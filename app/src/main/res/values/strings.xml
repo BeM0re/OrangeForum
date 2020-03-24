@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Orange Forum</string>
+    <string name="navigation_list">Menu 1</string>
+    <string name="navigation_parse">Menu 2</string>
+    <string name="navigation_scaling">Menu 4</string>
+    <string name="navigation_map">Menu 3</string>
 </resources>
