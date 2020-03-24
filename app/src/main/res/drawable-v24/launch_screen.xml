@@ -7,20 +7,24 @@
         </shape>
     </item>
 
-<!--    <item
-        android:top="24dp"
-        android:bottom="24dp">
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/splash_image"
-            android:tileMode="disabled" />
-    </item>-->
+
+    <item android:drawable="@android:color/white"/>
 
     <item
+        android:top="0dp"
+        android:bottom="0dp">
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/splash"
+            android:tileMode="disabled"
+            />
+    </item>
+
+<!--    <item
         android:drawable="@drawable/splash_image"
         android:gravity="center"
         android:width="400dp"
-        android:height="400dp"/>
+        android:height="400dp"/>-->
 
 
 
