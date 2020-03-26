@@ -7,6 +7,7 @@ import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.model.Category
 
 
 class CategoryAdapter(groups: List<ExpandableGroup<*>?>?) :

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_category.*
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.model.Category
 
 class CategoryFragment : Fragment() {
 
