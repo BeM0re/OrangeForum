@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.navigation_gallery -> {
+                R.id.navigation_category -> {
                     val fragment = TempFragment()
                     supportFragmentManager
                         .beginTransaction()
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
                         .commit()
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.navigation_list -> {
+                R.id.navigation_board -> {
                     val fragment = TempFragment()
                     supportFragmentManager
                         .beginTransaction()
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                         .commit()
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.navigation_map -> {
+                R.id.navigation_thread -> {
                     val fragment = TempFragment()
                     supportFragmentManager
                         .beginTransaction()
@@ -61,7 +61,15 @@ class MainActivity : AppCompatActivity() {
                         .commit()
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.navigation_parse -> {
+                R.id.navigation_favorites -> {
+                    val fragment = TempFragment()
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.container, fragment, fragment.javaClass.simpleName)
+                        .commit()
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.navigation_downloaded -> {
                     val fragment = TempFragment()
                     supportFragmentManager
                         .beginTransaction()

@@ -2,23 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_list"
+        android:id="@+id/navigation_category"
         android:icon="@drawable/ic_settings_accent_24dp"
-        android:title="@string/navigation_list"/>
+        android:title="@string/navigation_category"/>
 
     <item
-        android:id="@+id/navigation_parse"
+        android:id="@+id/navigation_board"
         android:icon="@drawable/ic_settings_accent_24dp"
-        android:title="@string/navigation_parse"/>
+        android:title="@string/navigation_board"/>
 
     <item
-        android:id="@+id/navigation_gallery"
+        android:id="@+id/navigation_thread"
         android:icon="@drawable/ic_settings_accent_24dp"
-        android:title="@string/navigation_scaling"/>
+        android:title="@string/navigation_thread"/>
 
     <item
-        android:id="@+id/navigation_map"
+        android:id="@+id/navigation_favorites"
         android:icon="@drawable/ic_settings_accent_24dp"
-        android:title="@string/navigation_map"/>
+        android:title="@string/navigation_favorites"/>
+
+    <item
+        android:id="@+id/navigation_downloaded"
+        android:icon="@drawable/ic_settings_accent_24dp"
+        android:title="@string/navigation_downloaded"/>
 
 </menu>
