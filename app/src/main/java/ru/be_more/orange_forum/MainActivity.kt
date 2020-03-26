@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.be_more.orange_forum.ui.TempFragment
+import ru.be_more.orange_forum.ui.category.CategoryFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.navigation_category -> {
-                    val fragment = TempFragment()
+                    val fragment = CategoryFragment()
                     supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.container, fragment, fragment.javaClass.simpleName)
