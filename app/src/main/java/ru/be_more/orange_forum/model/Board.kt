@@ -4,20 +4,23 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class Board (
-    var name:String?
+    var name:String?,
+    var id: String?
 ):Parcelable {
-    constructor(parcel: Parcel) : this(parcel.readString()) {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString()
+    ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
+        parcel.writeString(id)
     }
 
     override fun describeContents(): Int {
         return 0
     }
-
-//    fun getTitle() = name
 
     companion object CREATOR : Parcelable.Creator<Board> {
         override fun createFromParcel(parcel: Parcel): Board {
@@ -28,4 +31,5 @@ data class Board (
             return arrayOfNulls(size)
         }
     }
+
 }
