@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         toolbar.setOnMenuItemClickListener(mOnPreferenceItemSelectedListener)
 
         if (savedInstanceState == null) {
-            val fragment = TempFragment()
+            val fragment = CategoryFragment()
             supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.container, fragment, fragment.javaClass.simpleName)

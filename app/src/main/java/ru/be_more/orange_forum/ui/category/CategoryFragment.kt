@@ -5,8 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.get
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_category.*
@@ -15,9 +19,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 import ru.be_more.orange_forum.repositories.dvachCategoryRepository
+
 
 class CategoryFragment : Fragment() {
 
@@ -29,27 +33,21 @@ class CategoryFragment : Fragment() {
         inflater.inflate(R.layout.fragment_category, container, false)
 
     override fun onStart() {
-
         super.onStart()
 
 
+        var adapter : CategoryAdapter
 
-        var boards : List<Board> = listOf(Board("asd", "asd"),Board("zxc", "asd"))
-        var cat1 = Category("name1", boards)
-        var cat2 = Category("name2", boards)
-
-//        val categories : List<Category>  = listOf(cat1, cat2)
-        var categories = getParseData().value
-        if (categories == null)
-            categories = listOf()
-        Log.d("M_CategoryFragment", "size = ${categories?.size}")
         val recyclerView : RecyclerView = rv_category_list
         val layoutManager : LinearLayoutManager  = LinearLayoutManager(this.context)
-
-        //instantiate your adapter with the list of genres
-        val adapter : CategoryAdapter  = CategoryAdapter (categories)
         recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = adapter
+
+        getParseData().observe(this, Observer {
+            adapter = CategoryAdapter(it)
+            Log.d("M_CategoryFragment", "${it.size}")
+            recyclerView.adapter = adapter
+        })
+
     }
 
     private fun loadDataAsync() : Deferred<LiveData<List<Category>>> = GlobalScope.async{

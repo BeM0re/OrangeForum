@@ -46,22 +46,15 @@ object dvachCategoryRepository {
             isLoading.postValue(true)
 
             try {
-                withContext(Dispatchers.Main) {
-//                    val gson = GsonBuilder().setPrettyPrinting().create()
-                    val response = dvachCategoryService.getDvachCategoriesAsync("get_boards")
-//                    val formattedResponse: DvachCategories = gson.fromJson(response.body().toString(), DvachCategories::class.java)
-                    Log.d("M_ParseItemRepository ","response = $response")
+                val response = dvachCategoryService.getDvachCategoriesAsync("get_boards")
+//                Log.d("M_ParseItemRepository ","response = $response")
 
                 if(response.isSuccessful){
-                    val dvachCategoryResponse = response.body()
-                        allCategories = dvachCategoryResponse?: DvachCategories()
-                    Log.d("M_ParseItemRepository ","response.body = ${response.body().toString()}")
-
+                    allCategories = response.body()?: DvachCategories()
                 }else{
                     Log.d("M_ParseItemRepository ",response.errorBody().toString())
                 }
 
-                }
             }catch (e: Exception){
                 Log.d("M_ParseItemRepository", "$e")
             }
@@ -79,7 +72,6 @@ object dvachCategoryRepository {
         if(allCategories == null)
             return listOf()
 
-
         val adult = Category(
             title = "Взрослым",
             items = getBoards(allCategories.adult)
@@ -88,8 +80,36 @@ object dvachCategoryRepository {
             title = "Игры",
             items = getBoards(allCategories.games)
         )
+        val politics = Category(
+            title = "Политика",
+            items = getBoards(allCategories.games)
+        )
+        val custom = Category(
+            title = "Пользовательские",
+            items = getBoards(allCategories.games)
+        )
+        val other = Category(
+            title = "Разное",
+            items = getBoards(allCategories.games)
+        )
+        val art = Category(
+            title = "Творчество",
+            items = getBoards(allCategories.games)
+        )
+        val thematics = Category(
+            title = "Тематика",
+            items = getBoards(allCategories.games)
+        )
+        val tech = Category(
+            title = "Техника и софт",
+            items = getBoards(allCategories.games)
+        )
+        val japan = Category(
+            title = "Японская культура",
+            items = getBoards(allCategories.games)
+        )
 
-        return listOf(adult, games)
+        return listOf(adult, games, politics, custom, other, art, thematics, tech, japan)
     }
 
     private fun getBoards(dvachBoards : List<DvachBoard>) = dvachBoards.map { toBoard(it) }

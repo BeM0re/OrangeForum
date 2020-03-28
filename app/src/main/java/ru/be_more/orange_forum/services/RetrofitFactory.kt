@@ -5,7 +5,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import ru.be_more.orange_forum.BuildConfig
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -49,7 +49,7 @@ object RetrofitFactory{
     fun retrofit(baseUrl : String) : Retrofit = Retrofit.Builder()
         .client(client)
         .baseUrl(baseUrl)
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
 }

@@ -11,7 +11,8 @@ import ru.be_more.orange_forum.model.Category
 
 
 class CategoryAdapter(groups: List<ExpandableGroup<*>?>?) :
-    ExpandableRecyclerViewAdapter<CategoryViewHolder, BoardViewHolder>(groups) {
+    ExpandableRecyclerViewAdapter<CategoryViewHolder,
+            BoardViewHolder>(groups){
 
     override fun onCreateGroupViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val inflater = LayoutInflater.from(parent.context)
