@@ -25,18 +25,35 @@ data class DvachBoard(
     val sage : Int,
     val tripcodes : Int
 )
+/*data class DvachCategories(
+    val Взрослым : List<DvachBoard> = listOf(),
+    val games : List<DvachBoard> = listOf() ,
+    val politics : List<DvachBoard> = listOf() ,
+    val custom : List<DvachBoard> = listOf() ,
+    val other : List<DvachBoard> = listOf() ,
+    val art : List<DvachBoard> = listOf() ,
+    val thematics : List<DvachBoard> = listOf() ,
+    val tech : List<DvachBoard> = listOf() ,
+    val japan : List<DvachBoard> = listOf()
+)*/
 
 data class DvachCategories(
-    val Взрослым : List<DvachBoard> = listOf(),
-    val Игры : List<DvachBoard> = listOf() ,
-    val Политика : List<DvachBoard> = listOf() ,
-    val Пользовательские : List<DvachBoard> = listOf() ,
-    val Разное : List<DvachBoard> = listOf() ,
-    val Творчество : List<DvachBoard> = listOf() ,
-    val Тематика : List<DvachBoard> = listOf() ,
+    @SerializedName(value = "Взрослым")
+    val adult : List<DvachBoard> = listOf(),
+    @SerializedName(value = "Игры")
+    val games : List<DvachBoard> = listOf() ,
+    @SerializedName(value = "Политика")
+    val politics : List<DvachBoard> = listOf() ,
+    @SerializedName(value = "Пользовательские")
+    val custom : List<DvachBoard> = listOf() ,
+    @SerializedName(value = "Разное")
+    val other : List<DvachBoard> = listOf() ,
+    @SerializedName(value = "Творчество")
+    val art : List<DvachBoard> = listOf() ,
+    @SerializedName(value = "Тематика")
+    val thematics : List<DvachBoard> = listOf() ,
     @SerializedName(value = "Техника и софт")
     val tech : List<DvachBoard> = listOf() ,
     @SerializedName(value = "Японская культура" )
     val japan : List<DvachBoard> = listOf()
-
 )

@@ -42,7 +42,7 @@ class CategoryFragment : Fragment() {
         var categories = getParseData().value
         if (categories == null)
             categories = listOf()
-        Log.d("M_CategoryFragment", "${categories?.size}")
+        Log.d("M_CategoryFragment", "size = ${categories?.size}")
         val recyclerView : RecyclerView = rv_category_list
         val layoutManager : LinearLayoutManager  = LinearLayoutManager(this.context)
 

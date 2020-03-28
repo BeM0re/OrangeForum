@@ -3,6 +3,8 @@ package ru.be_more.orange_forum.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -12,58 +14,62 @@ import ru.be_more.orange_forum.data.DvachCategories
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 import ru.be_more.orange_forum.services.ApiFactory
-import java.lang.Exception
+
 
 object dvachCategoryRepository {
 
     private val dvachCategoryService = ApiFactory.dvachApi
     private var isLoading : MutableLiveData<Boolean> = MutableLiveData()
 
-    fun getItems(): LiveData<List<Category>> {
+/*    fun getItems(): LiveData<List<Category>> {
 
         val response = MutableLiveData<List<Category>> ()
         response.postValue(toCategories(loadData().value))
 
+
         return response
+    }*/
+    fun getItems(): LiveData<List<Category>> {
+        return Transformations.map(loadData()){ entity ->
+            toCategories(entity)
+        }
     }
 
     fun getIsLoading() : LiveData<Boolean> = isLoading
 
     private fun loadData(): LiveData<DvachCategories> {
-        var allCategories : DvachCategories = DvachCategories()
+        var allCategories = DvachCategories()
         val liveData : MutableLiveData<DvachCategories> = MutableLiveData()
 
         GlobalScope.launch(Dispatchers.Default) {
 
-            withContext(Dispatchers.Main) {
-                isLoading.value = true
-            }
-
-            val dvachCategoryRequest = dvachCategoryService.getBashQuotesAsync()
+            isLoading.postValue(true)
 
             try {
+                withContext(Dispatchers.Main) {
+//                    val gson = GsonBuilder().setPrettyPrinting().create()
+                    val response = dvachCategoryService.getDvachCategoriesAsync("get_boards")
+//                    val formattedResponse: DvachCategories = gson.fromJson(response.body().toString(), DvachCategories::class.java)
+                    Log.d("M_ParseItemRepository ","response = $response")
 
-                val response = dvachCategoryRequest.await()
                 if(response.isSuccessful){
                     val dvachCategoryResponse = response.body()
-                    allCategories = dvachCategoryResponse?: DvachCategories()
+                        allCategories = dvachCategoryResponse?: DvachCategories()
+                    Log.d("M_ParseItemRepository ","response.body = ${response.body().toString()}")
 
                 }else{
                     Log.d("M_ParseItemRepository ",response.errorBody().toString())
+                }
+
                 }
             }catch (e: Exception){
                 Log.d("M_ParseItemRepository", "$e")
             }
             finally {
-                withContext(Dispatchers.Main) {
-                    isLoading.value = false
-                }
+                isLoading.postValue(false)
             }
 
-            withContext(Dispatchers.Main) {
-                liveData.value = allCategories
-            }
-
+            liveData.postValue(allCategories)
         }
         return liveData
     }
@@ -74,16 +80,16 @@ object dvachCategoryRepository {
             return listOf()
 
 
-        var adult = Category(
+        val adult = Category(
             title = "Взрослым",
-            items = getBoards(allCategories.Взрослым)
+            items = getBoards(allCategories.adult)
         )
-        var games = Category(
+        val games = Category(
             title = "Игры",
-            items = getBoards(allCategories.Игры)
+            items = getBoards(allCategories.games)
         )
 
-        return listOf()
+        return listOf(adult, games)
     }
 
     private fun getBoards(dvachBoards : List<DvachBoard>) = dvachBoards.map { toBoard(it) }

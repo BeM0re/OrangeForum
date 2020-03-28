@@ -36,28 +36,15 @@ object RetrofitFactory{
 
     //Not logging the authkey if not debug
     private val client =
-        if(BuildConfig.DEBUG){
-            Log.d("M_RetrofitFactory", "release")
-            OkHttpClient().newBuilder()
-                .addInterceptor(HttpLoggingInterceptor { Log.d(OkHttpClient::class.java.simpleName, it) }.apply { level = HttpLoggingInterceptor.Level.BODY })
+        OkHttpClient().newBuilder()
+            .addInterceptor(HttpLoggingInterceptor { Log.d(OkHttpClient::class.java.simpleName, it) }.apply { level = HttpLoggingInterceptor.Level.BODY })
 //                .addInterceptor(authInterceptor)
 //                .addInterceptor(loggingInterceptor)
-                .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.X509TrustManager)
-                .hostnameVerifier(sslTrustManager.hostnameVerifier)
-                .readTimeout(45, TimeUnit.SECONDS)
-                .writeTimeout(45, TimeUnit.SECONDS)
-                .build()
-        }else{
-            Log.d("M_RetrofitFactory", "debug")
-            OkHttpClient().newBuilder()
-                .addInterceptor(loggingInterceptor)
-                .addInterceptor(authInterceptor)
-                .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.X509TrustManager)
-                .hostnameVerifier(sslTrustManager.hostnameVerifier)
-                .readTimeout(45, TimeUnit.SECONDS)
-                .writeTimeout(45, TimeUnit.SECONDS)
-                .build()
-        }
+            .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.X509TrustManager)
+            .hostnameVerifier(sslTrustManager.hostnameVerifier)
+            .readTimeout(45, TimeUnit.SECONDS)
+            .writeTimeout(45, TimeUnit.SECONDS)
+            .build()
 
     fun retrofit(baseUrl : String) : Retrofit = Retrofit.Builder()
         .client(client)
