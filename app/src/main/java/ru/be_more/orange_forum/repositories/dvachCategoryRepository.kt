@@ -82,31 +82,31 @@ object dvachCategoryRepository {
         )
         val politics = Category(
             title = "Политика",
-            items = getBoards(allCategories.games)
+            items = getBoards(allCategories.politics)
         )
         val custom = Category(
             title = "Пользовательские",
-            items = getBoards(allCategories.games)
+            items = getBoards(allCategories.custom)
         )
         val other = Category(
             title = "Разное",
-            items = getBoards(allCategories.games)
+            items = getBoards(allCategories.other)
         )
         val art = Category(
             title = "Творчество",
-            items = getBoards(allCategories.games)
+            items = getBoards(allCategories.art)
         )
         val thematics = Category(
             title = "Тематика",
-            items = getBoards(allCategories.games)
+            items = getBoards(allCategories.thematics)
         )
         val tech = Category(
             title = "Техника и софт",
-            items = getBoards(allCategories.games)
+            items = getBoards(allCategories.tech)
         )
         val japan = Category(
             title = "Японская культура",
-            items = getBoards(allCategories.games)
+            items = getBoards(allCategories.japan)
         )
 
         return listOf(adult, games, politics, custom, other, art, thematics, tech, japan)

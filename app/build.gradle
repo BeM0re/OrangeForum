@@ -73,4 +73,10 @@ dependencies {
 
     //gson
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    //MVIcore
+    implementation 'com.github.badoo.mvicore:mvicore:1.2.4'
+    implementation 'com.github.badoo.mvicore:mvicore-android:1.2.4'
+    implementation 'com.github.badoo.mvicore:mvicore-diff:1.2.4'
+    implementation 'com.github.badoo.mvicore:mvicore-debugdrawer:1.2.4'
 }
