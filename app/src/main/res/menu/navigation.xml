@@ -9,7 +9,7 @@
     <item
         android:id="@+id/navigation_board"
         android:icon="@drawable/ic_settings_accent_24dp"
-        android:title="@string/navigation_board"/>
+        android:title="@string/navigation_board" />
 
     <item
         android:id="@+id/navigation_thread"

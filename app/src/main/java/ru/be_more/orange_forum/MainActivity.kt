@@ -6,12 +6,19 @@ import android.os.Bundle
 import android.view.Menu
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 
 class MainActivity : AppCompatActivity() {
+
+    //TODO перенести в нормальное место
+    var selectedBoard: MutableLiveData<String> = MutableLiveData()
+    var selectedThread:  MutableLiveData<Int> = MutableLiveData()
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +32,18 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         toolbar.setOnMenuItemClickListener(mOnPreferenceItemSelectedListener)
+
+
+        selectedBoard.postValue("")
+        selectedThread.postValue(0)
+        
+        selectedBoard.observe(this, Observer {
+            bottomNavigationView.menu.getItem(1).isEnabled = !selectedBoard.value.isNullOrEmpty()
+        })
+        selectedThread.observe(this, Observer {
+            bottomNavigationView.menu.getItem(2).isEnabled = selectedThread.value!=0
+        })
+
 
         if (savedInstanceState == null) {
             val fragment = CategoryFragment()
