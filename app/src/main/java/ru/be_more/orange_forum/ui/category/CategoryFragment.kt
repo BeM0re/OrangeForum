@@ -18,7 +18,6 @@ import kotlinx.coroutines.runBlocking
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.Category
 import ru.be_more.orange_forum.repositories.DvachCategoryRepository
-import ru.be_more.orange_forum.ui.category.rv.CategoryAdapter
 
 
 class CategoryFragment : Fragment() {
