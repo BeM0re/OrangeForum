@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.ui.category
+package ru.be_more.orange_forum.ui.category.rv
 
 import android.view.View
 import android.widget.TextView

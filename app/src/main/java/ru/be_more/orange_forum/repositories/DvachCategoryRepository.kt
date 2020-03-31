@@ -14,21 +14,15 @@ import ru.be_more.orange_forum.data.DvachCategories
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 import ru.be_more.orange_forum.services.ApiFactory
+import java.lang.Thread.sleep
+import kotlin.concurrent.thread
 
 
-object dvachCategoryRepository {
+object DvachCategoryRepository {
 
     private val dvachCategoryService = ApiFactory.dvachApi
     private var isLoading : MutableLiveData<Boolean> = MutableLiveData()
 
-/*    fun getItems(): LiveData<List<Category>> {
-
-        val response = MutableLiveData<List<Category>> ()
-        response.postValue(toCategories(loadData().value))
-
-
-        return response
-    }*/
     fun getItems(): LiveData<List<Category>> {
         return Transformations.map(loadData()){ entity ->
             toCategories(entity)
@@ -46,14 +40,17 @@ object dvachCategoryRepository {
             isLoading.postValue(true)
 
             try {
-                val response = dvachCategoryService.getDvachCategoriesAsync("get_boards")
-//                Log.d("M_ParseItemRepository ","response = $response")
-
-                if(response.isSuccessful){
-                    allCategories = response.body()?: DvachCategories()
-                }else{
-                    Log.d("M_ParseItemRepository ",response.errorBody().toString())
+                //TODO убрать слип на релизе
+                withContext(Dispatchers.Default){
+                    sleep(1000)
                 }
+
+                val response = dvachCategoryService.getDvachCategoriesAsync("get_boards")
+
+                if(response.isSuccessful)
+                    allCategories = response.body()?: DvachCategories()
+                else
+                    Log.d("M_ParseItemRepository ",response.errorBody().toString())
 
             }catch (e: Exception){
                 Log.d("M_ParseItemRepository", "$e")
@@ -118,6 +115,5 @@ object dvachCategoryRepository {
         name = dvachBoard.name,
         id = dvachBoard.id
     )
-
 
 }

@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     var selectedBoard: MutableLiveData<String> = MutableLiveData()
     var selectedThread:  MutableLiveData<Int> = MutableLiveData()
 
+
+
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -36,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         selectedBoard.postValue("")
         selectedThread.postValue(0)
-        
+
         selectedBoard.observe(this, Observer {
             bottomNavigationView.menu.getItem(1).isEnabled = !selectedBoard.value.isNullOrEmpty()
         })
