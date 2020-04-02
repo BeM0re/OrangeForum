@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_small_8">
+
+
+        <TextView
+            android:id="@+id/tv_board_op_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_board_op_name"
+            app:layout_constraintEnd_toStartOf="@+id/tv_board_op_datetime"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_board_op_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_board_op_name"
+            tools:text="#OP" />
+
+        <TextView
+            android:id="@+id/tv_board_op_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_board_op_check"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Аноним" />
+
+        <TextView
+            android:id="@+id/tv_board_op_datetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_board_op_check"
+            app:layout_constraintEnd_toStartOf="@+id/tv_board_op_num"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_board_op_check"
+            app:layout_constraintTop_toTopOf="@+id/tv_board_op_check"
+            tools:text="02/04/20 Чтв 15:49:23" />
+
+
+        <TextView
+            android:id="@+id/tv_board_op_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_board_op_datetime"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_board_op_datetime"
+            app:layout_constraintTop_toTopOf="@+id/tv_board_op_datetime"
+            tools:text="#31231232" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_board_op_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="@string/lorem"
+        android:lines="1"
+        android:paddingStart="@dimen/font_normal_16"
+        android:paddingEnd="@dimen/font_normal_16"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight=".50"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/font_normal_16"
+            android:paddingEnd="@dimen/spacing_small_8"
+            android:src="@drawable/splash"
+            android:contentDescription="@string/fuck_warning"/>
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight=".50"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/spacing_small_8"
+            android:paddingEnd="@dimen/font_normal_16"
+            android:src="@drawable/splash"
+            android:contentDescription="@string/fuck_warning" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_board_op_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/font_normal_16"
+        android:paddingEnd="@dimen/font_normal_16"
+        android:paddingTop="0dp"
+        tools:text="@string/lorem"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/font_normal_16"
+        android:paddingEnd="@dimen/font_normal_16"
+        android:paddingTop="@dimen/spacing_small_8">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_board_op_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                tools:text="Пропущено 200 постов" />
+
+            <TextView
+                android:id="@+id/tv_board_op_with_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="20 c картинками" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_board_op_hide"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/btn_title_hide"
+            android:textColor="@color/color_accent"
+            app:backgroundTint="@android:color/white"/>
+        <Button
+            android:id="@+id/btn_board_op_into"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/spacing_small_8"
+            app:layout_constraintEnd_toStartOf="@id/btn_board_op_hide"
+            android:text="@string/btn_title_into"
+            android:textColor="@color/color_accent"
+            app:backgroundTint="@android:color/white"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

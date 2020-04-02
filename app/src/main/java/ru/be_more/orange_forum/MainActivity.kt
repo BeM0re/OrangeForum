@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 bottomNavigationView.selectedItemId=R.id.navigation_board
             }
         })
-        
+
         selectedThread.observe(this, Observer {
             bottomNavigationView.menu.getItem(2).isEnabled = selectedThread.value!=0
         })
