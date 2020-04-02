@@ -6,38 +6,20 @@ import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.be_more.orange_forum.BuildConfig
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 
 object RetrofitFactory{
 
 
-    private val authInterceptor = Interceptor {chain->
-        val newUrl = chain.request().url()
-            .newBuilder()
-            .addQueryParameter("task", "get_boards")
-            .build()
-
-        val newRequest = chain.request()
-            .newBuilder()
-            .url(newUrl)
-            .build()
-
-        chain.proceed(newRequest)
-    }
-
-    private val loggingInterceptor =  HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
 
     val sslTrustManager = SSLTrustManager()
 
     //Not logging the authkey if not debug
     private val client =
         OkHttpClient().newBuilder()
-            .addInterceptor(HttpLoggingInterceptor { Log.d(OkHttpClient::class.java.simpleName, it) }.apply { level = HttpLoggingInterceptor.Level.BODY })
+            .addInterceptor(HttpLoggingInterceptor { Log.d(OkHttpClient::class.java.simpleName, it) }
+                .apply { level = HttpLoggingInterceptor.Level.BODY })
 //                .addInterceptor(authInterceptor)
 //                .addInterceptor(loggingInterceptor)
             .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.X509TrustManager)

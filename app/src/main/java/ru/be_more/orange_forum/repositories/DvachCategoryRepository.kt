@@ -4,34 +4,37 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.be_more.orange_forum.data.DvachBoard
+import ru.be_more.orange_forum.data.DvachBoardName
 import ru.be_more.orange_forum.data.DvachCategories
-import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.model.BoardShort
 import ru.be_more.orange_forum.model.Category
 import ru.be_more.orange_forum.services.ApiFactory
-import java.lang.Thread.sleep
-import kotlin.concurrent.thread
 
 
 object DvachCategoryRepository {
 
-    private val dvachCategoryService = ApiFactory.dvachApi
+    private val dvachApi = ApiFactory.dvachApi
     private var isLoading : MutableLiveData<Boolean> = MutableLiveData()
 
-    fun getItems(): LiveData<List<Category>> {
-        return Transformations.map(loadData()){ entity ->
+    fun getCategories(): LiveData<List<Category>> {
+        return Transformations.map(loadCategories()){ entity ->
+            toCategories(entity)
+        }
+    }
+
+    fun getBoard(): LiveData<List<Category>> {
+        return Transformations.map(loadCategories()){ entity ->
             toCategories(entity)
         }
     }
 
     fun getIsLoading() : LiveData<Boolean> = isLoading
 
-    private fun loadData(): LiveData<DvachCategories> {
+    private fun loadCategories(): LiveData<DvachCategories> {
         var allCategories = DvachCategories()
         val liveData : MutableLiveData<DvachCategories> = MutableLiveData()
 
@@ -40,12 +43,7 @@ object DvachCategoryRepository {
             isLoading.postValue(true)
 
             try {
-                //TODO убрать слип на релизе
-                withContext(Dispatchers.Default){
-//                    sleep(1000)
-                }
-
-                val response = dvachCategoryService.getDvachCategoriesAsync("get_boards")
+                val response = dvachApi.getDvachCategoriesAsync("get_boards")
 
                 if(response.isSuccessful)
                     allCategories = response.body()?: DvachCategories()
@@ -109,11 +107,39 @@ object DvachCategoryRepository {
         return listOf(adult, games, politics, custom, other, art, thematics, tech, japan)
     }
 
-    private fun getBoards(dvachBoards : List<DvachBoard>) = dvachBoards.map { toBoard(it) }
+    private fun getBoards(dvachBoards : List<DvachBoardName>) = dvachBoards.map { toBoard(it) }
 
-    private fun toBoard(dvachBoard: DvachBoard) = Board(
+    private fun toBoard(dvachBoard: DvachBoardName) = BoardShort(
         name = dvachBoard.name,
         id = dvachBoard.id
     )
+
+    private fun loadBoard(boardId: String): LiveData<DvachBoard> {
+        var allThreads = DvachBoard()
+        val liveData : MutableLiveData<DvachBoard> = MutableLiveData()
+
+        GlobalScope.launch(Dispatchers.Default) {
+
+            isLoading.postValue(true)
+
+            try {
+                val response = dvachApi.getDvachThreadsAsync(boardId)
+
+                if(response.isSuccessful)
+                    allThreads = response.body()?: DvachBoard()
+                else
+                    Log.d("M_ParseItemRepository ",response.errorBody().toString())
+
+            }catch (e: Exception){
+                Log.d("M_ParseItemRepository", "$e")
+            }
+            finally {
+                isLoading.postValue(false)
+            }
+
+            liveData.postValue(allThreads)
+        }
+        return liveData
+    }
 
 }

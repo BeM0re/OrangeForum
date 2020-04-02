@@ -6,16 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.thoughtbot.expandablecheckrecyclerview.listeners.OnCheckChildClickListener
 import kotlinx.android.synthetic.main.fragment_category.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.model.BoardShort
 import ru.be_more.orange_forum.model.Category
 
 
-class CategoryFragment private constructor(var listener: (board: Board) -> Unit): MvpAppCompatFragment(), CategoryView, CategoryOnClickListener {
+class CategoryFragment private constructor(var listener: (board: BoardShort) -> Unit): MvpAppCompatFragment(), CategoryView, CategoryOnClickListener {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var categoryPresenter : CategoryPresenter
@@ -41,12 +40,12 @@ class CategoryFragment private constructor(var listener: (board: Board) -> Unit)
         recyclerView.adapter = adapter
     }
 
-    override fun onBoardClick(board: Board) {
+    override fun onBoardClick(board: BoardShort) {
         listener(board)
     }
 
     companion object {
-        fun getCategoryFragment (listener: (board: Board) -> Unit): CategoryFragment {
+        fun getCategoryFragment (listener: (board: BoardShort) -> Unit): CategoryFragment {
             return CategoryFragment(listener)
         }
     }

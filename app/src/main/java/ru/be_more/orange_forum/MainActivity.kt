@@ -3,16 +3,14 @@ package ru.be_more.orange_forum
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.model.BoardShort
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 
@@ -22,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     var selectedBoard: MutableLiveData<String> = MutableLiveData()
     var selectedThread:  MutableLiveData<Int> = MutableLiveData()
 
-    private fun setBoard(board: Board){
+    private fun setBoard(board: BoardShort){
         selectedBoard.postValue(board.id)
     }
 
