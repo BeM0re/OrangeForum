@@ -15,14 +15,20 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import moxy.MvpAppCompatFragment
+import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.Category
 import ru.be_more.orange_forum.repositories.DvachCategoryRepository
 
 
-class CategoryFragment : Fragment() {
+class CategoryFragment : MvpAppCompatFragment(), CategoryView {
 
-    private var repo = DvachCategoryRepository
+    @InjectPresenter
+    lateinit var categoryPresenter : CategoryPresenter
+
+    private lateinit var recyclerView : RecyclerView
+    lateinit var adapter : CategoryAdapter
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -32,26 +38,14 @@ class CategoryFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        recyclerView = rv_category_list
 
-        var adapter : CategoryAdapter
-
-        val recyclerView : RecyclerView = rv_category_list
         val layoutManager = LinearLayoutManager(this.context)
         recyclerView.layoutManager = layoutManager
-
-        getParseData().observe(this, Observer {
-            adapter = CategoryAdapter(it)
-            Log.d("M_CategoryFragment", "${it.size}")
-            recyclerView.adapter = adapter
-        })
-
     }
 
-    private fun loadDataAsync() : Deferred<LiveData<List<Category>>> = GlobalScope.async{
-        repo.getItems()
-    }
-
-    private fun getParseData() : LiveData<List<Category>> = runBlocking {
-        return@runBlocking  loadDataAsync().await()
+    override fun loadCategories(categories: List<Category>) {
+        adapter = CategoryAdapter(categories)
+        recyclerView.adapter = adapter
     }
 }
