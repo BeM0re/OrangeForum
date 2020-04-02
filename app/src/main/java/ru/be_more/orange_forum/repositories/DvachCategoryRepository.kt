@@ -42,7 +42,7 @@ object DvachCategoryRepository {
             try {
                 //TODO убрать слип на релизе
                 withContext(Dispatchers.Default){
-                    sleep(1000)
+//                    sleep(1000)
                 }
 
                 val response = dvachCategoryService.getDvachCategoriesAsync("get_boards")

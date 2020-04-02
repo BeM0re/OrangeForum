@@ -1,30 +1,23 @@
 package ru.be_more.orange_forum.ui.category
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.thoughtbot.expandablecheckrecyclerview.listeners.OnCheckChildClickListener
 import kotlinx.android.synthetic.main.fragment_category.*
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
-import ru.be_more.orange_forum.repositories.DvachCategoryRepository
 
 
-class CategoryFragment : MvpAppCompatFragment(), CategoryView {
+class CategoryFragment : MvpAppCompatFragment(), CategoryView, CategoryOnClickListener {
 
-    @InjectPresenter
+    @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var categoryPresenter : CategoryPresenter
 
     private lateinit var recyclerView : RecyclerView
@@ -35,17 +28,20 @@ class CategoryFragment : MvpAppCompatFragment(), CategoryView {
                               savedInstanceState: Bundle?) : View? =
         inflater.inflate(R.layout.fragment_category, container, false)
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         recyclerView = rv_category_list
-
-        val layoutManager = LinearLayoutManager(this.context)
-        recyclerView.layoutManager = layoutManager
+        recyclerView.layoutManager = LinearLayoutManager(this.context)
     }
 
     override fun loadCategories(categories: List<Category>) {
-        adapter = CategoryAdapter(categories)
+        adapter = CategoryAdapter(categories, this)
+
         recyclerView.adapter = adapter
+    }
+
+    override fun onBoardClick(board: Board) {
+        categoryPresenter.setSelectedBoard(board)
     }
 }

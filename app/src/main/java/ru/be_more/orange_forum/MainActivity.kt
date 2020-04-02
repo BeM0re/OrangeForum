@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
     var selectedThread:  MutableLiveData<Int> = MutableLiveData()
 
 
-    fun getInstance() = this
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {

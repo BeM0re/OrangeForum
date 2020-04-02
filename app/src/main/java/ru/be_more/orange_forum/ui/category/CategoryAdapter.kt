@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.category
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 
 
-class CategoryAdapter(groups: List<ExpandableGroup<*>?>?) :
+class CategoryAdapter(groups: List<ExpandableGroup<*>?>?, var listener: CategoryOnClickListener) :
     ExpandableRecyclerViewAdapter<CategoryViewHolder,
             BoardViewHolder>(groups){
 
@@ -33,8 +34,10 @@ class CategoryAdapter(groups: List<ExpandableGroup<*>?>?) :
         holder: BoardViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
         childIndex: Int
     ) {
-        val board: Board = (group as Category).items[childIndex]!!
-        holder.setBoardName(board.name.orEmpty())
+        val board: Board? = (group as Category).items[childIndex]
+        holder.setBoardName(board?.name.orEmpty())
+        if(board != null)
+            holder.itemView.setOnClickListener {listener.onBoardClick(board)}
     }
 
     override fun onBindGroupViewHolder(
