@@ -35,7 +35,7 @@ class CategoryPresenter : MvpPresenter<CategoryView>() {
     }
 
     fun setSelectedBoard(board: Board) {
-        Log.d("M_CategoryPresenter", "${board.id}")
+//        Log.d("M_CategoryPresenter", "${board.id}")
     }
 
 }

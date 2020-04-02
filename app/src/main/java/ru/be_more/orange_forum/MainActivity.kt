@@ -3,6 +3,7 @@ package ru.be_more.orange_forum
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
@@ -11,6 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 
@@ -20,7 +22,9 @@ class MainActivity : AppCompatActivity() {
     var selectedBoard: MutableLiveData<String> = MutableLiveData()
     var selectedThread:  MutableLiveData<Int> = MutableLiveData()
 
-
+    private fun setBoard(board: Board){
+        selectedBoard.postValue(board.id)
+    }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,26 +45,25 @@ class MainActivity : AppCompatActivity() {
 
         selectedBoard.observe(this, Observer {
             bottomNavigationView.menu.getItem(1).isEnabled = !selectedBoard.value.isNullOrEmpty()
+            if(selectedBoard.value!="") {
+                bottomNavigationView.selectedItemId=R.id.navigation_board
+            }
         })
+        
         selectedThread.observe(this, Observer {
             bottomNavigationView.menu.getItem(2).isEnabled = selectedThread.value!=0
         })
 
+        if (savedInstanceState == null)
+            bottomNavigationView.selectedItemId=R.id.navigation_category
 
-        if (savedInstanceState == null) {
-            val fragment = CategoryFragment()
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, fragment, fragment.javaClass.simpleName)
-                .commit()
-        }
     }
 
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.navigation_category -> {
-                    val fragment = CategoryFragment()
+                    val fragment =  CategoryFragment.getCategoryFragment {setBoard(it)}
                     supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.container, fragment, fragment.javaClass.simpleName)

@@ -15,7 +15,7 @@ import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 
 
-class CategoryFragment : MvpAppCompatFragment(), CategoryView, CategoryOnClickListener {
+class CategoryFragment private constructor(var listener: (board: Board) -> Unit): MvpAppCompatFragment(), CategoryView, CategoryOnClickListener {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var categoryPresenter : CategoryPresenter
@@ -42,6 +42,12 @@ class CategoryFragment : MvpAppCompatFragment(), CategoryView, CategoryOnClickLi
     }
 
     override fun onBoardClick(board: Board) {
-        categoryPresenter.setSelectedBoard(board)
+        listener(board)
+    }
+
+    companion object {
+        fun getCategoryFragment (listener: (board: Board) -> Unit): CategoryFragment {
+            return CategoryFragment(listener)
+        }
     }
 }
