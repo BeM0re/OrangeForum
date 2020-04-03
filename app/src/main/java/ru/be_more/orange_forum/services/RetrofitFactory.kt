@@ -13,7 +13,7 @@ object RetrofitFactory{
 
 
 
-    val sslTrustManager = SSLTrustManager()
+    private val sslTrustManager = SSLTrustManager()
 
     //Not logging the authkey if not debug
     private val client =

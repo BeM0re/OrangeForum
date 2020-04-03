@@ -26,8 +26,8 @@ object DvachCategoryRepository {
         }
     }
 
-    fun getBoard(): LiveData<List<Category>> {
-        return Transformations.map(loadCategories()){ entity ->
+    fun getBoard(boardId: String): LiveData<List<Category>> {
+        return Transformations.map(loadBoard(boardId)){ entity ->
             toCategories(entity)
         }
     }
