@@ -9,4 +9,5 @@
     <string name="fuck_warning">fuck warning</string>
     <string name="btn_title_hide">Скрыть</string>
     <string name="btn_title_into">В тред</string>
+    <string name="op_check">#OP</string>
 </resources>

@@ -155,16 +155,17 @@ object DvachApiRepository {
         num = dvachThread.num,
         posts = listOf(
             Post(
-            num = dvachThread.num,
-            comment = dvachThread.comment,
-            date = dvachThread.date,
-            email = dvachThread.email,
-            files = listOf(),
-            files_count = dvachThread.files_count,
-            op = dvachThread.op,
-            post_count = dvachThread.post_count,
-            subject = dvachThread.subject,
-            timestamp = dvachThread.timestamp
+                num = dvachThread.num,
+                name = dvachThread.name,
+                comment = dvachThread.comment,
+                date = dvachThread.date,
+                email = dvachThread.email,
+                files = listOf(),
+                files_count = dvachThread.files_count,
+                op = dvachThread.op,
+                post_count = dvachThread.post_count,
+                subject = dvachThread.subject,
+                timestamp = dvachThread.timestamp
             )
         )
     )

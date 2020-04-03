@@ -37,6 +37,7 @@ data class DvachBoard(
 
 data class DvachThread(
     var num: Int,
+    var name: String,
     var comment: String,
     var date: String,
     var email: String,

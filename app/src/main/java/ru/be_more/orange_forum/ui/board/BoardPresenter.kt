@@ -24,7 +24,7 @@ class BoardPresenter : MvpPresenter<BoardView>() {
     }
 
     fun setBoardId(id: String){
-        board.id = id
+        board = Board("", id)
 
         getParseData().observeForever( Observer {
             board.threads=it

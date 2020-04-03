@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.model
 
 data class Post (
     var num: Int,
+    var name: String,
     var comment: String,
     var date: String,
     var email: String,

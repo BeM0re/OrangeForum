@@ -25,17 +25,19 @@ class BoardAdapter( var threads: List<BoardThread> = listOf(), var listener: Boa
     override fun onBindViewHolder(holder: ThreadViewHolder, position: Int) {
         val thread: BoardThread? = threads[position]
         if(thread != null){
-            holder.setSenderName(thread.posts[0].email)
+            holder.setSenderName(thread.posts[0].name)
             holder.setIsOp(thread.posts[0].op > 0)
             holder.setDate(thread.posts[0].date)
             holder.setThreadNum(thread.posts[0].num)
             holder.setTitle(thread.posts[0].subject)
-            holder.setPic1(thread.posts[0].files[0].path)
-            holder.setPic2(thread.posts[0].files[1].path)
             holder.setComment(thread.posts[0].comment)
             holder.setTotalPosts(thread.posts[0].post_count)
             holder.setPostsWithPic(thread.posts[0].files_count)
+            //TODO сделать нормальные картинки
+            holder.setPic1("")
+            holder.setPic2("")
             holder.itemView.setOnClickListener {listener.onThreadClick(thread)}
+
         }
     }
 

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
@@ -22,7 +22,7 @@
             app:layout_constraintStart_toEndOf="@+id/tv_board_op_name"
             app:layout_constraintTop_toTopOf="@+id/tv_board_op_name"
             android:visibility="gone"
-            android:text="#OP"/>
+            android:text="@string/op_check"/>
 
         <TextView
             android:id="@+id/tv_board_op_name"
