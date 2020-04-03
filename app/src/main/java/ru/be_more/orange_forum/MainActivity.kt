@@ -11,7 +11,9 @@ import androidx.lifecycle.Observer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.TempFragment
+import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +25,11 @@ class MainActivity : AppCompatActivity() {
     private fun setBoard(board: Board){
         selectedBoard.postValue(board.id)
     }
+
+    private fun setThread(thread: BoardThread){
+        selectedThread.postValue(thread.num)
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +76,8 @@ class MainActivity : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_board -> {
-                    val fragment = TempFragment()
+                    //if selectedBoard.value == null then this menu item is disabled
+                    val fragment = BoardFragment.getBoardFragment({setThread(it)}, selectedBoard.value!!)
                     supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.container, fragment, fragment.javaClass.simpleName)

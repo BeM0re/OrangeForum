@@ -4,13 +4,13 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class Board (
-    var name:String?,
-    var id: String?,
-    var threads: List<Thread> = listOf()
+    var name:String,
+    var id: String,
+    var threads: List<BoardThread> = listOf()
 ):Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readString()
+        parcel.readString().orEmpty(),
+        parcel.readString().orEmpty()
     ) {
     }
 

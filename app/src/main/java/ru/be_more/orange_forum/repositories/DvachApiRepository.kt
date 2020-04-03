@@ -10,15 +10,20 @@ import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.data.DvachBoard
 import ru.be_more.orange_forum.data.DvachBoardName
 import ru.be_more.orange_forum.data.DvachCategories
+import ru.be_more.orange_forum.data.DvachThread
 import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Category
+import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.services.ApiFactory
 
 
-object DvachCategoryRepository {
+object DvachApiRepository {
 
     private val dvachApi = ApiFactory.dvachApi
     private var isLoading : MutableLiveData<Boolean> = MutableLiveData()
+
+    fun getIsLoading() : LiveData<Boolean> = isLoading
 
     fun getCategories(): LiveData<List<Category>> {
         return Transformations.map(loadCategories()){ entity ->
@@ -26,13 +31,11 @@ object DvachCategoryRepository {
         }
     }
 
-    fun getBoard(boardId: String): LiveData<List<Category>> {
-        return Transformations.map(loadBoard(boardId)){ entity ->
-            toCategories(entity)
+    fun getBoard(board: Board): LiveData<List<BoardThread>> {
+        return Transformations.map(loadBoard(board)){ entity ->
+            toBoard(entity)
         }
     }
-
-    fun getIsLoading() : LiveData<Boolean> = isLoading
 
     private fun loadCategories(): LiveData<DvachCategories> {
         var allCategories = DvachCategories()
@@ -62,59 +65,7 @@ object DvachCategoryRepository {
         return liveData
     }
 
-    private fun toCategories (allCategories: DvachCategories?) : List<Category> {
-
-        if(allCategories == null)
-            return listOf()
-
-        val adult = Category(
-            title = "Взрослым",
-            items = getBoards(allCategories.adult)
-        )
-        val games = Category(
-            title = "Игры",
-            items = getBoards(allCategories.games)
-        )
-        val politics = Category(
-            title = "Политика",
-            items = getBoards(allCategories.politics)
-        )
-        val custom = Category(
-            title = "Пользовательские",
-            items = getBoards(allCategories.custom)
-        )
-        val other = Category(
-            title = "Разное",
-            items = getBoards(allCategories.other)
-        )
-        val art = Category(
-            title = "Творчество",
-            items = getBoards(allCategories.art)
-        )
-        val thematics = Category(
-            title = "Тематика",
-            items = getBoards(allCategories.thematics)
-        )
-        val tech = Category(
-            title = "Техника и софт",
-            items = getBoards(allCategories.tech)
-        )
-        val japan = Category(
-            title = "Японская культура",
-            items = getBoards(allCategories.japan)
-        )
-
-        return listOf(adult, games, politics, custom, other, art, thematics, tech, japan)
-    }
-
-    private fun getBoards(dvachBoards : List<DvachBoardName>) = dvachBoards.map { toBoard(it) }
-
-    private fun toBoard(dvachBoard: DvachBoardName) = Board(
-        name = dvachBoard.name,
-        id = dvachBoard.id
-    )
-
-    private fun loadBoard(boardId: String): LiveData<DvachBoard> {
+    private fun loadBoard(board: Board): LiveData<DvachBoard> {
         var allThreads = DvachBoard()
         val liveData : MutableLiveData<DvachBoard> = MutableLiveData()
 
@@ -123,7 +74,7 @@ object DvachCategoryRepository {
             isLoading.postValue(true)
 
             try {
-                val response = dvachApi.getDvachThreadsAsync(boardId)
+                val response = dvachApi.getDvachThreadsAsync(board.id)
 
                 if(response.isSuccessful)
                     allThreads = response.body()?: DvachBoard()
@@ -141,5 +92,82 @@ object DvachCategoryRepository {
         }
         return liveData
     }
+
+
+    private fun toCategories (allCategories: DvachCategories?) : List<Category> {
+
+        if(allCategories == null)
+            return listOf()
+
+        val adult = Category(
+            title = "Взрослым",
+            items = getBoardNames(allCategories.adult)
+        )
+        val games = Category(
+            title = "Игры",
+            items = getBoardNames(allCategories.games)
+        )
+        val politics = Category(
+            title = "Политика",
+            items = getBoardNames(allCategories.politics)
+        )
+        val custom = Category(
+            title = "Пользовательские",
+            items = getBoardNames(allCategories.custom)
+        )
+        val other = Category(
+            title = "Разное",
+            items = getBoardNames(allCategories.other)
+        )
+        val art = Category(
+            title = "Творчество",
+            items = getBoardNames(allCategories.art)
+        )
+        val thematics = Category(
+            title = "Тематика",
+            items = getBoardNames(allCategories.thematics)
+        )
+        val tech = Category(
+            title = "Техника и софт",
+            items = getBoardNames(allCategories.tech)
+        )
+        val japan = Category(
+            title = "Японская культура",
+            items = getBoardNames(allCategories.japan)
+        )
+
+        return listOf(adult, games, politics, custom, other, art, thematics, tech, japan)
+    }
+
+    private fun getBoardNames(dvachBoards : List<DvachBoardName>) = dvachBoards.map { toBoard(it) }
+
+    private fun toBoard(dvachBoard: DvachBoardName) = Board(
+        name = dvachBoard.name,
+        id = dvachBoard.id
+    )
+
+    private fun toBoard(dvachBoard: DvachBoard)
+            = dvachBoard.threads.map { toThread(it) }
+
+
+        //TODO перенести в toPost
+    private fun toThread(dvachThread: DvachThread) = BoardThread(
+        num = dvachThread.num,
+        posts = listOf(
+            Post(
+            num = dvachThread.num,
+            comment = dvachThread.comment,
+            date = dvachThread.date,
+            email = dvachThread.email,
+            files = listOf(),
+            files_count = dvachThread.files_count,
+            op = dvachThread.op,
+            post_count = dvachThread.post_count,
+            subject = dvachThread.subject,
+            timestamp = dvachThread.timestamp
+            )
+        )
+    )
+
 
 }

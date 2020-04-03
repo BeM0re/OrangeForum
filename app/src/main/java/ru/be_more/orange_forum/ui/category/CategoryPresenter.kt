@@ -10,12 +10,12 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
-import ru.be_more.orange_forum.repositories.DvachCategoryRepository
+import ru.be_more.orange_forum.repositories.DvachApiRepository
 
 @InjectViewState
 class CategoryPresenter : MvpPresenter<CategoryView>() {
 
-    private var repo = DvachCategoryRepository
+    private var repo = DvachApiRepository
 
     override fun onFirstViewAttach(){
         getParseData().observeForever( Observer {
