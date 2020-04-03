@@ -8,7 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import moxy.InjectViewState
 import moxy.MvpPresenter
-import ru.be_more.orange_forum.model.BoardShort
+import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 import ru.be_more.orange_forum.repositories.DvachCategoryRepository
 
@@ -32,7 +32,7 @@ class CategoryPresenter : MvpPresenter<CategoryView>() {
         repo.getCategories()
     }
 
-    fun setSelectedBoard(board: BoardShort) {
+    fun setSelectedBoard(board: Board) {
 //        Log.d("M_CategoryPresenter", "${board.id}")
     }
 

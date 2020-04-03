@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.be_more.orange_forum.model.BoardShort
+import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     var selectedBoard: MutableLiveData<String> = MutableLiveData()
     var selectedThread:  MutableLiveData<Int> = MutableLiveData()
 
-    private fun setBoard(board: BoardShort){
+    private fun setBoard(board: Board){
         selectedBoard.postValue(board.id)
     }
 

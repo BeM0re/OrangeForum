@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.data.DvachBoard
 import ru.be_more.orange_forum.data.DvachBoardName
 import ru.be_more.orange_forum.data.DvachCategories
-import ru.be_more.orange_forum.model.BoardShort
+import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 import ru.be_more.orange_forum.services.ApiFactory
 
@@ -109,7 +109,7 @@ object DvachCategoryRepository {
 
     private fun getBoards(dvachBoards : List<DvachBoardName>) = dvachBoards.map { toBoard(it) }
 
-    private fun toBoard(dvachBoard: DvachBoardName) = BoardShort(
+    private fun toBoard(dvachBoard: DvachBoardName) = Board(
         name = dvachBoard.name,
         id = dvachBoard.id
     )

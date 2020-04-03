@@ -4,5 +4,5 @@ import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 
 class Category(
     title: String?,
-    items: List<BoardShort?>?
-):ExpandableGroup<BoardShort?>(title, items)
+    items: List<Board?>?
+):ExpandableGroup<Board?>(title, items)
