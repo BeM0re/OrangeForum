@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.ui.category
+package ru.be_more.orange_forum.ui.board
 
 import android.view.View
 import android.widget.ImageView
@@ -23,14 +23,17 @@ class ThreadViewHolder(itemView: View?) : ChildViewHolder(itemView) {
     fun setSenderName (param: String){
         senderName.text = param
     }
-    fun setIsOp (param: String){
-        isOp.text = param
+    fun setIsOp (param: Boolean){
+        if(param)
+            isOp.visibility=View.VISIBLE
+        else
+            isOp.visibility=View.GONE
     }
     fun setDate (param: String){
         date.text = param
     }
-    fun setThreadNum (param: String){
-        threadNum.text = param
+    fun setThreadNum (param: Int){
+        threadNum.text = param.toString()
     }
     fun setTitle (param: String){
         title.text = param
@@ -45,11 +48,12 @@ class ThreadViewHolder(itemView: View?) : ChildViewHolder(itemView) {
     fun setComment (param: String){
         comment.text = param
     }
-    fun setTotalPosts (param: String){
-        totalPosts.text = param
+    fun setTotalPosts (param: Int){
+        totalPosts.text ="Пропущено $param постов"
     }
-    fun setPostsWithPic (param: String){
-        postsWithPic.text = param
+    fun setPostsWithPic (param: Int){
+        postsWithPic.text = "$param c картинками"
     }
 
 }
+

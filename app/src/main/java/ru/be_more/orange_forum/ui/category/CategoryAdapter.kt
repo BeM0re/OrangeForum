@@ -12,7 +12,7 @@ import ru.be_more.orange_forum.model.Category
 
 class CategoryAdapter(groups: List<ExpandableGroup<*>?>?, var listener: CategoryOnClickListener) :
     ExpandableRecyclerViewAdapter<CategoryViewHolder,
-            BoardViewHolder>(groups){
+            BoardNameViewHolder>(groups){
 
     override fun onCreateGroupViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -23,14 +23,14 @@ class CategoryAdapter(groups: List<ExpandableGroup<*>?>?, var listener: Category
     override fun onCreateChildViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BoardViewHolder {
+    ): BoardNameViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view: View = inflater.inflate(R.layout.item_board, parent, false)
-        return BoardViewHolder(view)
+        return BoardNameViewHolder(view)
     }
 
     override fun onBindChildViewHolder(
-        holder: BoardViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
+        holder: BoardNameViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
         childIndex: Int
     ) {
         val board: Board? = (group as Category).items[childIndex]

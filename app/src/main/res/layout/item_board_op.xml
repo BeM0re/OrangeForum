@@ -21,7 +21,8 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/tv_board_op_name"
             app:layout_constraintTop_toTopOf="@+id/tv_board_op_name"
-            tools:text="#OP" />
+            android:visibility="gone"
+            android:text="#OP"/>
 
         <TextView
             android:id="@+id/tv_board_op_name"

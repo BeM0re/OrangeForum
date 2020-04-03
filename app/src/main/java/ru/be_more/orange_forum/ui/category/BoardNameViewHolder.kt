@@ -5,7 +5,7 @@ import android.widget.TextView
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.R
 
-class BoardViewHolder(itemView: View?) : ChildViewHolder(itemView) {
+class BoardNameViewHolder(itemView: View?) : ChildViewHolder(itemView) {
 
     private var boardName: TextView = itemView!!.findViewById(R.id.tv_board_title)
 

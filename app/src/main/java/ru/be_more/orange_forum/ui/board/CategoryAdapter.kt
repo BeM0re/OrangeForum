@@ -1,49 +1,64 @@
-package ru.be_more.orange_forum.ui.category
+package ru.be_more.orange_forum.ui.board
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.Category
-import ru.be_more.orange_forum.ui.board.BoardOnClickListener
+import ru.be_more.orange_forum.model.BoardThread
 
 
-class BoardAdapter(groups: List<ExpandableGroup<*>?>?, var listener: BoardOnClickListener) :
-    ExpandableRecyclerViewAdapter<CategoryViewHolder,
-            BoardViewHolder>(groups){
+class BoardAdapter( var threads: List<BoardThread> = listOf(), var listener: BoardOnClickListener) :
+    RecyclerView.Adapter<ThreadViewHolder>(){
 
-    override fun onCreateGroupViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThreadViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_category, parent, false)
-        return CategoryViewHolder(view)
+
+        return ThreadViewHolder(inflater.inflate(R.layout.item_board_op, parent, false))
     }
 
-    override fun onCreateChildViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): BoardViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_board, parent, false)
-        return BoardViewHolder(view)
+    override fun getItemCount(): Int = threads.size
+
+    override fun onBindViewHolder(holder: ThreadViewHolder, position: Int) {
+        val thread: BoardThread? = threads[position]
+        if(thread != null){
+            holder.setSenderName(thread.posts[0].email)
+            holder.setIsOp(thread.posts[0].op > 0)
+            holder.setDate(thread.posts[0].date)
+            holder.setThreadNum(thread.posts[0].num)
+            holder.setTitle(thread.posts[0].subject)
+            holder.setPic1(thread.posts[0].files[0].path)
+            holder.setPic2(thread.posts[0].files[1].path)
+            holder.setComment(thread.posts[0].comment)
+            holder.setTotalPosts(thread.posts[0].post_count)
+            holder.setPostsWithPic(thread.posts[0].files_count)
+            holder.itemView.setOnClickListener {listener.onThreadClick(thread)}
+        }
     }
 
-    override fun onBindChildViewHolder(
-        holder: BoardViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
-        childIndex: Int
-    ) {
-        val board: Board? = (group as Category).items[childIndex]
-        holder.setBoardName(board?.name.orEmpty())
-        if(board != null)
-            holder.itemView.setOnClickListener {listener.onThreadClick(board)}
-    }
+    fun updateData(data:List<BoardThread>){
 
-    override fun onBindGroupViewHolder(
-        holder: CategoryViewHolder, flatPosition: Int,
-        group: ExpandableGroup<*>?
-    ) {
-        holder.setCategoryTitle(group as Category)
+        val diffCallback = object: DiffUtil.Callback(){
+            override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean =
+                threads[oldPos].num == data[newPos].num
+
+            override fun getOldListSize(): Int = threads.size
+
+            override fun getNewListSize(): Int  = data.size
+
+            override fun areContentsTheSame(oldPos: Int, newPos: Int) : Boolean =
+                threads[oldPos].hashCode() == data[newPos].hashCode()
+
+        }
+
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        threads = data
+        diffResult.dispatchUpdatesTo(this)
     }
 }
+
+
