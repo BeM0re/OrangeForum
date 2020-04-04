@@ -87,4 +87,7 @@ dependencies {
     implementation 'com.github.badoo.mvicore:mvicore-android:1.2.4'
     implementation 'com.github.badoo.mvicore:mvicore-diff:1.2.4'
     implementation 'com.github.badoo.mvicore:mvicore-debugdrawer:1.2.4'
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
 }

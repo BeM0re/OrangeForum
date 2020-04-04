@@ -7,14 +7,8 @@ import androidx.lifecycle.Transformations
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import ru.be_more.orange_forum.data.DvachBoard
-import ru.be_more.orange_forum.data.DvachBoardName
-import ru.be_more.orange_forum.data.DvachCategories
-import ru.be_more.orange_forum.data.DvachThread
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.Category
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.data.*
+import ru.be_more.orange_forum.model.*
 import ru.be_more.orange_forum.services.ApiFactory
 
 
@@ -160,14 +154,19 @@ object DvachApiRepository {
                 comment = dvachThread.comment,
                 date = dvachThread.date,
                 email = dvachThread.email,
-                files = listOf(),
+                files = dvachThread.files.map { toFiles(it) },
                 files_count = dvachThread.files_count,
                 op = dvachThread.op,
-                post_count = dvachThread.post_count,
+                posts_count = dvachThread.posts_count,
                 subject = dvachThread.subject,
                 timestamp = dvachThread.timestamp
             )
         )
+    )
+
+    private fun toFiles (file: DvachFile) = AttachFile(
+        path = file.path,
+        thumbnail = file.thumbnail
     )
 
 

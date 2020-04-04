@@ -44,7 +44,7 @@ data class DvachThread(
     var files: List<DvachFile>,
     var files_count: Int,
     var op: Int,
-    var post_count: Int,
+    var posts_count: Int,
     var subject: String,
     var timestamp: Int
 )

@@ -1,10 +1,10 @@
 package ru.be_more.orange_forum.ui.board
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.BoardThread
 
@@ -31,10 +31,12 @@ class BoardAdapter( var threads: List<BoardThread> = listOf(), var listener: Boa
             holder.setThreadNum(thread.posts[0].num)
             holder.setTitle(thread.posts[0].subject)
             holder.setComment(thread.posts[0].comment)
-            holder.setTotalPosts(thread.posts[0].post_count)
+            holder.setTotalPosts(thread.posts[0].posts_count)
             holder.setPostsWithPic(thread.posts[0].files_count)
-            //TODO сделать нормальные картинки
-            holder.setPic1("")
+
+            if(thread.posts[0].files.isNotEmpty()){
+                holder.setPic1(thread.posts[0].files[0].thumbnail)
+            }
             holder.setPic2("")
             holder.itemView.setOnClickListener {listener.onThreadClick(thread)}
 
