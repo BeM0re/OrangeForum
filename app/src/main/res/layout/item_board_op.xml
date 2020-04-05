@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="@dimen/spacing_small_8"
+    android:paddingBottom="@dimen/spacing_small_8">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -70,7 +72,7 @@
         android:paddingEnd="@dimen/font_normal_16"
         android:textStyle="bold" />
 
-    <LinearLayout
+<!--    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -92,7 +94,14 @@
             android:paddingEnd="@dimen/font_normal_16"
             android:src="@drawable/splash"
             android:contentDescription="@string/fuck_warning" />
-    </LinearLayout>
+    </LinearLayout>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_op_post_pics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/item_post_pics"
+        tools:itemCount="1"/>
 
     <TextView
         android:id="@+id/tv_board_op_comment"

@@ -20,8 +20,6 @@ object RetrofitFactory{
         OkHttpClient().newBuilder()
             .addInterceptor(HttpLoggingInterceptor { Log.d(OkHttpClient::class.java.simpleName, it) }
                 .apply { level = HttpLoggingInterceptor.Level.BODY })
-//                .addInterceptor(authInterceptor)
-//                .addInterceptor(loggingInterceptor)
             .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.X509TrustManager)
             .hostnameVerifier(sslTrustManager.hostnameVerifier)
             .readTimeout(45, TimeUnit.SECONDS)

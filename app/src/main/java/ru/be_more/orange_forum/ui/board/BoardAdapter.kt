@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.ui.board
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -35,9 +34,8 @@ class BoardAdapter( var threads: List<BoardThread> = listOf(), var listener: Boa
             holder.setPostsWithPic(thread.posts[0].files_count)
 
             if(thread.posts[0].files.isNotEmpty()){
-                holder.setPic1(thread.posts[0].files[0].thumbnail)
+                holder.setPics(thread.posts[0].files)
             }
-            holder.setPic2("")
             holder.itemView.setOnClickListener {listener.onThreadClick(thread)}
 
         }

@@ -12,5 +12,6 @@
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp"
-        tools:listitem="@layout/item_board"/>
+        tools:listitem="@layout/item_board_op"
+        />
 </LinearLayout>

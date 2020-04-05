@@ -1,9 +1,11 @@
 package ru.be_more.orange_forum.ui.board
 
+import android.graphics.drawable.ClipDrawable.HORIZONTAL
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_board.*
@@ -12,8 +14,7 @@ import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.Category
-import ru.be_more.orange_forum.ui.category.*
+
 
 //TODO сделать динамическое количество картинок через ресайклер
 class BoardFragment private constructor(): MvpAppCompatFragment(),
@@ -45,11 +46,14 @@ class BoardFragment private constructor(): MvpAppCompatFragment(),
         adapter = BoardAdapter(board.threads, this)
 
         recyclerView.adapter = adapter
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(recyclerView.context, HORIZONTAL)
+        )
     }
 
     companion object {
         fun getBoardFragment (listener: (thread: BoardThread) -> Unit, id: String): BoardFragment {
-            var board = BoardFragment()
+            val board = BoardFragment()
             board.listener = listener
             board.id = id
 
