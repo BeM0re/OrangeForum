@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.AttachFile
-import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.board.BoardOnClickListener
 
 
@@ -26,12 +25,30 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: Boar
     override fun onBindViewHolder(holder: PosPicViewHolder, position: Int) {
 
         when {
-            files.size > position*2+1 ->
-                holder.setPics(files[position*2].thumbnail, files[position*2+1].thumbnail)
-            files.size == position*2+1 ->
-                holder.setPics(files[position*2].thumbnail)
-            else ->
+            files.size > position * 2 + 1 -> {
+                holder.setPics(files[position * 2].thumbnail, files[position * 2 + 1].thumbnail)
+                holder.itemView.visibility = View.VISIBLE
+                Log.d(
+                    "M_PostPicAdapter",
+                    "size = ${files.size}, position = $position, visible=${holder.itemView.visibility}"
+                )
+            }
+            files.size == position * 2 + 1 -> {
+                holder.setPics(files[position * 2].thumbnail)
+                holder.itemView.visibility = View.VISIBLE
+                Log.d(
+                    "M_PostPicAdapter",
+                    "size = ${files.size}, position = $position, visible=${holder.itemView.visibility}"
+                )
+            }
+            else -> {
                 holder.itemView.visibility = View.GONE
+                holder.setParentContainerGone()
+                Log.d(
+                    "M_PostPicAdapter",
+                    "size = ${files.size}, position = $position, visible=${holder.itemView.visibility}"
+                )
+            }
         }
 
         holder.itemView.setOnClickListener { Log.d("M_PostPicAdapter", "Click on ${holder.itemView}")}

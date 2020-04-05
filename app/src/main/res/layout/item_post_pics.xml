@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_op_post_pics"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:orientation="horizontal">
@@ -12,17 +13,17 @@
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/font_normal_16"
         android:paddingEnd="@dimen/spacing_small_8"
-        android:src="@drawable/splash"
         android:contentDescription="@string/fuck_warning"
         android:visibility="visible"/>
     <ImageView
         android:id="@+id/iv_op_post_pic2"
         android:layout_width="0dp"
         android:layout_weight=".50"
+        android:maxWidth="500dp"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/spacing_small_8"
         android:paddingEnd="@dimen/font_normal_16"
-        android:src="@drawable/splash"
+        android:paddingBottom="@dimen/spacing_normal_16"
         android:contentDescription="@string/fuck_warning"
         android:visibility="visible" />
 </LinearLayout>

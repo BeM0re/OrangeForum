@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.ui.post
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -19,11 +20,15 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
 
     private var pic1: ImageView = itemView!!.findViewById(R.id.iv_op_post_pic1)
     private var pic2: ImageView = itemView!!.findViewById(R.id.iv_op_post_pic2)
+    private var pics: LinearLayout = itemView!!.findViewById(R.id.ll_op_post_pics)
+
+    fun setParentContainerGone(){
+        pics.visibility = View.GONE
+    }
 
     fun setPics (url1: String, url2: String = ""){
         val url1 = "https://2ch.hk$url1"
 
-        Log.d("M_PostPicViewHolder", "$url1")
         val glideUrl = GlideUrl(
             url1, LazyHeaders.Builder()
                 .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
@@ -43,8 +48,6 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
 
         if(url2.isNotEmpty()){
             val url2 = "https://2ch.hk$url2"
-
-            Log.d("M_PostPicViewHolder", "$url2")
 
             val glideUrl = GlideUrl(
                 url2, LazyHeaders.Builder()

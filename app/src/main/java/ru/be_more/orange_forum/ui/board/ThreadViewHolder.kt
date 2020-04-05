@@ -26,7 +26,6 @@ class ThreadViewHolder(itemView: View?) : ChildViewHolder(itemView) {
     private var threadNum: TextView = itemView!!.findViewById(R.id.tv_board_op_num)
     private var title: TextView = itemView!!.findViewById(R.id.tv_board_op_subject)
     private var pics: RecyclerView = itemView!!.findViewById(R.id.rv_op_post_pics)
-//    private var pic: ImageView = itemView!!.findViewById(R.id.iv_board_op_pic1)
     private var comment: TextView = itemView!!.findViewById(R.id.tv_board_op_comment)
     private var totalPosts: TextView = itemView!!.findViewById(R.id.tv_board_op_total)
     private var postsWithPic: TextView = itemView!!.findViewById(R.id.tv_board_op_with_pic)
@@ -51,29 +50,12 @@ class ThreadViewHolder(itemView: View?) : ChildViewHolder(itemView) {
     }
     //TODO сделать картинки
     fun setPics (urls: List<AttachFile>){
-//        if(urls.isNotEmpty()){
-//            val glideUrl = GlideUrl(
-//                urls[0].path, LazyHeaders.Builder()
-//                    .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
-//                            "_ga=GA1.2.57010468.1498700728; " +
-//                            "ageallow=1; " +
-//                            "_gid=GA1.2.1910512907.1585793763; " +
-//                            "_gat=1")
-//                    .build()
-//            )
-//            Glide.with(itemView)
-//                .load(glideUrl)
-//                .skipMemoryCache(true)
-//                .diskCacheStrategy(DiskCacheStrategy.NONE)
-//                .into(pic)
-//        }
         val adapter = PostPicAdapter(urls)
 
         pics.layoutManager = LinearLayoutManager(App.getInstance())
         pics.adapter = adapter
     }
     fun setComment (param: String){
-//        comment.text = param
         comment.text = HtmlCompat.fromHtml(param, HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
     fun setTotalPosts (param: Int){
