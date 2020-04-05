@@ -6,5 +6,5 @@ import ru.be_more.orange_forum.model.BoardThread
 
 interface BoardOnClickListener  {
     fun onThreadClick(thread: BoardThread)
-    fun onThumbnailListener(fullPicUrl: String)
+    fun onThumbnailListener(fullPicUrl: String, duration: String? = "")
 }

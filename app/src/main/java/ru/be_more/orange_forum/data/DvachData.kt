@@ -56,5 +56,6 @@ data class DvachFile(
     var tn_height: Int,
     var tn_width: Int,
     var path: String,
-    var thumbnail: String
+    var thumbnail: String,
+    var duration: String
 )

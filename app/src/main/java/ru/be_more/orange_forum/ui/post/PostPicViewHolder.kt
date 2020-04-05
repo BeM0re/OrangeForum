@@ -39,12 +39,10 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
 
         Glide.with(itemView)
             .load(thumbnailGlideUrl)
-            .skipMemoryCache(true)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(pic1)
 
         pic1.visibility = View.VISIBLE
-        pic1.setOnClickListener { listener.onThumbnailListener(fullPicUrl) }
+        pic1.setOnClickListener { listener.onThumbnailListener(fullPicUrl, file1.duration) }
 
         if(file2 != null){
             thumbnailUrl = "https://2ch.hk${file2.thumbnail}"
@@ -65,7 +63,7 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
                 .into(pic2)
 
             pic2.visibility = View.VISIBLE
-            pic2.setOnClickListener { listener.onThumbnailListener(fullPicUrl) }
+            pic2.setOnClickListener { listener.onThumbnailListener(fullPicUrl, file2.duration) }
         }
         else
             pic2.visibility = View.GONE

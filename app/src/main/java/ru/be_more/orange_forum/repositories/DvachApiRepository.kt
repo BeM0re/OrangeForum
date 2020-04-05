@@ -166,7 +166,8 @@ object DvachApiRepository {
 
     private fun toFiles (file: DvachFile) = AttachFile(
         path = file.path,
-        thumbnail = file.thumbnail
+        thumbnail = file.thumbnail,
+        duration = if(file.duration.isNullOrEmpty()) "" else file.duration
     )
 
 
