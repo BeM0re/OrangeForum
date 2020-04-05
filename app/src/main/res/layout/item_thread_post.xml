@@ -70,101 +70,13 @@
         android:paddingEnd="@dimen/font_normal_16"
         android:textStyle="bold" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/iv_board_op_pic1"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/font_normal_16"
-            android:paddingEnd="@dimen/spacing_small_8"
-            android:src="@drawable/splash"
-            android:contentDescription="@string/fuck_warning"/>
-        <ImageView
-            android:id="@+id/iv_board_op_pic2"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/spacing_small_8"
-            android:paddingEnd="@dimen/font_normal_16"
-            android:src="@drawable/splash"
-            android:contentDescription="@string/fuck_warning" />
-    </LinearLayout>
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_op_post_pics"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/iv_board_op_pic3"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/font_normal_16"
-            android:paddingEnd="@dimen/spacing_small_8"
-            android:src="@drawable/splash"
-            android:contentDescription="@string/fuck_warning"/>
-        <ImageView
-            android:id="@+id/iv_board_op_pic4"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/spacing_small_8"
-            android:paddingEnd="@dimen/font_normal_16"
-            android:src="@drawable/splash"
-            android:contentDescription="@string/fuck_warning" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/iv_board_op_pic5"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/font_normal_16"
-            android:paddingEnd="@dimen/spacing_small_8"
-            android:src="@drawable/splash"
-            android:contentDescription="@string/fuck_warning"/>
-        <ImageView
-            android:id="@+id/iv_board_op_pic6"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/spacing_small_8"
-            android:paddingEnd="@dimen/font_normal_16"
-            android:src="@drawable/splash"
-            android:contentDescription="@string/fuck_warning" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/iv_board_op_pic7"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/font_normal_16"
-            android:paddingEnd="@dimen/spacing_small_8"
-            android:src="@drawable/splash"
-            android:contentDescription="@string/fuck_warning"/>
-        <ImageView
-            android:id="@+id/iv_board_op_pic8"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/spacing_small_8"
-            android:paddingEnd="@dimen/font_normal_16"
-            android:src="@drawable/splash"
-            android:contentDescription="@string/fuck_warning" />
-    </LinearLayout>
+        tools:listitem="@layout/item_post_pics"
+        tools:itemCount="1"/>
 
     <TextView
         android:id="@+id/tv_board_op_comment"
@@ -182,10 +94,6 @@
         android:paddingStart="@dimen/font_normal_16"
         android:paddingEnd="@dimen/font_normal_16"
         android:paddingTop="@dimen/spacing_small_8">
-
-
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

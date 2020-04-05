@@ -30,8 +30,8 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: Boar
                 holder.setPics(files[position*2].thumbnail, files[position*2+1].thumbnail)
             files.size == position*2+1 ->
                 holder.setPics(files[position*2].thumbnail)
-            else -> ""
-//                holder.itemView.visibility = View.GONE
+            else ->
+                holder.itemView.visibility = View.GONE
         }
 
         holder.itemView.setOnClickListener { Log.d("M_PostPicAdapter", "Click on ${holder.itemView}")}

@@ -21,7 +21,7 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
     private var pic2: ImageView = itemView!!.findViewById(R.id.iv_op_post_pic2)
 
     fun setPics (url1: String, url2: String = ""){
-        val url1 = "https://2ch.hk$url1: String"
+        val url1 = "https://2ch.hk$url1"
 
         Log.d("M_PostPicViewHolder", "$url1")
         val glideUrl = GlideUrl(
@@ -38,15 +38,11 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(pic1)
-/*        Picasso.get()
-            .load(url1)
-            .fit()
-            .into(pic1)*/
 
         pic1.visibility = View.VISIBLE
 
         if(url2.isNotEmpty()){
-            val url2 = "https://2ch.hk$url2: String"
+            val url2 = "https://2ch.hk$url2"
 
             Log.d("M_PostPicViewHolder", "$url2")
 
@@ -63,10 +59,6 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
                 .load(glideUrl)
                 .into(pic2)
 
-/*            Picasso.get()
-                .load(url1)
-                .fit()
-                .into(pic1)*/
             pic2.visibility = View.VISIBLE
         }
         else
