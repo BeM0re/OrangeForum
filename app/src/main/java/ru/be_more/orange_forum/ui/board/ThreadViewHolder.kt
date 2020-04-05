@@ -18,7 +18,7 @@ import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 
 
-class ThreadViewHolder(itemView: View?) : ChildViewHolder(itemView) {
+class ThreadViewHolder(itemView: View?, var listener: BoardOnClickListener) : ChildViewHolder(itemView) {
 
     private var senderName: TextView = itemView!!.findViewById(R.id.tv_board_op_name)
     private var isOp: TextView = itemView!!.findViewById(R.id.tv_board_op_check)
@@ -50,7 +50,7 @@ class ThreadViewHolder(itemView: View?) : ChildViewHolder(itemView) {
     }
     //TODO сделать картинки
     fun setPics (urls: List<AttachFile>){
-        val adapter = PostPicAdapter(urls)
+        val adapter = PostPicAdapter(urls, listener = listener)
 
         pics.layoutManager = LinearLayoutManager(App.getInstance())
         pics.adapter = adapter

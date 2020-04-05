@@ -1,14 +1,26 @@
 package ru.be_more.orange_forum.ui.board
 
 import android.graphics.drawable.ClipDrawable.HORIZONTAL
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_board.*
+import kotlinx.android.synthetic.main.item_post_pics.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
@@ -64,4 +76,58 @@ class BoardFragment private constructor(): MvpAppCompatFragment(),
     override fun onThreadClick(thread: BoardThread) {
         listener(thread)
     }
+
+    override fun onThumbnailListener(fullPicUrl: String) {
+        val fullPicGlideUrl = GlideUrl(
+            fullPicUrl,
+            LazyHeaders.Builder()
+                .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
+                        "_ga=GA1.2.57010468.1498700728; " +
+                        "ageallow=1; " +
+                        "_gid=GA1.2.1910512907.1585793763; " +
+                        "_gat=1")
+                .build()
+        )
+        v_op_post_pic_full_background.visibility = View.VISIBLE
+        iv_op_post_pic_full.visibility = View.VISIBLE
+        pb_op_pos_pic_loading.visibility = View.VISIBLE
+        Glide.with(this)
+            .load(fullPicGlideUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    Log.d("M_BoardFragment", "$e")
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    pb_op_pos_pic_loading.visibility = View.GONE
+                    return false
+                }
+            })
+            .into(iv_op_post_pic_full)
+
+        v_op_post_pic_full_background.setOnClickListener {
+            v_op_post_pic_full_background.visibility = View.GONE
+            iv_op_post_pic_full.visibility = View.GONE
+            Glide.with(this).clear(iv_op_post_pic_full)
+            pb_op_pos_pic_loading.visibility = View.GONE
+        }
+        iv_op_post_pic_full.setOnClickListener {
+            v_op_post_pic_full_background.visibility = View.GONE
+            iv_op_post_pic_full.visibility = View.GONE
+        }
+    }
+
 }

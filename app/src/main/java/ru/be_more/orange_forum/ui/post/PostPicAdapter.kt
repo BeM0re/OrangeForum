@@ -11,7 +11,7 @@ import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.ui.board.BoardOnClickListener
 
 
-class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: BoardOnClickListener? = null) :
+class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: BoardOnClickListener) :
     RecyclerView.Adapter<PosPicViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PosPicViewHolder {
@@ -25,8 +25,10 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: Boar
     override fun onBindViewHolder(holder: PosPicViewHolder, position: Int) {
 
         when {
+            //Один вью холдер содержит 2 картинки, поэтому приходится извращаться
+            //и передавать по 2 или по 1 файлу за раз
             files.size > position * 2 + 1 -> {
-                holder.setPics(files[position * 2].thumbnail, files[position * 2 + 1].thumbnail)
+                holder.setPics(files[position * 2], files[position * 2 + 1], listener)
                 holder.itemView.visibility = View.VISIBLE
                 Log.d(
                     "M_PostPicAdapter",
@@ -34,7 +36,7 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: Boar
                 )
             }
             files.size == position * 2 + 1 -> {
-                holder.setPics(files[position * 2].thumbnail)
+                holder.setPics(files[position * 2], listener = listener)
                 holder.itemView.visibility = View.VISIBLE
                 Log.d(
                     "M_PostPicAdapter",

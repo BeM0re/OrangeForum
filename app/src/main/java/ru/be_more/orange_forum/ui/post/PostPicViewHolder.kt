@@ -1,19 +1,16 @@
 package ru.be_more.orange_forum.ui.post
 
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.core.text.HtmlCompat
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import com.squareup.picasso.Picasso
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.model.AttachFile
+import ru.be_more.orange_forum.ui.board.BoardOnClickListener
 
 
 class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
@@ -26,11 +23,12 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
         pics.visibility = View.GONE
     }
 
-    fun setPics (url1: String, url2: String = ""){
-        val url1 = "https://2ch.hk$url1"
+    fun setPics (file1: AttachFile, file2: AttachFile? = null, listener: BoardOnClickListener){
+        var thumbnailUrl = "https://2ch.hk${file1.thumbnail}"
+        var fullPicUrl = "https://2ch.hk${file1.path}"
 
-        val glideUrl = GlideUrl(
-            url1, LazyHeaders.Builder()
+        var thumbnailGlideUrl = GlideUrl(
+            thumbnailUrl, LazyHeaders.Builder()
                 .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
                         "_ga=GA1.2.57010468.1498700728; " +
                         "ageallow=1; " +
@@ -38,19 +36,22 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
                         "_gat=1")
                 .build()
         )
+
         Glide.with(itemView)
-            .load(glideUrl)
+            .load(thumbnailGlideUrl)
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(pic1)
 
         pic1.visibility = View.VISIBLE
+        pic1.setOnClickListener { listener.onThumbnailListener(fullPicUrl) }
 
-        if(url2.isNotEmpty()){
-            val url2 = "https://2ch.hk$url2"
+        if(file2 != null){
+            thumbnailUrl = "https://2ch.hk${file2.thumbnail}"
+            val fullPicUrl = "https://2ch.hk${file2.path}"
 
-            val glideUrl = GlideUrl(
-                url2, LazyHeaders.Builder()
+            thumbnailGlideUrl = GlideUrl(
+                thumbnailUrl, LazyHeaders.Builder()
                     .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
                             "_ga=GA1.2.57010468.1498700728; " +
                             "ageallow=1; " +
@@ -58,11 +59,13 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
                             "_gat=1")
                     .build()
             )
+
             Glide.with(itemView)
-                .load(glideUrl)
+                .load(thumbnailGlideUrl)
                 .into(pic2)
 
             pic2.visibility = View.VISIBLE
+            pic2.setOnClickListener { listener.onThumbnailListener(fullPicUrl) }
         }
         else
             pic2.visibility = View.GONE

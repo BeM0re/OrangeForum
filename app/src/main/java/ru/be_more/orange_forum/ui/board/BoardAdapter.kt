@@ -16,7 +16,7 @@ class BoardAdapter( var threads: List<BoardThread> = listOf(), var listener: Boa
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThreadViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
-        return ThreadViewHolder(inflater.inflate(R.layout.item_board_op, parent, false))
+        return ThreadViewHolder(inflater.inflate(R.layout.item_board_op, parent, false), listener)
     }
 
     override fun getItemCount(): Int = threads.size
