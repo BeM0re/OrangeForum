@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/spacing_small_8"
+    android:paddingBottom="@dimen/spacing_normal_16">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/spacing_small_8">
+
+        <TextView
+            android:id="@+id/tv_item_post_op_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_name"
+            app:layout_constraintEnd_toStartOf="@+id/tv_item_post_datetime"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_item_post_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_item_post_name"
+            android:visibility="gone"
+            android:text="@string/op_check"/>
+
+        <TextView
+            android:id="@+id/tv_item_post_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_item_post_op_check"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Аноним" />
+
+        <TextView
+            android:id="@+id/tv_item_post_datetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_op_check"
+            app:layout_constraintEnd_toStartOf="@+id/tv_item_post_num"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_item_post_op_check"
+            app:layout_constraintTop_toTopOf="@+id/tv_item_post_op_check"
+            tools:text="02/04/20 Чтв 15:49:23" />
+
+
+        <TextView
+            android:id="@+id/tv_item_post_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_datetime"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_item_post_datetime"
+            app:layout_constraintTop_toTopOf="@+id/tv_item_post_datetime"
+            tools:text="#31231232" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_item_post_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="@string/lorem"
+        android:lines="1"
+        android:paddingStart="@dimen/font_normal_16"
+        android:paddingEnd="@dimen/font_normal_16"
+        android:textStyle="bold"
+        android:layout_marginBottom="@dimen/spacing_normal_16"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_item_post_pics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/item_post_pics"
+        tools:itemCount="1"/>
+
+    <ru.be_more.orange_forum.ui.custom.ExpandableTextView
+        android:id="@+id/tv_item_post_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/font_normal_16"
+        android:paddingEnd="@dimen/font_normal_16"
+        android:paddingTop="0dp"
+        tools:text="@string/lorem"/>
+
+</LinearLayout>

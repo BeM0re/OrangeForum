@@ -37,16 +37,6 @@ class ThreadViewHolder(itemView: View?, private var listener: BoardOnClickListen
     private var pickThreadButton: Button = itemView!!.findViewById(R.id.btn_board_op_into)
     private var hideButton: Button = itemView!!.findViewById(R.id.btn_board_op_hide)
 
-    private lateinit var senderNameValue: String
-    private lateinit var isOpValue: String
-    private lateinit var dateValue: String
-    private lateinit var threadNumValue: String
-    private lateinit var titleValue: String
-    private lateinit var picsValue: String
-    private lateinit var commentValue: String
-    private lateinit var totalPostsValue: String
-    private lateinit var postsWithPicValue: String
-
     fun setSenderName (param: String){
         senderName.text = param
     }
