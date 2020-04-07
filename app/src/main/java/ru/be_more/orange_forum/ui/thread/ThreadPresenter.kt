@@ -28,7 +28,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         getParseData().observeForever( Observer {
             thread=it
             viewState.loadThread(thread)
-            Log.d("M_ThreadPresenter", "thread = ${thread.posts[0].files}")
         })
     }
 

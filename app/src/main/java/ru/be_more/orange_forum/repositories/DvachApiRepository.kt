@@ -76,10 +76,8 @@ object DvachApiRepository {
             try {
                 val response = dvachApi.getDvachThreadsAsync(board.id)
 
-                if(response.isSuccessful) {
+                if(response.isSuccessful)
                     allThreads = response.body() ?: DvachBoard()
-//                    Log.d("M_DvachApiRepository", "${response.body()}")
-                }
                 else
                     Log.d("M_DvachApiRepository ",response.errorBody().toString())
 
@@ -107,10 +105,8 @@ object DvachApiRepository {
                 val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
                 val response = dvachApi.getDvachPostsAsync(board.id, threadNum, cookie)
 
-                if (response.isSuccessful){
-                    Log.d("M_DvachApiRepository", "${response.body()}")
+                if (response.isSuccessful)
                     allPosts = response.body() ?: DvachThread()
-                }
                 else
                     Log.d("M_DvachApiRepository ",response.errorBody().toString())
 
