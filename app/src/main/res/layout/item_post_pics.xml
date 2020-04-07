@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_op_post_pics"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
@@ -13,8 +13,10 @@
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/spacing_normal_16"
         android:paddingEnd="@dimen/spacing_normal_16"
+        android:paddingBottom="@dimen/spacing_normal_16"
         android:contentDescription="@string/fuck_warning"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        tools:src="@drawable/splash"/>
     <ImageView
         android:id="@+id/iv_op_post_pic2"
         android:layout_width="0dp"
@@ -24,5 +26,6 @@
         android:paddingEnd="@dimen/spacing_normal_16"
         android:paddingBottom="@dimen/spacing_normal_16"
         android:contentDescription="@string/fuck_warning"
-        android:visibility="visible" />
+        android:visibility="visible"
+        tools:src="@drawable/splash"/>
 </LinearLayout>

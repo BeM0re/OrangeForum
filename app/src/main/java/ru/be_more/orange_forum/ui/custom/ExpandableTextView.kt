@@ -14,14 +14,15 @@ class ExpandableTextView  @JvmOverloads constructor(
     context: Context,attrs: AttributeSet? = null)
     : AppCompatTextView(context, attrs), View.OnClickListener {
 
-    private val defaultTrimLength = 100
-    private val readMore = " <html><body>...</body></html>"
+    private val defaultTrimLength = 300
+    private val readMore = " ..."
+//    private val readMore = " <html><body>...</body></html>"
 
     private var originalText :String = ""
     private var trimmedText = ""
     private var bufferType : BufferType? = null
     private var trim = true
-    private var trimLength = 10
+    private var trimLength = 20
 
     init {
         val typedArray : TypedArray  = context.obtainStyledAttributes(attrs, R.styleable.ExpandableTextView)
@@ -33,6 +34,7 @@ class ExpandableTextView  @JvmOverloads constructor(
     private fun setText() {
         super.setText(HtmlCompat.fromHtml(getDisplayableText(), HtmlCompat.FROM_HTML_MODE_LEGACY),
             bufferType)
+//        super.setText(getDisplayableText())
     }
 
     private fun getDisplayableText(): String {

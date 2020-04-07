@@ -18,10 +18,12 @@ import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.AttachFile
+import ru.be_more.orange_forum.ui.custom.ExpandableTextView
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 
 
-class ThreadViewHolder(itemView: View?, var listener: BoardOnClickListener) : ChildViewHolder(itemView) {
+class ThreadViewHolder(itemView: View?, private var listener: BoardOnClickListener) :
+    ChildViewHolder(itemView) {
 
     private var senderName: TextView = itemView!!.findViewById(R.id.tv_board_op_name)
     private var isOp: TextView = itemView!!.findViewById(R.id.tv_board_op_check)
@@ -29,7 +31,7 @@ class ThreadViewHolder(itemView: View?, var listener: BoardOnClickListener) : Ch
     private var threadNum: TextView = itemView!!.findViewById(R.id.tv_board_op_num)
     private var title: TextView = itemView!!.findViewById(R.id.tv_board_op_subject)
     private var pics: RecyclerView = itemView!!.findViewById(R.id.rv_op_post_pics)
-    private var comment: TextView = itemView!!.findViewById(R.id.tv_board_op_comment)
+    private var comment: ExpandableTextView = itemView!!.findViewById(R.id.tv_board_op_comment)
     private var totalPosts: TextView = itemView!!.findViewById(R.id.tv_board_op_total)
     private var postsWithPic: TextView = itemView!!.findViewById(R.id.tv_board_op_with_pic)
     private var pickThreadButton: Button = itemView!!.findViewById(R.id.btn_board_op_into)
@@ -71,7 +73,8 @@ class ThreadViewHolder(itemView: View?, var listener: BoardOnClickListener) : Ch
         pics.adapter = adapter
     }
     fun setComment (param: String){
-        comment.text = HtmlCompat.fromHtml(param, HtmlCompat.FROM_HTML_MODE_LEGACY)
+//        comment.text = HtmlCompat.fromHtml(param, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        comment.text = param
     }
     fun setTotalPosts (param: Int){
         totalPosts.text ="Пропущено $param постов"

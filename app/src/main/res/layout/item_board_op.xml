@@ -70,7 +70,8 @@
         android:lines="1"
         android:paddingStart="@dimen/font_normal_16"
         android:paddingEnd="@dimen/font_normal_16"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_marginBottom="@dimen/spacing_normal_16"/>
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -80,14 +81,15 @@
         tools:listitem="@layout/item_post_pics"
         tools:itemCount="1"/>
 
-    <TextView
+    <ru.be_more.orange_forum.ui.custom.ExpandableTextView
         android:id="@+id/tv_board_op_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/font_normal_16"
         android:paddingEnd="@dimen/font_normal_16"
         android:paddingTop="0dp"
-        tools:text="@string/lorem"/>
+        tools:text="@string/lorem"
+        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
