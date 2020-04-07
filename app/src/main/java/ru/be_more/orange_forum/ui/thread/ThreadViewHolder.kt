@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.ui.thread
 
 import android.view.View
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
@@ -22,7 +23,7 @@ class ThreadViewHolder(itemView: View?, private val listener: PostOnClickListene
     private var num: TextView = itemView!!.findViewById(R.id.tv_item_post_num)
     private var title: TextView = itemView!!.findViewById(R.id.tv_item_post_subject)
     private var pics: RecyclerView = itemView!!.findViewById(R.id.rv_item_post_pics)
-    private var comment: ExpandableTextView = itemView!!.findViewById(R.id.tv_item_post_comment)
+    private var comment: TextView = itemView!!.findViewById(R.id.tv_item_post_comment)
 
     fun setSenderName (param: String){
         senderName.text = param
@@ -40,17 +41,39 @@ class ThreadViewHolder(itemView: View?, private val listener: PostOnClickListene
         num.text = param.toString()
     }
     fun setTitle (param: String){
-        title.text = param
+        if (param != ""){
+            title.text = param
+            title.visibility = View.VISIBLE
+        }
+        else {
+            title.text = ""
+            title.visibility = View.GONE
+        }
     }
-    //TODO сделать картинки
-    fun setPics (urls: List<AttachFile>){
-        val adapter = PostPicAdapter(urls, listener = listener)
 
-        pics.layoutManager = LinearLayoutManager(App.getInstance())
-        pics.adapter = adapter
+    fun setPics (urls: List<AttachFile>){
+        if(urls.isNotEmpty()){
+            val adapter = PostPicAdapter(urls, listener = listener)
+
+            pics.layoutManager = LinearLayoutManager(App.getInstance())
+            pics.adapter = adapter
+            pics.visibility = View.VISIBLE
+        }
+        else {
+            pics.visibility = View.GONE
+            pics.adapter = null
+        }
+
     }
     fun setComment (param: String){
-        comment.text = param
+        if (param != "") {
+            comment.text = HtmlCompat.fromHtml(param, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            comment.visibility = View.VISIBLE
+        }
+        else {
+            comment.visibility = View.GONE
+            comment.text = ""
+        }
     }
 
 }

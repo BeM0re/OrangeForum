@@ -56,16 +56,29 @@ class OpPostViewHolder(itemView: View?, private var listener: PostOnClickListene
     fun setTitle (param: String){
         title.text = param
     }
-    //TODO сделать картинки
-    fun setPics (urls: List<AttachFile>){
-        val adapter = PostPicAdapter(urls, listener = listener)
 
-        pics.layoutManager = LinearLayoutManager(App.getInstance())
-        pics.adapter = adapter
+    fun setPics (urls: List<AttachFile>){
+        if (urls.isNotEmpty()){
+            val adapter = PostPicAdapter(urls, listener = listener)
+
+            pics.layoutManager = LinearLayoutManager(App.getInstance())
+            pics.adapter = adapter
+            pics.visibility = View.VISIBLE
+        }
+        else{
+            pics.visibility = View.GONE
+            pics.adapter = null
+        }
     }
     fun setComment (param: String){
-//        comment.text = HtmlCompat.fromHtml(param, HtmlCompat.FROM_HTML_MODE_LEGACY)
-        comment.text = param
+        if (param != "") {
+            comment.text = param
+            comment.visibility = View.VISIBLE
+        }
+        else {
+            comment.visibility = View.GONE
+            comment.text = ""
+        }
     }
     fun setTotalPosts (param: Int){
         totalPosts.text ="Пропущено $param постов"

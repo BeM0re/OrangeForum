@@ -29,8 +29,7 @@ class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickLi
         holder.setThreadNum(thread.posts[position].num)
         holder.setTitle(thread.posts[position].subject)
         holder.setComment(thread.posts[position].comment)
-        if(thread.posts[position].files.isNotEmpty())
-            holder.setPics(thread.posts[position].files)
+        holder.setPics(thread.posts[position].files)
     }
 
     fun updateData(data: BoardThread){

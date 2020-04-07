@@ -24,6 +24,7 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
     }
 
     fun setPics (file1: AttachFile, file2: AttachFile? = null, listener: PostOnClickListener){
+        //TODO перенести в константы
         var thumbnailUrl = "https://2ch.hk${file1.thumbnail}"
         var fullPicUrl = "https://2ch.hk${file1.path}"
 

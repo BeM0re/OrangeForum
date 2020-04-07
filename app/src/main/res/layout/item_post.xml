@@ -23,7 +23,8 @@
             app:layout_constraintStart_toEndOf="@+id/tv_item_post_name"
             app:layout_constraintTop_toTopOf="@+id/tv_item_post_name"
             android:visibility="gone"
-            android:text="@string/op_check"/>
+            android:text="@string/op_check"
+            android:textColor="@color/color_accent"/>
 
         <TextView
             android:id="@+id/tv_item_post_name"
@@ -80,7 +81,7 @@
         tools:listitem="@layout/item_post_pics"
         tools:itemCount="1"/>
 
-    <ru.be_more.orange_forum.ui.custom.ExpandableTextView
+    <TextView
         android:id="@+id/tv_item_post_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -24,7 +24,8 @@
             app:layout_constraintStart_toEndOf="@+id/tv_board_op_name"
             app:layout_constraintTop_toTopOf="@+id/tv_board_op_name"
             android:visibility="gone"
-            android:text="@string/op_check"/>
+            android:text="@string/op_check"
+            android:textColor="@color/color_accent"/>
 
         <TextView
             android:id="@+id/tv_board_op_name"
