@@ -15,10 +15,6 @@ class BoardPresenter : MvpPresenter<BoardView>() {
     private var repo = DvachApiRepository
     private lateinit var board :Board
 
-    override fun onFirstViewAttach(){
-
-    }
-
     private fun getParseData() : LiveData<List<BoardThread>> = runBlocking {
         return@runBlocking  repo.getBoard(board)
     }
@@ -30,9 +26,6 @@ class BoardPresenter : MvpPresenter<BoardView>() {
             board.threads=it
             viewState.loadBoard(board)
         })
-    }
-    fun setSelectedBoard(board: Board) {
-//        Log.d("M_CategoryPresenter", "${board.id}")
     }
 
 }

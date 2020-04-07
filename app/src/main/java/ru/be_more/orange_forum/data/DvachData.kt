@@ -32,10 +32,34 @@ data class DvachBoardName(
 
 data class DvachBoard(
     var BoardName : String = "",
-    var threads: List<DvachThread> = listOf()
+    var threads: List<DvachPost> = listOf()
+)
+
+data class DvachOpPost(
+    var num: Int,
+    var name: String,
+    var comment: String,
+    var date: String,
+    var email: String,
+    var files: List<DvachFile>,
+    var files_count: Int,
+    var op: Int,
+    var posts_count: Int,
+    var subject: String,
+    var timestamp: Int
 )
 
 data class DvachThread(
+    var posts_count: Int = 0,
+    var title: String = "",
+    var threads: List<DvachPosts> = listOf(DvachPosts())
+)
+
+data class DvachPosts(
+    var posts: List<DvachPost> = listOf()
+)
+
+data class DvachPost(
     var num: Int,
     var name: String,
     var comment: String,
@@ -57,5 +81,5 @@ data class DvachFile(
     var tn_width: Int,
     var path: String,
     var thumbnail: String,
-    var duration: String
+    var duration: String = ""
 )

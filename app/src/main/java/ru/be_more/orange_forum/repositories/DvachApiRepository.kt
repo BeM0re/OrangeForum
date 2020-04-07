@@ -31,6 +31,12 @@ object DvachApiRepository {
         }
     }
 
+    fun getThread(board: Board, threadNum: Int): LiveData<BoardThread> {
+        return Transformations.map(loadThread(board, threadNum)){ entity ->
+            toThread(entity, threadNum)
+        }
+    }
+
     private fun loadCategories(): LiveData<DvachCategories> {
         var allCategories = DvachCategories()
         val liveData : MutableLiveData<DvachCategories> = MutableLiveData()
@@ -45,10 +51,10 @@ object DvachApiRepository {
                 if(response.isSuccessful)
                     allCategories = response.body()?: DvachCategories()
                 else
-                    Log.d("M_ParseItemRepository ",response.errorBody().toString())
+                    Log.d("M_DvachApiRepository ",response.errorBody().toString())
 
             }catch (e: Exception){
-                Log.d("M_ParseItemRepository", "$e")
+                Log.d("M_DvachApiRepository", "$e")
             }
             finally {
                 isLoading.postValue(false)
@@ -70,13 +76,15 @@ object DvachApiRepository {
             try {
                 val response = dvachApi.getDvachThreadsAsync(board.id)
 
-                if(response.isSuccessful)
-                    allThreads = response.body()?: DvachBoard()
+                if(response.isSuccessful) {
+                    allThreads = response.body() ?: DvachBoard()
+//                    Log.d("M_DvachApiRepository", "${response.body()}")
+                }
                 else
-                    Log.d("M_ParseItemRepository ",response.errorBody().toString())
+                    Log.d("M_DvachApiRepository ",response.errorBody().toString())
 
             }catch (e: Exception){
-                Log.d("M_ParseItemRepository", "$e")
+                Log.d("M_DvachApiRepository", "$e")
             }
             finally {
                 isLoading.postValue(false)
@@ -87,6 +95,36 @@ object DvachApiRepository {
         return liveData
     }
 
+    private fun loadThread(board: Board, threadNum: Int): LiveData<DvachThread> {
+        var allPosts = DvachThread()
+        val liveData : MutableLiveData<DvachThread> = MutableLiveData()
+
+        GlobalScope.launch(Dispatchers.Default) {
+
+            isLoading.postValue(true)
+
+            try {
+                val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
+                val response = dvachApi.getDvachPostsAsync(board.id, threadNum, cookie)
+
+                if (response.isSuccessful){
+                    Log.d("M_DvachApiRepository", "${response.body()}")
+                    allPosts = response.body() ?: DvachThread()
+                }
+                else
+                    Log.d("M_DvachApiRepository ",response.errorBody().toString())
+
+            }catch (e: Exception){
+                Log.d("M_DvachApiRepository", "Get thread error = $e")
+            }
+            finally {
+                isLoading.postValue(false)
+            }
+
+            liveData.postValue(allPosts)
+        }
+        return liveData
+    }
 
     private fun toCategories (allCategories: DvachCategories?) : List<Category> {
 
@@ -143,26 +181,40 @@ object DvachApiRepository {
     private fun toBoard(dvachBoard: DvachBoard)
             = dvachBoard.threads.map { toThread(it) }
 
-
-        //TODO перенести в toPost
-    private fun toThread(dvachThread: DvachThread) = BoardThread(
-        num = dvachThread.num,
-        posts = listOf(
-            Post(
-                num = dvachThread.num,
-                name = dvachThread.name,
-                comment = dvachThread.comment,
-                date = dvachThread.date,
-                email = dvachThread.email,
-                files = dvachThread.files.map { toFiles(it) },
-                files_count = dvachThread.files_count,
-                op = dvachThread.op,
-                posts_count = dvachThread.posts_count,
-                subject = dvachThread.subject,
-                timestamp = dvachThread.timestamp
-            )
-        )
+    private fun toThread(dvachOpPost: DvachPost) = BoardThread(
+        num = dvachOpPost.num,
+        posts = listOf(toPost(dvachOpPost))
     )
+    private fun toThread(dvachThread: DvachThread, threadNum: Int) = BoardThread(
+        num = threadNum,
+        posts = dvachThread.threads[0].posts.map { toPost(it) },
+        title = dvachThread.title
+    )
+
+    private fun toPost(post: DvachPost) = Post(
+        num = post.num,
+        name = post.name,
+        comment = post.comment,
+        date = post.date,
+        email = post.email,
+        files = post.files.map { toFiles(it) },
+        files_count = post.files_count,
+        op = post.op,
+        posts_count = post.posts_count,
+        subject = post.subject,
+        timestamp = post.timestamp
+    )
+
+/*    private fun toFiles (file: DvachFile) :AttachFile{
+        val f = AttachFile(
+            path = file.path,
+            thumbnail = file.thumbnail,
+            duration = if(file.duration.isNullOrEmpty()) "" else file.duration
+            )
+        Log.d("M_DvachApiRepository", "file = ${f.path}")
+        return f
+    }*/
+
 
     private fun toFiles (file: DvachFile) = AttachFile(
         path = file.path,

@@ -23,17 +23,12 @@ class CategoryPresenter : MvpPresenter<CategoryView>() {
         })
     }
 
-
     private fun getParseData() : LiveData<List<Category>> = runBlocking {
         return@runBlocking  loadDataAsync().await()
     }
 
     private fun loadDataAsync() : Deferred<LiveData<List<Category>>> = GlobalScope.async{
         repo.getCategories()
-    }
-
-    fun setSelectedBoard(board: Board) {
-//        Log.d("M_CategoryPresenter", "${board.id}")
     }
 
 }

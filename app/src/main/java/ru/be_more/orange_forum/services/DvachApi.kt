@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.services
 
-import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -16,7 +15,13 @@ interface DvachApi{
     suspend fun getDvachCategoriesAsync(@Query("task") task : String): Response<DvachCategories>
 
     @GET("{board}/catalog.json")
-    suspend fun getDvachThreadsAsync(@Path("board") board : String
-//                                     , @Header("Cookie") cookies: String
-    ): Response<DvachBoard>
+    suspend fun getDvachThreadsAsync(@Path("board") board : String): Response<DvachBoard>
+
+    @GET("{board}/res/{threadNum}.json")
+    suspend fun getDvachPostsAsync(
+        @Path("board") board : String,
+        @Path("threadNum") threadNum : Int,
+        @Header("Cookie") cookie: String
+    ): Response<DvachThread>
+
 }

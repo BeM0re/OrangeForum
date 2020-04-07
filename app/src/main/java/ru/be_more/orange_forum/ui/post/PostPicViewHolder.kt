@@ -23,7 +23,7 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
         pics.visibility = View.GONE
     }
 
-    fun setPics (file1: AttachFile, file2: AttachFile? = null, listener: BoardOnClickListener){
+    fun setPics (file1: AttachFile, file2: AttachFile? = null, listener: PostOnClickListener){
         var thumbnailUrl = "https://2ch.hk${file1.thumbnail}"
         var fullPicUrl = "https://2ch.hk${file1.path}"
 

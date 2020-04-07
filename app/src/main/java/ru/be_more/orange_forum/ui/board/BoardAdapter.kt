@@ -7,22 +7,25 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 
-class BoardAdapter( var threads: List<BoardThread> = listOf(), var listener: BoardOnClickListener) :
-    RecyclerView.Adapter<ThreadViewHolder>(){
+class BoardAdapter(var threads: List<BoardThread> = listOf(),
+                   private var picListener: PostOnClickListener,
+                   private var boardListener: BoardOnClickListener) :
+    RecyclerView.Adapter<OpPostViewHolder>(){
 
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThreadViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OpPostViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
-        return ThreadViewHolder(inflater.inflate(R.layout.item_board_op, parent, false), listener)
+        return OpPostViewHolder(inflater.inflate(R.layout.item_board_op, parent, false), picListener)
     }
 
     override fun getItemCount(): Int = threads.size
 
-    override fun onBindViewHolder(holder: ThreadViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: OpPostViewHolder, position: Int) {
         val thread: BoardThread? = threads[position]
         if(thread != null){
             holder.setSenderName(thread.posts[0].name)
@@ -37,7 +40,7 @@ class BoardAdapter( var threads: List<BoardThread> = listOf(), var listener: Boa
                 holder.setPics(thread.posts[0].files)
             }
             holder.setHideButton()
-            holder.setIntoThreadButton(View.OnClickListener { listener.onThreadClick(thread) })
+            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread) })
         }
     }
 

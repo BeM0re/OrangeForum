@@ -15,12 +15,13 @@ import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
+import ru.be_more.orange_forum.ui.thread.ThreadFragment
 
 class MainActivity : AppCompatActivity() {
 
     //TODO перенести в нормальное место
-    var selectedBoard: MutableLiveData<String> = MutableLiveData()
-    var selectedThread:  MutableLiveData<Int> = MutableLiveData()
+    private var selectedBoard: MutableLiveData<String> = MutableLiveData()
+    private var selectedThread:  MutableLiveData<Int> = MutableLiveData()
 
     private fun setBoard(board: Board){
         selectedBoard.postValue(board.id)
@@ -80,7 +81,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.navigation_board -> {
                     //if selectedBoard.value == null then this menu item is disabled
-                    val fragment = BoardFragment.getBoardFragment({setThread(it)}, selectedBoard.value!!)
+                    val fragment =
+                        BoardFragment.getBoardFragment({setThread(it)}, selectedBoard.value!!)
                     supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.container, fragment, fragment.javaClass.simpleName)
@@ -88,7 +90,12 @@ class MainActivity : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_thread -> {
-                    val fragment = TempFragment()
+                    //if selectedBoard.value or selectedThread.value == null then this menu item is disabled
+                    val fragment = ThreadFragment.getThreadFragment(
+                        {setThread(it)},
+                        selectedBoard.value!!,
+                        selectedThread.value!!
+                    )
                     supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.container, fragment, fragment.javaClass.simpleName)

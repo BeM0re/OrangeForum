@@ -19,10 +19,11 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.ui.custom.ExpandableTextView
+import ru.be_more.orange_forum.ui.post.PostOnClickListener
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 
 
-class ThreadViewHolder(itemView: View?, private var listener: BoardOnClickListener) :
+class OpPostViewHolder(itemView: View?, private var listener: PostOnClickListener) :
     ChildViewHolder(itemView) {
 
     private var senderName: TextView = itemView!!.findViewById(R.id.tv_board_op_name)
