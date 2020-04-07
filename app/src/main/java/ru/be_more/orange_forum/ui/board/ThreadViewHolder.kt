@@ -1,6 +1,9 @@
 package ru.be_more.orange_forum.ui.board
 
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
@@ -29,6 +32,18 @@ class ThreadViewHolder(itemView: View?, var listener: BoardOnClickListener) : Ch
     private var comment: TextView = itemView!!.findViewById(R.id.tv_board_op_comment)
     private var totalPosts: TextView = itemView!!.findViewById(R.id.tv_board_op_total)
     private var postsWithPic: TextView = itemView!!.findViewById(R.id.tv_board_op_with_pic)
+    private var pickThreadButton: Button = itemView!!.findViewById(R.id.btn_board_op_into)
+    private var hideButton: Button = itemView!!.findViewById(R.id.btn_board_op_hide)
+
+    private lateinit var senderNameValue: String
+    private lateinit var isOpValue: String
+    private lateinit var dateValue: String
+    private lateinit var threadNumValue: String
+    private lateinit var titleValue: String
+    private lateinit var picsValue: String
+    private lateinit var commentValue: String
+    private lateinit var totalPostsValue: String
+    private lateinit var postsWithPicValue: String
 
     fun setSenderName (param: String){
         senderName.text = param
@@ -63,6 +78,33 @@ class ThreadViewHolder(itemView: View?, var listener: BoardOnClickListener) : Ch
     }
     fun setPostsWithPic (param: Int){
         postsWithPic.text = "$param c картинками"
+    }
+    fun setIntoThreadButton(listener: View.OnClickListener) {
+        pickThreadButton.setOnClickListener(listener)
+    }
+    fun setHideButton() {
+        hideButton.setOnClickListener {
+            isOp.visibility = View.GONE
+            pics.visibility = View.GONE
+            comment.visibility = View.GONE
+            totalPosts.visibility = View.GONE
+            postsWithPic.visibility = View.GONE
+            hideButton.visibility = View.GONE
+            pickThreadButton.visibility = View.GONE
+
+            itemView.setBackgroundColor(Color.parseColor("#00000004"))
+            itemView.setOnClickListener {
+                isOp.visibility = View.VISIBLE
+                pics.visibility = View.VISIBLE
+                comment.visibility = View.VISIBLE
+                totalPosts.visibility = View.VISIBLE
+                postsWithPic.visibility = View.VISIBLE
+                hideButton.visibility = View.VISIBLE
+                pickThreadButton.visibility = View.VISIBLE
+                itemView.setOnClickListener {  }
+                itemView.setBackgroundColor(Color.parseColor("#000000FF"))
+            }
+        }
     }
 
 }

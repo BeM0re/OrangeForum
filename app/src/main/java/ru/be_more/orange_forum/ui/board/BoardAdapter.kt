@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.ui.board
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -32,12 +33,11 @@ class BoardAdapter( var threads: List<BoardThread> = listOf(), var listener: Boa
             holder.setComment(thread.posts[0].comment)
             holder.setTotalPosts(thread.posts[0].posts_count)
             holder.setPostsWithPic(thread.posts[0].files_count)
-
             if(thread.posts[0].files.isNotEmpty()){
                 holder.setPics(thread.posts[0].files)
             }
-            holder.itemView.setOnClickListener {listener.onThreadClick(thread)}
-
+            holder.setHideButton()
+            holder.setIntoThreadButton(View.OnClickListener { listener.onThreadClick(thread) })
         }
     }
 
