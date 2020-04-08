@@ -198,19 +198,9 @@ object DvachApiRepository {
         op = post.op,
         posts_count = post.posts_count,
         subject = post.subject,
-        timestamp = post.timestamp
+        timestamp = post.timestamp,
+        number = post.number
     )
-
-/*    private fun toFiles (file: DvachFile) :AttachFile{
-        val f = AttachFile(
-            path = file.path,
-            thumbnail = file.thumbnail,
-            duration = if(file.duration.isNullOrEmpty()) "" else file.duration
-            )
-        Log.d("M_DvachApiRepository", "file = ${f.path}")
-        return f
-    }*/
-
 
     private fun toFiles (file: DvachFile) = AttachFile(
         path = file.path,

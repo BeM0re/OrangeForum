@@ -17,6 +17,7 @@ import ru.be_more.orange_forum.ui.post.PostPicAdapter
 class ThreadViewHolder(itemView: View?, private val listener: PostOnClickListener) :
     ChildViewHolder(itemView) {
 
+    private var senderNumber: TextView = itemView!!.findViewById(R.id.tv_item_post_number)
     private var senderName: TextView = itemView!!.findViewById(R.id.tv_item_post_name)
     private var isOp: TextView = itemView!!.findViewById(R.id.tv_item_post_op_check)
     private var date: TextView = itemView!!.findViewById(R.id.tv_item_post_datetime)
@@ -25,6 +26,9 @@ class ThreadViewHolder(itemView: View?, private val listener: PostOnClickListene
     private var pics: RecyclerView = itemView!!.findViewById(R.id.rv_item_post_pics)
     private var comment: TextView = itemView!!.findViewById(R.id.tv_item_post_comment)
 
+    fun setNumber (param: Int){
+        senderNumber.text = param.toString()
+    }
     fun setSenderName (param: String){
         senderName.text = param
     }

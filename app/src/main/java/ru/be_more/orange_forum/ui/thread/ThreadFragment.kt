@@ -127,8 +127,6 @@ class ThreadFragment private constructor(): MvpAppCompatFragment(),
                 })
                 .into(iv_post_pic_full)
 
-//            Log.d("M_ThreadFragment", "padding = ${iv_post_pic_full.width}")
-
             iv_post_pic_full.setOnClickListener {
                 v_post_pic_full_background.visibility = View.GONE
                 iv_post_pic_full.visibility = View.GONE

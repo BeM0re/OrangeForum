@@ -23,6 +23,7 @@ class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickLi
     override fun getItemCount(): Int = thread.posts.size
 
     override fun onBindViewHolder(holder: ThreadViewHolder, position: Int) {
+        holder.setNumber(thread.posts[position].number)
         holder.setSenderName(thread.posts[position].name)
         holder.setIsOp(thread.posts[position].op > 0)
         holder.setDate(thread.posts[position].date)

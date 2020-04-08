@@ -70,7 +70,8 @@ data class DvachPost(
     var op: Int,
     var posts_count: Int,
     var subject: String,
-    var timestamp: Int
+    var timestamp: Int,
+    var number: Int
 )
 
 data class DvachFile(
