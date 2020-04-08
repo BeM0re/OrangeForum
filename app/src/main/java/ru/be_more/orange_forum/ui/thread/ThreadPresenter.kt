@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.ui.thread
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.runBlocking
 import moxy.InjectViewState
@@ -14,21 +15,33 @@ import ru.be_more.orange_forum.repositories.DvachApiRepository
 class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     private var repo = DvachApiRepository
-    private lateinit var thread :BoardThread
+    var thread :MutableLiveData<BoardThread> = MutableLiveData()
     private lateinit var board :Board
 
-    private fun getParseData() : LiveData<BoardThread> = runBlocking {
-        return@runBlocking  repo.getThread(board, thread.num)
+    private fun getParseData() : MutableLiveData<BoardThread> = runBlocking {
+
+        Log.d("M_ThreadPresenter", "get = ${thread.value}")
+        if(thread.value!=null) {
+            return@runBlocking repo.getThread(board, thread.value!!.num) as MutableLiveData
+        }
+        else
+            return@runBlocking thread
+    }
+
+    fun updateThreadData(){
+        thread = getParseData()
     }
 
     fun setThread(boardId: String, threadId: Int){
         board = Board("", boardId)
-        thread = BoardThread(threadId)
+        thread.postValue(BoardThread(threadId))
 
-        getParseData().observeForever( Observer {
-            thread=it
-            viewState.loadThread(thread)
-        })
+        thread = getParseData()
+
+        if(thread.value != null) {
+            viewState.loadThread(thread.value!!)
+            Log.d("M_ThreadPresenter", "load = ${thread.value}")
+        }
     }
 
 }
