@@ -131,6 +131,7 @@ class BoardFragment private constructor(): MvpAppCompatFragment(),
                     }
                 })
                 .into(iv_op_post_pic_full)
+            
 
             iv_op_post_pic_full.setOnClickListener {
                 v_op_post_pic_full_background.visibility = View.GONE
