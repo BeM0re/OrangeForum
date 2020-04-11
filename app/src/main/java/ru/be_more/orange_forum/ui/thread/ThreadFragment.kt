@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.MediaController
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,16 +21,12 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.board.BoardAdapter
-import ru.be_more.orange_forum.ui.board.BoardFragment
-import ru.be_more.orange_forum.ui.board.BoardPresenter
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 
@@ -56,9 +53,15 @@ class ThreadFragment private constructor(): MvpAppCompatFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        threadPresenter.setThread(boardId, threadId)
+        threadPresenter.init(boardId, threadId)
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
+
+        srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
+        srl_thread.setOnRefreshListener {
+            srl_thread.isRefreshing = false
+            threadPresenter.updateThreadData()
+        }
     }
 
     override fun loadThread(thread: BoardThread) {
@@ -68,17 +71,6 @@ class ThreadFragment private constructor(): MvpAppCompatFragment(),
         recyclerView.addItemDecoration(
             DividerItemDecoration(recyclerView.context, HORIZONTAL)
         )
-    }
-
-    companion object {
-        fun getThreadFragment (listener: (thread: BoardThread) -> Unit, boardId: String, threadId: Int): ThreadFragment {
-            val thread = ThreadFragment()
-            thread.listener = listener
-            thread.boardId = boardId
-            thread.threadId = threadId
-
-            return thread
-        }
     }
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
@@ -160,4 +152,14 @@ class ThreadFragment private constructor(): MvpAppCompatFragment(),
         }
     }
 
+    companion object {
+        fun getThreadFragment (listener: (thread: BoardThread) -> Unit, boardId: String, threadId: Int): ThreadFragment {
+            val thread = ThreadFragment()
+            thread.listener = listener
+            thread.boardId = boardId
+            thread.threadId = threadId
+
+            return thread
+        }
+    }
 }

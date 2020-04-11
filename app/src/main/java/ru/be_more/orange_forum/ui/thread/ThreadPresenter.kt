@@ -15,33 +15,27 @@ import ru.be_more.orange_forum.repositories.DvachApiRepository
 class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     private var repo = DvachApiRepository
-    var thread :MutableLiveData<BoardThread> = MutableLiveData()
-    private lateinit var board :Board
+    var thread :BoardThread = BoardThread(num = 0)
+    private lateinit var boardId :String
+    private var threadNum :Int = 0
 
-    private fun getParseData() : MutableLiveData<BoardThread> = runBlocking {
-
-        Log.d("M_ThreadPresenter", "get = ${thread.value}")
-        if(thread.value!=null) {
-            return@runBlocking repo.getThread(board, thread.value!!.num) as MutableLiveData
-        }
-        else
-            return@runBlocking thread
+    private fun getParseData() : LiveData<BoardThread> = runBlocking {
+        return@runBlocking repo.getThread(boardId, threadNum)
     }
 
     fun updateThreadData(){
-        thread = getParseData()
+        viewState.loadThread(thread)
     }
 
-    fun setThread(boardId: String, threadId: Int){
-        board = Board("", boardId)
-        thread.postValue(BoardThread(threadId))
-
-        thread = getParseData()
-
-        if(thread.value != null) {
-            viewState.loadThread(thread.value!!)
-            Log.d("M_ThreadPresenter", "load = ${thread.value}")
-        }
+    fun init(boardId: String, threadNum: Int){
+        this.boardId = boardId
+        this.threadNum = threadNum
+        getParseData().observeForever( Observer {
+            thread=it
+            viewState.loadThread(thread)
+            Log.d("M_ThreadPresenter", "thread = ${thread.posts[0].files}")
+        })
+        updateThreadData()
     }
 
 }

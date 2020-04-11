@@ -31,8 +31,8 @@ object DvachApiRepository {
         }
     }
 
-    fun getThread(board: Board, threadNum: Int): LiveData<BoardThread> {
-        return Transformations.map(loadThread(board, threadNum)){ entity ->
+    fun getThread(boardId: String, threadNum: Int): LiveData<BoardThread> {
+        return Transformations.map(loadThread(boardId, threadNum)){ entity ->
             toThread(entity, threadNum)
         }
     }
@@ -93,7 +93,7 @@ object DvachApiRepository {
         return liveData
     }
 
-    private fun loadThread(board: Board, threadNum: Int): LiveData<DvachThread> {
+    private fun loadThread(boardId: String, threadNum: Int): LiveData<DvachThread> {
         var allPosts = DvachThread()
         val liveData : MutableLiveData<DvachThread> = MutableLiveData()
 
@@ -103,7 +103,7 @@ object DvachApiRepository {
 
             try {
                 val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
-                val response = dvachApi.getDvachPostsAsync(board.id, threadNum, cookie)
+                val response = dvachApi.getDvachPostsAsync(boardId, threadNum, cookie)
 
                 if (response.isSuccessful)
                     allPosts = response.body() ?: DvachThread()
