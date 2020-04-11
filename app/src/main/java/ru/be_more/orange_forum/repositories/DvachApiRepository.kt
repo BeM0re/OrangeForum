@@ -18,120 +18,26 @@ const val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57
 object DvachApiRepository {
 
     private val dvachApi = ApiFactory.dvachApi
-    private var isLoading : MutableLiveData<Boolean> = MutableLiveData()
+    private var isLoading : Observable<Boolean> = Observable.just(false)
 
-    fun getIsLoading() : LiveData<Boolean> = isLoading
+    fun getCategories(): Observable<List<Category>>  =
+        dvachApi.getDvachCategoriesRx("get_boards")
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+            .map { entity -> toCategories(entity) }
 
-    fun getCategories(): LiveData<List<Category>> {
-        return Transformations.map(loadCategories()){ entity ->
-            toCategories(entity)
-        }
-    }
+    fun getBoard(boardId: String): Observable<List<BoardThread>> =
+        dvachApi.getDvachThreadsRx(boardId)
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+            .map { entity -> toBoard(entity) }
 
-    fun getBoard(board: Board): LiveData<List<BoardThread>> {
-        return Transformations.map(loadBoard(board)){ entity ->
-            toBoard(entity)
-        }
-    }
-
-    fun getThread(boardId: String, threadNum: Int): LiveData<BoardThread> {
-        return Transformations.map(loadThread(boardId, threadNum)){ entity ->
-            toThread(entity, threadNum)
-        }
-    }
-
-    fun getThreadRx(boardId: String, threadNum: Int): Observable<BoardThread> =
+    fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
         dvachApi.getDvachPostsRx(boardId, threadNum, cookie)
             .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
             .map { entity -> toThread(entity, threadNum) }
 
-
-
-    private fun loadCategories(): LiveData<DvachCategories> {
-        var allCategories = DvachCategories()
-        val liveData : MutableLiveData<DvachCategories> = MutableLiveData()
-
-        GlobalScope.launch(Dispatchers.Default) {
-
-            isLoading.postValue(true)
-
-            try {
-                val response = dvachApi.getDvachCategoriesAsync("get_boards")
-
-                if(response.isSuccessful)
-                    allCategories = response.body()?: DvachCategories()
-                else
-                    Log.d("M_DvachApiRepository ",response.errorBody().toString())
-
-            }catch (e: Exception){
-                Log.d("M_DvachApiRepository", "$e")
-            }
-            finally {
-                isLoading.postValue(false)
-            }
-
-            liveData.postValue(allCategories)
-        }
-        return liveData
-    }
-
-    private fun loadBoard(board: Board): LiveData<DvachBoard> {
-        var allThreads = DvachBoard()
-        val liveData : MutableLiveData<DvachBoard> = MutableLiveData()
-
-        GlobalScope.launch(Dispatchers.Default) {
-
-            isLoading.postValue(true)
-
-            try {
-                val response = dvachApi.getDvachThreadsAsync(board.id)
-
-                if(response.isSuccessful)
-                    allThreads = response.body() ?: DvachBoard()
-                else
-                    Log.d("M_DvachApiRepository ",response.errorBody().toString())
-
-            }catch (e: Exception){
-                Log.d("M_DvachApiRepository", "$e")
-            }
-            finally {
-                isLoading.postValue(false)
-            }
-
-            liveData.postValue(allThreads)
-        }
-        return liveData
-    }
-
-    private fun loadThread(boardId: String, threadNum: Int): LiveData<DvachThread> {
-        var allPosts = DvachThread()
-        val liveData : MutableLiveData<DvachThread> = MutableLiveData()
-
-        GlobalScope.launch(Dispatchers.Default) {
-
-            isLoading.postValue(true)
-
-            try {
-                val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
-                val response = dvachApi.getDvachPostsAsync(boardId, threadNum, cookie)
-
-                if (response.isSuccessful)
-                    allPosts = response.body() ?: DvachThread()
-                else
-                    Log.d("M_DvachApiRepository ",response.errorBody().toString())
-
-            }catch (e: Exception){
-                Log.d("M_DvachApiRepository", "Get thread error = $e")
-            }
-            finally {
-                isLoading.postValue(false)
-            }
-
-            liveData.postValue(allPosts)
-        }
-        return liveData
-    }
 
     private fun toCategories (allCategories: DvachCategories?) : List<Category> {
 
@@ -178,7 +84,8 @@ object DvachApiRepository {
         return listOf(adult, games, politics, custom, other, art, thematics, tech, japan)
     }
 
-    private fun getBoardNames(dvachBoards : List<DvachBoardName>) = dvachBoards.map { toBoard(it) }
+    private fun getBoardNames(dvachBoards : List<DvachBoardName>) =
+        dvachBoards.map { toBoard(it) }
 
     private fun toBoard(dvachBoard: DvachBoardName) = Board(
         name = dvachBoard.name,

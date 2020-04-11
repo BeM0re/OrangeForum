@@ -27,13 +27,6 @@ object RetrofitFactory{
             .writeTimeout(45, TimeUnit.SECONDS)
             .build()
 
-    /*fun retrofit(baseUrl : String) : Retrofit = Retrofit.Builder()
-        .client(client)
-        .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .build()*/
-
     fun retrofit(baseUrl : String) : Retrofit = Retrofit.Builder()
         .client(client)
         .baseUrl(baseUrl)

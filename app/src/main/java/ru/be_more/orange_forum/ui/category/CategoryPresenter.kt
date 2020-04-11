@@ -2,6 +2,10 @@ package ru.be_more.orange_forum.ui.category
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -16,19 +20,18 @@ import ru.be_more.orange_forum.repositories.DvachApiRepository
 class CategoryPresenter : MvpPresenter<CategoryView>() {
 
     private var repo = DvachApiRepository
+    private var disposable : Disposable? = null
 
     override fun onFirstViewAttach(){
-        getParseData().observeForever( Observer {
-            viewState.loadCategories(it)
-        })
+        disposable?.dispose()
+        disposable = repo.getCategories()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe{viewState.loadCategories(it)}
     }
 
-    private fun getParseData() : LiveData<List<Category>> = runBlocking {
-        return@runBlocking  loadDataAsync().await()
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable?.dispose()
     }
-
-    private fun loadDataAsync() : Deferred<LiveData<List<Category>>> = GlobalScope.async{
-        repo.getCategories()
-    }
-
 }

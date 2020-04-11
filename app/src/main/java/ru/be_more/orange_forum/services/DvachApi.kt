@@ -13,17 +13,10 @@ import ru.be_more.orange_forum.data.DvachThread
 interface DvachApi{
 
     @GET("makaba/mobile.fcgi")
-    suspend fun getDvachCategoriesAsync(@Query("task") task : String): Response<DvachCategories>
+    fun getDvachCategoriesRx(@Query("task") task : String): Observable<DvachCategories>
 
     @GET("{board}/catalog.json")
-    suspend fun getDvachThreadsAsync(@Path("board") board : String): Response<DvachBoard>
-
-    @GET("{board}/res/{threadNum}.json")
-    suspend fun getDvachPostsAsync(
-        @Path("board") board : String,
-        @Path("threadNum") threadNum : Int,
-        @Header("Cookie") cookie: String
-    ): Response<DvachThread>
+    fun getDvachThreadsRx(@Path("board") board : String): Observable<DvachBoard>
 
     @GET("{board}/res/{threadNum}.json")
     fun getDvachPostsRx(

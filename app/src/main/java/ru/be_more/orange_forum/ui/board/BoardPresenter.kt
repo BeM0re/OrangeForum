@@ -1,7 +1,9 @@
 package ru.be_more.orange_forum.ui.board
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.runBlocking
 import moxy.InjectViewState
 import moxy.MvpPresenter
@@ -14,18 +16,21 @@ class BoardPresenter : MvpPresenter<BoardView>() {
 
     private var repo = DvachApiRepository
     private lateinit var board :Board
+    private var disposable : Disposable? = null
 
-    private fun getParseData() : LiveData<List<BoardThread>> = runBlocking {
-        return@runBlocking  repo.getBoard(board)
+    fun setBoardId(boardId: String){
+        disposable?.dispose()
+        disposable = repo.getBoard(boardId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe{
+                board = Board("", boardId, it)
+                viewState.loadBoard(board)
+            }
     }
 
-    fun setBoardId(id: String){
-        board = Board("", id)
-
-        getParseData().observeForever( Observer {
-            board.threads=it
-            viewState.loadBoard(board)
-        })
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable?.dispose()
     }
-
 }
