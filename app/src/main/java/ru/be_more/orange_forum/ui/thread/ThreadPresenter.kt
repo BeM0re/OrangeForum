@@ -4,6 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.runBlocking
 import moxy.InjectViewState
 import moxy.MvpPresenter
@@ -18,9 +23,14 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     var thread :BoardThread = BoardThread(num = 0)
     private lateinit var boardId :String
     private var threadNum :Int = 0
+    private var disposable : Disposable? = null
 
     private fun getParseData() : LiveData<BoardThread> = runBlocking {
         return@runBlocking repo.getThread(boardId, threadNum)
+    }
+
+    private fun getParseDataRx() : Observable<BoardThread> = runBlocking {
+        return@runBlocking repo.getThreadRx(boardId, threadNum)
     }
 
     fun updateThreadData(){
@@ -36,6 +46,19 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
             Log.d("M_ThreadPresenter", "thread = ${thread.posts[0].files}")
         })
         updateThreadData()
+    }
+
+    fun initRx(boardId: String, threadNum: Int){
+        this.boardId = boardId
+        this.threadNum = threadNum
+        disposable = getParseDataRx()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe{
+                thread = it
+                updateThreadData()
+            }
+
     }
 
 }

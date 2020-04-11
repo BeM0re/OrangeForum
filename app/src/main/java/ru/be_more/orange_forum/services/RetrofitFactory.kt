@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.services
 
 import android.util.Log
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -26,10 +27,17 @@ object RetrofitFactory{
             .writeTimeout(45, TimeUnit.SECONDS)
             .build()
 
-    fun retrofit(baseUrl : String) : Retrofit = Retrofit.Builder()
+    /*fun retrofit(baseUrl : String) : Retrofit = Retrofit.Builder()
         .client(client)
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .build()*/
+
+    fun retrofit(baseUrl : String) : Retrofit = Retrofit.Builder()
+        .client(client)
+        .baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
 }

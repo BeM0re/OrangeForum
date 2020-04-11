@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -11,6 +13,7 @@ import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.*
 import ru.be_more.orange_forum.services.ApiFactory
 
+const val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
 
 object DvachApiRepository {
 
@@ -36,6 +39,14 @@ object DvachApiRepository {
             toThread(entity, threadNum)
         }
     }
+
+    fun getThreadRx(boardId: String, threadNum: Int): Observable<BoardThread> =
+        dvachApi.getDvachPostsRx(boardId, threadNum, cookie)
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+            .map { entity -> toThread(entity, threadNum) }
+
+
 
     private fun loadCategories(): LiveData<DvachCategories> {
         var allCategories = DvachCategories()

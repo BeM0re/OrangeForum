@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.services
 
+import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -24,4 +25,10 @@ interface DvachApi{
         @Header("Cookie") cookie: String
     ): Response<DvachThread>
 
+    @GET("{board}/res/{threadNum}.json")
+    fun getDvachPostsRx(
+        @Path("board") board : String,
+        @Path("threadNum") threadNum : Int,
+        @Header("Cookie") cookie: String
+    ): Observable<DvachThread>
 }

@@ -53,7 +53,8 @@ class ThreadFragment private constructor(): MvpAppCompatFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        threadPresenter.init(boardId, threadId)
+//        threadPresenter.init(boardId, threadId)
+        threadPresenter.initRx(boardId, threadId)
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
