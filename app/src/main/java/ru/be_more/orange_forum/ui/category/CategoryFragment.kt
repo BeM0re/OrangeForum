@@ -14,7 +14,10 @@ import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 
 
-class CategoryFragment private constructor(var listener: (board: Board) -> Unit): MvpAppCompatFragment(), CategoryView, CategoryOnClickListener {
+class CategoryFragment private constructor(var listener: (boardId: String) -> Unit):
+    MvpAppCompatFragment(),
+    CategoryView,
+    CategoryOnClickListener {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var categoryPresenter : CategoryPresenter
@@ -40,12 +43,12 @@ class CategoryFragment private constructor(var listener: (board: Board) -> Unit)
         recyclerView.adapter = adapter
     }
 
-    override fun onBoardClick(board: Board) {
-        listener(board)
+    override fun onBoardClick(boardId: String) {
+        listener(boardId)
     }
 
     companion object {
-        fun getCategoryFragment (listener: (board: Board) -> Unit): CategoryFragment {
+        fun getCategoryFragment (listener: (boardId: String) -> Unit): CategoryFragment {
             return CategoryFragment(listener)
         }
     }

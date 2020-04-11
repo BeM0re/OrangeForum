@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.board
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +41,7 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
                 holder.setPics(thread.posts[0].files)
             }
             holder.setHideButton()
-            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread) })
+            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread.num) })
         }
     }
 

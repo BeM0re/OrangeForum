@@ -31,7 +31,7 @@ import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 
 //TODO сделать динамическое количество картинок через ресайклер
-class ThreadFragment private constructor(): MvpAppCompatFragment(),
+class ThreadFragment : MvpAppCompatFragment(),
     PostOnClickListener,
     ThreadView {
 
@@ -39,7 +39,6 @@ class ThreadFragment private constructor(): MvpAppCompatFragment(),
     lateinit var threadPresenter : ThreadPresenter
 
     private var timestamp: Long = 0
-    private lateinit var listener: (thread: BoardThread) -> Unit
     private lateinit var boardId: String
     private var threadId: Int = 0
     private lateinit var recyclerView : RecyclerView
@@ -154,9 +153,8 @@ class ThreadFragment private constructor(): MvpAppCompatFragment(),
     }
 
     companion object {
-        fun getThreadFragment (listener: (thread: BoardThread) -> Unit, boardId: String, threadId: Int): ThreadFragment {
+        fun getThreadFragment ( boardId: String, threadId: Int): ThreadFragment {
             val thread = ThreadFragment()
-            thread.listener = listener
             thread.boardId = boardId
             thread.threadId = threadId
 

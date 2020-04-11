@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum
+package ru.be_more.orange_forum.ui.main
 
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -10,8 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
@@ -23,12 +22,12 @@ class MainActivity : AppCompatActivity() {
     private var selectedBoard: MutableLiveData<String> = MutableLiveData()
     private var selectedThread:  MutableLiveData<Int> = MutableLiveData()
 
-    private fun setBoard(board: Board){
-        selectedBoard.postValue(board.id)
+    private fun setBoard(boardId: String){
+        selectedBoard.postValue(boardId)
     }
 
-    private fun setThread(thread: BoardThread){
-        selectedThread.postValue(thread.num)
+    private fun setThread(threadNum: Int){
+        selectedThread.postValue(threadNum)
     }
 
 
@@ -52,19 +51,22 @@ class MainActivity : AppCompatActivity() {
         selectedBoard.observe(this, Observer {
             bottomNavigationView.menu.getItem(1).isEnabled = !selectedBoard.value.isNullOrEmpty()
             if(selectedBoard.value!="") {
-                bottomNavigationView.selectedItemId=R.id.navigation_board
+                bottomNavigationView.selectedItemId=
+                    R.id.navigation_board
             }
         })
 
         selectedThread.observe(this, Observer {
             bottomNavigationView.menu.getItem(2).isEnabled = selectedThread.value!=0
             if(selectedThread.value!=0) {
-                bottomNavigationView.selectedItemId=R.id.navigation_thread
+                bottomNavigationView.selectedItemId=
+                    R.id.navigation_thread
             }
         })
 
         if (savedInstanceState == null)
-            bottomNavigationView.selectedItemId=R.id.navigation_category
+            bottomNavigationView.selectedItemId=
+                R.id.navigation_category
 
     }
 
@@ -92,7 +94,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_thread -> {
                     //if selectedBoard.value or selectedThread.value == null then this menu item is disabled
                     val fragment = ThreadFragment.getThreadFragment(
-                        {setThread(it)},
                         selectedBoard.value!!,
                         selectedThread.value!!
                     )

@@ -8,9 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.MediaController
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,20 +21,16 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_board.*
-import kotlinx.android.synthetic.main.item_post_pics.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
-import java.security.Timestamp
-import java.time.Duration
 
 
 //TODO сделать динамическое количество картинок через ресайклер
-class BoardFragment private constructor(): MvpAppCompatFragment(),
+class BoardFragment: MvpAppCompatFragment(),
     BoardOnClickListener,
     PostOnClickListener,
     BoardView {
@@ -45,8 +39,8 @@ class BoardFragment private constructor(): MvpAppCompatFragment(),
     lateinit var boardPresenter : BoardPresenter
 
     private var timestamp: Long = 0
-    private lateinit var listener: (thread: BoardThread) -> Unit
-    private lateinit var id: String
+    private var listener: ((Int) -> Unit)? = null
+    private var id: String = ""
     private lateinit var recyclerView : RecyclerView
     private lateinit var adapter : BoardAdapter
 
@@ -58,7 +52,7 @@ class BoardFragment private constructor(): MvpAppCompatFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        boardPresenter.setBoardId(id)
+        boardPresenter.init(id, listener)
         recyclerView = rv_thread_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
     }
@@ -73,7 +67,7 @@ class BoardFragment private constructor(): MvpAppCompatFragment(),
     }
 
     companion object {
-        fun getBoardFragment (listener: (thread: BoardThread) -> Unit, id: String): BoardFragment {
+        fun getBoardFragment (listener: (threadNum: Int) -> Unit, id: String): BoardFragment {
             val board = BoardFragment()
             board.listener = listener
             board.id = id
@@ -82,8 +76,9 @@ class BoardFragment private constructor(): MvpAppCompatFragment(),
         }
     }
 
-    override fun onThreadClick(thread: BoardThread) {
-        listener(thread)
+    override fun onThreadClick(threadNum: Int) {
+        if (boardPresenter.listener != null)
+            boardPresenter.listener!!(threadNum)
     }
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {

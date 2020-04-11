@@ -19,6 +19,10 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private var threadNum :Int = 0
     private var disposable : Disposable? = null
 
+    fun updateThreadData(){
+        viewState.loadThread(thread)
+    }
+
     fun init(boardId: String, threadNum: Int){
         this.boardId = boardId
         this.threadNum = threadNum
