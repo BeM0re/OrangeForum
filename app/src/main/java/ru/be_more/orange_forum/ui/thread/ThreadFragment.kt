@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.MediaController
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -67,11 +68,13 @@ class ThreadFragment : MvpAppCompatFragment(),
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0 && fab_thread_respond.visibility == View.VISIBLE) {
                     fab_thread_respond.hide()
-                } else if (dy < 0 && fab_thread_respond.visibility != View.VISIBLE) {
+                } else if (dy < 0 && fab_thread_respond.visibility != View.VISIBLE ) {
                     fab_thread_respond.show()
                 }
             }
         })
+
+        fab_thread_respond.setOnClickListener { threadPresenter.openResponseForm() }
 
 
     }
@@ -83,6 +86,10 @@ class ThreadFragment : MvpAppCompatFragment(),
         recyclerView.addItemDecoration(
             DividerItemDecoration(recyclerView.context, HORIZONTAL)
         )
+    }
+
+    override fun hideResponseFab() {
+        fab_thread_respond.visibility = View.GONE
     }
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {

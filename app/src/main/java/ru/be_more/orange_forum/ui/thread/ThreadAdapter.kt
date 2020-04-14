@@ -23,7 +23,9 @@ class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickLi
             PostViewHolder(inflater.inflate(R.layout.item_post, parent, false), listener)
     }
 
-    override fun getItemCount(): Int = thread.posts.size +1
+    override fun getItemCount(): Int {
+      return thread.posts.size +1
+    }
 
     override fun getItemViewType(position: Int): Int {
         return if (position == thread.posts.size)

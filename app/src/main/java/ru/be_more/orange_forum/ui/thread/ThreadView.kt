@@ -9,4 +9,5 @@ import ru.be_more.orange_forum.model.BoardThread
 @StateStrategyType(value = AddToEndStrategy::class)
 interface ThreadView  : MvpView {
     fun loadThread(thread: BoardThread)
+    fun hideResponseFab()
 }

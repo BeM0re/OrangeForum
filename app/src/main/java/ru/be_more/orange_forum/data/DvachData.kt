@@ -35,20 +35,6 @@ data class DvachBoard(
     var threads: List<DvachPost> = listOf()
 )
 
-data class DvachOpPost(
-    var num: Int,
-    var name: String,
-    var comment: String,
-    var date: String,
-    var email: String,
-    var files: List<DvachFile>,
-    var files_count: Int,
-    var op: Int,
-    var posts_count: Int,
-    var subject: String,
-    var timestamp: Int
-)
-
 data class DvachThread(
     var posts_count: Int = 0,
     var title: String = "",
@@ -83,4 +69,22 @@ data class DvachFile(
     var path: String,
     var thumbnail: String,
     var duration: String = ""
+)
+
+data class CaptchaTypes(
+    var enabled: Int,
+    var result : Int,
+    var types: List<CaptchaType>
+    )
+
+data class CaptchaType(
+    var expires : Int,
+    var id: String
+)
+
+data class GetCaptchaResponse(
+    var id: String,
+    var result: Int,
+    var type: String,
+    var description: String
 )
