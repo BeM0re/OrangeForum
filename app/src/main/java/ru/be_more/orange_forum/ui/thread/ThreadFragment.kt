@@ -52,7 +52,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        threadPresenter.init(boardId, threadId)
         threadPresenter.init(boardId, threadId)
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
@@ -62,6 +61,19 @@ class ThreadFragment : MvpAppCompatFragment(),
             srl_thread.isRefreshing = false
             threadPresenter.updateThreadData()
         }
+
+        rv_post_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && fab_thread_respond.visibility == View.VISIBLE) {
+                    fab_thread_respond.hide()
+                } else if (dy < 0 && fab_thread_respond.visibility != View.VISIBLE) {
+                    fab_thread_respond.show()
+                }
+            }
+        })
+
+
     }
 
     override fun loadThread(thread: BoardThread) {
