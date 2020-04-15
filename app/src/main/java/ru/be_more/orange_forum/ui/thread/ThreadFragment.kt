@@ -23,6 +23,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_thread.*
+import kotlinx.android.synthetic.main.item_thread_response_form.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
@@ -74,9 +75,10 @@ class ThreadFragment : MvpAppCompatFragment(),
             }
         })
 
-        fab_thread_respond.setOnClickListener { threadPresenter.openResponseForm() }
+//        fab_thread_respond.setOnClickListener { threadPresenter.openResponseForm() }
+        fab_thread_respond.setOnClickListener { threadPresenter.post() }
 
-
+//        btn_response_submit.setOnClickListener()
     }
 
     override fun loadThread(thread: BoardThread) {

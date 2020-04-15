@@ -10,4 +10,5 @@
     <string name="btn_title_hide">Скрыть</string>
     <string name="btn_title_into">В тред</string>
     <string name="op_check">#OP</string>
+    <string name="no_invisible_recaptcha_error">The app works only with invisible recaptcha for now, which is unavailable</string>
 </resources>

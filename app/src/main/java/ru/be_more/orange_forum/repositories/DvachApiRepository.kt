@@ -1,24 +1,123 @@
 package ru.be_more.orange_forum.repositories
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.safetynet.SafetyNet
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.*
 import ru.be_more.orange_forum.services.ApiFactory
+import java.io.File
+import java.util.*
+
 
 const val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
+const val SECRET = "6Ler0ukUAAAAAFZD0uzKYrkK4ne8jVJn6B52x43z"
 
 object DvachApiRepository {
 
     private val dvachApi = ApiFactory.dvachApi
+    private val googleCaptchaApi = ApiFactory.googleCaptcha
     private var isLoading : Observable<Boolean> = Observable.just(false)
+    private lateinit var disposable: Disposable
+
+    fun getCaptchaTypes(): Observable<CaptchaType>? =
+        dvachApi.getDvachCaptchaTypesRx("b", cookie) //TODO убрать захардкоженное
+//            .doOnEach { Log.d("M_DvachApiRepository", "cap type = ${it.value}") }
+            .flatMap { Observable.fromIterable(it.types) }
+
+    fun getCaptchaId(): Observable<GetCaptchaResponse>  =
+        dvachApi.getDvachCaptchaIdRx("invisible_recaptcha", cookie) //TODO убрать захардкоженное
+//            .doOnEach { Log.d("M_DvachApiRepository", "cap id = ${it.value}") }
+
+    fun postResponse (
+        boardId: String,
+        threadNum: Int,
+        comment: String,
+        captcha_type: String,
+        g_recaptcha_response: String,
+        chaptcha_id : String,
+        files : List<File>): Observable<DvachPostResponse>  {
+
+        val requestTask =
+            RequestBody.create(MediaType.parse("multipart/form-data"), "post")
+        val requestCookie =
+            RequestBody.create(MediaType.parse("multipart/form-data"), cookie)
+        val requestBoardId =
+            RequestBody.create(MediaType.parse("multipart/form-data"), boardId)
+        val requestThreadNum =
+            RequestBody.create(MediaType.parse("multipart/form-data"), ""+threadNum)
+        val requestComment =
+            RequestBody.create(MediaType.parse("multipart/form-data"), comment)
+        val requestCaptchaType =
+            RequestBody.create(MediaType.parse("multipart/form-data"), captcha_type)
+        val requestGRecaptchaResponse =
+            RequestBody.create(MediaType.parse("multipart/form-data"), g_recaptcha_response)
+        val requestChaptchaId =
+            RequestBody.create(MediaType.parse("multipart/form-data"), chaptcha_id)
+
+        val requestFiles: LinkedList<MultipartBody.Part> = LinkedList()
+
+        val gCaptchaResponse: MutableLiveData<String> = MutableLiveData()
+
+        files.forEach {file ->
+            val requestFile: RequestBody =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file)
+
+            requestFiles.add(
+                MultipartBody.Part.createFormData("image", file.name, requestFile)
+            )
+        }
+        val file = File("/storage/emulated/0/Download/Corrections 6.jpg")
+
+
+        SafetyNet.getClient(App.applicationContext()).verifyWithRecaptcha(
+            "6Ler0ukUAAAAAA0GXsEhYa-rgoA6HojFJmn2aTTC")
+            .addOnSuccessListener { response ->
+                if (response.tokenResult?.isNotEmpty() == true) {
+                    Log.d("M_DvachApiRepository", response.tokenResult)
+                    disposable = googleCaptchaApi.getGCaptchaResponse(SECRET, response.tokenResult)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe { it }
+                }
+            }
+            .addOnFailureListener { e ->
+                if (e is ApiException) {
+                    Log.d("M_DvachApiRepository",
+                        "Google captcha error: ${CommonStatusCodes.getStatusCodeString(e.statusCode)}")
+                } else {
+                    Log.d("M_DvachApiRepository", "Google captcha error: ${e.message}")
+                }
+            }
+
+
+        return dvachApi.postThreadResponseRx(
+            cookie = requestCookie,
+            task = requestTask ,
+            board = requestBoardId,
+            thread = requestThreadNum,
+            op_mark = null,
+            usercode = null,
+            captcha_type = requestCaptchaType,
+            email = null,
+            subject = null,
+            comment = requestComment,
+//            g_recaptcha_response = requestGRecaptchaResponse,
+            chaptcha_id = requestChaptchaId,
+            files = requestFiles
+        )
+    }
+
+
+
 
     fun getCategories(): Observable<List<Category>>  =
         dvachApi.getDvachCategoriesRx("get_boards")

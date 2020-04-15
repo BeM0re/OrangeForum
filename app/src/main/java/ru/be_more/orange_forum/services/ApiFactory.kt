@@ -7,5 +7,7 @@ object ApiFactory{
     val dvachApi : DvachApi = RetrofitFactory.retrofit(DVACH_ROOT_URL)
         .create(DvachApi::class.java)
 
+    val googleCaptcha : CaptchaApi = RetrofitFactory.retrofit("https://www.google.com/")
+        .create(CaptchaApi::class.java)
 
 }

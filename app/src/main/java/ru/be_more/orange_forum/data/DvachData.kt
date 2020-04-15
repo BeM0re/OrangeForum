@@ -22,7 +22,6 @@ data class DvachCategories(
     @SerializedName(value = "Японская культура" )
     val japan : List<DvachBoardName> = listOf()
 )
-
 data class DvachBoardName(
     val default_name : String,
     val category : String,
@@ -75,7 +74,7 @@ data class CaptchaTypes(
     var enabled: Int,
     var result : Int,
     var types: List<CaptchaType>
-    )
+)
 
 data class CaptchaType(
     var expires : Int,
@@ -87,4 +86,20 @@ data class GetCaptchaResponse(
     var result: Int,
     var type: String,
     var description: String
+)
+
+data class DvachPostResponse(
+    var error : String,
+    var Status :String,
+    var Num: Int,
+    var Reason: String
+)
+
+data class GoogleCaptchaResponse(
+    var success: Boolean,
+    var challenge_ts: String,  // timestamp of the challenge load (ISO format yyyy-MM-dd'T'HH:mm:ssZZ)
+    var apk_package_name: String, // the package name of the app where the reCAPTCHA was solved
+
+    @SerializedName(value = "error-codes" )
+    var error_codes: List<String>
 )
