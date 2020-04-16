@@ -61,16 +61,20 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         disposables.add(
             repo.getCaptchaTypes()
                 ?.subscribeOn(Schedulers.io())
+                ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribe (
                     {
 //                        Log.d("M_ThreadPresenter", "C types = $it")
                         if(it.id == "invisible_recaptcha") {
+                            viewState.setWebView()
+
                             isInvisibleRecaptcha = true
-                            disposables.add(repo.getCaptchaId()
+                            disposables.add(repo.getCaptchaId("invisible_recaptcha")
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(
                                     { response -> //response is Captcha
-                                        postResponse(response.id)
+                                        Log.d("M_ThreadPresenter", "$response")
+                                        postResponse(response.id, "invisible_recaptcha")
                                     },
                                     { throwable ->
                                         Log.d("M_ThreadPresenter", "getCaptchaId error = $throwable")
@@ -94,19 +98,22 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     }
 
-    private fun postResponse(captchaId:String){
+    private fun postResponse(captchaId:String, captchaType:String){
 
 //        Log.d("M_ThreadPresenter", "board = $boardId")
 //        Log.d("M_ThreadPresenter", "thr = $threadNum")
-        Log.d("M_ThreadPresenter", captchaId)
+//        Log.d("M_ThreadPresenter", "captchaId = $captchaId")
+
+
+
 
         disposables.add(
             repo.postResponse(
                 boardId = boardId,
                 threadNum = threadNum ,
                 comment = "test",
-                captcha_type = "invisible_recaptcha",
-                g_recaptcha_response = "", //if invisible_recaptcha then empty
+                captcha_type = captchaType,
+                g_recaptcha_response = "",
                 chaptcha_id = captchaId,
                 files = listOf()
             )

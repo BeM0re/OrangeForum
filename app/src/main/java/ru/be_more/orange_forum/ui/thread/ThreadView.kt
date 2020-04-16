@@ -10,4 +10,5 @@ import ru.be_more.orange_forum.model.BoardThread
 interface ThreadView  : MvpView {
     fun loadThread(thread: BoardThread)
     fun hideResponseFab()
+    fun setWebView()
 }

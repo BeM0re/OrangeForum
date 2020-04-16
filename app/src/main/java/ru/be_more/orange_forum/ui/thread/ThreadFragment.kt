@@ -81,6 +81,13 @@ class ThreadFragment : MvpAppCompatFragment(),
 //        btn_response_submit.setOnClickListener()
     }
 
+    override fun setWebView() {
+        wv_post_captcha.visibility = View.VISIBLE
+        wv_post_captcha.loadUrl("file:///android_asset/www/postingCaptchaView.html")
+        wv_post_captcha.settings.javaScriptEnabled = true
+
+    }
+
     override fun loadThread(thread: BoardThread) {
         adapter = ThreadAdapter(thread, this)
 

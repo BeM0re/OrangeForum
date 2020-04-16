@@ -46,7 +46,7 @@ interface DvachApi{
         @Part("email") email: RequestBody?, //имейл или сажа
         @Part("subject") subject: RequestBody?,
         @Part("comment") comment: RequestBody,
-//        @Part("g-recaptcha-response") g_recaptcha_response: RequestBody,
+        @Part("g-recaptcha-response") g_recaptcha_response: RequestBody,
         @Part("2chaptcha_id") chaptcha_id: RequestBody,
         @Part files: List<MultipartBody.Part>
     ): Observable<DvachPostResponse>

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.safetynet.SafetyNet
+import com.google.android.gms.safetynet.SafetyNetApi
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -21,7 +22,7 @@ import java.util.*
 
 const val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
 const val SECRET = "6Ler0ukUAAAAAFZD0uzKYrkK4ne8jVJn6B52x43z"
-
+const val OPEN_KEY = "6Ler0ukUAAAAAA0GXsEhYa-rgoA6HojFJmn2aTTC"
 object DvachApiRepository {
 
     private val dvachApi = ApiFactory.dvachApi
@@ -34,8 +35,8 @@ object DvachApiRepository {
 //            .doOnEach { Log.d("M_DvachApiRepository", "cap type = ${it.value}") }
             .flatMap { Observable.fromIterable(it.types) }
 
-    fun getCaptchaId(): Observable<GetCaptchaResponse>  =
-        dvachApi.getDvachCaptchaIdRx("invisible_recaptcha", cookie) //TODO убрать захардкоженное
+    fun getCaptchaId(captchaType: String): Observable<GetCaptchaResponse>  =
+        dvachApi.getDvachCaptchaIdRx(captchaType, cookie) //TODO убрать захардкоженное
 //            .doOnEach { Log.d("M_DvachApiRepository", "cap id = ${it.value}") }
 
     fun postResponse (
@@ -76,17 +77,47 @@ object DvachApiRepository {
                 MultipartBody.Part.createFormData("image", file.name, requestFile)
             )
         }
-        val file = File("/storage/emulated/0/Download/Corrections 6.jpg")
 
 
-        SafetyNet.getClient(App.applicationContext()).verifyWithRecaptcha(
-            "6Ler0ukUAAAAAA0GXsEhYa-rgoA6HojFJmn2aTTC")
+
+       /* SafetyNet.getClient(App.applicationContext()).verifyWithRecaptcha(
+            OPEN_KEY
+//        chaptcha_id
+        )
             .addOnSuccessListener { response ->
+
+
+
                 if (response.tokenResult?.isNotEmpty() == true) {
+
                     Log.d("M_DvachApiRepository", response.tokenResult)
-                    disposable = googleCaptchaApi.getGCaptchaResponse(SECRET, response.tokenResult)
+                    val token =
+                        RequestBody.create(MediaType.parse("multipart/form-data"), response.tokenResult)
+
+                    dvachApi.postThreadResponseRx(
+                        cookie = requestCookie,
+                        task = requestTask ,
+                        board = requestBoardId,
+                        thread = requestThreadNum,
+                        op_mark = null,
+                        usercode = null,
+                        captcha_type = requestCaptchaType,
+                        email = null,
+                        subject = null,
+                        comment = requestComment,
+                        g_recaptcha_response = token,
+                        chaptcha_id = requestChaptchaId,
+                        files = requestFiles
+                    ).subscribeOn(Schedulers.io())
+                        .subscribe { Log.d("M_DvachApiRepository", "! response = $it") }
+
+                    disposable = googleCaptchaApi.getGCaptchaResponse(SECRET, response.tokenResult+"1")
                         .subscribeOn(Schedulers.io())
-                        .subscribe { it }
+                        .subscribe {
+//                            Log.d("M_DvachApiRepository", "response = $it")
+//                            requestGRecaptchaResponse -> Observable.just(
+
+                         }
                 }
             }
             .addOnFailureListener { e ->
@@ -96,7 +127,7 @@ object DvachApiRepository {
                 } else {
                     Log.d("M_DvachApiRepository", "Google captcha error: ${e.message}")
                 }
-            }
+            }*/
 
 
         return dvachApi.postThreadResponseRx(
@@ -110,7 +141,7 @@ object DvachApiRepository {
             email = null,
             subject = null,
             comment = requestComment,
-//            g_recaptcha_response = requestGRecaptchaResponse,
+            g_recaptcha_response = requestGRecaptchaResponse,
             chaptcha_id = requestChaptchaId,
             files = requestFiles
         )
