@@ -12,6 +12,8 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.*
@@ -38,6 +40,9 @@ object DvachApiRepository {
     fun getCaptchaId(captchaType: String): Observable<GetCaptchaResponse>  =
         dvachApi.getDvachCaptchaIdRx(captchaType, cookie) //TODO убрать захардкоженное
 //            .doOnEach { Log.d("M_DvachApiRepository", "cap id = ${it.value}") }
+
+    fun getMobileCaptcha(): Observable<ResponseBody>  =
+        dvachApi.getMobileCaptchaRx()
 
     fun postResponse (
         boardId: String,
@@ -77,6 +82,7 @@ object DvachApiRepository {
                 MultipartBody.Part.createFormData("image", file.name, requestFile)
             )
         }
+
 
 
 

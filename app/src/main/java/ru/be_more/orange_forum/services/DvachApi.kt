@@ -3,6 +3,8 @@ package ru.be_more.orange_forum.services
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
 import retrofit2.http.*
 import ru.be_more.orange_forum.data.*
 
@@ -51,5 +53,6 @@ interface DvachApi{
         @Part files: List<MultipartBody.Part>
     ): Observable<DvachPostResponse>
 
-
+    @GET("api/captcha/recaptcha/mobile")
+    fun getMobileCaptchaRx() : Observable<ResponseBody>
 }

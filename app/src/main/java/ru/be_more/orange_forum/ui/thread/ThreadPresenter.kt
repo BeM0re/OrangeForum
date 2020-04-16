@@ -66,7 +66,18 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                     {
 //                        Log.d("M_ThreadPresenter", "C types = $it")
                         if(it.id == "invisible_recaptcha") {
-                            viewState.setWebView()
+
+                            repo.getMobileCaptcha().subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe (
+                                    {
+//                                        Log.d("M_ThreadPresenter", "API response = ${it.string()}")
+                                        viewState.setWebView(it.string())
+                                    },
+                                    {Log.d("M_ThreadPresenter", "error = $it")}
+                                )
+
+
 
                             isInvisibleRecaptcha = true
                             disposables.add(repo.getCaptchaId("invisible_recaptcha")

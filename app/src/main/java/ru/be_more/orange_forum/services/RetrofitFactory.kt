@@ -1,9 +1,8 @@
 package ru.be_more.orange_forum.services
 
-import android.util.Log
+import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -14,7 +13,9 @@ object RetrofitFactory{
 
 
     private val sslTrustManager = SSLTrustManager()
-
+    var gson = GsonBuilder()
+        .setLenient()
+        .create()
 
     //Not logging the authkey if not debug
     private val client =
@@ -30,7 +31,7 @@ object RetrofitFactory{
     fun retrofit(baseUrl : String) : Retrofit = Retrofit.Builder()
             .client(client)
             .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
 }

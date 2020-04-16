@@ -81,10 +81,14 @@ class ThreadFragment : MvpAppCompatFragment(),
 //        btn_response_submit.setOnClickListener()
     }
 
-    override fun setWebView() {
-        wv_post_captcha.visibility = View.VISIBLE
-        wv_post_captcha.loadUrl("file:///android_asset/www/postingCaptchaView.html")
+    override fun setWebView(htmlPage: String) {
+//        wv_post_captcha.visibility = View.VISIBLE
+//        wv_post_captcha.loadUrl("file:///android_asset/www/postingCaptchaView.html")
+
+        Log.d("M_ThreadPresenter", "API response = ${htmlPage}")
         wv_post_captcha.settings.javaScriptEnabled = true
+        wv_post_captcha.loadData(htmlPage, "text/html; charset=utf-8", "UTF-8")
+
 
     }
 
