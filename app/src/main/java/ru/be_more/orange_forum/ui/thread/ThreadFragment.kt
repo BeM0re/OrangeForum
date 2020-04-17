@@ -4,12 +4,15 @@ import android.graphics.drawable.ClipDrawable.HORIZONTAL
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebSettings
 import android.widget.MediaController
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,22 +78,36 @@ class ThreadFragment : MvpAppCompatFragment(),
             }
         })
 
-//        fab_thread_respond.setOnClickListener { threadPresenter.openResponseForm() }
         fab_thread_respond.setOnClickListener { threadPresenter.post() }
 
-//        btn_response_submit.setOnClickListener()
     }
 
     override fun setWebView(htmlPage: String) {
-//        wv_post_captcha.visibility = View.VISIBLE
-//        wv_post_captcha.loadUrl("file:///android_asset/www/postingCaptchaView.html")
+        val MyUA: String  = "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 " +
+                "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
 
-        Log.d("M_ThreadPresenter", "API response = ${htmlPage}")
+        wv_post_captcha.settings.userAgentString = MyUA
+
+
         wv_post_captcha.settings.javaScriptEnabled = true
-        wv_post_captcha.loadData(htmlPage, "text/html; charset=utf-8", "UTF-8")
+        wv_post_captcha.settings.javaScriptCanOpenWindowsAutomatically = true
+        wv_post_captcha.settings.builtInZoomControls = true
+        wv_post_captcha.settings.pluginState = WebSettings.PluginState.ON
+        wv_post_captcha.settings.allowContentAccess = true
+        wv_post_captcha.settings.domStorageEnabled = true
 
+        wv_post_captcha.settings.loadWithOverviewMode = true
+        wv_post_captcha.settings.useWideViewPort = true
+        wv_post_captcha.settings.displayZoomControls = false
+        wv_post_captcha.settings.setSupportZoom(true)
+        wv_post_captcha.settings.defaultTextEncodingName = "utf-8"
 
+//        wv_post_captcha.loadData(htmlPage, "text/html", "UTF-8")
+        wv_post_captcha.loadUrl("https://2ch.hk/api/captcha/recaptcha/mobile")
     }
+
+//    https://2ch.hk/makaba/posting.fcgi?task=post&board=b&thread=217935468&comment=Тест&g-recaptcha-response=03AHaCkAaEGXLrI9Uiab6WQ05SQ9Qx41gJSCgkIMLwwXdf2lEtL0h2F1sSY68JdmlR4PRn1D8iJP7VDrvRExhCAMEPIGOi-5HSk3wQmbNnpxCU6_4bgEeTHPaaixu_vwoMUk1TuAIJkZtvCgTHGKdBG3_Yy_QvG42EzvafFaMa0ikjPZNg0ih_GJm2APKaI_lajITmiIe9sdjq6qCpr_CV7anPPSUoCrfOLSc55o4sPyK5kfHf46KdTcUDG7gnnEs_KpBOUbnUrgN3P6DMnPXmBG0qRGGmIhyEts4Kys-iy73pEW6ldl0-Llw&2chaptcha_id=6LdwXD4UAAAAAHxyTiwSMuge1-pf1ZiEL4qva_xu&json=1&captcha_type=invisible_recaptcha
 
     override fun loadThread(thread: BoardThread) {
         adapter = ThreadAdapter(thread, this)
