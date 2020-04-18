@@ -14,6 +14,8 @@ const val RESPONSE_VIEW = 1
 class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickListener) :
     RecyclerView.Adapter<ThreadViewHolder>(){
 
+    private var isFooterShown = false
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ThreadViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
@@ -24,7 +26,10 @@ class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickLi
     }
 
     override fun getItemCount(): Int {
-      return thread.posts.size +1
+        return if (isFooterShown)
+            thread.posts.size +1
+        else
+            thread.posts.size +1 //TODO Убрать +1 потом
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -49,6 +54,13 @@ class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickLi
             is ResponseViewHolder -> {
 
             }
+        }
+    }
+
+    fun setIsFooterShown(isShow:Boolean){
+        if (!isFooterShown == isShow) {
+            isFooterShown = isShow
+            this.notifyDataSetChanged()
         }
     }
 

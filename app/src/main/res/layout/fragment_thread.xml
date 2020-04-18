@@ -78,16 +78,6 @@
             android:src="@drawable/ic_create_black_24dp"
             app:tint="@android:color/white" />
 
-        <WebView
-            android:id="@+id/wv_post_captcha"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            app:layout_constraintBottom_toBottomOf="@+id/rv_post_list"
-            app:layout_constraintEnd_toEndOf="@+id/rv_post_list"
-            app:layout_constraintStart_toStartOf="@+id/rv_post_list"
-            app:layout_constraintTop_toTopOf="@+id/rv_post_list"
-            android:visibility="visible"
-            tools:visibility="visible"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

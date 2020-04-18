@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -14,12 +15,15 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.repositories.DvachApiRepository
+import ru.be_more.orange_forum.ui.post.PostOnClickListener
 import java.util.*
 
 @InjectViewState
 class ThreadPresenter : MvpPresenter<ThreadView>() {
 
-    private var isResponseOpen : MutableLiveData<Boolean> = MutableLiveData()
+
+
+    private lateinit var adapter : ThreadAdapter
 
     private var repo = DvachApiRepository
     var thread :BoardThread = BoardThread(num = 0)
@@ -28,12 +32,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private var disposables : LinkedList<Disposable?> = LinkedList()
     private var isInvisibleRecaptcha: Boolean = false
     private var captchaId: String = ""
-
-    fun openResponseForm(){
-        isResponseOpen.postValue(true)
-    }
-
-    fun getIsResponseOpen(): LiveData<Boolean> = isResponseOpen
+    private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
     fun updateThreadData(){
         viewState.loadThread(thread)
@@ -52,8 +51,11 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                     viewState.loadThread(thread)
                 }
         )
-        getIsResponseOpen().observeForever { viewState.hideResponseFab() }
+    //TODO прятать fab при нажатии на ответ
 
+        captchaResponse.observeForever {
+            Log.d("M_ThreadPresenter", "posting. token = $it")
+        }
     }
 
     fun post(){
@@ -67,17 +69,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 //                        Log.d("M_ThreadPresenter", "C types = $it")
                         if(it.id == "invisible_recaptcha") {
 
-                            repo.getMobileCaptcha().subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe (
-                                    {
-//                                        Log.d("M_ThreadPresenter", "API response = ${it.string()}")
-                                        viewState.setWebView(it.string())
-                                    },
-                                    {Log.d("M_ThreadPresenter", "error = $it")}
-                                )
-
-
+//                            viewState.setWebView()
 
                             isInvisibleRecaptcha = true
                             disposables.add(repo.getCaptchaId("invisible_recaptcha")
@@ -116,8 +108,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 //        Log.d("M_ThreadPresenter", "captchaId = $captchaId")
 
 
-
-
         disposables.add(
             repo.postResponse(
                 boardId = boardId,
@@ -142,6 +132,22 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         disposables.forEach {
             it?.dispose()
         }
+    }
+
+    fun showFooter() {
+        adapter.setIsFooterShown(true)
+        viewState.setWebView()
+        viewState.setOnPostClickListener()
+    }
+
+    fun initAdapter(thread: BoardThread, listener: PostOnClickListener) {
+        adapter = ThreadAdapter(thread, listener)
+    }
+
+    fun getAdapter(): ThreadAdapter = this.adapter
+    fun setCaptchaResponse(captchaResponse: String) {
+        Log.d("M_ThreadPresenter", "presenter token = $captchaResponse")
+        this.captchaResponse.postValue(captchaResponse)
     }
 
 }
