@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebSettings
 import android.widget.MediaController
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -45,21 +46,11 @@ const val PAGE_HTML = "<html>\n" +
         "  </script>\n" +
         "    <script type=\"text/javascript\">\n" +
         "      var onloadCallback = function() {\n" +
-//        "        grecaptcha.render('html_element', {\n" +
-//        "          'sitekey' : '6LeQYz4UAAAAAL8JCk35wHSv6cuEV5PyLhI6IxsM',\n" +
-//        "          'sitekey' : '6LdwXD4UAAAAAHxyTiwSMuge1-pf1ZiEL4qva_xu',\n" +
-//        "          'data-size' : 'invisible',\n" +
-//        "          'class' : 'g-recaptcha',\n" +
-//        "\t\t  'callback': function(a) { window.external.notify(JSON.stringify(a)); }\n" +
-//        "        });\n" +
         "        grecaptcha.execute()" +
         "      };\n" +
         "  </script>\n" +
         "</head>\n" +
         "<body>\n" +
-//        "<form action=\"test\" method=\"POST\">\n" +
-//        "    <div id=\"html_element\"></div>\n" +
-//        "</form>\n" +
         "<script src=\"//www.google.com/recaptcha/api.js?onload=onloadCallback\"\n" + //&render=explicit
         "        async defer>\n" +
         "</script>\n" +
@@ -103,7 +94,8 @@ class ThreadFragment : MvpAppCompatFragment(),
             threadPresenter.updateThreadData()
         }
 
-        rv_post_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        //TODO вернуть после API
+/*        rv_post_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0 && fab_thread_respond.visibility == View.VISIBLE) {
@@ -112,14 +104,14 @@ class ThreadFragment : MvpAppCompatFragment(),
                     fab_thread_respond.show()
                 }
             }
-        })
+        })*/
 
         fab_thread_respond.setOnClickListener { threadPresenter.showFooter() }
     }
 
-    override fun setWebView() {
+    override fun setWebView() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
 
-        wv_post_captcha.settings.userAgentString =
+/*        wv_post_captcha.settings.userAgentString =
             "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
                     "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 " +
                     "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
@@ -139,13 +131,10 @@ class ThreadFragment : MvpAppCompatFragment(),
         wv_post_captcha.settings.setSupportZoom(true)
         wv_post_captcha.settings.defaultTextEncodingName = "utf-8"
 
-//        wv_post_captcha.loadUrl("https://2ch.hk/api/captcha/recaptcha/mobile")
         wv_post_captcha.loadDataWithBaseURL("https://2ch.hk", PAGE_HTML, "text/html; charset=UTF-8", null, null)
-        wv_post_captcha.addJavascriptInterface(ThreadFragment(), "Android")
+        wv_post_captcha.addJavascriptInterface(ThreadFragment(), "Android")*/
 
     }
-
-//    https://2ch.hk/makaba/posting.fcgi?task=post&board=b&thread=217935468&comment=Тест&g-recaptcha-response=03AHaCkAaEGXLrI9Uiab6WQ05SQ9Qx41gJSCgkIMLwwXdf2lEtL0h2F1sSY68JdmlR4PRn1D8iJP7VDrvRExhCAMEPIGOi-5HSk3wQmbNnpxCU6_4bgEeTHPaaixu_vwoMUk1TuAIJkZtvCgTHGKdBG3_Yy_QvG42EzvafFaMa0ikjPZNg0ih_GJm2APKaI_lajITmiIe9sdjq6qCpr_CV7anPPSUoCrfOLSc55o4sPyK5kfHf46KdTcUDG7gnnEs_KpBOUbnUrgN3P6DMnPXmBG0qRGGmIhyEts4Kys-iy73pEW6ldl0-Llw&2chaptcha_id=6LdwXD4UAAAAAHxyTiwSMuge1-pf1ZiEL4qva_xu&json=1&captcha_type=invisible_recaptcha
 
     override fun loadThread(thread: BoardThread) {
 
@@ -170,7 +159,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
 
         btn_response_submit.setOnClickListener {
-            wv_post_captcha.loadUrl("javascript: Android.showToast(sendParams())")
+//            wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
 
         }
 
@@ -258,12 +247,13 @@ class ThreadFragment : MvpAppCompatFragment(),
 
 
     @JavascriptInterface
-    fun showToast(token: String) {
+    fun responsePushed(token: String) {
 
-        Log.d("M_ThreadFragment", "token will send = \"$token\"")
+        Toast.makeText(App.applicationContext(), "Постинг отключен пока макака не сделает API", Toast.LENGTH_LONG)
+
+//        Log.d("M_ThreadFragment", "token = \"$token\"")
 //        threadPresenter.setCaptchaResponse(token)
-        this.captchaResponse.postValue(token)
-        Log.d("M_ThreadFragment", "token did send = \"$token\"")
+//        this.captchaResponse.postValue(token)
     }
 
     companion object {

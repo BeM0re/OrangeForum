@@ -76,7 +76,9 @@
             android:layout_marginEnd="@dimen/spacing_normal_16"
             app:backgroundTint="@color/color_accent"
             android:src="@drawable/ic_create_black_24dp"
-            app:tint="@android:color/white" />
+            app:tint="@android:color/white"
+            android:visibility="gone"/>
+<!--        TODO после API убрать визибилити-->
 
 
 

@@ -31,7 +31,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private var threadNum :Int = 0
     private var disposables : LinkedList<Disposable?> = LinkedList()
     private var isInvisibleRecaptcha: Boolean = false
-    private var captchaId: String = ""
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
     fun updateThreadData(){
@@ -66,8 +65,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribe (
                     {
-//                        Log.d("M_ThreadPresenter", "C types = $it")
-                        if(it.id == "invisible_recaptcha") {
+                        if(it.id == "invisible_recaptcha") { //TODO переделать на нативную капчу после API
 
 //                            viewState.setWebView()
 
@@ -103,12 +101,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     private fun postResponse(captchaId:String, captchaType:String){
 
-//        Log.d("M_ThreadPresenter", "board = $boardId")
-//        Log.d("M_ThreadPresenter", "thr = $threadNum")
-//        Log.d("M_ThreadPresenter", "captchaId = $captchaId")
-
-
-        disposables.add(
+        disposables.add( //TODO после API доделать (убрать зашитые данные, брать из полей вью)
             repo.postResponse(
                 boardId = boardId,
                 threadNum = threadNum ,
@@ -136,7 +129,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     fun showFooter() {
         adapter.setIsFooterShown(true)
-        viewState.setWebView()
+//        viewState.setWebView()
         viewState.setOnPostClickListener()
     }
 
@@ -145,6 +138,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     fun getAdapter(): ThreadAdapter = this.adapter
+
     fun setCaptchaResponse(captchaResponse: String) {
         Log.d("M_ThreadPresenter", "presenter token = $captchaResponse")
         this.captchaResponse.postValue(captchaResponse)
