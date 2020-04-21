@@ -88,11 +88,12 @@ class ThreadFragment : MvpAppCompatFragment(),
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
+
+        /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
         srl_thread.setOnRefreshListener {
             srl_thread.isRefreshing = false
             threadPresenter.updateThreadData()
-        }
+        }*/
 
         //TODO вернуть после API
 /*        rv_post_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -184,6 +185,7 @@ class ThreadFragment : MvpAppCompatFragment(),
                     )
                     .build()
             )
+            iv_post_pic_full.resetZoom()
             iv_post_pic_full.visibility = View.VISIBLE
             Glide.with(this)
                 .load(fullPicGlideUrl)

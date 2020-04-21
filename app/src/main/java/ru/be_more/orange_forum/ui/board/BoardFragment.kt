@@ -21,6 +21,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_board.*
+import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
@@ -100,6 +101,7 @@ class BoardFragment: MvpAppCompatFragment(),
                     )
                     .build()
             )
+            iv_op_post_pic_full.resetZoom()
             iv_op_post_pic_full.visibility = View.VISIBLE
             Glide.with(this)
                 .load(fullPicGlideUrl)

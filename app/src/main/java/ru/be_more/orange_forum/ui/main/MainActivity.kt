@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setActionBarTitle(title: String? = "Orange Forum"){
         supportActionBar?.title = title
-        Log.d("M_MainActivity", "title = $title")
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
