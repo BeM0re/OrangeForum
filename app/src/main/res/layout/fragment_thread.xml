@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:background="#80000000"
             android:visibility="gone"
-            tools:visibility="visible" />
+            tools:visibility="invisible"/>
 
         <ImageView
             android:id="@+id/iv_post_pic_full"
@@ -35,12 +35,12 @@
             android:layout_height="match_parent"
             tools:src="@drawable/splash"
             android:visibility="gone"
-            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/rv_post_list"
             app:layout_constraintTop_toTopOf="@+id/rv_post_list"
-            android:padding="@dimen/spacing_normal_16"/>
+            android:padding="@dimen/spacing_normal_16"
+            tools:visibility="invisible"/>
 
         <VideoView
             android:id="@+id/vv_post_video"
@@ -51,7 +51,8 @@
             app:layout_constraintStart_toStartOf="@+id/rv_post_list"
             app:layout_constraintTop_toTopOf="@+id/rv_post_list"
             android:padding="@dimen/spacing_normal_16"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            tools:visibility="invisible"/>
 
 
         <ProgressBar
@@ -64,7 +65,7 @@
             app:layout_constraintStart_toStartOf="@+id/rv_post_list"
             app:layout_constraintTop_toTopOf="@+id/rv_post_list"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="invisible"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_thread_respond"

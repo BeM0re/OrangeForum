@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.ui.post
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
@@ -17,7 +18,7 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
 
     private var pic1: ImageView = itemView!!.findViewById(R.id.iv_op_post_pic1)
     private var pic2: ImageView = itemView!!.findViewById(R.id.iv_op_post_pic2)
-    private var pics: LinearLayout = itemView!!.findViewById(R.id.ll_op_post_pics)
+    private var pics: ConstraintLayout = itemView!!.findViewById(R.id.ll_op_post_pics)
 
     fun setParentContainerGone(){
         pics.visibility = View.GONE
