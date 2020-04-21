@@ -218,12 +218,23 @@ class ThreadFragment : MvpAppCompatFragment(),
             }
         }
         else{
-            vv_post_video.setVideoURI(Uri.parse(fullPicUrl))
+            pb_post_pic_loading.visibility = View.VISIBLE
+
+            //TODO потом поменять на нормальные куки
+            val headers = mapOf("cookie" to
+                    "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
+                    "_ga=GA1.2.57010468.1498700728; " +
+                    "ageallow=1; " +
+                    "_gid=GA1.2.1910512907.1585793763; " +
+                    "_gat=1")
+
+            vv_post_video.setOnPreparedListener { pb_post_pic_loading.visibility = View.GONE }
+
+            vv_post_video.setVideoURI(Uri.parse(fullPicUrl), headers)
             vv_post_video.visibility = View.VISIBLE
             vv_post_video.setMediaController(MediaController(this.context))
             vv_post_video.requestFocus(0)
             vv_post_video.start()
-            pb_post_pic_loading.visibility = View.GONE
 
             vv_post_video.setOnClickListener {
                 if(System.currentTimeMillis() - timestamp < 3000) {
