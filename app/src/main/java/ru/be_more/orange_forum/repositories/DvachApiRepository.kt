@@ -86,6 +86,7 @@ object DvachApiRepository {
 
 
 
+        //TODO вернуть после нормального API
        /* SafetyNet.getClient(App.applicationContext()).verifyWithRecaptcha(
             OPEN_KEY
 //        chaptcha_id
@@ -233,7 +234,8 @@ object DvachApiRepository {
 
     private fun toThread(dvachOpPost: DvachPost) = BoardThread(
         num = dvachOpPost.num,
-        posts = listOf(toPost(dvachOpPost))
+        posts = listOf(toPost(dvachOpPost)),
+        title = dvachOpPost.subject
     )
     private fun toThread(dvachThread: DvachThread, threadNum: Int) = BoardThread(
         num = threadNum,

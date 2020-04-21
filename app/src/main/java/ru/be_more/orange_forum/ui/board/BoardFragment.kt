@@ -39,7 +39,7 @@ class BoardFragment: MvpAppCompatFragment(),
     lateinit var boardPresenter : BoardPresenter
 
     private var timestamp: Long = 0
-    private var listener: ((Int) -> Unit)? = null
+    private var listener: ((Int, String) -> Unit)? = null
     private var id: String = ""
     private lateinit var recyclerView : RecyclerView
     private lateinit var adapter : BoardAdapter
@@ -67,7 +67,8 @@ class BoardFragment: MvpAppCompatFragment(),
     }
 
     companion object {
-        fun getBoardFragment (listener: (threadNum: Int) -> Unit, id: String): BoardFragment {
+        fun getBoardFragment (listener: (threadNum: Int, threadTitle: String) -> Unit,
+                              id: String): BoardFragment {
             val board = BoardFragment()
             board.listener = listener
             board.id = id
@@ -76,9 +77,9 @@ class BoardFragment: MvpAppCompatFragment(),
         }
     }
 
-    override fun onThreadClick(threadNum: Int) {
+    override fun onThreadClick(threadNum: Int, threadTitle: String) {
         if (boardPresenter.listener != null)
-            boardPresenter.listener!!(threadNum)
+            boardPresenter.listener!!(threadNum, threadTitle)
     }
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {

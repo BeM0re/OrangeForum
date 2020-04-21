@@ -19,9 +19,9 @@ class BoardPresenter : MvpPresenter<BoardView>() {
     private lateinit var board :Board
     private var disposable : Disposable? = null
     private var boardId: String = ""
-    var listener: ((threadNum: Int) -> Unit)? = null
+    var listener: ((threadNum: Int, threadTitle: String) -> Unit)? = null
 
-    fun init(boardId: String, listener: ((threadNum: Int) -> Unit)?){
+    fun init(boardId: String, listener: ((threadNum: Int, threadTitle: String) -> Unit)?){
 
         if (listener!=null)
             this.listener = listener

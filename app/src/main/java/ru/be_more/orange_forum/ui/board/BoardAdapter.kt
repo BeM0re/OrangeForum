@@ -41,7 +41,7 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
                 holder.setPics(thread.posts[0].files)
             }
             holder.setHideButton()
-            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread.num) })
+            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread.num, thread.title) })
         }
     }
 

@@ -21,7 +21,7 @@ import java.util.*
 @InjectViewState
 class ThreadPresenter : MvpPresenter<ThreadView>() {
 
-
+    private var threadTitle: String = "OrangeForum"
 
     private lateinit var adapter : ThreadAdapter
 
@@ -48,6 +48,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                 .subscribe{
                     thread = it
                     viewState.loadThread(thread)
+//                    viewState.setTitle()
                 }
         )
     //TODO прятать fab при нажатии на ответ
