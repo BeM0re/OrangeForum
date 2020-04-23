@@ -21,21 +21,15 @@ import java.util.*
 @InjectViewState
 class ThreadPresenter : MvpPresenter<ThreadView>() {
 
-    private var threadTitle: String = "OrangeForum"
-
     private lateinit var adapter : ThreadAdapter
 
     private var repo = DvachApiRepository
-    var thread :BoardThread = BoardThread(num = 0)
+    lateinit var thread: BoardThread
     private lateinit var boardId :String
-    private var threadNum :Int = 0
-    private var disposables : LinkedList<Disposable?> = LinkedList()
+    private var threadNum: Int = 0
+    private var disposables: LinkedList<Disposable?> = LinkedList()
     private var isInvisibleRecaptcha: Boolean = false
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
-
-    fun updateThreadData(){
-        viewState.loadThread(thread)
-    }
 
     fun init(boardId: String, threadNum: Int){
         this.boardId = boardId
@@ -48,7 +42,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                 .subscribe{
                     thread = it
                     viewState.loadThread(thread)
-//                    viewState.setTitle()
                 }
         )
     //TODO прятать fab при нажатии на ответ

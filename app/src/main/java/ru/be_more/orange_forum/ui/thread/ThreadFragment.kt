@@ -35,7 +35,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
-const val PAGE_HTML = "<html>\n" +
+/*const val PAGE_HTML = "<html>\n" +
         "<head>\n" +
         "    <script type=\"text/javascript\">\n" +
         "    var sendParams = function() {\n" +
@@ -60,7 +60,7 @@ const val PAGE_HTML = "<html>\n" +
         "    </form>" +
         "</body>\n" +
         "</html>\n" +
-        "\n"
+        "\n"*/
 
 
 class ThreadFragment : MvpAppCompatFragment(),
@@ -89,6 +89,7 @@ class ThreadFragment : MvpAppCompatFragment(),
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
 
+        //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
         srl_thread.setOnRefreshListener {
             srl_thread.isRefreshing = false
@@ -162,6 +163,8 @@ class ThreadFragment : MvpAppCompatFragment(),
         btn_response_submit.setOnClickListener {
 //            wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
 
+            Toast.makeText(App.applicationContext(),
+                "Постинг отключен пока макака не сделает API", Toast.LENGTH_LONG).show()
         }
 
         //        btn_response_submit.setOnClickListener { threadPresenter.post() }
@@ -261,9 +264,6 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     @JavascriptInterface
     fun responsePushed(token: String) {
-
-        Toast.makeText(App.applicationContext(), "Постинг отключен пока макака не сделает API", Toast.LENGTH_LONG)
-
 //        Log.d("M_ThreadFragment", "token = \"$token\"")
 //        threadPresenter.setCaptchaResponse(token)
 //        this.captchaResponse.postValue(token)

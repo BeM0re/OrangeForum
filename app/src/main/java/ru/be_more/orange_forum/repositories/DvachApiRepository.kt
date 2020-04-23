@@ -25,6 +25,7 @@ import java.util.*
 const val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
 const val SECRET = "6Ler0ukUAAAAAFZD0uzKYrkK4ne8jVJn6B52x43z"
 const val OPEN_KEY = "6Ler0ukUAAAAAA0GXsEhYa-rgoA6HojFJmn2aTTC"
+
 object DvachApiRepository {
 
     private val dvachApi = ApiFactory.dvachApi
