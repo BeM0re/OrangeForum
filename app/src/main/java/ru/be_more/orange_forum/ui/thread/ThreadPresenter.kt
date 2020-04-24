@@ -17,13 +17,15 @@ import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
 import java.util.*
+import javax.inject.Inject
 
 @InjectViewState
 class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     private lateinit var adapter : ThreadAdapter
 
-    private var repo = DvachApiRepository
+    @Inject
+    lateinit var repo : DvachApiRepository
     lateinit var thread: BoardThread
     private lateinit var boardId :String
     private var threadNum: Int = 0
@@ -32,6 +34,8 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
     fun init(boardId: String, threadNum: Int){
+        App.getComponent().inject(this)
+
         this.boardId = boardId
         this.threadNum = threadNum
 

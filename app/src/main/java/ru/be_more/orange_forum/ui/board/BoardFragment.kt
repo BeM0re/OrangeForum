@@ -21,12 +21,10 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_board.*
-import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 

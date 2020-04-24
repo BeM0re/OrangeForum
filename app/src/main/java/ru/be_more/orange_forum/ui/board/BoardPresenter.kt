@@ -8,20 +8,25 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.runBlocking
 import moxy.InjectViewState
 import moxy.MvpPresenter
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.repositories.DvachApiRepository
+import javax.inject.Inject
 
 @InjectViewState
 class BoardPresenter : MvpPresenter<BoardView>() {
 
-    private var repo = DvachApiRepository
+    @Inject
+    lateinit var repo : DvachApiRepository
     private lateinit var board :Board
     private var disposable : Disposable? = null
     private var boardId: String = ""
     var listener: ((threadNum: Int, threadTitle: String) -> Unit)? = null
 
     fun init(boardId: String, listener: ((threadNum: Int, threadTitle: String) -> Unit)?){
+
+        App.getComponent().inject(this)
 
         if (listener!=null)
             this.listener = listener

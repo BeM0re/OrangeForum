@@ -9,11 +9,13 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.repositories.DvachApiRepository
+import javax.inject.Inject
 
 @InjectViewState
 class MainPresenter : MvpPresenter<MainView>() {
 
-    private var repo = DvachApiRepository
+    @Inject
+    lateinit var repo : DvachApiRepository
     var thread :BoardThread = BoardThread(num = 0)
     private lateinit var boardId :String
     private var threadNum :Int = 0
