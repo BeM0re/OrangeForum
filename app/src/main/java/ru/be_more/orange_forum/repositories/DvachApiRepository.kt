@@ -30,7 +30,7 @@ const val SECRET = "6Ler0ukUAAAAAFZD0uzKYrkK4ne8jVJn6B52x43z"
 const val OPEN_KEY = "6Ler0ukUAAAAAA0GXsEhYa-rgoA6HojFJmn2aTTC"
 
 class DvachApiRepository @Inject constructor(){
-//    @Inject constructor()
+
     private val dvachApi = ApiFactory.dvachApi
     private val googleCaptchaApi = ApiFactory.googleCaptcha
     private var isLoading : Observable<Boolean> = Observable.just(false)

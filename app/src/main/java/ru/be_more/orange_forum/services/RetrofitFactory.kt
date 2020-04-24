@@ -10,8 +10,6 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitFactory{
 
-
-
     private val sslTrustManager = SSLTrustManager()
     var gson = GsonBuilder()
         .setLenient()
