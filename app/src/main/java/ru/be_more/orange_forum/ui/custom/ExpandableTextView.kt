@@ -3,15 +3,9 @@ package ru.be_more.orange_forum.ui.custom
 import android.content.Context
 import android.content.res.TypedArray
 import android.text.SpannableStringBuilder
-import android.text.util.Linkify
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.text.HtmlCompat
-import me.saket.bettermovementmethod.BetterLinkMovementMethod
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 
 
@@ -21,7 +15,6 @@ class ExpandableTextView  @JvmOverloads constructor(
 
     private val defaultTrimLength = 300
     private val readMore = " ..."
-//    private val readMore = " <html><body>...</body></html>"
 
     private var originalText :String = ""
     private var trimmedText = ""

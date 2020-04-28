@@ -42,7 +42,8 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: Post
             }
         }
 
-        holder.itemView.setOnClickListener { Log.d("M_PostPicAdapter", "Click on ${holder.itemView}")}
+        //хз что это, может потом вспомню зачем это начал делать
+//        holder.itemView.setOnClickListener { Log.d("M_PostPicAdapter", "Click on ${holder.itemView}")}
     }
 
     fun updateData(data:List<AttachFile>){
