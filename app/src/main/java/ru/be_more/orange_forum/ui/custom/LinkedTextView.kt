@@ -5,6 +5,7 @@ import android.text.util.Linkify
 import android.util.AttributeSet
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.text.HtmlCompat
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import ru.be_more.orange_forum.App
 
@@ -25,6 +26,9 @@ open class LinkedTextView @JvmOverloads constructor(
         Linkify.addLinks(this, Linkify.ALL)
     }
 
-
+    override fun setText(text: CharSequence?, type: BufferType?) {
+        super.setText(
+            HtmlCompat.fromHtml(text.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY),type)
+    }
 
 }

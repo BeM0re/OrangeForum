@@ -38,9 +38,8 @@ class ExpandableTextView  @JvmOverloads constructor(
     }
 
     private fun setText() {
-        Log.d("M_TextView", "${getDisplayableText()}")
-        super.setText(HtmlCompat.fromHtml(getDisplayableText(), HtmlCompat.FROM_HTML_MODE_LEGACY),
-            bufferType)
+//        Log.d("M_TextView", "${getDisplayableText()}")
+        super.setText(getDisplayableText(),bufferType)
 //        super.setText(getDisplayableText())
     }
 
@@ -70,7 +69,8 @@ class ExpandableTextView  @JvmOverloads constructor(
     }
 
     override fun onClick(v: View?) {
-        trim = !trim
+//        trim = !trim
+        trim = false
         setText()
         requestFocusFromTouch()
     }
