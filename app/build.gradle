@@ -95,7 +95,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-
     //gson
     implementation 'com.google.code.gson:gson:2.8.6'
 
@@ -112,4 +111,8 @@ dependencies {
     api 'com.google.dagger:dagger-android:2.25.3'
 //    annotationProcessor 'com.google.dagger:dagger-android-processor:2.25.3'
     kapt 'com.google.dagger:dagger-android-processor:2.25.3'
+
+    //Handler for textView links
+    implementation 'me.saket:better-link-movement-method:2.2.0'
+
 }

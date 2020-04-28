@@ -3,10 +3,15 @@ package ru.be_more.orange_forum.ui.custom
 import android.content.Context
 import android.content.res.TypedArray
 import android.text.SpannableStringBuilder
+import android.text.util.Linkify
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.HtmlCompat
+import me.saket.bettermovementmethod.BetterLinkMovementMethod
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 
 
@@ -29,6 +34,18 @@ class ExpandableTextView  @JvmOverloads constructor(
         trimLength = typedArray.getInt(R.styleable.ExpandableTextView_trimLength, defaultTrimLength)
         typedArray.recycle()
         setOnClickListener(this)
+
+        //Links handling
+        this.movementMethod = BetterLinkMovementMethod.newInstance()
+
+        BetterLinkMovementMethod.linkify(Linkify.ALL, this)
+            .setOnLinkClickListener { view, link ->
+                Log.d("M_TextView", "$link")
+                Toast.makeText(App.applicationContext(), link, Toast.LENGTH_SHORT).show()
+                return@setOnLinkClickListener true
+            }
+
+        Linkify.addLinks(this, Linkify.ALL)
     }
 
     private fun setText() {
@@ -49,6 +66,8 @@ class ExpandableTextView  @JvmOverloads constructor(
         trimmedText = getTrimmedText()
         bufferType = type
         trim = true
+
+
         setText()
     }
 
