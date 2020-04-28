@@ -23,6 +23,14 @@ interface DvachApi{
         @Header("Cookie") cookie: String
     ): Observable<DvachThread>
 
+    @GET("makaba/mobile.fcgi")
+    fun getDvachPostRx(
+        @Query("task") task : String? = "get_post",
+        @Query("board") board : String,
+        @Query("post") post : Int,
+        @Header("Cookie") cookie: String
+    ): Observable<List<DvachPost>>
+
     @GET("api/captcha/settings/{board}")
     fun getDvachCaptchaTypesRx(
         @Path("board") board : String,

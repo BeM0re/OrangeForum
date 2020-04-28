@@ -21,6 +21,7 @@ import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.*
 import ru.be_more.orange_forum.services.ApiFactory
 import java.io.File
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -48,6 +49,34 @@ class DvachApiRepository @Inject constructor(){
 
     fun getMobileCaptcha(): Observable<ResponseBody>  =
         dvachApi.getMobileCaptchaRx()
+
+    fun getCategories(): Observable<List<Category>>  =
+        dvachApi.getDvachCategoriesRx("get_boards")
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+//            .doOnEach {Log.d("M_DvachApiRepository", "$it") }
+            .map { entity -> toCategories(entity) }
+
+    fun getBoard(boardId: String): Observable<List<BoardThread>> =
+        dvachApi.getDvachThreadsRx(boardId)
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+            .map { entity -> toBoard(entity) }
+
+    fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
+        dvachApi.getDvachPostsRx(boardId, threadNum, cookie)
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+            .map { entity -> toThread(entity, threadNum) }
+
+
+    fun getPost(boardId: String, postNum: Int): Observable<Post> =
+        dvachApi.getDvachPostRx("get_post", boardId, postNum, cookie)
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "error = $throwable") }
+            .map { entity -> Log.d("M_DvachApiRepository", "entity = $entity")
+                return@map toPost(entity[0])
+            }
 
     fun postResponse (
         boardId: String,
@@ -159,26 +188,6 @@ class DvachApiRepository @Inject constructor(){
         )
     }
 
-
-
-    fun getCategories(): Observable<List<Category>>  =
-        dvachApi.getDvachCategoriesRx("get_boards")
-            .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
-//            .doOnEach {Log.d("M_DvachApiRepository", "$it") }
-            .map { entity -> toCategories(entity) }
-
-    fun getBoard(boardId: String): Observable<List<BoardThread>> =
-        dvachApi.getDvachThreadsRx(boardId)
-            .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
-            .map { entity -> toBoard(entity) }
-
-    fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
-        dvachApi.getDvachPostsRx(boardId, threadNum, cookie)
-            .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
-            .map { entity -> toThread(entity, threadNum) }
 
 
     private fun toCategories (allCategories: DvachCategories?) : List<Category> {

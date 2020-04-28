@@ -34,6 +34,7 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 /*const val PAGE_HTML = "<html>\n" +
@@ -172,6 +173,10 @@ class ThreadFragment : MvpAppCompatFragment(),
         //        btn_response_submit.setOnClickListener { threadPresenter.post() }
     }
 
+    override fun displayPost(post: Post) {
+        Log.d("M_ThreadFragment", "post = $post")
+    }
+
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
 
         v_post_pic_full_background.visibility = View.VISIBLE
@@ -266,11 +271,15 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun onClick(chanLink: Triple<String, String, String>?) {
         Log.d("M_ThreadPresenter", "inner link = $chanLink")
+        if (chanLink != null)
+            threadPresenter.loadPost(chanLink.first, chanLink.third)
+
     }
 
     override fun onClick(externalLink: String?) {
         Log.d("M_ThreadPresenter", "outer link = $externalLink")
     }
+
 
 
 

@@ -142,5 +142,26 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         this.captchaResponse.postValue(captchaResponse)
     }
 
+    fun loadPost(boardId: String, postNumStr: String) {
+
+        try {
+            val postNum = postNumStr.toInt()
+            disposables.add(
+            repo.getPost(boardId, postNum)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError {throwable -> Log.d("M_ThreadPresenter", "error = $throwable") }
+                .subscribe(
+                    {viewState.displayPost(it)},
+                    {Log.d("M_ThreadPresenter", "error = $it")}
+                )
+            )
+        }
+        catch (e: NumberFormatException){
+            Log.d("M_ThreadPresenter", "$e")
+        }
+
+    }
+
 
 }
