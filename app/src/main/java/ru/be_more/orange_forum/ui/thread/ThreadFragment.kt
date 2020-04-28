@@ -32,6 +32,7 @@ import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
@@ -65,6 +66,7 @@ import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 class ThreadFragment : MvpAppCompatFragment(),
     PostOnClickListener,
+    LinkOnClickListener,
     ThreadView {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
@@ -140,7 +142,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun loadThread(thread: BoardThread) {
 
-        threadPresenter.initAdapter(thread, this)
+        threadPresenter.initAdapter(thread, this, this)
 
         recyclerView.adapter = threadPresenter.getAdapter()
         recyclerView.addItemDecoration(
@@ -260,6 +262,16 @@ class ThreadFragment : MvpAppCompatFragment(),
             vv_post_video.visibility = View.GONE
         }
     }
+
+
+    override fun onClick(chanLink: Triple<String, String, String>?) {
+        Log.d("M_ThreadPresenter", "inner link = $chanLink")
+    }
+
+    override fun onClick(externalLink: String?) {
+        Log.d("M_ThreadPresenter", "outer link = $externalLink")
+    }
+
 
 
     @JavascriptInterface

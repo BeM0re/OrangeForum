@@ -1,17 +1,19 @@
 package ru.be_more.orange_forum.ui.thread
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 const val RESPONSE_VIEW = 1
 
-class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickListener) :
+class ThreadAdapter(var thread: BoardThread,
+                    private val postListener: PostOnClickListener,
+                    private val linkListener: LinkOnClickListener) :
     RecyclerView.Adapter<ThreadViewHolder>(){
 
     private var isFooterShown = false
@@ -22,7 +24,7 @@ class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickLi
         return if (viewType == RESPONSE_VIEW)
             ResponseViewHolder(inflater.inflate(R.layout.item_thread_response_form, parent, false))
         else
-            PostViewHolder(inflater.inflate(R.layout.item_post, parent, false), listener)
+            PostViewHolder(inflater.inflate(R.layout.item_post, parent, false), postListener)
     }
 
     override fun getItemCount(): Int {
@@ -50,6 +52,7 @@ class ThreadAdapter(var thread: BoardThread, private val listener: PostOnClickLi
                 holder.setTitle(thread.posts[position].subject)
                 holder.setComment(thread.posts[position].comment)
                 holder.setPics(thread.posts[position].files)
+                holder.setListener(linkListener)
             }
             is ResponseViewHolder -> {
 

@@ -2,10 +2,7 @@ package ru.be_more.orange_forum.ui.thread
 
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -13,6 +10,7 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
@@ -131,8 +129,10 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         viewState.setOnPostClickListener()
     }
 
-    fun initAdapter(thread: BoardThread, listener: PostOnClickListener) {
-        adapter = ThreadAdapter(thread, listener)
+    fun initAdapter(thread: BoardThread,
+                    postListener: PostOnClickListener,
+                    linkListener: LinkOnClickListener) {
+        adapter = ThreadAdapter(thread, postListener, linkListener)
     }
 
     fun getAdapter(): ThreadAdapter = this.adapter
@@ -141,5 +141,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         Log.d("M_ThreadPresenter", "presenter token = $captchaResponse")
         this.captchaResponse.postValue(captchaResponse)
     }
+
 
 }

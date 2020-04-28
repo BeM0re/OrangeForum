@@ -10,28 +10,33 @@ import androidx.core.text.HtmlCompat
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.extentions.toChanLink
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 
 
 open class LinkedTextView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null)
+    context: Context,
+    attrs: AttributeSet? = null)
     : AppCompatTextView(context, attrs)  {
+
+    private var listener: LinkOnClickListener? = null
+
+    fun setListener(listener: LinkOnClickListener){
+        this.listener = listener
+    }
 
     init {
         //Links handling
         this.movementMethod = BetterLinkMovementMethod.newInstance()
 
-
         //TODO убрать this из аргумента
         BetterLinkMovementMethod.linkify(Linkify.ALL, this)
-            .setOnLinkClickListener { view, link ->
+            .setOnLinkClickListener { _, link ->
 
-                if (link[0] == '/') {
-                    val chanLinks = link.toChanLink
+                if (link[0] == '/')
+                    listener?.onClick(link.toChanLink)
+                else
+                    listener?.onClick(link)
 
-
-                    Log.d("M_LinkedTextView", "link = $link")
-                    Log.d("M_LinkedTextView", "3 links = $chanLinks")
-                }
                 return@setOnLinkClickListener true
             }
 
