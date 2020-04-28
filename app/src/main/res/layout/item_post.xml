@@ -94,7 +94,7 @@
         tools:itemCount="1"
         tools:listitem="@layout/item_post_pics" />
 
-    <ru.be_more.orange_forum.ui.custom.ExpandableTextView
+    <ru.be_more.orange_forum.ui.custom.LinkedTextView
         android:id="@+id/tv_item_post_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

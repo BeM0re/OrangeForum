@@ -17,7 +17,7 @@ import ru.be_more.orange_forum.R
 
 class ExpandableTextView  @JvmOverloads constructor(
     context: Context,attrs: AttributeSet? = null)
-    : AppCompatTextView(context, attrs), View.OnClickListener {
+    : LinkedTextView(context, attrs), View.OnClickListener {
 
     private val defaultTrimLength = 300
     private val readMore = " ..."
@@ -35,16 +35,6 @@ class ExpandableTextView  @JvmOverloads constructor(
         typedArray.recycle()
         setOnClickListener(this)
 
-        //Links handling
-        this.movementMethod = BetterLinkMovementMethod.newInstance()
-
-        BetterLinkMovementMethod.linkify(Linkify.ALL, this)
-            .setOnLinkClickListener { _, link ->
-                Toast.makeText(App.applicationContext(), link, Toast.LENGTH_SHORT).show()
-                return@setOnLinkClickListener true
-            }
-
-        Linkify.addLinks(this, Linkify.ALL)
     }
 
     private fun setText() {
