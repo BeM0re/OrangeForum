@@ -71,7 +71,8 @@ class PostViewHolder(itemView: View, private val listener: PostOnClickListener) 
     }
     fun setComment (param: String){
         if (param != "") {
-            comment.text = HtmlCompat.fromHtml(param, HtmlCompat.FROM_HTML_MODE_LEGACY)
+//            comment.text = HtmlCompat.fromHtml(param, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            comment.text = param
             comment.visibility = View.VISIBLE
         }
         else {

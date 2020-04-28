@@ -39,8 +39,7 @@ class ExpandableTextView  @JvmOverloads constructor(
         this.movementMethod = BetterLinkMovementMethod.newInstance()
 
         BetterLinkMovementMethod.linkify(Linkify.ALL, this)
-            .setOnLinkClickListener { view, link ->
-                Log.d("M_TextView", "$link")
+            .setOnLinkClickListener { _, link ->
                 Toast.makeText(App.applicationContext(), link, Toast.LENGTH_SHORT).show()
                 return@setOnLinkClickListener true
             }
@@ -49,6 +48,7 @@ class ExpandableTextView  @JvmOverloads constructor(
     }
 
     private fun setText() {
+        Log.d("M_TextView", "${getDisplayableText()}")
         super.setText(HtmlCompat.fromHtml(getDisplayableText(), HtmlCompat.FROM_HTML_MODE_LEGACY),
             bufferType)
 //        super.setText(getDisplayableText())
