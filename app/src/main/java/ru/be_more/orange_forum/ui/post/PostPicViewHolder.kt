@@ -16,6 +16,11 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
     private var pic1: ImageView = itemView!!.findViewById(R.id.iv_op_post_pic1)
     private var pic2: ImageView = itemView!!.findViewById(R.id.iv_op_post_pic2)
     private var pics: ConstraintLayout = itemView!!.findViewById(R.id.ll_op_post_pics)
+    private var videoIndicator1: ImageView = itemView!!.findViewById(R.id.iv_play_1)
+    private var videoIndicator2: ImageView = itemView!!.findViewById(R.id.iv_play_2)
+    private var videoIndicatorBg1: ImageView = itemView!!.findViewById(R.id.iv_play_background_1)
+    private var videoIndicatorBg2: ImageView = itemView!!.findViewById(R.id.iv_play_background_2)
+
 
     fun setParentContainerGone(){
         pics.visibility = View.GONE
@@ -43,6 +48,16 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
         pic1.visibility = View.VISIBLE
         pic1.setOnClickListener { listener.onThumbnailListener(fullPicUrl, file1.duration) }
 
+        if (!file1.duration.isNullOrEmpty()){
+            videoIndicator1.visibility = View.VISIBLE
+            videoIndicatorBg1.visibility = View.VISIBLE
+        }
+        else {
+            videoIndicator1.visibility = View.GONE
+            videoIndicatorBg1.visibility = View.GONE
+        }
+
+
         if(file2 != null){
             thumbnailUrl = "https://2ch.hk${file2.thumbnail}"
             val fullPicUrl = "https://2ch.hk${file2.path}"
@@ -63,6 +78,16 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
 
             pic2.visibility = View.VISIBLE
             pic2.setOnClickListener { listener.onThumbnailListener(fullPicUrl, file2.duration) }
+
+
+            if (!file2.duration.isNullOrEmpty()) {
+                videoIndicator2.visibility = View.VISIBLE
+                videoIndicatorBg2.visibility = View.VISIBLE
+            }
+            else {
+                videoIndicator2.visibility = View.GONE
+                videoIndicatorBg2.visibility = View.GONE
+            }
         }
         else
             pic2.visibility = View.GONE

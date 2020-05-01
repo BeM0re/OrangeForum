@@ -62,4 +62,54 @@
         android:visibility="visible"
         tools:src="@drawable/splash"/>
 
+
+    <ImageView
+        android:id="@+id/iv_play_background_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_play_arrow_white_27dp"
+        app:layout_constraintStart_toStartOf="@+id/iv_op_post_pic1"
+        app:layout_constraintTop_toTopOf="@+id/iv_op_post_pic1"
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="5.5dp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/iv_play_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/iv_op_post_pic1"
+        app:layout_constraintTop_toTopOf="@+id/iv_op_post_pic1"
+        app:srcCompat="@drawable/ic_play_arrow_accent_24dp"
+        android:layout_marginTop="@dimen/spacing_small_8"
+        android:layout_marginLeft="@dimen/spacing_small_8"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+
+    <ImageView
+        android:id="@+id/iv_play_background_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_play_arrow_white_27dp"
+        app:layout_constraintStart_toStartOf="@+id/iv_op_post_pic2"
+        app:layout_constraintTop_toTopOf="@+id/iv_op_post_pic2"
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="5.5dp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/iv_play_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/iv_op_post_pic2"
+        app:layout_constraintTop_toTopOf="@+id/iv_op_post_pic2"
+        app:srcCompat="@drawable/ic_play_arrow_accent_24dp"
+        android:layout_marginTop="@dimen/spacing_small_8"
+        android:layout_marginLeft="@dimen/spacing_small_8"
+        android:visibility="gone"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
