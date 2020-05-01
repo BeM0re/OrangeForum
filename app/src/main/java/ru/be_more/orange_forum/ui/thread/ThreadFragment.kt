@@ -35,6 +35,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 /*const val PAGE_HTML = "<html>\n" +
@@ -91,6 +92,7 @@ class ThreadFragment : MvpAppCompatFragment(),
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
+        setOnBackgroundViewClickListener()
 
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
@@ -155,7 +157,7 @@ class ThreadFragment : MvpAppCompatFragment(),
         fab_thread_respond.visibility = View.GONE
     }
 
-    override fun setOnPostClickListener() {
+    override fun setOnPostButtonClickListener() {
 
         captchaResponse.observe(this, Observer {
             Log.d("M_ThreadFragment", "trigger")
@@ -175,6 +177,13 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun displayPost(post: Post) {
         Log.d("M_ThreadFragment", "post = $post")
+
+       /* val fragment =  PostFragment()
+        fragmentManager
+            ?.beginTransaction()
+            ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
+            ?.commit()*/
+
     }
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
@@ -258,6 +267,37 @@ class ThreadFragment : MvpAppCompatFragment(),
                     timestamp = System.currentTimeMillis()
             }
         }
+/*
+        v_post_pic_full_background.setOnClickListener {
+            v_post_pic_full_background.visibility = View.GONE
+            iv_post_pic_full.visibility = View.GONE
+            Glide.with(this).clear(iv_post_pic_full)
+            pb_post_pic_loading.visibility = View.GONE
+            vv_post_video.visibility = View.GONE
+        }*/
+    }
+
+    override fun onLinkClick(chanLink: Triple<String, String, String>?) {
+        Log.d("M_ThreadPresenter", "inner link = $chanLink")
+        if (chanLink != null) {
+//            threadPresenter.loadPost(chanLink.first, chanLink.third)
+
+            fl_post.visibility = View.VISIBLE
+            v_post_pic_full_background.visibility = View.VISIBLE
+
+            val fragment = PostFragment.getThreadFragment(chanLink.first, chanLink.third.toInt())
+            fragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
+                ?.commit()
+        }
+    }
+
+    override fun onLinkClick(externalLink: String?) {
+        Log.d("M_ThreadPresenter", "outer link = $externalLink")
+    }
+
+    private fun setOnBackgroundViewClickListener(){
 
         v_post_pic_full_background.setOnClickListener {
             v_post_pic_full_background.visibility = View.GONE
@@ -265,23 +305,10 @@ class ThreadFragment : MvpAppCompatFragment(),
             Glide.with(this).clear(iv_post_pic_full)
             pb_post_pic_loading.visibility = View.GONE
             vv_post_video.visibility = View.GONE
+            fl_post.visibility = View.GONE
         }
-    }
-
-
-    override fun onClick(chanLink: Triple<String, String, String>?) {
-        Log.d("M_ThreadPresenter", "inner link = $chanLink")
-        if (chanLink != null)
-            threadPresenter.loadPost(chanLink.first, chanLink.third)
 
     }
-
-    override fun onClick(externalLink: String?) {
-        Log.d("M_ThreadPresenter", "outer link = $externalLink")
-    }
-
-
-
 
     @JavascriptInterface
     fun responsePushed(token: String) {

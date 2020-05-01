@@ -3,12 +3,9 @@ package ru.be_more.orange_forum.ui.custom
 import android.content.Context
 import android.text.util.Linkify
 import android.util.AttributeSet
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.HtmlCompat
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.extentions.toChanLink
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 
@@ -33,9 +30,9 @@ open class LinkedTextView @JvmOverloads constructor(
             .setOnLinkClickListener { _, link ->
 
                 if (link[0] == '/')
-                    listener?.onClick(link.toChanLink)
+                    listener?.onLinkClick(link.toChanLink)
                 else
-                    listener?.onClick(link)
+                    listener?.onLinkClick(link)
 
                 return@setOnLinkClickListener true
             }

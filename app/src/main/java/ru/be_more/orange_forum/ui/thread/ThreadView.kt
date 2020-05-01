@@ -12,6 +12,6 @@ interface ThreadView  : MvpView {
     fun loadThread(thread: BoardThread)
     fun hideResponseFab()
     fun setWebView()
-    fun setOnPostClickListener()
+    fun setOnPostButtonClickListener()
     fun displayPost(post: Post)
 }

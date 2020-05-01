@@ -74,9 +74,7 @@ class DvachApiRepository @Inject constructor(){
         dvachApi.getDvachPostRx("get_post", boardId, postNum, cookie)
             .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.d("M_DvachApiRepository", "error = $throwable") }
-            .map { entity -> Log.d("M_DvachApiRepository", "entity = $entity")
-                return@map toPost(entity[0])
-            }
+            .map { entity -> toPost(entity[0]) }
 
     fun postResponse (
         boardId: String,

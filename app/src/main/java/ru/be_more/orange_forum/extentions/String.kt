@@ -1,5 +1,7 @@
 package ru.be_more.orange_forum.extentions
 
+
+//TODO поменять 3ий параметр на Инт
 val String.toChanLink: Triple<String, String, String>?
     get() {
         if (this.isEmpty()) return null

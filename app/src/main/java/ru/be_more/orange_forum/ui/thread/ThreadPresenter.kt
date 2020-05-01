@@ -126,7 +126,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     fun showFooter() {
         adapter.setIsFooterShown(true)
 //        viewState.setWebView()
-        viewState.setOnPostClickListener()
+        viewState.setOnPostButtonClickListener()
     }
 
     fun initAdapter(thread: BoardThread,
@@ -144,7 +144,9 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     fun loadPost(boardId: String, postNumStr: String) {
 
-        try {
+
+
+        /*try {
             val postNum = postNumStr.toInt()
             disposables.add(
             repo.getPost(boardId, postNum)
@@ -159,7 +161,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         }
         catch (e: NumberFormatException){
             Log.d("M_ThreadPresenter", "$e")
-        }
+        }*/
 
     }
 
