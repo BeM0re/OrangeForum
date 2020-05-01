@@ -9,11 +9,11 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.ui.custom.LinkedTextView
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.ui.post.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 
 
-class PostViewHolder(itemView: View, private val listener: PostOnClickListener) :
+class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
     ThreadViewHolder(itemView) {
 
     private var senderNumber: TextView = itemView.findViewById(R.id.tv_item_post_number)

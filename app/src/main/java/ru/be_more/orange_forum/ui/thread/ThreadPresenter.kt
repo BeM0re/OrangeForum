@@ -13,7 +13,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.repositories.DvachApiRepository
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.ui.post.PicOnClickListener
 import java.util.*
 import javax.inject.Inject
 
@@ -130,9 +130,9 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     fun initAdapter(thread: BoardThread,
-                    postListener: PostOnClickListener,
+                    picListener: PicOnClickListener,
                     linkListener: LinkOnClickListener) {
-        adapter = ThreadAdapter(thread, postListener, linkListener)
+        adapter = ThreadAdapter(thread, picListener, linkListener)
     }
 
     fun getAdapter(): ThreadAdapter = this.adapter
@@ -141,29 +141,5 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         Log.d("M_ThreadPresenter", "presenter token = $captchaResponse")
         this.captchaResponse.postValue(captchaResponse)
     }
-
-    fun loadPost(boardId: String, postNumStr: String) {
-
-
-
-        /*try {
-            val postNum = postNumStr.toInt()
-            disposables.add(
-            repo.getPost(boardId, postNum)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError {throwable -> Log.d("M_ThreadPresenter", "error = $throwable") }
-                .subscribe(
-                    {viewState.displayPost(it)},
-                    {Log.d("M_ThreadPresenter", "error = $it")}
-                )
-            )
-        }
-        catch (e: NumberFormatException){
-            Log.d("M_ThreadPresenter", "$e")
-        }*/
-
-    }
-
 
 }

@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.ui.post
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.AttachFile
-import ru.be_more.orange_forum.ui.board.BoardOnClickListener
 
 
-class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PostOnClickListener) :
+class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PicOnClickListener) :
     RecyclerView.Adapter<PosPicViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PosPicViewHolder {

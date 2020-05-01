@@ -7,12 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.ui.post.PicOnClickListener
 
 const val RESPONSE_VIEW = 1
 
 class ThreadAdapter(var thread: BoardThread,
-                    private val postListener: PostOnClickListener,
+                    private val picListener: PicOnClickListener,
                     private val linkListener: LinkOnClickListener) :
     RecyclerView.Adapter<ThreadViewHolder>(){
 
@@ -24,7 +24,7 @@ class ThreadAdapter(var thread: BoardThread,
         return if (viewType == RESPONSE_VIEW)
             ResponseViewHolder(inflater.inflate(R.layout.item_thread_response_form, parent, false))
         else
-            PostViewHolder(inflater.inflate(R.layout.item_post, parent, false), postListener)
+            PostViewHolder(inflater.inflate(R.layout.item_post, parent, false), picListener)
     }
 
     override fun getItemCount(): Int {

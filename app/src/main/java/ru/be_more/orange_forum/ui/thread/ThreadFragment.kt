@@ -9,10 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
-import android.webkit.WebSettings
 import android.widget.MediaController
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -34,9 +32,8 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.ui.post.PostFragment
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.ui.post.PicOnClickListener
 
 /*const val PAGE_HTML = "<html>\n" +
         "<head>\n" +
@@ -67,7 +64,7 @@ import ru.be_more.orange_forum.ui.post.PostOnClickListener
 
 
 class ThreadFragment : MvpAppCompatFragment(),
-    PostOnClickListener,
+    PicOnClickListener,
     LinkOnClickListener,
     ThreadView {
 
@@ -175,16 +172,6 @@ class ThreadFragment : MvpAppCompatFragment(),
         //        btn_response_submit.setOnClickListener { threadPresenter.post() }
     }
 
-    override fun displayPost(post: Post) {
-        Log.d("M_ThreadFragment", "post = $post")
-
-       /* val fragment =  PostFragment()
-        fragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
-            ?.commit()*/
-
-    }
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
 
@@ -267,14 +254,6 @@ class ThreadFragment : MvpAppCompatFragment(),
                     timestamp = System.currentTimeMillis()
             }
         }
-/*
-        v_post_pic_full_background.setOnClickListener {
-            v_post_pic_full_background.visibility = View.GONE
-            iv_post_pic_full.visibility = View.GONE
-            Glide.with(this).clear(iv_post_pic_full)
-            pb_post_pic_loading.visibility = View.GONE
-            vv_post_video.visibility = View.GONE
-        }*/
     }
 
     override fun onLinkClick(chanLink: Triple<String, String, String>?) {
@@ -285,7 +264,7 @@ class ThreadFragment : MvpAppCompatFragment(),
             fl_post.visibility = View.VISIBLE
             v_post_pic_full_background.visibility = View.VISIBLE
 
-            val fragment = PostFragment.getThreadFragment(chanLink.first, chanLink.third.toInt())
+            val fragment = PostFragment.getThreadFragment(chanLink.first, chanLink.third.toInt(), this)
             fragmentManager
                 ?.beginTransaction()
                 ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)

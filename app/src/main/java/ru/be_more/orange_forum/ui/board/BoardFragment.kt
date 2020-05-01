@@ -25,13 +25,13 @@ import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.ui.post.PicOnClickListener
 
 
 //TODO сделать динамическое количество картинок через ресайклер
 class BoardFragment: MvpAppCompatFragment(),
     BoardOnClickListener,
-    PostOnClickListener,
+    PicOnClickListener,
     BoardView {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")

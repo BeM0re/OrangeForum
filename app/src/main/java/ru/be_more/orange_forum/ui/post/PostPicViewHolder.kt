@@ -2,16 +2,13 @@ package ru.be_more.orange_forum.ui.post
 
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.AttachFile
-import ru.be_more.orange_forum.ui.board.BoardOnClickListener
 
 
 class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
@@ -24,7 +21,7 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
         pics.visibility = View.GONE
     }
 
-    fun setPics (file1: AttachFile, file2: AttachFile? = null, listener: PostOnClickListener){
+    fun setPics (file1: AttachFile, file2: AttachFile? = null, listener: PicOnClickListener){
         //TODO перенести в константы
         var thumbnailUrl = "https://2ch.hk${file1.thumbnail}"
         var fullPicUrl = "https://2ch.hk${file1.path}"

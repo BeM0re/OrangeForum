@@ -1,29 +1,21 @@
 package ru.be_more.orange_forum.ui.board
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.text.HtmlCompat
-import androidx.lifecycle.Transformations.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.ui.custom.ExpandableTextView
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.ui.post.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 
 
-class OpPostViewHolder(itemView: View?, private var listener: PostOnClickListener) :
+class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener) :
     ChildViewHolder(itemView) {
 
     private var senderName: TextView = itemView!!.findViewById(R.id.tv_board_op_name)

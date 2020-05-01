@@ -21,12 +21,16 @@ class PostPresenter : MvpPresenter<PostView>() {
     private lateinit var post: Post
     private var postNum: Int = 0
     private var disposables: LinkedList<Disposable?> = LinkedList()
+    private lateinit var adapter: PostPicAdapter
+    private lateinit var listener: PicOnClickListener
 
-    fun init(boardId: String, postNum: Int) {
+
+    fun init(boardId: String, postNum: Int, listener: PicOnClickListener) {
         App.getComponent().inject(this)
 
         this.boardId = boardId
         this.postNum = postNum
+        this.listener = listener
 
         try {
             disposables.add(
@@ -35,7 +39,7 @@ class PostPresenter : MvpPresenter<PostView>() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError {throwable -> Log.d("M_ThreadPresenter", "error = $throwable") }
                     .subscribe(
-                        {viewState.setPost(it)},
+                        {viewState.setPost(it)}, //TODO брать из фрагмента пост, не передавать напрямую
                         { Log.d("M_ThreadPresenter", "error = $it")}
                     )
             )
@@ -44,4 +48,8 @@ class PostPresenter : MvpPresenter<PostView>() {
             Log.d("M_ThreadPresenter", "$e")
         }
     }
+
+    fun getAdapter(): PostPicAdapter = this.adapter
+
+    fun getListener(): PicOnClickListener = this.listener
 }

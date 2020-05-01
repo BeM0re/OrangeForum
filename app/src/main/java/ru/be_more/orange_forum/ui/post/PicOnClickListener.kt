@@ -1,5 +1,5 @@
 package ru.be_more.orange_forum.ui.post
 
-interface PostOnClickListener  {
+interface PicOnClickListener  {
     fun onThumbnailListener(fullPicUrl: String, duration: String? = "")
 }
