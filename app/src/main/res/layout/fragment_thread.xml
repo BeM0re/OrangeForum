@@ -12,6 +12,13 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_thread_bottom_third"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.66"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_post_list"
@@ -92,6 +99,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_thread_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/gl_thread_bottom_third"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="@dimen/spacing_small_8"
+        android:layout_marginRight="@dimen/spacing_normal_16"
+        app:backgroundTint="@color/color_accent"
+        android:src="@drawable/ic_keyboard_arrow_up_white_24dp"
+        app:tint="@android:color/white"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_thread_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gl_thread_bottom_third"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/spacing_small_8"
+        android:layout_marginRight="@dimen/spacing_normal_16"
+        app:backgroundTint="@color/color_accent"
+        android:src="@drawable/ic_keyboard_arrow_down_white_24dp"
+        app:tint="@android:color/white"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

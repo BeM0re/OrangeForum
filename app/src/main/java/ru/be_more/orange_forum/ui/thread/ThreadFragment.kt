@@ -91,6 +91,8 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         setOnBackgroundViewClickListener()
 
+        setUpDownButtonOnCLickListener()
+
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
         srl_thread.setOnRefreshListener {
@@ -287,6 +289,15 @@ class ThreadFragment : MvpAppCompatFragment(),
             fl_post.visibility = View.GONE
         }
 
+    }
+
+    private fun setUpDownButtonOnCLickListener(){
+        fab_thread_up.setOnClickListener {
+            recyclerView.scrollToPosition(0)
+        }
+        fab_thread_down.setOnClickListener {
+            recyclerView.scrollToPosition(threadPresenter.getAdapter().itemCount - 1)
+        }
     }
 
     @JavascriptInterface
