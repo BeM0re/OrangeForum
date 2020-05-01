@@ -31,7 +31,9 @@ import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.ui.custom.CustomRecyclerView
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.post.PicOnClickListener
 
@@ -66,7 +68,8 @@ import ru.be_more.orange_forum.ui.post.PicOnClickListener
 class ThreadFragment : MvpAppCompatFragment(),
     PicOnClickListener,
     LinkOnClickListener,
-    ThreadView {
+    ThreadView,
+    CustomOnScrollListener{
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var threadPresenter : ThreadPresenter
@@ -75,6 +78,7 @@ class ThreadFragment : MvpAppCompatFragment(),
     private lateinit var boardId: String
     private var threadId: Int = 0
     private lateinit var recyclerView : RecyclerView
+//    private lateinit var recyclerView : CustomRecyclerView
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -92,6 +96,8 @@ class ThreadFragment : MvpAppCompatFragment(),
         setOnBackgroundViewClickListener()
 
         setUpDownButtonOnCLickListener()
+
+        setOnScrollListener()
 
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
@@ -298,6 +304,21 @@ class ThreadFragment : MvpAppCompatFragment(),
         fab_thread_down.setOnClickListener {
             recyclerView.scrollToPosition(threadPresenter.getAdapter().itemCount - 1)
         }
+    }
+
+    private fun setOnScrollListener(){
+
+
+    }
+
+    override fun onScrolling(){
+        fab_thread_up.visibility = View.VISIBLE
+        fab_thread_down.visibility = View.VISIBLE
+    }
+
+    override fun onScrollStop(){
+        fab_thread_up.visibility = View.GONE
+        fab_thread_down.visibility = View.GONE
     }
 
     @JavascriptInterface
