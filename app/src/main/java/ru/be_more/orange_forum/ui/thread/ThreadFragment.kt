@@ -34,6 +34,7 @@ import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.custom.CustomRecyclerView
+import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.post.PicOnClickListener
 
@@ -307,16 +308,20 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     private fun setOnScrollListener(){
+        val scrollListener = CustomScrollListener(this)
 
-
+        recyclerView.setOnScrollChangeListener(scrollListener)
+        Log.d("M_ThreadFragment", "set")
     }
 
     override fun onScrolling(){
+        Log.d("M_ThreadFragment", "scroll")
         fab_thread_up.visibility = View.VISIBLE
         fab_thread_down.visibility = View.VISIBLE
     }
 
     override fun onScrollStop(){
+        Log.d("M_ThreadFragment", "stop scroll")
         fab_thread_up.visibility = View.GONE
         fab_thread_down.visibility = View.GONE
     }

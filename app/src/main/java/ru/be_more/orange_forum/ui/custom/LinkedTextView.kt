@@ -8,6 +8,7 @@ import androidx.core.text.HtmlCompat
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import ru.be_more.orange_forum.extentions.toChanLink
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.utils.ParseHtml
 
 
 open class LinkedTextView @JvmOverloads constructor(
@@ -41,8 +42,11 @@ open class LinkedTextView @JvmOverloads constructor(
     }
 
     override fun setText(text: CharSequence?, type: BufferType?) {
+
+        ParseHtml.parse(text.toString())
+
         super.setText(
-            HtmlCompat.fromHtml(text.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY),type)
+            HtmlCompat.fromHtml(text.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY), type)
     }
 
 }
