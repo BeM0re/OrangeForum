@@ -311,7 +311,6 @@ class ThreadFragment : MvpAppCompatFragment(),
         val scrollListener = CustomScrollListener(this)
 
         recyclerView.setOnScrollChangeListener(scrollListener)
-        Log.d("M_ThreadFragment", "set")
     }
 
     override fun onScrolling(){

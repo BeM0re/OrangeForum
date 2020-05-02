@@ -8,6 +8,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.post.PicOnClickListener
+import ru.be_more.orange_forum.ui.post.PostViewHolder
 
 const val RESPONSE_VIEW = 1
 
@@ -24,7 +25,13 @@ class ThreadAdapter(var thread: BoardThread,
         return if (viewType == RESPONSE_VIEW)
             ResponseViewHolder(inflater.inflate(R.layout.item_thread_response_form, parent, false))
         else
-            PostViewHolder(inflater.inflate(R.layout.item_post, parent, false), picListener)
+            PostViewHolder(
+                inflater.inflate(
+                    R.layout.item_post,
+                    parent,
+                    false
+                ), picListener
+            )
     }
 
     override fun getItemCount(): Int {
@@ -52,6 +59,7 @@ class ThreadAdapter(var thread: BoardThread,
                 holder.setTitle(thread.posts[position].subject)
                 holder.setComment(thread.posts[position].comment)
                 holder.setPics(thread.posts[position].files)
+                holder.setReplies(thread.posts[position].replies)
                 holder.setListener(linkListener)
             }
             is ResponseViewHolder -> {
