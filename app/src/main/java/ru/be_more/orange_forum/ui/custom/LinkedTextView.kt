@@ -3,9 +3,12 @@ package ru.be_more.orange_forum.ui.custom
 import android.content.Context
 import android.text.util.Linkify
 import android.util.AttributeSet
+import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.HtmlCompat
+import kotlinx.android.synthetic.main.item_post.view.*
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
+import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.extentions.toChanLink
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.utils.ParseHtml
@@ -28,12 +31,18 @@ open class LinkedTextView @JvmOverloads constructor(
 
         //TODO убрать this из аргумента
         BetterLinkMovementMethod.linkify(Linkify.ALL, this)
-            .setOnLinkClickListener { _, link ->
+            .setOnLinkClickListener { view, link ->
 
-                if (link[0] == '/')
-                    listener?.onLinkClick(link.toChanLink)
-                else
-                    listener?.onLinkClick(link)
+                if(view.id == R.id.tv_item_post_replies)
+                    listener?.onLinkClick(link.toInt())
+                else{
+                    if (link[0] == '/')
+                        listener?.onLinkClick(link.toChanLink)
+                    else
+                        listener?.onLinkClick(link)
+                }
+
+
 
                 return@setOnLinkClickListener true
             }

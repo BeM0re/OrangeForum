@@ -270,14 +270,12 @@ class DvachApiRepository @Inject constructor(){
         duration = if(file.duration.isNullOrEmpty()) "" else file.duration
     )
 
-
-    private fun findResponses(board: BoardThread): BoardThread? {
+    private fun findResponses(board: BoardThread): BoardThread {
 
         board.posts.forEach { post ->
             //replies - на какие посты ответы
             val replies = ParseHtml.findReply(post.comment)
 
-            Log.d("M_DvachApiRepository", "replies = $replies")
             //пост с номером post.num отвечает на пост с номером reply
             //reply сохраняет, что на него ссылается post.num
             replies.forEach { reply ->

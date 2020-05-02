@@ -33,7 +33,6 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.custom.CustomRecyclerView
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.post.PicOnClickListener
@@ -266,19 +265,48 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun onLinkClick(chanLink: Triple<String, String, String>?) {
-        Log.d("M_ThreadPresenter", "inner link = $chanLink")
+
         if (chanLink != null) {
 //            threadPresenter.loadPost(chanLink.first, chanLink.third)
 
             fl_post.visibility = View.VISIBLE
             v_post_pic_full_background.visibility = View.VISIBLE
 
-            val fragment = PostFragment.getThreadFragment(chanLink.first, chanLink.third.toInt(), this)
+//            val fragment = PostFragment.getPostFragment(
+//                chanLink.first, chanLink.third.toInt(), this, this)
+
+            //TODO создавать фрагмент с конструктором, где только номер, а не весь пост передается.
+            // Пост брать в БД (наверн)
+            val fragment = PostFragment.getPostFragment(
+                threadPresenter.thread.posts.find { it.num == chanLink.third.toInt() },//TODO если не найден, то запрос по вебу из другого треда
+                this,
+                this)
+
+            if (fragment != null)
+                fragmentManager
+                    ?.beginTransaction()
+                    ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
+                    ?.commit()
+        }
+    }
+
+    override fun onLinkClick(postNum: Int) {
+        fl_post.visibility = View.VISIBLE
+        v_post_pic_full_background.visibility = View.VISIBLE
+
+//        val fragment = PostFragment.getPostFragment(
+//            threadPresenter.setBoardId(), postNum, this, this)
+
+        val fragment = PostFragment.getPostFragment(
+            threadPresenter.thread.posts.find { it.num == postNum }, //TODO если не найден, то запрос по вебу из другого треда
+            this,
+            this)
+
+        if (fragment != null)
             fragmentManager
                 ?.beginTransaction()
                 ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
                 ?.commit()
-        }
     }
 
     override fun onLinkClick(externalLink: String?) {

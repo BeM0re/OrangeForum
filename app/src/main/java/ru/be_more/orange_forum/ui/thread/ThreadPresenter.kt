@@ -142,4 +142,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         this.captchaResponse.postValue(captchaResponse)
     }
 
+    fun setBoardId(): String = this.boardId
+
 }

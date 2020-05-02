@@ -7,6 +7,7 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import java.util.*
@@ -22,34 +23,45 @@ class PostPresenter : MvpPresenter<PostView>() {
     private var postNum: Int = 0
     private var disposables: LinkedList<Disposable?> = LinkedList()
     private lateinit var adapter: PostPicAdapter
-    private lateinit var listener: PicOnClickListener
+    private lateinit var picListener: PicOnClickListener
+    private lateinit var linkListener: LinkOnClickListener
 
 
-    fun init(boardId: String, postNum: Int, listener: PicOnClickListener) {
+    fun init(post: Post,
+             picListener: PicOnClickListener,
+             linkListener: LinkOnClickListener) {
         App.getComponent().inject(this)
 
-        this.boardId = boardId
-        this.postNum = postNum
-        this.listener = listener
+//        this.boardId = boardId
+//        this.postNum = postNum
+        this.post = post
+        this.picListener = picListener
+        this.linkListener = linkListener
 
-        try {
+        viewState.setPost(post)
+
+/*        try {
             disposables.add(
                 repo.getPost(boardId, postNum)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError {throwable -> Log.d("M_ThreadPresenter", "error = $throwable") }
                     .subscribe(
-                        {viewState.setPost(it)}, //TODO брать из фрагмента пост, не передавать напрямую
+                        {viewState.setPost(it)
+                        Log.d("M_PostPresenter", "post = $it")
+                        }, //TODO брать из фрагмента пост, не передавать напрямую
                         { Log.d("M_ThreadPresenter", "error = $it")}
                     )
             )
         }
         catch (e: NumberFormatException){
             Log.d("M_ThreadPresenter", "$e")
-        }
+        }*/
     }
 
     fun getAdapter(): PostPicAdapter = this.adapter
 
-    fun getListener(): PicOnClickListener = this.listener
+    fun getPicListener(): PicOnClickListener = this.picListener
+
+    fun getLinkListener(): LinkOnClickListener = this.linkListener
 }

@@ -1,8 +1,8 @@
 package ru.be_more.orange_forum.ui.post
 
-import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.App
@@ -25,7 +25,7 @@ class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
     private var title: TextView = itemView.findViewById(R.id.tv_item_post_subject)
     private var pics: RecyclerView = itemView.findViewById(R.id.rv_item_post_pics)
     private var comment: LinkedTextView = itemView.findViewById(R.id.tv_item_post_comment)
-    private var replyPosts: TextView = itemView.findViewById(R.id.tv_item_post_replies)
+    private var replyPosts: LinkedTextView = itemView.findViewById(R.id.tv_item_post_replies)
 
     fun setNumber (param: Int){
         senderNumber.text = param.toString()
@@ -81,18 +81,24 @@ class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
         }
     }
 
-    fun setListener(listener: LinkOnClickListener){
+    fun setCommentListener(listener: LinkOnClickListener){
         comment.setListener(listener)
     }
 
-    fun setReplies(replies: Stack<Int>) {
-        Log.d("M_PostViewHolder", "replies = $replies")
+    fun setReplies(replies: Stack<Int>, listener: LinkOnClickListener) {
+        replyPosts.text = ""
+        var replyResult = ""
+
         replies.forEach { reply ->
 
-            if (replyPosts.text == "")
-                replyPosts.text = ">>$reply"
+            replyResult = if (replyResult == "")
+                "<a href='$reply'>>>$reply</a>"
             else
-                replyPosts.text = "${replyPosts.text}, >>$reply"
+                "$replyResult <a href='$reply'>>>$reply</a>"
+
+            replyPosts.text = replyResult
+
+            replyPosts.setListener(listener)
         }
 
     }

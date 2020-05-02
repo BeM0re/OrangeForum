@@ -59,8 +59,8 @@ class ThreadAdapter(var thread: BoardThread,
                 holder.setTitle(thread.posts[position].subject)
                 holder.setComment(thread.posts[position].comment)
                 holder.setPics(thread.posts[position].files)
-                holder.setReplies(thread.posts[position].replies)
-                holder.setListener(linkListener)
+                holder.setCommentListener(linkListener)
+                holder.setReplies(thread.posts[position].replies, linkListener)
             }
             is ResponseViewHolder -> {
 
