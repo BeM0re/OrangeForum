@@ -9,9 +9,14 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.anadeainc.rxbus.BusProvider
+import com.anadeainc.rxbus.Subscribe
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.bus.AppToBeClosed
+import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.interfaces.OnBackPressed
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
@@ -24,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedThread:  MutableLiveData<Int> = MutableLiveData()
     private var selectedBoardTitle: MutableLiveData<String> = MutableLiveData()
     private var selectedThreadTitle:  MutableLiveData<String> = MutableLiveData()
+    private val bus = BusProvider.getInstance()
 
     private fun setBoard(boardId: String){
         selectedBoard.postValue(boardId)
@@ -85,6 +91,7 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView.selectedItemId=
                 R.id.navigation_category
 
+        bus.register(this)
     }
 
     private val mOnNavigationItemSelectedListener =
@@ -170,4 +177,17 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onBackPressed() {
+        fragmentsGoBack()
+//        super.onBackPressed()
+    }
+
+    private fun fragmentsGoBack() {
+        bus.post(BackPressed)
+    }
+
+    @Subscribe
+    fun closeApp(event: AppToBeClosed){
+        super.onBackPressed()
+    }
 }

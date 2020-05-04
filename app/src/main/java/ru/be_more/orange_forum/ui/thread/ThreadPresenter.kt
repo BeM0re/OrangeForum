@@ -12,6 +12,7 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.ui.post.PicOnClickListener
 import java.util.*
@@ -30,6 +31,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private var disposables: LinkedList<Disposable?> = LinkedList()
     private var isInvisibleRecaptcha: Boolean = false
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
+    private val postStack = Stack <Post>()
 
     fun init(boardId: String, threadNum: Int){
         App.getComponent().inject(this)
@@ -143,5 +145,13 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     fun setBoardId(): String = this.boardId
+
+    fun clearStack() {
+        this.postStack.empty()
+    }
+
+    fun putPostInStack(post: Post?) {
+        this.postStack.push(post)
+    }
 
 }

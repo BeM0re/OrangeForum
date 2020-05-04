@@ -1,20 +1,25 @@
 package ru.be_more.orange_forum.ui.post
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.anadeainc.rxbus.BusProvider
+import com.anadeainc.rxbus.Subscribe
 import kotlinx.android.synthetic.main.item_post.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.Post
 
-class PostFragment : MvpAppCompatFragment(), PostView{
+
+class PostFragment : MvpAppCompatFragment(), PostView {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var postPresenter : PostPresenter
@@ -25,6 +30,7 @@ class PostFragment : MvpAppCompatFragment(), PostView{
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
     private var post: MutableLiveData<Post> = MutableLiveData()
+    var bus = BusProvider.getInstance()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -37,6 +43,8 @@ class PostFragment : MvpAppCompatFragment(), PostView{
         postPresenter.init(postFromFragment, picListener, linkListener)
 
         initObserver()
+
+        bus.register(this)
     }
 
     private fun initObserver(){
@@ -81,6 +89,17 @@ class PostFragment : MvpAppCompatFragment(), PostView{
     override fun setPost(post: Post) {
         this.post.postValue(post)
     }
+
+
+    @Subscribe
+    public fun onBackPressed(event: BackPressed) {
+        Log.d("M_PostFragment", "back pressed")
+    }
+
+   /* override fun onBackPressed(): Boolean {
+        postPresenter.onBackPressed()
+        return true
+    }*/
 
     companion object {
         fun getPostFragment (boardId: String,

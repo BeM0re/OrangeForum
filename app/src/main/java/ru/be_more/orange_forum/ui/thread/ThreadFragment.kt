@@ -32,6 +32,7 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
+import ru.be_more.orange_forum.interfaces.OnBackPressed
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
@@ -69,7 +70,8 @@ class ThreadFragment : MvpAppCompatFragment(),
     PicOnClickListener,
     LinkOnClickListener,
     ThreadView,
-    CustomOnScrollListener{
+    CustomOnScrollListener,
+    OnBackPressed {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var threadPresenter : ThreadPresenter
@@ -297,16 +299,23 @@ class ThreadFragment : MvpAppCompatFragment(),
 //        val fragment = PostFragment.getPostFragment(
 //            threadPresenter.setBoardId(), postNum, this, this)
 
-        val fragment = PostFragment.getPostFragment(
-            threadPresenter.thread.posts.find { it.num == postNum }, //TODO если не найден, то запрос по вебу из другого треда
-            this,
-            this)
 
-        if (fragment != null)
-            fragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
-                ?.commit()
+        val post = threadPresenter.thread.posts.find { it.num == postNum }
+
+        if (post != null) {
+            threadPresenter.putPostInStack(post)
+
+            val fragment = PostFragment.getPostFragment(post,this,this)
+
+            if (fragment != null)
+                fragmentManager
+                    ?.beginTransaction()
+                    ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
+                    ?.commit()
+        }
+        else
+        //TODO если не найден, то запрос по вебу из другого треда
+            true
     }
 
     override fun onLinkClick(externalLink: String?) {
@@ -323,6 +332,7 @@ class ThreadFragment : MvpAppCompatFragment(),
             vv_post_video.visibility = View.GONE
             fl_post.visibility = View.GONE
         }
+        threadPresenter.clearStack()
 
     }
 
@@ -368,5 +378,11 @@ class ThreadFragment : MvpAppCompatFragment(),
 
             return thread
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+
+
+        return false
     }
 }

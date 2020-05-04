@@ -20,11 +20,10 @@ class PostPresenter : MvpPresenter<PostView>() {
     lateinit var repo: DvachApiRepository
     private lateinit var boardId: String
     private lateinit var post: Post
-    private var postNum: Int = 0
-    private var disposables: LinkedList<Disposable?> = LinkedList()
     private lateinit var adapter: PostPicAdapter
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
+    private val replyStack = Stack<Post>()
 
 
     fun init(post: Post,
@@ -32,31 +31,11 @@ class PostPresenter : MvpPresenter<PostView>() {
              linkListener: LinkOnClickListener) {
         App.getComponent().inject(this)
 
-//        this.boardId = boardId
-//        this.postNum = postNum
         this.post = post
         this.picListener = picListener
         this.linkListener = linkListener
 
         viewState.setPost(post)
-
-/*        try {
-            disposables.add(
-                repo.getPost(boardId, postNum)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError {throwable -> Log.d("M_ThreadPresenter", "error = $throwable") }
-                    .subscribe(
-                        {viewState.setPost(it)
-                        Log.d("M_PostPresenter", "post = $it")
-                        }, //TODO брать из фрагмента пост, не передавать напрямую
-                        { Log.d("M_ThreadPresenter", "error = $it")}
-                    )
-            )
-        }
-        catch (e: NumberFormatException){
-            Log.d("M_ThreadPresenter", "$e")
-        }*/
     }
 
     fun getAdapter(): PostPicAdapter = this.adapter
@@ -64,4 +43,20 @@ class PostPresenter : MvpPresenter<PostView>() {
     fun getPicListener(): PicOnClickListener = this.picListener
 
     fun getLinkListener(): LinkOnClickListener = this.linkListener
+
+    fun putPostInStack(post: Post){
+        this.replyStack.push(post)
+    }
+
+    fun getPostFromStack(): Post?{
+        return if(this.replyStack.empty())
+            null
+        else
+            replyStack.peek()
+    }
+
+    fun onBackPressed() {
+        this.replyStack.pop()
+        viewState.setPost(replyStack.peek())
+    }
 }

@@ -67,9 +67,11 @@ dependencies {
     implementation "com.github.moxy-community:moxy-ktx:2.1.1"
     kapt "com.github.moxy-community:moxy-compiler:2.1.1"
 
-    // RxJava
+    // RxJava + event bus
     implementation 'io.reactivex.rxjava2:rxjava:2.2.16'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation 'com.github.anadea:rxbus:1.0.1'
+
 
     //Room
     implementation "androidx.room:room-ktx:2.2.5"
@@ -120,4 +122,6 @@ dependencies {
 
     //HTML parser
     implementation 'org.jsoup:jsoup:1.8.3'
+
+
 }
