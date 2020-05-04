@@ -33,6 +33,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.interfaces.OnBackPressed
+import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
@@ -70,8 +71,7 @@ class ThreadFragment : MvpAppCompatFragment(),
     PicOnClickListener,
     LinkOnClickListener,
     ThreadView,
-    CustomOnScrollListener,
-    OnBackPressed {
+    CustomOnScrollListener{
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var threadPresenter : ThreadPresenter
@@ -185,7 +185,16 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
 
-        v_post_pic_full_background.visibility = View.VISIBLE
+        val attachment = Attachment(fullPicUrl, duration)
+
+        val fragment = PostFragment.getPostFragment(
+            attachment,this,this)
+
+        fragmentManager
+            ?.beginTransaction()
+            ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
+            ?.commit()
+/*        v_post_pic_full_background.visibility = View.VISIBLE
         pb_post_pic_loading.visibility = View.VISIBLE
 
         if(duration == "") {
@@ -263,7 +272,7 @@ class ThreadFragment : MvpAppCompatFragment(),
                 else
                     timestamp = System.currentTimeMillis()
             }
-        }
+        }*/
     }
 
     override fun onLinkClick(chanLink: Triple<String, String, String>?) {
@@ -279,19 +288,22 @@ class ThreadFragment : MvpAppCompatFragment(),
 
             //TODO создавать фрагмент с конструктором, где только номер, а не весь пост передается.
             // Пост брать в БД (наверн)
-            val fragment = PostFragment.getPostFragment(
-                threadPresenter.thread.posts.find { it.num == chanLink.third.toInt() },//TODO если не найден, то запрос по вебу из другого треда
-                this,
-                this)
+            val post = threadPresenter.thread.posts.find { it.num == chanLink.third.toInt() }
+            if (post != null) {
+                val fragment = PostFragment.getPostFragment(
+                    post,this,this)
 
-            if (fragment != null)
                 fragmentManager
                     ?.beginTransaction()
                     ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
                     ?.commit()
+            }
+            else
+                ""//TODO если не найден, то запрос по вебу из другого треда
         }
     }
 
+    //TODO объединить с методом выше
     override fun onLinkClick(postNum: Int) {
         fl_post.visibility = View.VISIBLE
         v_post_pic_full_background.visibility = View.VISIBLE
@@ -307,11 +319,10 @@ class ThreadFragment : MvpAppCompatFragment(),
 
             val fragment = PostFragment.getPostFragment(post,this,this)
 
-            if (fragment != null)
-                fragmentManager
-                    ?.beginTransaction()
-                    ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
-                    ?.commit()
+            fragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
+                ?.commit()
         }
         else
         //TODO если не найден, то запрос по вебу из другого треда
@@ -380,9 +391,4 @@ class ThreadFragment : MvpAppCompatFragment(),
         }
     }
 
-    override fun onBackPressed(): Boolean {
-
-
-        return false
-    }
 }

@@ -115,4 +115,46 @@
         android:textStyle="italic"
         tools:text=">>123456"/>
 
+    <View
+        android:id="@+id/v_post1_pic_full_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"/>
+
+    <com.ortiz.touchview.TouchImageView
+        android:id="@+id/iv_post1_pic_full"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:src="@drawable/splash"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/rv_post_list"
+        app:layout_constraintTop_toTopOf="@+id/rv_post_list"
+        android:padding="@dimen/spacing_normal_16"
+        android:visibility="gone"/>
+
+    <VideoView
+        android:id="@+id/vv_post1_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/rv_post_list"
+        app:layout_constraintTop_toTopOf="@+id/rv_post_list"
+        android:padding="@dimen/spacing_normal_16"
+        android:visibility="gone"/>
+
+
+    <ProgressBar
+        android:id="@+id/pb_post1_pic_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/rv_post_list"
+        app:layout_constraintTop_toTopOf="@+id/rv_post_list"
+        android:visibility="gone"/>
+
 </LinearLayout>

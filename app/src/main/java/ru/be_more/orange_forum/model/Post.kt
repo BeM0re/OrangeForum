@@ -16,4 +16,4 @@ data class Post (
     var timestamp: Int,
     var number: Int, //Порядковый номер в треде
     var replies: Stack<Int> = Stack()
-)
+) : ModalContent()
