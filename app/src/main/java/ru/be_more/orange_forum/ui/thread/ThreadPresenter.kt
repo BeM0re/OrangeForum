@@ -11,7 +11,9 @@ import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.model.ModalContent
 import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.ui.post.PicOnClickListener
@@ -31,7 +33,8 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private var disposables: LinkedList<Disposable?> = LinkedList()
     private var isInvisibleRecaptcha: Boolean = false
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
-    private val postStack = Stack <Post>()
+
+    private val modalStack: Stack<ModalContent> = Stack()
 
     fun init(boardId: String, threadNum: Int){
         App.getComponent().inject(this)
@@ -147,11 +150,28 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     fun setBoardId(): String = this.boardId
 
     fun clearStack() {
-        this.postStack.empty()
+        this.modalStack.empty()
     }
 
-    fun putPostInStack(post: Post?) {
-        this.postStack.push(post)
+    fun putContentInStack(modal: ModalContent) {
+        this.modalStack.push(modal)
+    }
+
+    fun onBackPressed(): Boolean {
+        modalStack.pop()
+
+        Log.d("M_ThreadPresenter", "stack = ${modalStack.size}")
+
+        return if(!modalStack.empty()) {
+
+            when(val content = modalStack.peek()){
+                is Attachment -> viewState.showPic(content)
+                is Post -> viewState.showPost(content)
+            }
+            true
+        } else
+            false
+
     }
 
 }

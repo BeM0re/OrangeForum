@@ -51,7 +51,6 @@ class PostFragment : MvpAppCompatFragment(), PostView {
     private lateinit var linkListener: LinkOnClickListener
     private lateinit var closeModalListener: CloseModalListener
 
-    private var bus = BusProvider.getInstance()
 
     //Pair<String, String? = URL + Duration (if video or null if pic)
     private var picUrl: MutableLiveData<Pair<String, String?>> = MutableLiveData()
@@ -67,13 +66,10 @@ class PostFragment : MvpAppCompatFragment(), PostView {
 //        postPresenter.init(boardId, postNum, picListener, linkListener)
         postPresenter.init(content, picListener, linkListener)
 
-        bus.register(this)
-
         setOnBackgroundViewClickListener()
     }
 
     override fun onDestroyView() {
-        bus.unregister(this)
         super.onDestroyView()
     }
 
@@ -224,10 +220,6 @@ class PostFragment : MvpAppCompatFragment(), PostView {
         postPresenter.clearStack()
     }
 
-    @Subscribe
-    public fun onBackPressed(event: BackPressed) {
-        Log.d("M_PostFragment", "back pressed")
-    }
 
     companion object {
 

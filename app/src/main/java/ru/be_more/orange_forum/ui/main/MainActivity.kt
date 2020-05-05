@@ -94,6 +94,11 @@ class MainActivity : AppCompatActivity() {
         bus.register(this)
     }
 
+    override fun onDestroy() {
+        bus.unregister(this)
+        super.onDestroy()
+    }
+
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {

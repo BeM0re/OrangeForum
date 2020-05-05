@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/fuck_warning"
         android:visibility="visible"
-        android:layout_marginBottom="@dimen/spacing_small_8"
+        android:paddingBottom="@dimen/spacing_small_8"
         app:layout_constraintEnd_toStartOf="@+id/gl_1_end"
         app:layout_constraintStart_toStartOf="@+id/gl_1_start"
         app:layout_constraintTop_toTopOf="parent"
