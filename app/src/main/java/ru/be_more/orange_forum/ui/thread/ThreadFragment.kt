@@ -214,8 +214,10 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         val post = threadPresenter.thread.posts.find { it.num == postNum }
 
-        if (post != null)
-           showPost(post)
+        if (post != null) {
+            threadPresenter.putContentInStack(post)
+            showPost(post)
+        }
         else
             true //TODO если не найден, то запрос по вебу из другого треда
     }
@@ -238,7 +240,6 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         fl_post.visibility = View.VISIBLE
 
-        threadPresenter.putContentInStack(post)
 
         val fragment = PostFragment.getPostFragment(
             post,this,this, this)
@@ -284,10 +285,9 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     @Subscribe
     public fun onBackPressed(event: BackPressed) {
-        if(!threadPresenter.onBackPressed()) {
+        if(!threadPresenter.onBackPressed())
             bus.post(AppToBeClosed)
-            Log.d("M_ThreadFragment", "Closed")
-        }
+
     }
 
     @JavascriptInterface

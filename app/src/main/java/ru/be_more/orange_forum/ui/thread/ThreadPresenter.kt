@@ -150,7 +150,9 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     fun setBoardId(): String = this.boardId
 
     fun clearStack() {
-        this.modalStack.empty()
+        Log.d("M_ThreadPresenter", "empty")
+        this.modalStack.clear()
+        Log.d("M_ThreadPresenter", "size = ${modalStack.size}")
     }
 
     fun putContentInStack(modal: ModalContent) {

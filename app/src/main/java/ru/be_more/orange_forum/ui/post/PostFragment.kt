@@ -42,19 +42,11 @@ class PostFragment : MvpAppCompatFragment(), PostView {
 
     private var timestamp: Long = 0
 
-    private lateinit var fragmentType: String
-    private lateinit var boardId: String
-    private var postNum: Int = 0
     private lateinit var content: ModalContent
 
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
     private lateinit var closeModalListener: CloseModalListener
-
-
-    //Pair<String, String? = URL + Duration (if video or null if pic)
-    private var picUrl: MutableLiveData<Pair<String, String?>> = MutableLiveData()
-    private var post: MutableLiveData<Post> = MutableLiveData()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -217,7 +209,6 @@ class PostFragment : MvpAppCompatFragment(), PostView {
 
         closeModalListener.OnCloseModalListener()
 
-        postPresenter.clearStack()
     }
 
 
@@ -232,7 +223,6 @@ class PostFragment : MvpAppCompatFragment(), PostView {
             postFragment.content = content
             postFragment.picListener = picListener
             postFragment.linkListener = linkListener
-            postFragment.fragmentType = POST
             postFragment.closeModalListener = closeModalListener
 
             return postFragment

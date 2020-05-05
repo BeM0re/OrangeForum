@@ -21,7 +21,6 @@ class PostPresenter : MvpPresenter<PostView>() {
     private lateinit var adapter: PostPicAdapter
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
-    private val replyStack = Stack<ModalContent>() //Post or Pair<url,duration?>
     private lateinit var pic: Attachment
 
 
@@ -52,24 +51,4 @@ class PostPresenter : MvpPresenter<PostView>() {
     fun getPicListener(): PicOnClickListener = this.picListener
 
     fun getLinkListener(): LinkOnClickListener = this.linkListener
-
-    fun putPostInStack(post: Post){
-        this.replyStack.push(post)
-    }
-
-    fun getPostFromStack(): Post?{
-        return if(this.replyStack.empty())
-            null
-        else
-            replyStack.peek() as Post
-    }
-
-    fun onBackPressed() {
-        this.replyStack.pop()
-        viewState.setContent(replyStack.peek() as Post)
-    }
-
-    fun clearStack() {
-        replyStack.empty()
-    }
 }
