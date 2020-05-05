@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.MediaController
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
@@ -27,6 +26,7 @@ import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.ModalContent
@@ -49,6 +49,7 @@ class PostFragment : MvpAppCompatFragment(), PostView {
 
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
+    private lateinit var closeModalListener: CloseModalListener
 
     private var bus = BusProvider.getInstance()
 
@@ -77,6 +78,10 @@ class PostFragment : MvpAppCompatFragment(), PostView {
     }
 
     private fun showPost(post: Post){
+
+        v_post1_pic_full_background.visibility = View.VISIBLE
+
+        ll_post_layout.setBackgroundColor(resources.getColor(R.color.color_background))
 
         tv_item_post_comment.text = post.comment
         tv_item_post_comment.setListener(postPresenter.getLinkListener())
@@ -199,17 +204,24 @@ class PostFragment : MvpAppCompatFragment(), PostView {
     }
 
     private fun setOnBackgroundViewClickListener(){
-
         v_post1_pic_full_background.setOnClickListener {
-            v_post1_pic_full_background.visibility = View.GONE
-            iv_post1_pic_full.visibility = View.GONE
-            Glide.with(this).clear(iv_post1_pic_full)
-            pb_post1_pic_loading.visibility = View.GONE
-            vv_post1_video.visibility = View.GONE
-//            fl_post.visibility = View.GONE
+            hideModal()
         }
-        postPresenter.clearStack()
+    }
 
+    private fun hideModal(){
+        v_post1_pic_full_background.visibility = View.GONE
+        iv_post1_pic_full.visibility = View.GONE
+        Glide.with(this).clear(iv_post1_pic_full)
+        pb_post1_pic_loading.visibility = View.GONE
+        vv_post1_video.visibility = View.GONE
+        tv_item_post_comment.text = ""
+        tv_item_post_subject.text = ""
+        tv_item_post_replies.text = ""
+
+        closeModalListener.OnCloseModalListener()
+
+        postPresenter.clearStack()
     }
 
     @Subscribe
@@ -221,13 +233,15 @@ class PostFragment : MvpAppCompatFragment(), PostView {
 
         fun getPostFragment (content: ModalContent,
                              picListener: PicOnClickListener,
-                             linkListener: LinkOnClickListener): PostFragment {
+                             linkListener: LinkOnClickListener,
+                             closeModalListener: CloseModalListener): PostFragment {
 
             val postFragment = PostFragment()
             postFragment.content = content
             postFragment.picListener = picListener
             postFragment.linkListener = linkListener
             postFragment.fragmentType = POST
+            postFragment.closeModalListener = closeModalListener
 
             return postFragment
         }

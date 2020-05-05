@@ -30,6 +30,7 @@ import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.interfaces.OnBackPressed
@@ -71,7 +72,8 @@ class ThreadFragment : MvpAppCompatFragment(),
     PicOnClickListener,
     LinkOnClickListener,
     ThreadView,
-    CustomOnScrollListener{
+    CustomOnScrollListener,
+    CloseModalListener {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var threadPresenter : ThreadPresenter
@@ -95,7 +97,7 @@ class ThreadFragment : MvpAppCompatFragment(),
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        setOnBackgroundViewClickListener()
+//        setOnBackgroundViewClickListener()
 
         setUpDownButtonOnCLickListener()
 
@@ -185,10 +187,12 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
 
+        fl_post.visibility = View.VISIBLE
+
         val attachment = Attachment(fullPicUrl, duration)
 
         val fragment = PostFragment.getPostFragment(
-            attachment,this,this)
+            attachment,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
@@ -278,20 +282,15 @@ class ThreadFragment : MvpAppCompatFragment(),
     override fun onLinkClick(chanLink: Triple<String, String, String>?) {
 
         if (chanLink != null) {
-//            threadPresenter.loadPost(chanLink.first, chanLink.third)
 
             fl_post.visibility = View.VISIBLE
-            v_post_pic_full_background.visibility = View.VISIBLE
-
-//            val fragment = PostFragment.getPostFragment(
-//                chanLink.first, chanLink.third.toInt(), this, this)
 
             //TODO создавать фрагмент с конструктором, где только номер, а не весь пост передается.
             // Пост брать в БД (наверн)
             val post = threadPresenter.thread.posts.find { it.num == chanLink.third.toInt() }
             if (post != null) {
                 val fragment = PostFragment.getPostFragment(
-                    post,this,this)
+                    post,this,this, this)
 
                 fragmentManager
                     ?.beginTransaction()
@@ -306,18 +305,14 @@ class ThreadFragment : MvpAppCompatFragment(),
     //TODO объединить с методом выше
     override fun onLinkClick(postNum: Int) {
         fl_post.visibility = View.VISIBLE
-        v_post_pic_full_background.visibility = View.VISIBLE
-
-//        val fragment = PostFragment.getPostFragment(
-//            threadPresenter.setBoardId(), postNum, this, this)
-
 
         val post = threadPresenter.thread.posts.find { it.num == postNum }
 
         if (post != null) {
             threadPresenter.putPostInStack(post)
 
-            val fragment = PostFragment.getPostFragment(post,this,this)
+            val fragment = PostFragment.getPostFragment(
+                post,this,this, this)
 
             fragmentManager
                 ?.beginTransaction()
@@ -331,20 +326,6 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun onLinkClick(externalLink: String?) {
         Log.d("M_ThreadPresenter", "outer link = $externalLink")
-    }
-
-    private fun setOnBackgroundViewClickListener(){
-
-        v_post_pic_full_background.setOnClickListener {
-            v_post_pic_full_background.visibility = View.GONE
-            iv_post_pic_full.visibility = View.GONE
-            Glide.with(this).clear(iv_post_pic_full)
-            pb_post_pic_loading.visibility = View.GONE
-            vv_post_video.visibility = View.GONE
-            fl_post.visibility = View.GONE
-        }
-        threadPresenter.clearStack()
-
     }
 
     private fun setUpDownButtonOnCLickListener(){
@@ -372,6 +353,10 @@ class ThreadFragment : MvpAppCompatFragment(),
         Log.d("M_ThreadFragment", "stop scroll")
         fab_thread_up.visibility = View.GONE
         fab_thread_down.visibility = View.GONE
+    }
+
+    override fun OnCloseModalListener(){
+        fl_post.visibility = View.GONE
     }
 
     @JavascriptInterface
