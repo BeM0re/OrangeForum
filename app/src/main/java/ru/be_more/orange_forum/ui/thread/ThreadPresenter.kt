@@ -170,7 +170,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
             }
         } else
             viewState.hideModal()
-
     }
 
     fun getSinglePost(postNum: Int) {
@@ -183,8 +182,11 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    {viewState.showPost(it)},
-                    {viewState.showToast("Пост не найден")}
+                    {
+                        this.putContentInStack(it)
+                        viewState.showPost(it)
+                    },
+                    { viewState.showToast("Пост не найден") }
                 )
 
         )
