@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +15,7 @@ import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_thread.*
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
@@ -30,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedBoardTitle: MutableLiveData<String> = MutableLiveData()
     private var selectedThreadTitle:  MutableLiveData<String> = MutableLiveData()
     private val bus = BusProvider.getInstance()
+    private var timestamp: Long = 0
 
     private fun setBoard(boardId: String){
         selectedBoard.postValue(boardId)
@@ -193,6 +197,15 @@ class MainActivity : AppCompatActivity() {
 
     @Subscribe
     fun closeApp(event: AppToBeClosed){
-        super.onBackPressed()
+        if(System.currentTimeMillis() - timestamp < 2000) {
+            super.onBackPressed()
+        }
+        else {
+            timestamp = System.currentTimeMillis()
+            Toast.makeText(applicationContext,
+                "Нажмите назад еще раз, чтобы закрыть приложение",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 }
