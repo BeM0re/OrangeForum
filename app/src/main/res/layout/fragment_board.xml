@@ -15,7 +15,19 @@
         tools:layout_editor_absoluteY="1dp"
         tools:listitem="@layout/item_board_op"/>
 
-    <View
+
+    <FrameLayout
+        android:id="@+id/fl_board_post"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foregroundGravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+<!--    <View
         android:id="@+id/v_op_post_pic_full_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -58,6 +70,6 @@
         app:layout_constraintStart_toStartOf="@+id/rv_thread_list"
         app:layout_constraintTop_toTopOf="@+id/rv_thread_list"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible"/>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

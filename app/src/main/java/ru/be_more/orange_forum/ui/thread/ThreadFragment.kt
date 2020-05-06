@@ -188,7 +188,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
 
-        fl_post.visibility = View.VISIBLE
+        fl_thread_post.visibility = View.VISIBLE
 
         val attachment = Attachment(fullPicUrl, duration)
 
@@ -233,25 +233,25 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_thread_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
     }
 
     override fun showPost(post: Post){
 
-        fl_post.visibility = View.VISIBLE
+        fl_thread_post.visibility = View.VISIBLE
 
         val fragment = PostFragment.getPostFragment(
             post,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_thread_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
     }
 
     override fun hideModal() {
-        fl_post.visibility = View.GONE
+        fl_thread_post.visibility = View.GONE
         threadPresenter.clearStack()
     }
 
@@ -295,7 +295,7 @@ class ThreadFragment : MvpAppCompatFragment(),
     public fun onBackPressed(event: BackPressed) {
 
         Log.d("M_ThreadFragment", "back")
-        if (fl_post.visibility != View.GONE)
+        if (fl_thread_post.visibility != View.GONE)
             threadPresenter.onBackPressed()
         else
             bus.post(AppToBeClosed)

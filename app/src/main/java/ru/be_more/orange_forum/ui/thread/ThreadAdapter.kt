@@ -14,8 +14,8 @@ const val RESPONSE_VIEW = 1
 
 class ThreadAdapter(var thread: BoardThread,
                     private val picListener: PicOnClickListener,
-                    private val linkListener: LinkOnClickListener) :
-    RecyclerView.Adapter<ThreadViewHolder>(){
+                    private val linkListener: LinkOnClickListener
+) : RecyclerView.Adapter<ThreadViewHolder>(){
 
     private var isFooterShown = false
 

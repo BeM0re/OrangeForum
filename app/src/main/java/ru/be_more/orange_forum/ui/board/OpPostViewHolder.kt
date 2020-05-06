@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.ui.custom.ExpandableTextView
 import ru.be_more.orange_forum.ui.post.PicOnClickListener
@@ -62,6 +63,7 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
             pics.adapter = null
         }
     }
+
     fun setComment (param: String){
         if (param != "") {
             comment.text = param
@@ -72,15 +74,23 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
             comment.text = ""
         }
     }
+
     fun setTotalPosts (param: Int){
         totalPosts.text ="Пропущено $param постов"
     }
+
     fun setPostsWithPic (param: Int){
         postsWithPic.text = "$param c картинками"
     }
+
     fun setIntoThreadButton(listener: View.OnClickListener) {
         pickThreadButton.setOnClickListener(listener)
     }
+
+    fun setCommentListener(listener: LinkOnClickListener){
+        comment.setListener(listener)
+    }
+
     fun setHideButton() {
         hideButton.setOnClickListener {
             isOp.visibility = View.GONE
