@@ -17,7 +17,6 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import kotlinx.android.synthetic.main.fragment_thread.*
 import kotlinx.android.synthetic.main.item_post.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
@@ -51,11 +50,7 @@ class PostFragment : MvpAppCompatFragment(), PostView {
 //        postPresenter.init(boardId, postNum, picListener, linkListener)
         postPresenter.init(content, picListener, linkListener)
 
-        setOnBackgroundViewClickListener()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
+        setClosingViewClickListener()
     }
 
     private fun showPost(post: Post){
@@ -109,8 +104,7 @@ class PostFragment : MvpAppCompatFragment(), PostView {
                                 "ageallow=1; " +
                                 "_gid=GA1.2.1910512907.1585793763; " +
                                 "_gat=1"
-                    )
-                    .build()
+                    ).build()
             )
             iv_post1_pic_full.resetZoom()
             iv_post1_pic_full.visibility = View.VISIBLE
@@ -140,11 +134,6 @@ class PostFragment : MvpAppCompatFragment(), PostView {
                     }
                 })
                 .into(iv_post1_pic_full)
-
-            iv_post1_pic_full.setOnClickListener {
-                v_post1_pic_full_background.visibility = View.GONE
-                iv_post1_pic_full.visibility = View.GONE
-            }
         }
         else{
             pb_post1_pic_loading.visibility = View.VISIBLE
@@ -158,22 +147,11 @@ class PostFragment : MvpAppCompatFragment(), PostView {
                     "_gat=1")
 
             vv_post1_video.setOnPreparedListener { pb_post1_pic_loading.visibility = View.GONE }
-
             vv_post1_video.setVideoURI(Uri.parse(pic.url), headers)
             vv_post1_video.visibility = View.VISIBLE
             vv_post1_video.setMediaController(MediaController(this.context))
             vv_post1_video.requestFocus(0)
             vv_post1_video.start()
-
-            vv_post1_video.setOnClickListener {
-                if(System.currentTimeMillis() - timestamp < 2000) {
-                    pb_post_pic_loading.visibility = View.GONE
-                    vv_post_video.visibility = View.GONE
-                    v_post_pic_full_background.visibility = View.GONE
-                }
-                else
-                    timestamp = System.currentTimeMillis()
-            }
         }
     }
 
@@ -184,9 +162,26 @@ class PostFragment : MvpAppCompatFragment(), PostView {
         }
     }
 
-    private fun setOnBackgroundViewClickListener(){
+    private fun setClosingViewClickListener(){
         v_post1_pic_full_background.setOnClickListener {
             hideModal()
+        }
+
+        iv_post1_pic_full.setOnClickListener {
+            v_post1_pic_full_background.visibility = View.GONE
+            iv_post1_pic_full.visibility = View.GONE
+            hideModal()
+        }
+
+        vv_post1_video.setOnClickListener {
+            if(System.currentTimeMillis() - timestamp < 2000) {
+                pb_post1_pic_loading.visibility = View.GONE
+                vv_post1_video.visibility = View.GONE
+                v_post1_pic_full_background.visibility = View.GONE
+                hideModal()
+            }
+            else
+                timestamp = System.currentTimeMillis()
         }
     }
 
