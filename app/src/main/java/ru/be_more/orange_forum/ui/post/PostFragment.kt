@@ -118,7 +118,7 @@ class PostFragment : MvpAppCompatFragment(), PostView {
                         target: Target<Drawable>?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        Log.d("M_BoardFragment", "$e")
+                        Log.d("M_PostFragment", "$e")
                         return false
                     }
 

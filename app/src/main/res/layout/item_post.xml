@@ -22,132 +22,129 @@
         app:layout_constraintTop_toTopOf="parent"
         android:maxHeight="500dp">
 
-    <LinearLayout
-        android:id="@+id/ll_post_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/spacing_small_8"
-        android:paddingBottom="@dimen/spacing_normal_16"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-
-<!--        android:background="@color/color_background"-->
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_post_header"
+        <LinearLayout
+            android:id="@+id/ll_post_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/spacing_small_8">
+            android:orientation="vertical"
+            android:paddingTop="@dimen/spacing_small_8"
+            android:paddingBottom="@dimen/spacing_normal_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_post_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/spacing_small_8">
+
+                <TextView
+                    android:id="@+id/tv_item_post_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_number"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tv_item_post_datetime"
+                    app:layout_constraintTop_toTopOf="@+id/tv_item_post_number"
+                    tools:text="#31231232" />
+
+                <TextView
+                    android:id="@+id/tv_item_post_op_check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/op_check"
+                    android:textColor="@color/color_accent"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_number"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_item_post_name"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tv_item_post_number"
+                    app:layout_constraintTop_toTopOf="@+id/tv_item_post_number"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tv_item_post_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_number"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_item_post_datetime"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tv_item_post_op_check"
+                    app:layout_constraintTop_toTopOf="@+id/tv_item_post_number"
+                    tools:text="Аноним" />
+
+                <TextView
+                    android:id="@+id/tv_item_post_datetime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_number"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_item_post_num"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/tv_item_post_name"
+                    app:layout_constraintTop_toTopOf="@+id/tv_item_post_number"
+                    tools:text="02/04/20 Чтв 15:49:23" />
+
+                <TextView
+                    android:id="@+id/tv_item_post_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_accent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_item_post_op_check"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="22" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:id="@+id/tv_item_post_num"
+                android:id="@+id/tv_item_post_subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/spacing_normal_16"
+                android:lines="1"
+                android:paddingStart="@dimen/font_normal_16"
+                android:paddingEnd="@dimen/font_normal_16"
+                android:textStyle="bold"
+                tools:text="@string/lorem" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_item_post_pics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:itemCount="1"
+                tools:listitem="@layout/item_post_pics" />
+
+            <ru.be_more.orange_forum.ui.custom.LinkedTextView
+                android:id="@+id/tv_item_post_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/font_normal_16"
+                android:paddingTop="0dp"
+                android:paddingEnd="@dimen/font_normal_16"
+                tools:text="@string/lorem" />
+
+            <ru.be_more.orange_forum.ui.custom.LinkedTextView
+                android:id="@+id/tv_item_post_replies"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_number"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv_item_post_datetime"
-                app:layout_constraintTop_toTopOf="@+id/tv_item_post_number"
-                tools:text="#31231232" />
-
-            <TextView
-                android:id="@+id/tv_item_post_op_check"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/op_check"
-                android:textColor="@color/color_accent"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_number"
-                app:layout_constraintEnd_toStartOf="@+id/tv_item_post_name"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv_item_post_number"
-                app:layout_constraintTop_toTopOf="@+id/tv_item_post_number"
-                tools:visibility="visible" />
-
-            <TextView
-                android:id="@+id/tv_item_post_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_number"
-                app:layout_constraintEnd_toStartOf="@+id/tv_item_post_datetime"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv_item_post_op_check"
-                app:layout_constraintTop_toTopOf="@+id/tv_item_post_number"
-                tools:text="Аноним" />
-
-            <TextView
-                android:id="@+id/tv_item_post_datetime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_item_post_number"
-                app:layout_constraintEnd_toStartOf="@+id/tv_item_post_num"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/tv_item_post_name"
-                app:layout_constraintTop_toTopOf="@+id/tv_item_post_number"
-                tools:text="02/04/20 Чтв 15:49:23" />
-
-            <TextView
-                android:id="@+id/tv_item_post_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/color_accent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tv_item_post_op_check"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="22" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/tv_item_post_subject"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_normal_16"
-            android:lines="1"
-            android:paddingStart="@dimen/font_normal_16"
-            android:paddingEnd="@dimen/font_normal_16"
-            android:textStyle="bold"
-            tools:text="@string/lorem" />
-
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_item_post_pics"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:itemCount="1"
-            tools:listitem="@layout/item_post_pics" />
-
-        <ru.be_more.orange_forum.ui.custom.LinkedTextView
-            android:id="@+id/tv_item_post_comment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/font_normal_16"
-            android:paddingTop="0dp"
-            android:paddingEnd="@dimen/font_normal_16"
-            tools:text="@string/lorem" />
-
-        <ru.be_more.orange_forum.ui.custom.LinkedTextView
-            android:id="@+id/tv_item_post_replies"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_normal_16"
-            android:layout_marginEnd="@dimen/spacing_normal_16"
-            android:textSize="@dimen/font_small_12"
-            android:textStyle="italic"
-            tools:text=">>123456" />
-    </LinearLayout>
+                android:layout_marginStart="@dimen/spacing_normal_16"
+                android:layout_marginEnd="@dimen/spacing_normal_16"
+                android:textSize="@dimen/font_small_12"
+                android:textStyle="italic"
+                tools:text=">>123456" />
+        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
     <com.ortiz.touchview.TouchImageView
         android:id="@+id/iv_post1_pic_full"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="800dp"
         android:padding="@dimen/spacing_normal_16"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
