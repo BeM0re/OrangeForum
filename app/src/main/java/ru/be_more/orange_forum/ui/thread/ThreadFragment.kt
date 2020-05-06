@@ -75,7 +75,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     private lateinit var boardId: String
     private var threadId: Int = 0
     private lateinit var recyclerView : RecyclerView
-//    private lateinit var recyclerView : CustomRecyclerView
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
     private var bus = BusProvider.getInstance()
@@ -198,17 +197,17 @@ class ThreadFragment : MvpAppCompatFragment(),
         showPic(attachment)
     }
 
-    override fun onLinkClick(chanLink: Triple<String, String, String>?) {
+    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
 
         if (chanLink != null) {
-            val post = threadPresenter.thread.posts.find { it.num == chanLink.third.toInt() }
+            val post = threadPresenter.thread.posts.find { it.num == chanLink.third }
 
             if (post != null) {
                 threadPresenter.putContentInStack(post)
                 showPost(post)
             }
             else
-                ""//TODO если не найден, то запрос по вебу из другого треда
+                threadPresenter.getSinglePost(chanLink.first, chanLink.third)
         }
     }
 
@@ -221,7 +220,7 @@ class ThreadFragment : MvpAppCompatFragment(),
             showPost(post)
         }
         else
-            true //TODO если не найден, то запрос по вебу из другого треда
+            threadPresenter.getSinglePost(postNum)
     }
 
     override fun onLinkClick(externalLink: String?) {
@@ -285,6 +284,10 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun onCloseModalListener(){
         hideModal()
+    }
+
+    override fun showToast(message: String) {
+        Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
 
 

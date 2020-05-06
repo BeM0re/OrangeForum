@@ -142,6 +142,8 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     fun getAdapter(): ThreadAdapter = this.adapter
 
+    fun getBoardId(): String = this.boardId
+
     fun setCaptchaResponse(captchaResponse: String) {
         Log.d("M_ThreadPresenter", "presenter token = $captchaResponse")
         this.captchaResponse.postValue(captchaResponse)
@@ -155,14 +157,10 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     fun putContentInStack(modal: ModalContent) {
         this.modalStack.push(modal)
-        Log.d("M_ThreadPresenter", "stack = ${modalStack.size}")
     }
 
     fun onBackPressed() {
-
-        Log.d("M_ThreadPresenter", "stack = ${modalStack.size}")
         modalStack.pop()
-
 
         if(!modalStack.empty()) {
 
@@ -175,4 +173,20 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     }
 
+    fun getSinglePost(postNum: Int) {
+        getSinglePost(this.boardId, postNum)
+    }
+
+    fun getSinglePost(boardId: String, postNum: Int){
+        disposables.add(
+            repo.getPost(boardId, postNum)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {viewState.showPost(it)},
+                    {viewState.showToast("Пост не найден")}
+                )
+
+        )
+    }
 }

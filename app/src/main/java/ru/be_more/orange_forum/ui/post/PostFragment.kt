@@ -28,9 +28,6 @@ import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.ModalContent
 import ru.be_more.orange_forum.model.Post
 
-const val PIC = "PICTURE"
-const val POST = "POST"
-
 class PostFragment : MvpAppCompatFragment(), PostView {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")

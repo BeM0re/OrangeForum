@@ -17,4 +17,5 @@ interface ThreadView  : MvpView {
     fun showPic(attachment: Attachment)
     fun showPost(post: Post)
     fun hideModal()
+    fun showToast(message: String)
 }

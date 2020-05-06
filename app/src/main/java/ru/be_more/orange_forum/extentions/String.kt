@@ -1,8 +1,8 @@
 package ru.be_more.orange_forum.extentions
 
 
-//TODO поменять 3ий параметр на Инт
-val String.toChanLink: Triple<String, String, String>?
+//Board, thread, post
+val String.toChanLink: Triple<String, Int, Int>?
     get() {
         if (this.isEmpty()) return null
 
@@ -18,11 +18,11 @@ val String.toChanLink: Triple<String, String, String>?
         
         val threadLength = url.indexOf('.')
         if (threadLength == -1) return null
-        val thread = url.substring(0, threadLength)
+        val thread = url.substring(0, threadLength).toInt()
 
         val sharpInd = url.indexOf('#')
         if (sharpInd == -1) return null
-        val post = url.substring(sharpInd + 1)
+        val post = url.substring(sharpInd + 1).toInt()
 
         return Triple(board, thread, post)
     }
