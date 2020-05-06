@@ -16,4 +16,5 @@ interface ThreadView  : MvpView {
     fun setOnPostButtonClickListener()
     fun showPic(attachment: Attachment)
     fun showPost(post: Post)
+    fun hideModal()
 }

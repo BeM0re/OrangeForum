@@ -8,10 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.MediaController
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.anadeainc.rxbus.BusProvider
-import com.anadeainc.rxbus.Subscribe
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -25,7 +22,6 @@ import kotlinx.android.synthetic.main.item_post.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.Attachment
@@ -207,7 +203,7 @@ class PostFragment : MvpAppCompatFragment(), PostView {
         tv_item_post_subject.text = ""
         tv_item_post_replies.text = ""
 
-        closeModalListener.OnCloseModalListener()
+        closeModalListener.onCloseModalListener()
 
     }
 

@@ -150,29 +150,28 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     fun setBoardId(): String = this.boardId
 
     fun clearStack() {
-        Log.d("M_ThreadPresenter", "empty")
         this.modalStack.clear()
-        Log.d("M_ThreadPresenter", "size = ${modalStack.size}")
     }
 
     fun putContentInStack(modal: ModalContent) {
         this.modalStack.push(modal)
+        Log.d("M_ThreadPresenter", "stack = ${modalStack.size}")
     }
 
-    fun onBackPressed(): Boolean {
-        modalStack.pop()
+    fun onBackPressed() {
 
         Log.d("M_ThreadPresenter", "stack = ${modalStack.size}")
+        modalStack.pop()
 
-        return if(!modalStack.empty()) {
+
+        if(!modalStack.empty()) {
 
             when(val content = modalStack.peek()){
                 is Attachment -> viewState.showPic(content)
                 is Post -> viewState.showPost(content)
             }
-            true
         } else
-            false
+            viewState.hideModal()
 
     }
 

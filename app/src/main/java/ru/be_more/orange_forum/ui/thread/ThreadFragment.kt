@@ -203,8 +203,10 @@ class ThreadFragment : MvpAppCompatFragment(),
         if (chanLink != null) {
             val post = threadPresenter.thread.posts.find { it.num == chanLink.third.toInt() }
 
-            if (post != null)
+            if (post != null) {
+                threadPresenter.putContentInStack(post)
                 showPost(post)
+            }
             else
                 ""//TODO если не найден, то запрос по вебу из другого треда
         }
@@ -240,7 +242,6 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         fl_post.visibility = View.VISIBLE
 
-
         val fragment = PostFragment.getPostFragment(
             post,this,this, this)
 
@@ -248,6 +249,11 @@ class ThreadFragment : MvpAppCompatFragment(),
             ?.beginTransaction()
             ?.replace(R.id.fl_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
+    }
+
+    override fun hideModal() {
+        fl_post.visibility = View.GONE
+        threadPresenter.clearStack()
     }
 
     private fun setUpDownButtonOnCLickListener(){
@@ -277,15 +283,18 @@ class ThreadFragment : MvpAppCompatFragment(),
         fab_thread_down.visibility = View.GONE
     }
 
-    override fun OnCloseModalListener(){
-        fl_post.visibility = View.GONE
-        threadPresenter.clearStack()
+    override fun onCloseModalListener(){
+        hideModal()
     }
 
 
     @Subscribe
     public fun onBackPressed(event: BackPressed) {
-        if(!threadPresenter.onBackPressed())
+
+        Log.d("M_ThreadFragment", "back")
+        if (fl_post.visibility != View.GONE)
+            threadPresenter.onBackPressed()
+        else
             bus.post(AppToBeClosed)
 
     }
