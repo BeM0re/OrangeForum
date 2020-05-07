@@ -2,39 +2,42 @@ package ru.be_more.orange_forum.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.data.AppDatabase
+import ru.be_more.orange_forum.data.DvachDao
 
-/*
-object ListItemRepository {
 
-    private lateinit var listItemDao: ListItemDao
+object DvachDbRepository {
+
+    private lateinit var dvachDbDao: DvachDao
     private lateinit var db: AppDatabase
 
-    fun initDatabase() : ListItemDao{
+    fun initDatabase() : DvachDao{
         db = App.getDatabase()
-        listItemDao = db.listItemDao()
-        return listItemDao
+        dvachDbDao = db.dvachDao()
+        return dvachDbDao
     }
 
-    fun getItems() = domainToDto()
+/*    fun getItems() = domainToDto()
 
-    suspend fun remove(id: Long) {
+    fun remove(id: Long) {
         listItemDao.setStatus(ListItemEntity.Status.LAST_REMOVED, ListItemEntity.Status.REMOVED)
         listItemDao.setStatus(id, ListItemEntity.Status.LAST_REMOVED)
     }
 
-    suspend fun restore(){
+    fun restore(){
         listItemDao.setStatus(ListItemEntity.Status.LAST_REMOVED, ListItemEntity.Status.ACTIVE)
     }
 
-    suspend fun addItem(item: ListItem){
+    fun addItem(item: ListItem){
         listItemDao.insertItem(toEntity(item))
     }
 
-    suspend fun editItem(id: Long, content: String, isChecked: Boolean){
+    fun editItem(id: Long, content: String, isChecked: Boolean){
         listItemDao.editItem(id, content, isChecked)
     }
 
-    suspend fun changeChecked(itemId: Long, isChecked : Boolean){
+    fun changeChecked(itemId: Long, isChecked : Boolean){
         listItemDao.setCheckbox(itemId, isChecked)
     }
 
@@ -56,5 +59,5 @@ object ListItemRepository {
     private fun toEntity (item : ListItem) : ListItemEntity = ListItemEntity(
             content = item.content,
             isChecked = item.isChecked,
-            status = ListItemEntity.Status.ACTIVE)
-}*/
+            status = ListItemEntity.Status.ACTIVE)*/
+}

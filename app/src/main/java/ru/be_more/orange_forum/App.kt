@@ -2,6 +2,8 @@ package ru.be_more.orange_forum
 
 import android.app.Application
 import android.content.Context
+import androidx.room.Room
+import ru.be_more.orange_forum.data.AppDatabase
 import ru.be_more.orange_forum.di.components.DaggerRepoComponent
 import ru.be_more.orange_forum.di.components.RepoComponent
 
@@ -11,12 +13,14 @@ open class App : Application() {
     companion object {
 //        private var database: AppDatabase? = null
         private var instance: App? = null
+        private var database: AppDatabase? = null
+        private var component: RepoComponent = DaggerRepoComponent.create()
 
         fun applicationContext(): Context = instance!!.applicationContext
 
         fun getInstance(): App? = instance
 
-        private var component: RepoComponent = DaggerRepoComponent.create()
+        fun getDatabase(): AppDatabase = database!!
 
         fun getComponent(): RepoComponent {
             return component
@@ -28,6 +32,9 @@ open class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        database = Room
+            .databaseBuilder(this, AppDatabase::class.java, "database")
+            .build()
 
         createComponent()
 
