@@ -5,95 +5,118 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_thread.*
+import moxy.MvpAppCompatActivity
+import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
-import ru.be_more.orange_forum.interfaces.OnBackPressed
-import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : MvpAppCompatActivity(), MainView {
 
-    //TODO перенести в нормальное место
-    private var selectedBoard: MutableLiveData<String> = MutableLiveData()
-    private var selectedThread:  MutableLiveData<Int> = MutableLiveData()
-    private var selectedBoardTitle: MutableLiveData<String> = MutableLiveData()
-    private var selectedThreadTitle:  MutableLiveData<String> = MutableLiveData()
+    @InjectPresenter(presenterId = "presID", tag = "presTag")
+    lateinit var mainPresenter: MainPresenter
+
     private val bus = BusProvider.getInstance()
     private var timestamp: Long = 0
 
-    private fun setBoard(boardId: String){
-        selectedBoard.postValue(boardId)
-    }
-
-    private fun setThread(threadNum: Int){
-        selectedThread.postValue(threadNum)
-    }
-
-    private fun setBoardTitle(boardTitle: String) {
-        selectedBoardTitle.postValue(boardTitle)
-    }
-
-    private fun setThreadTitle(threadTitle: String) {
-        selectedThreadTitle.postValue(threadTitle)
-    }
-
-    private fun setActionBarTitle(title: String? = "Orange Forum"){
+    override fun setActionBarTitle(title: String? ){
         supportActionBar?.title = title
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    override fun showCategoryFragment(categoryFragment: CategoryFragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, categoryFragment, categoryFragment.javaClass.simpleName)
+            .commit()
+        setActionBarTitle()
+    }
+
+    override fun showBoardFragment(boardFragment: BoardFragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, boardFragment, boardFragment.javaClass.simpleName)
+            .commit()
+        setActionBarTitle(mainPresenter.getBoardTitle())
+
+        bottomNavigationView!!.menu.getItem(1).isChecked = true
+    }
+
+    override fun showThreadFragment(threadFragment: ThreadFragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, threadFragment, threadFragment.javaClass.simpleName)
+            .commit()
+        setActionBarTitle(mainPresenter.getThreadTitle())
+
+        bottomNavigationView!!.menu.getItem(2).isChecked = true
+    }
+
+    override fun showFavoriteFragment(favoriteFragment: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, favoriteFragment, favoriteFragment.javaClass.simpleName)
+            .commit()
+        setActionBarTitle("Favorites")
+    }
+
+    override fun showDownloadedFragment(downloadedFragment: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, downloadedFragment, downloadedFragment.javaClass.simpleName)
+            .commit()
+        setActionBarTitle("Downloaded")
+    }
+
+    override fun showPrefFragment(prefFragment: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, prefFragment, prefFragment.javaClass.simpleName)
+            .commit()
+        setActionBarTitle("Downloaded")
+    }
+
+    override fun hideBoardMenuItem(){
+        bottomNavigationView.menu.getItem(1).isEnabled = false
+    }
+
+    override fun hideThreadMenuItem(){
+        bottomNavigationView.menu.getItem(2).isEnabled = false
+    }
+
+    override fun showBoardMenuItem(){
+        bottomNavigationView.menu.getItem(1).isEnabled = true
+    }
+
+    override fun showThreadMenuItem(){
+        bottomNavigationView.menu.getItem(2).isEnabled = true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         setTheme(R.style.AppTheme)
 //        Localization.setLanguage(this)
 
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        toolbar.setOnMenuItemClickListener(mOnPreferenceItemSelectedListener)
+        toolbar.setOnMenuItemClickListener(mOnToolbarItemSelectedListener)
 
-
-        selectedBoard.postValue("")
-        selectedThread.postValue(0)
-
-        selectedBoard.observe(this, Observer {
-            bottomNavigationView.menu.getItem(1).isEnabled = !selectedBoard.value.isNullOrEmpty()
-            if(selectedBoard.value!="") {
-                bottomNavigationView.selectedItemId=
-                    R.id.navigation_board
-            }
-        })
-
-        selectedThread.observe(this, Observer {
-            bottomNavigationView.menu.getItem(2).isEnabled = selectedThread.value!=0
-            if(selectedThread.value!=0) {
-                bottomNavigationView.selectedItemId=
-                    R.id.navigation_thread
-            }
-        })
-
-        selectedBoardTitle.observe(this, Observer { setActionBarTitle(it) })
-        selectedThreadTitle.observe(this, Observer { setActionBarTitle(it) })
-
-        if (savedInstanceState == null)
-            bottomNavigationView.selectedItemId=
-                R.id.navigation_category
+        bottomNavigationView.selectedItemId = R.id.navigation_category
 
         bus.register(this)
     }
@@ -107,74 +130,50 @@ class MainActivity : AppCompatActivity() {
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.navigation_category -> {
-                    val fragment =  CategoryFragment.getCategoryFragment {id, title ->
-                        setBoard(id)
-                        setBoardTitle(title)
-                    }
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.container, fragment, fragment.javaClass.simpleName)
-                        .commit()
-                    setActionBarTitle()
+                    mainPresenter.makeCategoryFragment()
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_board -> {
-                    //if selectedBoard.value == null then this menu item is disabled
-                    val fragment =
-                        BoardFragment.getBoardFragment({
-                                num, title ->
-                                setThread(num)
-                                setThreadTitle(title)
-                        }, selectedBoard.value!!)
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.container, fragment, fragment.javaClass.simpleName)
-                        .commit()
-                    setActionBarTitle(selectedBoardTitle.value)
+                    mainPresenter.makeBoardFragment()
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_thread -> {
-                    //if selectedBoard.value or selectedThread.value == null then this menu item is disabled
-                    val fragment = ThreadFragment.getThreadFragment(
-                        selectedBoard.value!!,
-                        selectedThread.value!!
-                    )
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.container, fragment, fragment.javaClass.simpleName)
-                        .commit()
-                    setActionBarTitle(selectedThreadTitle.value)
+                    mainPresenter.makeThreadFragment()
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_favorites -> {
-                    val fragment = TempFragment()
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.container, fragment, fragment.javaClass.simpleName)
-                        .commit()
+                    mainPresenter.makeFavoriteFragment()
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_downloaded -> {
-                    val fragment = TempFragment()
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.container, fragment, fragment.javaClass.simpleName)
-                        .commit()
+                    mainPresenter.makeDownloadedFragment()
                     return@OnNavigationItemSelectedListener true
                 }
             }
             false
         }
 
-    private val mOnPreferenceItemSelectedListener = Toolbar.OnMenuItemClickListener { menuItem ->
+    private val mOnToolbarItemSelectedListener = Toolbar.OnMenuItemClickListener { menuItem ->
         when (menuItem.itemId) {
 
             R.id.navigation_pref -> {
-                val fragment = TempFragment()
-                supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.container, fragment)
-                    .commit()
+                mainPresenter.makePrefFragment()
+                return@OnMenuItemClickListener true
+            }
+            R.id.navigation_download -> {
+
+                return@OnMenuItemClickListener true
+            }
+            R.id.navigation_download_done -> {
+
+                return@OnMenuItemClickListener true
+            }
+            R.id.navigation_favorite -> {
+
+                return@OnMenuItemClickListener true
+            }
+            R.id.navigation_favorite_added -> {
+
                 return@OnMenuItemClickListener true
             }
         }
@@ -187,12 +186,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        fragmentsGoBack()
-//        super.onBackPressed()
-    }
-
-    private fun fragmentsGoBack() {
         bus.post(BackPressed)
+//        super.onBackPressed()
     }
 
     @Subscribe
