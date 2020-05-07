@@ -10,22 +10,22 @@ import ru.be_more.orange_forum.model.Post
 @Dao
 interface DvachDao {
     @Query("SELECT * FROM categories")
-    fun getCategories(): Observable<List<Category>>
+    fun getCategories(): Observable<List<StoredCategory>>
 
     @Query("SELECT * FROM boards WHERE categoryId = :category")
-    fun getBoards(category: String): Observable<List<Board>>
+    fun getBoards(category: String): Observable<List<StoredBoard>>
 
     @Query("SELECT * FROM boards WHERE id = :boardId")
-    fun getBoard(boardId: String): Observable<Board>
+    fun getBoard(boardId: String): Observable<StoredBoard>
 
     @Query("SELECT * FROM threads WHERE num = :threadNum")
-    fun getThread(threadNum: Int): Observable<BoardThread>
+    fun getThread(threadNum: Int): Observable<StoredThread>
 
     @Query("SELECT * FROM posts WHERE threadNum = :threadNum")
-    fun getPost(threadNum: Int): Observable<Post>
+    fun getPost(threadNum: Int): Observable<StoredPost>
 
     @Query("SELECT * FROM files WHERE postNum = :postNum")
-    fun getFiles(postNum: Int): Observable<Post>
+    fun getFiles(postNum: Int): Observable<StoredFile>
 
 
     @Insert

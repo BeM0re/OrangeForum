@@ -11,12 +11,28 @@
         android:id="@+id/navigation_download"
         app:showAsAction="ifRoom"
         android:title=""
-        android:icon="@drawable/ic_cloud_download_accent_24dp">
+        android:icon="@drawable/ic_cloud_download_accent_24dp"
+        android:visible="false">
+    </item>
+    <item
+        android:id="@+id/navigation_download_done"
+        app:showAsAction="ifRoom"
+        android:title=""
+        android:icon="@drawable/ic_cloud_done_black_24dp"
+        android:visible="false">
     </item>
     <item
         android:id="@+id/navigation_favorite"
         app:showAsAction="always"
         android:title=""
-        android:icon="@drawable/ic_favorite_border_accent_24dp">
+        android:icon="@drawable/ic_favorite_border_accent_24dp"
+        android:visible="false">
+    </item>
+    <item
+        android:id="@+id/navigation_favorite_added"
+        app:showAsAction="always"
+        android:title=""
+        android:icon="@drawable/ic_favorite_accent_24dp"
+        android:visible="false">
     </item>
 </menu>

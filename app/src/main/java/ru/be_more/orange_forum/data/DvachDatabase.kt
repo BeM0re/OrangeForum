@@ -2,6 +2,8 @@ package ru.be_more.orange_forum.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 
 @Database(
     entities = [
@@ -15,6 +17,7 @@ import androidx.room.RoomDatabase
     exportSchema = false)
 
 
+@TypeConverters(ReplyConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun dvachDao(): DvachDao
 }

@@ -54,7 +54,7 @@ data class StoredPost(
     val subject: String,
     val timestamp: Int,
     val number: Int, //Порядковый номер в треде
-    val replies: List<Int> = listOf()
+    @TypeConverters(ReplyConverter::class) val replies: List<Int> = listOf()
 )
 
 @Entity(
