@@ -2,12 +2,12 @@ package ru.be_more.orange_forum.ui.post
 
 import android.view.View
 import android.widget.TextView
-import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.ui.custom.LinkedTextView
 import ru.be_more.orange_forum.ui.thread.ThreadViewHolder

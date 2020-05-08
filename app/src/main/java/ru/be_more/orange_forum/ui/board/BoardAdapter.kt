@@ -6,9 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.post.PicOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 
 
 class BoardAdapter(var threads: List<BoardThread> = listOf(),
@@ -42,7 +43,7 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
                 holder.setPics(thread.posts[0].files, thread.isHidden)
             }
             holder.setCommentListener(linkListener)
-            holder.setHideButton(thread)
+            holder.setHideButton(thread, boardListener)
             holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread.num, thread.title) }, thread.isHidden)
         }
     }

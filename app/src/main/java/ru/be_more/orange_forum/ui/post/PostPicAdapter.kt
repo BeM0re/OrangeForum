@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
 
 

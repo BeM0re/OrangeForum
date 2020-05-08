@@ -31,7 +31,7 @@ import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
-import ru.be_more.orange_forum.ui.post.PicOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 
 /*const val PAGE_HTML = "<html>\n" +
         "<head>\n" +

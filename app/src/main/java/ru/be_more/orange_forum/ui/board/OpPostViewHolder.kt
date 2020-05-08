@@ -8,11 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.custom.ExpandableTextView
-import ru.be_more.orange_forum.ui.post.PicOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 
 
@@ -92,40 +93,30 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
     fun setIntoThreadButton(listener: View.OnClickListener, isHidden: Boolean) {
         if (isHidden)
             pickThreadButton.visibility = View.GONE
-        else
+        else {
             pickThreadButton.setOnClickListener(listener)
+            pickThreadButton.visibility = View.VISIBLE
+        }
     }
 
     fun setCommentListener(listener: LinkOnClickListener){
         comment.setListener(listener)
     }
 
-    fun setHideButton(thread: BoardThread) {
-        if(thread.isHidden)
+    fun setHideButton(thread: BoardThread, listener: BoardOnClickListener) {
+        if(thread.isHidden) {
+            hideButton.visibility = View.GONE
             itemView.setOnClickListener {
                 thread.isHidden = false
-                /*isOp.visibility = View.VISIBLE
-                pics.visibility = View.VISIBLE
-                comment.visibility = View.VISIBLE
-                totalPosts.visibility = View.VISIBLE
-                postsWithPic.visibility = View.VISIBLE
-                hideButton.visibility = View.VISIBLE
-                pickThreadButton.visibility = View.VISIBLE
-                itemView.setOnClickListener {  }
-                itemView.setBackgroundColor(Color.parseColor("#000000FF"))*/
+                listener.onHideClick(thread.num)
             }
-
-        hideButton.setOnClickListener {
-            thread.isHidden = true
-           /* isOp.visibility = View.GONE
-            pics.visibility = View.GONE
-            comment.visibility = View.GONE
-            totalPosts.visibility = View.GONE
-            postsWithPic.visibility = View.GONE
-            hideButton.visibility = View.GONE
-            pickThreadButton.visibility = View.GONE
-            itemView.setBackgroundColor(Color.parseColor("#00000004"))*/
-
+        }
+        else{
+            hideButton.visibility = View.VISIBLE
+            hideButton.setOnClickListener {
+                thread.isHidden = true
+                listener.onHideClick(thread.num)
+            }
         }
     }
 

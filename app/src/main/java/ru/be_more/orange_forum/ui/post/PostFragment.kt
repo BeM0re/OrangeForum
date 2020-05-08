@@ -23,6 +23,7 @@ import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.ModalContent
 import ru.be_more.orange_forum.model.Post

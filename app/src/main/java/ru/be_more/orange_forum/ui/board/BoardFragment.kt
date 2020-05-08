@@ -13,19 +13,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
 import kotlinx.android.synthetic.main.fragment_board.*
-import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Post
-import ru.be_more.orange_forum.ui.post.PicOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 
@@ -81,6 +81,10 @@ class BoardFragment: MvpAppCompatFragment(),
     override fun onThreadClick(threadNum: Int, threadTitle: String) {
         if (boardPresenter.listener != null)
             boardPresenter.listener!!(threadNum, threadTitle)
+    }
+
+    override fun onHideClick(threadNum: Int) {
+        adapter.notifyDataSetChanged()
     }
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {

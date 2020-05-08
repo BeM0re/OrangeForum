@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.post.PicOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostViewHolder
 
 const val RESPONSE_VIEW = 1

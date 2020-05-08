@@ -1,5 +1,6 @@
-package ru.be_more.orange_forum.ui.board
+package ru.be_more.orange_forum.interfaces
 
 interface BoardOnClickListener  {
     fun onThreadClick(threadNum: Int, threadTitle: String)
+    fun onHideClick(threadNum: Int)
 }
