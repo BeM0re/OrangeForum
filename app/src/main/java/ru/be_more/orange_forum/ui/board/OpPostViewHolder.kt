@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.ui.board
 
-import android.graphics.Color
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -11,6 +10,7 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
+import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.ui.custom.ExpandableTextView
 import ru.be_more.orange_forum.ui.post.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
@@ -34,11 +34,11 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
     fun setSenderName (param: String){
         senderName.text = param
     }
-    fun setIsOp (param: Boolean){
-        if(param)
-            isOp.visibility=View.VISIBLE
+    fun setIsOp (isOp: Boolean, isHidden: Boolean){
+        if(isOp)
+            this.isOp.visibility=View.VISIBLE
         else
-            isOp.visibility=View.GONE
+            this.isOp.visibility=View.GONE
     }
     fun setDate (param: String){
         date.text = param
@@ -50,8 +50,8 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
         title.text = param
     }
 
-    fun setPics (urls: List<AttachFile>){
-        if (urls.isNotEmpty()){
+    fun setPics (urls: List<AttachFile>, isHidden: Boolean){
+        if (urls.isNotEmpty() && !isHidden){
             val adapter = PostPicAdapter(urls, listener = listener)
 
             pics.layoutManager = LinearLayoutManager(App.getInstance())
@@ -64,8 +64,8 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
         }
     }
 
-    fun setComment (param: String){
-        if (param != "") {
+    fun setComment (param: String, isHidden: Boolean){
+        if (param != "" && !isHidden) {
             comment.text = param
             comment.visibility = View.VISIBLE
         }
@@ -75,35 +75,36 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
         }
     }
 
-    fun setTotalPosts (param: Int){
-        totalPosts.text ="Пропущено $param постов"
+    fun setTotalPosts (param: Int, isHidden: Boolean){
+        if(isHidden)
+            totalPosts.visibility = View.GONE
+        else
+            totalPosts.text ="Пропущено $param постов"
     }
 
-    fun setPostsWithPic (param: Int){
-        postsWithPic.text = "$param c картинками"
+    fun setPostsWithPic (param: Int, isHidden: Boolean){
+        if(isHidden)
+            postsWithPic.visibility = View.GONE
+        else
+            postsWithPic.text = "$param c картинками"
     }
 
-    fun setIntoThreadButton(listener: View.OnClickListener) {
-        pickThreadButton.setOnClickListener(listener)
+    fun setIntoThreadButton(listener: View.OnClickListener, isHidden: Boolean) {
+        if (isHidden)
+            pickThreadButton.visibility = View.GONE
+        else
+            pickThreadButton.setOnClickListener(listener)
     }
 
     fun setCommentListener(listener: LinkOnClickListener){
         comment.setListener(listener)
     }
 
-    fun setHideButton() {
-        hideButton.setOnClickListener {
-            isOp.visibility = View.GONE
-            pics.visibility = View.GONE
-            comment.visibility = View.GONE
-            totalPosts.visibility = View.GONE
-            postsWithPic.visibility = View.GONE
-            hideButton.visibility = View.GONE
-            pickThreadButton.visibility = View.GONE
-
-            itemView.setBackgroundColor(Color.parseColor("#00000004"))
+    fun setHideButton(thread: BoardThread) {
+        if(thread.isHidden)
             itemView.setOnClickListener {
-                isOp.visibility = View.VISIBLE
+                thread.isHidden = false
+                /*isOp.visibility = View.VISIBLE
                 pics.visibility = View.VISIBLE
                 comment.visibility = View.VISIBLE
                 totalPosts.visibility = View.VISIBLE
@@ -111,8 +112,20 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
                 hideButton.visibility = View.VISIBLE
                 pickThreadButton.visibility = View.VISIBLE
                 itemView.setOnClickListener {  }
-                itemView.setBackgroundColor(Color.parseColor("#000000FF"))
+                itemView.setBackgroundColor(Color.parseColor("#000000FF"))*/
             }
+
+        hideButton.setOnClickListener {
+            thread.isHidden = true
+           /* isOp.visibility = View.GONE
+            pics.visibility = View.GONE
+            comment.visibility = View.GONE
+            totalPosts.visibility = View.GONE
+            postsWithPic.visibility = View.GONE
+            hideButton.visibility = View.GONE
+            pickThreadButton.visibility = View.GONE
+            itemView.setBackgroundColor(Color.parseColor("#00000004"))*/
+
         }
     }
 

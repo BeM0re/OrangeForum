@@ -5,9 +5,10 @@ import androidx.lifecycle.Transformations
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.AppDatabase
 import ru.be_more.orange_forum.data.DvachDao
+import javax.inject.Inject
 
 
-object DvachDbRepository {
+class DvachDbRepository  @Inject constructor(){
 
     private lateinit var dvachDbDao: DvachDao
     private lateinit var db: AppDatabase

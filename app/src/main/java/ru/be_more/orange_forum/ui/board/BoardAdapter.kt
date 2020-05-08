@@ -31,19 +31,19 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
         val thread: BoardThread? = threads[position]
         if(thread != null){
             holder.setSenderName(thread.posts[0].name)
-            holder.setIsOp(thread.posts[0].op > 0)
+            holder.setIsOp(thread.posts[0].op > 0, thread.isHidden)
             holder.setDate(thread.posts[0].date)
             holder.setThreadNum(thread.posts[0].num)
             holder.setTitle(thread.posts[0].subject)
-            holder.setComment(thread.posts[0].comment)
-            holder.setTotalPosts(thread.posts[0].posts_count)
-            holder.setPostsWithPic(thread.posts[0].files_count)
+            holder.setComment(thread.posts[0].comment, thread.isHidden)
+            holder.setTotalPosts(thread.posts[0].posts_count, thread.isHidden)
+            holder.setPostsWithPic(thread.posts[0].files_count, thread.isHidden)
             if(thread.posts[0].files.isNotEmpty()){
-                holder.setPics(thread.posts[0].files)
+                holder.setPics(thread.posts[0].files, thread.isHidden)
             }
             holder.setCommentListener(linkListener)
-            holder.setHideButton()
-            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread.num, thread.title) })
+            holder.setHideButton(thread)
+            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread.num, thread.title) }, thread.isHidden)
         }
     }
 

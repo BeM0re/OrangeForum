@@ -5,6 +5,7 @@ import io.reactivex.disposables.Disposable
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.repositories.DvachApiRepository
+import ru.be_more.orange_forum.repositories.DvachDbRepository
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
@@ -15,7 +16,9 @@ import javax.inject.Inject
 class MainPresenter : MvpPresenter<MainView>() {
 
     @Inject
-    lateinit var repo : DvachApiRepository
+    lateinit var apiRepo : DvachApiRepository
+    @Inject
+    lateinit var dbRepo : DvachDbRepository
 
     private lateinit var boardId :String
     private lateinit var boardTitle :String
@@ -97,5 +100,22 @@ class MainPresenter : MvpPresenter<MainView>() {
         val fragment = TempFragment()
         viewState.showPrefFragment(fragment)
     }
+
+    fun downloadThread() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun deleteThread() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun markThreadFavorite() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun removeFavoriteMark() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 
 }

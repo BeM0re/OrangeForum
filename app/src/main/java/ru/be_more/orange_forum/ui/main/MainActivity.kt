@@ -161,19 +161,19 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_download -> {
-
+                mainPresenter.downloadThread()
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_download_done -> {
-
+                mainPresenter.deleteThread()
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite -> {
-
+                mainPresenter.markThreadFavorite()
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite_added -> {
-
+                mainPresenter.removeFavoriteMark()
                 return@OnMenuItemClickListener true
             }
         }
