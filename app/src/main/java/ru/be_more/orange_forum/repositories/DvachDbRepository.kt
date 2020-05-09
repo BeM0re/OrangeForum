@@ -1,19 +1,29 @@
 package ru.be_more.orange_forum.repositories
 
-import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Environment
 import android.util.Log
+import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.services.DVACH_ROOT_URL
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.util.*
 import javax.inject.Inject
 
 
@@ -21,6 +31,7 @@ class DvachDbRepository @Inject constructor(){
 
     private lateinit var dvachDbDao: DvachDao
     private lateinit var db: AppDatabase
+    private var disposable: LinkedList<Disposable> = LinkedList()
 
     fun initDatabase() : DvachDao{
         db = App.getDatabase()
@@ -28,23 +39,50 @@ class DvachDbRepository @Inject constructor(){
         return dvachDbDao
     }
 
-    fun saveThread(thread: BoardThread, boardId: String) {
-        dvachDbDao.insertThread(toStoredThread(thread, boardId))
-        thread.posts.forEach { post ->
-            savePost(post, thread.num, boardId)
-        }
+    fun saveThread(thread: BoardThread, boardId: String, boardName: String) {
+
+        disposable.add(
+            dvachDbDao.getBoardCount(boardId)
+                .subscribeOn(Schedulers.io())
+                .subscribe({boardCount ->
+                    if (boardCount ==0){
+                        dvachDbDao.insertBoard(StoredBoard(boardId, "", boardName))
+                    }
+
+                    dvachDbDao.insertThread(toStoredThread(thread, boardId))
+
+                    thread.posts.forEach { post ->
+                        savePost(post, thread.num, boardId)
+                    }
+                },
+                    { Log.d("M_DvachDbRepository", "error = $it") },
+                    { Log.d("M_DvachDbRepository", "Done") })
+        )
+
     }
 
     private fun savePost(post: Post, threadNum: Int, boardId: String){
         dvachDbDao.insertPost(toStoredPost(post, threadNum, boardId))
         post.files.forEach { file ->
-            dvachDbDao.insertFile(toStoredFile(file, post.num, boardId))
+            Observable.fromCallable { dvachDbDao.insertFile(toStoredFile(file, post.num, boardId)) }
+                .subscribeOn(Schedulers.io())
+                .subscribe({},
+                    { Log.d("M_DvachDbRepository", "$it") })
         }
     }
 
 
-    private fun downloadImage(url: String): String{
-        val fileName = "${System.currentTimeMillis()}.jpg"
+    private fun downloadImage(url: String): Uri? {
+//        val fulUrl = DVACH_ROOT_URL+url
+        val glideUrl = GlideUrl(
+            DVACH_ROOT_URL+url.substring(1), LazyHeaders.Builder()
+                .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
+                        "_ga=GA1.2.57010468.1498700728; " +
+                        "ageallow=1; " +
+                        "_gid=GA1.2.1910512907.1585793763; " +
+                        "_gat=1")
+                .build()
+        )
         val context = App.applicationContext()
 
         val requestOptions = RequestOptions().override(100)
@@ -54,24 +92,49 @@ class DvachDbRepository @Inject constructor(){
 
         val bitmap = Glide.with(context)
             .asBitmap()
-            .load(url)
+            .load(glideUrl)
             .apply(requestOptions)
             .submit()
             .get()
 
-        return try {
-            var file = context.getDir("Images", Context.MODE_PRIVATE)
-            file = File(file, fileName)
-            val out = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out)
-            out.flush()
-            out.close()
-            Log.d("M_DvachDbRepository", "Image saved. Path = $fileName")
-            fileName
+        try {
+            val photoFile: File? = try {
+                createImageFile()
+            } catch (ex: IOException) {
+                Log.d("M_GalleryFragment", "$ex")
+                return null
+            }
+            // Continue only if the File was successfully created
+            var fileName: Uri? = null
+            if(photoFile != null) {
+                fileName = FileProvider.getUriForFile(
+                    context,
+                    "ru.be_more.orange_forum.fileprovider",
+                    photoFile
+                )
+                val out = FileOutputStream(photoFile)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                out.flush()
+                out.close()
+                Log.d("M_DvachDbRepository", "Image saved. Path = $fileName")
+            }
+            return fileName
         } catch (e: Exception) {
             Log.e("M_DvachDbRepository", "Image NOT saved.")
-            ""
+            return null
         }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = "${System.currentTimeMillis()}"
+        val storageDir: File = App.applicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        )
     }
 
     private fun toStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
@@ -117,9 +180,10 @@ class DvachDbRepository @Inject constructor(){
         tn_height = file.tn_height,
         tn_width = file.tn_width,
         webPath = file.path,
-        localPath = downloadImage(file.path),
+        localPath = if (file.duration == "") downloadImage(file.path).toString() else "",
         webThumbnail = file.thumbnail,
-        localThumbnail = downloadImage(file.thumbnail),
+        localThumbnail = downloadImage(file.thumbnail).toString(),
         duration = file.duration
     )
+
 }

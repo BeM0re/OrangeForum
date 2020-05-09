@@ -10,11 +10,11 @@ data class StoredCategory(
 )
 
 @Entity(
-    tableName = "boards",
-    foreignKeys = [ForeignKey(entity = StoredCategory::class,
+    tableName = "boards"
+    /*foreignKeys = [ForeignKey(entity = StoredCategory::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("categoryId"),
-        onDelete = ForeignKey.CASCADE)])
+        onDelete = ForeignKey.CASCADE)]*/)
 data class StoredBoard(
     @PrimaryKey val id: String,
     val categoryId: String,

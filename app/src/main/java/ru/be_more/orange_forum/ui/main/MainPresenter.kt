@@ -113,7 +113,7 @@ class MainPresenter : MvpPresenter<MainView>() {
                 .subscribeOn(Schedulers.io())
                 .subscribe (
                     {
-                        dbRepo.saveThread(it, boardId)
+                        dbRepo.saveThread(it, boardId, boardTitle)
                     },
                     {
                         App.showToast("Ошибка")

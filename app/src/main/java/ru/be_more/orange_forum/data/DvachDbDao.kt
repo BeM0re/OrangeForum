@@ -12,6 +12,9 @@ interface DvachDao {
     @Query("SELECT * FROM categories")
     fun getCategories(): Observable<List<StoredCategory>>
 
+    @Query("SELECT COUNT(id) FROM boards WHERE id = :boardId")
+    fun getBoardCount(boardId: String): Observable<Int>
+
     @Query("SELECT * FROM boards WHERE categoryId = :category")
     fun getBoards(category: String): Observable<List<StoredBoard>>
 
