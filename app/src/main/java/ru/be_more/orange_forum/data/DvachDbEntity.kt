@@ -44,7 +44,7 @@ data class StoredThread(
         onDelete = ForeignKey.CASCADE)])
 data class StoredPost(
     val boardId: String,
-    val num: Int,
+    @PrimaryKey val num: Int,
     val threadNum: Int,
     val name: String,
     val comment: String,
@@ -56,8 +56,8 @@ data class StoredPost(
     val subject: String,
     val timestamp: Int,
     val number: Int, //Порядковый номер в треде
-    @TypeConverters(ReplyConverter::class) val replies: List<Int> = listOf(),
-    @PrimaryKey(autoGenerate = true) val id: Long? = null
+    @TypeConverters(ReplyConverter::class) val replies: List<Int> = listOf()
+//    @PrimaryKey(autoGenerate = true) val id: Long? = null
 )
 
 @Entity(

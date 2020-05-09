@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.ui.thread
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import com.anadeainc.rxbus.BusProvider
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -10,6 +11,10 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.bus.DownloadedThreadEntered
+import ru.be_more.orange_forum.bus.FavoriteThreadEntered
+import ru.be_more.orange_forum.bus.UndownloadedThreadEntered
+import ru.be_more.orange_forum.bus.UnfavoriteThreadEntered
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.BoardThread
@@ -35,9 +40,12 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
     private val modalStack: Stack<ModalContent> = Stack()
+    private var bus = BusProvider.getInstance()
 
     fun init(boardId: String, threadNum: Int){
         App.getComponent().inject(this)
+
+        bus.register(this)
 
         this.boardId = boardId
         this.threadNum = threadNum
@@ -46,10 +54,15 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
             repo.getThread(boardId, threadNum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{
-                    thread = it
-                    viewState.loadThread(thread)
-                }
+                .subscribe(
+                    {
+                        thread = it
+                        viewState.loadThread(thread)
+                    },
+                    {
+                        Log.d("M_ThreadPresenter", "$it")
+                    }
+                )
         )
     //TODO прятать fab при нажатии на ответ
 
@@ -122,10 +135,11 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        bus.unregister(this)
         disposables.forEach {
             it?.dispose()
         }
+        super.onDestroy()
     }
 
     fun showFooter() {

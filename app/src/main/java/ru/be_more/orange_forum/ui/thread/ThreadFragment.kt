@@ -21,8 +21,7 @@ import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.bus.AppToBeClosed
-import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
@@ -32,6 +31,7 @@ import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
+import java.lang.Exception
 
 /*const val PAGE_HTML = "<html>\n" +
         "<head>\n" +
@@ -100,6 +100,8 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         setOnScrollListener()
 
+
+
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
         srl_thread.setOnRefreshListener {
@@ -123,6 +125,7 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun onDestroy() {
+        bus.post(ThreadLeaved)
         bus.unregister(this)
         super.onDestroy()
     }
@@ -155,6 +158,17 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun loadThread(thread: BoardThread) {
+
+        if (thread.isDownloaded)
+            bus.post(DownloadedThreadEntered)
+        else
+            bus.post(UndownloadedThreadEntered)
+
+
+        if (thread.isFavorite)
+            bus.post(UnfavoriteThreadEntered)
+        else
+            bus.post(FavoriteThreadEntered)
 
         threadPresenter.initAdapter(thread, this, this)
 

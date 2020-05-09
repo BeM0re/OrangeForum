@@ -4,3 +4,8 @@ sealed class Event
 
 object BackPressed : Event()
 object AppToBeClosed : Event()
+object DownloadedThreadEntered : Event()
+object UndownloadedThreadEntered : Event()
+object FavoriteThreadEntered : Event()
+object UnfavoriteThreadEntered : Event()
+object ThreadLeaved : Event()

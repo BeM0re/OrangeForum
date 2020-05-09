@@ -5,6 +5,7 @@ import ru.be_more.orange_forum.di.modules.RepoModule
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.ui.board.BoardPresenter
 import ru.be_more.orange_forum.ui.category.CategoryPresenter
+import ru.be_more.orange_forum.ui.main.MainPresenter
 import ru.be_more.orange_forum.ui.post.PostPresenter
 import ru.be_more.orange_forum.ui.thread.ThreadPresenter
 import javax.inject.Singleton
@@ -19,6 +20,8 @@ interface RepoComponent {
     fun inject(presenter: ThreadPresenter)
 
     fun inject(presenter: PostPresenter)
+
+    fun inject(presenter: MainPresenter)
 
     fun getApiRepo(): DvachApiRepository
 

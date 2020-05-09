@@ -32,6 +32,7 @@ class MainPresenter : MvpPresenter<MainView>() {
     private var disposables : LinkedList<Disposable?> = LinkedList()
 
     init {
+        App.getComponent().inject(this)
         setBoard("")
         setThread(0)
         dbRepo.initDatabase()

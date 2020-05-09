@@ -1,15 +1,12 @@
 package ru.be_more.orange_forum.ui.main
 
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -17,8 +14,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.bus.AppToBeClosed
-import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
@@ -119,6 +115,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         bottomNavigationView.selectedItemId = R.id.navigation_category
 
         bus.register(this)
+
     }
 
     override fun onDestroy() {
@@ -202,5 +199,36 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    @Subscribe
+    fun showDownloadThreadButtons(event: UndownloadedThreadEntered){
+        toolbar.menu.findItem(R.id.navigation_download).isVisible = true
+        toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
+    }
+
+    @Subscribe
+    fun showUndownloadThreadButtons(event: DownloadedThreadEntered){
+        toolbar.menu.findItem(R.id.navigation_download_done).isVisible = true
+        toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
+    }
+
+    @Subscribe
+    fun showFavoriteThreadButtons(event: FavoriteThreadEntered){
+        toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
+    }
+
+    @Subscribe
+    fun showUnfavoriteThreadButtons(event: UnfavoriteThreadEntered){
+        toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
+    }
+
+    @Subscribe
+    fun hideThreadControlButtons(event: ThreadLeaved){
+        toolbar.menu.findItem(R.id.navigation_download).isVisible = false
+        toolbar.menu.findItem(R.id.navigation_download_done).isVisible = false
+        toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
+        toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
+        toolbar.menu.findItem(R.id.navigation_pref).isVisible = true
     }
 }
