@@ -2,6 +2,7 @@ package ru.be_more.orange_forum
 
 import android.app.Application
 import android.content.Context
+import android.widget.Toast
 import androidx.room.Room
 import ru.be_more.orange_forum.data.AppDatabase
 import ru.be_more.orange_forum.di.components.DaggerRepoComponent
@@ -24,6 +25,10 @@ open class App : Application() {
 
         fun getComponent(): RepoComponent {
             return component
+        }
+
+        fun showToast(message: String) {
+            Toast.makeText(this.applicationContext(), message, Toast.LENGTH_LONG).show()
         }
 
 //        fun getDatabase(): AppDatabase = database!!

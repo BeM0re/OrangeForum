@@ -4,5 +4,7 @@ data class BoardThread(
     var num : Int,
     var posts: List<Post> = listOf(),
     var title: String = "",
-    var isHidden: Boolean = false
+    var isHidden: Boolean = false,
+    var isDownloaded: Boolean = false,
+    var isFavorite: Boolean = false
 )

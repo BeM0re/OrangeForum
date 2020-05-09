@@ -1,15 +1,19 @@
 package ru.be_more.orange_forum.ui.main
 
 import android.util.Log
+import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.repositories.DvachDbRepository
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
+import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
@@ -25,16 +29,17 @@ class MainPresenter : MvpPresenter<MainView>() {
     private var threadNum :Int = 0
     private lateinit var threadTitle :String
 
-    private var disposable : Disposable? = null
+    private var disposables : LinkedList<Disposable?> = LinkedList()
 
     init {
         setBoard("")
         setThread(0)
+        dbRepo.initDatabase()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        disposable?.dispose()
+        disposables.forEach { it?.dispose() }
     }
 
     private fun setBoard(boardId: String){
@@ -102,7 +107,17 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     fun downloadThread() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        disposables.add(
+            apiRepo.getThread(boardId, threadNum)
+                .subscribeOn(Schedulers.io())
+                .subscribe (
+                    {
+                        dbRepo.saveThread(it, boardId)
+                    },
+                    {
+                        App.showToast("Ошибка")
+                    })
+        )
     }
 
     fun deleteThread() {

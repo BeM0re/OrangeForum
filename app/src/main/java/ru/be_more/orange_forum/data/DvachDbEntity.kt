@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.data
 
+import android.media.ThumbnailUtils
 import androidx.room.*
 
 @Entity(tableName = "categories")
@@ -42,7 +43,8 @@ data class StoredThread(
         childColumns = arrayOf("threadNum"),
         onDelete = ForeignKey.CASCADE)])
 data class StoredPost(
-    @PrimaryKey val num: Int,
+    val boardId: String,
+    val num: Int,
     val threadNum: Int,
     val name: String,
     val comment: String,
@@ -54,7 +56,8 @@ data class StoredPost(
     val subject: String,
     val timestamp: Int,
     val number: Int, //Порядковый номер в треде
-    @TypeConverters(ReplyConverter::class) val replies: List<Int> = listOf()
+    @TypeConverters(ReplyConverter::class) val replies: List<Int> = listOf(),
+    @PrimaryKey(autoGenerate = true) val id: Long? = null
 )
 
 @Entity(
@@ -64,6 +67,7 @@ data class StoredPost(
         childColumns = arrayOf("postNum"),
         onDelete = ForeignKey.CASCADE)])
 data class StoredFile(
+    val boardId: String,
     val postNum: Int,
     var displayName: String = "",
     var height: Int = 0,
@@ -72,7 +76,8 @@ data class StoredFile(
     var tn_width: Int = 0,
     var webPath: String = "",
     var localPath: String = "",
-    var thumbnail: String = "",
+    var webThumbnail: String = "",
+    var localThumbnail: String = "",
     var duration : String = "",
-    @PrimaryKey(autoGenerate = true) val id: Int
+    @PrimaryKey(autoGenerate = true) val id: Long? = null
 )
