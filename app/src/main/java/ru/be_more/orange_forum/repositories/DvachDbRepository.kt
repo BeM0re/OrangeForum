@@ -143,33 +143,18 @@ class DvachDbRepository @Inject constructor(){
             .subscribeOn(Schedulers.io())
             .flatMap { boards ->
                 Observable.create<List<Board>> { emitter ->
-                    //                Log.d("M_DvachDbRepository", "boards = $boards")
                     val modelBoards = LinkedList<Board>()
                     boards.forEach { board ->
-                        //                    Log.d("M_DvachDbRepository", "board = $board")
                         getThreadOpPosts(board.id)
                             .subscribeOn(Schedulers.io())
                             .subscribe { threads ->
-                                //                            Log.d("M_DvachDbRepository", "threads = $threads")
                                 modelBoards.add(toModelBoard(board, threads))
                                 emitter.onNext(modelBoards)
-//                                Observable.just(modelBoards)
                             }
                     }
-//                    emitter.onNext(modelBoards)
-//                    Observable.just(modelBoards)
                 }
 
             }
-
-
-    /* getThreadOpPosts(board.id)
-         .subscribeOn(Schedulers.io())
-         .subscribe { threads ->
-             Log.d("M_DvachDbRepository", "threads = $threads")
-             modelBoards.add(toModelBoard(board,threads))
-         }*/
-//                        .blockingSubscribe
 
     //возвращает список тредов одной борды с одним оп-постом в каждом треде
     fun getThreadOpPosts(boardId: String): Observable<List<BoardThread>> =
@@ -177,22 +162,14 @@ class DvachDbRepository @Inject constructor(){
             .subscribeOn(Schedulers.io())
             .flatMap { threads ->
                 Observable.create<List<BoardThread>> { emitter ->
-
-                    //                Log.d("M_DvachDbRepository", "threads = $threads")
                     val modelsOpPosts = LinkedList<BoardThread>()
                     threads.forEach { thread ->
-                        //                    Log.d("M_DvachDbRepository", "thread = $thread")
                         getPost(thread.boardId, thread.num)
                             .subscribe { post ->
-                                                        Log.d("M_DvachDbRepository", "post = $post")
                                 modelsOpPosts.add(opPostToThread(thread, post))
-                        Log.d("M_DvachDbRepository", "modelsOpPosts = $modelsOpPosts")
                                 emitter.onNext(modelsOpPosts)
-//                    Observable.just(modelsOpPosts)
                             }
                     }
-//                    emitter.onNext(modelsOpPosts)
-//                   Observable.just(modelsOpPosts)
                 }
             }
 
