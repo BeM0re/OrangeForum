@@ -5,6 +5,7 @@ import ru.be_more.orange_forum.di.modules.RepoModule
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.ui.board.BoardPresenter
 import ru.be_more.orange_forum.ui.category.CategoryPresenter
+import ru.be_more.orange_forum.ui.download.DownloadPresenter
 import ru.be_more.orange_forum.ui.main.MainPresenter
 import ru.be_more.orange_forum.ui.post.PostPresenter
 import ru.be_more.orange_forum.ui.thread.ThreadPresenter
@@ -22,6 +23,8 @@ interface RepoComponent {
     fun inject(presenter: PostPresenter)
 
     fun inject(presenter: MainPresenter)
+
+    fun inject(presenter: DownloadPresenter)
 
     fun getApiRepo(): DvachApiRepository
 

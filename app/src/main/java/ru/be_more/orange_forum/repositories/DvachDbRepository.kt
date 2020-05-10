@@ -13,10 +13,13 @@ import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.AttachFile
+import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.services.DVACH_ROOT_URL
@@ -71,7 +74,6 @@ class DvachDbRepository @Inject constructor(){
         }
     }
 
-
     private fun downloadImage(url: String): Uri? {
 //        val fulUrl = DVACH_ROOT_URL+url
         val glideUrl = GlideUrl(
@@ -85,15 +87,9 @@ class DvachDbRepository @Inject constructor(){
         )
         val context = App.applicationContext()
 
-        val requestOptions = RequestOptions().override(100)
-            .downsample(DownsampleStrategy.CENTER_INSIDE)
-            .skipMemoryCache(true)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-
         val bitmap = Glide.with(context)
             .asBitmap()
             .load(glideUrl)
-            .apply(requestOptions)
             .submit()
             .get()
 
@@ -104,23 +100,19 @@ class DvachDbRepository @Inject constructor(){
                 Log.d("M_GalleryFragment", "$ex")
                 return null
             }
-            // Continue only if the File was successfully created
             var fileName: Uri? = null
             if(photoFile != null) {
                 fileName = FileProvider.getUriForFile(
-                    context,
-                    "ru.be_more.orange_forum.fileprovider",
-                    photoFile
-                )
+                    context,"ru.be_more.orange_forum.fileprovider", photoFile)
                 val out = FileOutputStream(photoFile)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
                 out.flush()
                 out.close()
-                Log.d("M_DvachDbRepository", "Image saved. Path = $fileName")
+//                Log.d("M_DvachDbRepository", "Image saved. Path = $fileName")
             }
             return fileName
         } catch (e: Exception) {
-            Log.e("M_DvachDbRepository", "Image NOT saved.")
+            Log.e("M_DvachDbRepository", "Image NOT saved. Error = $e")
             return null
         }
     }
@@ -137,6 +129,47 @@ class DvachDbRepository @Inject constructor(){
         )
     }
 
+
+
+    fun getDownloads(): Observable<List<Board>> =
+        dvachDbDao.getBoards()
+            .subscribeOn(Schedulers.io())
+            .zipWith()
+
+
+    fun getOpPosts(boardId: String): Observable<List<Post>> =
+        dvachDbDao.getOpPosts(boardId)
+            .subscribeOn(Schedulers.io())
+            .switchMap { opPosts ->
+                val modelsOpPosts = LinkedList<Post> ()
+                    opPosts.forEach { opPost -> getPost(opPost.boardId, opPost.threadNum)
+                        .subscribe { modelsOpPosts.add(it) }}
+                return@switchMap Observable.just(modelsOpPosts)
+            }
+
+
+    fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
+        dvachDbDao.getThread(boardId, threadNum)
+            .subscribeOn(Schedulers.io())
+            .zipWith(getPosts(boardId, threadNum), BiFunction {thread, posts ->
+                toModelThread(thread, posts)
+            })
+
+    fun getPosts(boardId: String, threadNum: Int): Observable<List<Post>> =
+        dvachDbDao.getPosts(boardId, threadNum)
+            .subscribeOn(Schedulers.io())
+            .zipWith(dvachDbDao.getFiles(threadNum), BiFunction {posts, files ->
+                posts.map { post -> toModelPost(post, files.filter { it.postNum == post.num }) }
+            })
+
+    fun getPost(boardId: String, postNum: Int): Observable<Post> =
+        dvachDbDao.getPost(boardId, postNum)
+            .subscribeOn(Schedulers.io())
+            .zipWith(dvachDbDao.getFiles(postNum), BiFunction {post, files ->
+                toModelPost(post, files)
+            })
+
+
     private fun toStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
         num = thread.num,
         title = thread.title,
@@ -146,12 +179,13 @@ class DvachDbRepository @Inject constructor(){
         isFavorite = thread.isFavorite
     )
 
-    private fun toModelThread(thread: StoredThread): BoardThread = BoardThread(
+    private fun toModelThread(thread: StoredThread, posts: List<Post>): BoardThread = BoardThread(
         num = thread.num,
         title = thread.title,
         isHidden = thread.isHidden,
         isDownloaded = thread.isHidden,
-        isFavorite = thread.isFavorite
+        isFavorite = thread.isFavorite,
+        posts = posts
     )
 
     private fun toStoredPost(post: Post, threadNum: Int, boardId: String): StoredPost = StoredPost(
@@ -186,4 +220,25 @@ class DvachDbRepository @Inject constructor(){
         duration = file.duration
     )
 
+    private fun toModelPost(post: StoredPost, files: List<StoredFile>): Post = Post(
+        num = post.num,
+        name = post.name,
+        comment = post.comment,
+        date = post.date,
+        email = post.email,
+        files_count = post.files_count,
+        op = post.op,
+        posts_count = post.posts_count,
+        subject = post.subject,
+        timestamp = post.timestamp,
+        number = post.number,
+        replies = post.replies,
+        files = files.map { toModelFile(it) }
+    )
+
+    private fun toModelFile(file: StoredFile): AttachFile = AttachFile(
+        path = file.localPath,
+        thumbnail = file.localThumbnail,
+        duration = file.duration
+    )
 }

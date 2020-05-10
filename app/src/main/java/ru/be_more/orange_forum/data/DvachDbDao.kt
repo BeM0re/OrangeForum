@@ -18,17 +18,35 @@ interface DvachDao {
     @Query("SELECT * FROM boards WHERE categoryId = :category")
     fun getBoards(category: String): Observable<List<StoredBoard>>
 
+    @Query("SELECT * FROM boards")
+    fun getBoards(): Observable<List<StoredBoard>>
+
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun getBoard(boardId: String): Observable<StoredBoard>
 
-    @Query("SELECT * FROM threads WHERE num = :threadNum")
-    fun getThread(threadNum: Int): Observable<StoredThread>
+    @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
+    fun getThread(boardId: String, threadNum: Int): Observable<StoredThread>
 
-    @Query("SELECT * FROM posts WHERE threadNum = :threadNum")
-    fun getPost(threadNum: Int): Observable<StoredPost>
+    @Query("SELECT * FROM threads WHERE boardId = :boardId")
+    fun getThreads(boardId: String): Observable<List<StoredThread>>
+
+    @Query("SELECT * FROM posts WHERE boardId = :boardId AND num = threadNum")
+    fun getOpPosts(boardId: String): Observable<List<StoredPost>>
+
+    @Query("SELECT * FROM posts WHERE boardId = :boardId")
+    fun getPosts(boardId: String): Observable<List<StoredPost>>
+
+    @Query("SELECT * FROM posts WHERE threadNum = :threadNum AND boardId = :boardId")
+    fun getPosts(boardId: String, threadNum: Int): Observable<List<StoredPost>>
+
+    @Query("SELECT * FROM posts WHERE num = :postNum AND boardId = :boardId")
+    fun getPost(boardId: String, postNum: Int): Observable<StoredPost>
 
     @Query("SELECT * FROM files WHERE postNum = :postNum")
-    fun getFiles(postNum: Int): Observable<StoredFile>
+    fun getFiles(postNum: Int): Observable<List<StoredFile>>
+
+    @Query("SELECT * FROM files WHERE boardId = :boardId")
+    fun getFiles(boardId: String): Observable<List<StoredFile>>
 
 
     @Insert

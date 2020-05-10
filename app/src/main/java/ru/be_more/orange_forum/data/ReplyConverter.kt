@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.data
 
 import androidx.room.TypeConverter
+import java.util.*
 
 
 class ReplyConverter {
@@ -12,8 +13,9 @@ class ReplyConverter {
     }
 
     @TypeConverter
-    fun toReplies(data: String): List<Int> {
-        val strings = data.split(",").toList()
-        return strings.map{ it.toInt() }
+    fun toReplies(data: String): Stack<Int> {
+        val result: Stack<Int> = Stack()
+        data.split(",").toList().forEach { result.add(it.toInt()) }
+        return result
     }
 }

@@ -2,12 +2,13 @@ package ru.be_more.orange_forum.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 
 data class Board (
     var name:String,
     var id: String,
     var threads: List<BoardThread> = listOf()
-):Parcelable {
+):Parcelable, ExpandableGroup<BoardThread>(name, threads) {
     constructor(parcel: Parcel) : this(
         parcel.readString().orEmpty(),
         parcel.readString().orEmpty()

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Category
 

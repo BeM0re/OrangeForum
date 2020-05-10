@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.fragment_category.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.model.Category
 
 

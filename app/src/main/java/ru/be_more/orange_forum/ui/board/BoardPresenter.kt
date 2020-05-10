@@ -44,9 +44,7 @@ class BoardPresenter : MvpPresenter<BoardView>() {
     }
 
     override fun onDestroy() {
-        disposables.forEach {
-            it?.dispose()
-        }
+        disposables.forEach { it?.dispose() }
         super.onDestroy()
     }
 
@@ -54,8 +52,8 @@ class BoardPresenter : MvpPresenter<BoardView>() {
         this.modalStack.clear()
     }
 
-    fun putContentInStack(modal: ModalContent) {
-        this.modalStack.push(modal)
+    fun putContentInStack(content: ModalContent) {
+        this.modalStack.push(content)
     }
 
     fun onBackPressed() {

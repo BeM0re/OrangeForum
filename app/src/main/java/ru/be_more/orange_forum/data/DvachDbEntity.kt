@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.data
 
 import android.media.ThumbnailUtils
 import androidx.room.*
+import java.util.*
 
 @Entity(tableName = "categories")
 data class StoredCategory(
@@ -56,7 +57,7 @@ data class StoredPost(
     val subject: String,
     val timestamp: Int,
     val number: Int, //Порядковый номер в треде
-    @TypeConverters(ReplyConverter::class) val replies: List<Int> = listOf()
+    @TypeConverters(ReplyConverter::class) val replies: Stack<Int> = Stack()
 //    @PrimaryKey(autoGenerate = true) val id: Long? = null
 )
 
