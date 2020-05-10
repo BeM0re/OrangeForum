@@ -64,9 +64,18 @@ class DownloadFragment private constructor(
     }
 
     override fun loadDownloads(boards: List<Board>) {
-        adapter = DownloadAdapter(boards, this, this, this)
-
-        recyclerView.adapter = adapter
+//        Log.d("M_DownloadFragment", "1")
+        var isOk = true
+        if (boards.isNotEmpty()) {
+            boards.forEach { board ->
+                if (board.threads.isEmpty())
+                    isOk = false
+            }
+            if (isOk) {
+                adapter = DownloadAdapter(boards, this, this, this)
+                recyclerView.adapter = adapter
+            }
+        }
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {

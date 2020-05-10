@@ -43,20 +43,28 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
     ) {
         val thread: BoardThread = (group as Board).items[childIndex]
 
-        holder.setSenderName(thread.posts[0].name)
-        holder.setIsOp(thread.posts[0].op > 0)
-        holder.setDate(thread.posts[0].date)
-        holder.setThreadNum(thread.posts[0].num)
-        holder.setTitle(thread.posts[0].subject)
-        holder.setComment(thread.posts[0].comment)
-        holder.setTotalPosts(thread.posts[0].posts_count)
-        holder.setPostsWithPic(thread.posts[0].files_count)
-        if(thread.posts[0].files.isNotEmpty()){
-            holder.setPics(thread.posts[0].files)
+        if(thread.posts.isNotEmpty()) {
+            holder.setSenderName(thread.posts[0].name)
+            holder.setIsOp(thread.posts[0].op > 0)
+            holder.setDate(thread.posts[0].date)
+            holder.setThreadNum(thread.posts[0].num)
+            holder.setTitle(thread.posts[0].subject)
+            holder.setComment(thread.posts[0].comment)
+            holder.setTotalPosts(thread.posts[0].posts_count)
+            holder.setPostsWithPic(thread.posts[0].files_count)
+            if (thread.posts[0].files.isNotEmpty()) {
+                holder.setPics(thread.posts[0].files)
+            }
+            holder.setCommentListener(linkListener)
+            holder.setRemoveButton(group.id, thread, downloadListener)
+            holder.setIntoThreadButton(View.OnClickListener {
+                downloadListener.intoThreadClick(
+                    group.id,
+                    thread.num,
+                    thread.title
+                )
+            })
         }
-        holder.setCommentListener(linkListener)
-        holder.setRemoveButton(group.id, thread, downloadListener)
-        holder.setIntoThreadButton(View.OnClickListener { downloadListener.intoThreadClick(group.id, thread.num, thread.title) })
     }
 
     override fun onBindGroupViewHolder(

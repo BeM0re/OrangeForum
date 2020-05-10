@@ -6,15 +6,11 @@ import android.os.Environment
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
-import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.*
@@ -132,8 +128,6 @@ class DvachDbRepository @Inject constructor(){
         )
     }
 
-
-
     fun getBoardNames(): Observable<List<Board>> =
         dvachDbDao.getBoards()
             .subscribeOn(Schedulers.io())
@@ -143,16 +137,63 @@ class DvachDbRepository @Inject constructor(){
                 return@switchMap Observable.just(boardNames)
             }
 
+
+    fun getBoards(): Observable<List<Board>> =
+        dvachDbDao.getBoards()
+            .subscribeOn(Schedulers.io())
+            .flatMap { boards ->
+                Observable.create<List<Board>> { emitter ->
+                    //                Log.d("M_DvachDbRepository", "boards = $boards")
+                    val modelBoards = LinkedList<Board>()
+                    boards.forEach { board ->
+                        //                    Log.d("M_DvachDbRepository", "board = $board")
+                        getThreadOpPosts(board.id)
+                            .subscribeOn(Schedulers.io())
+                            .subscribe { threads ->
+                                //                            Log.d("M_DvachDbRepository", "threads = $threads")
+                                modelBoards.add(toModelBoard(board, threads))
+                                emitter.onNext(modelBoards)
+//                                Observable.just(modelBoards)
+                            }
+                    }
+//                    emitter.onNext(modelBoards)
+//                    Observable.just(modelBoards)
+                }
+
+            }
+
+
+    /* getThreadOpPosts(board.id)
+         .subscribeOn(Schedulers.io())
+         .subscribe { threads ->
+             Log.d("M_DvachDbRepository", "threads = $threads")
+             modelBoards.add(toModelBoard(board,threads))
+         }*/
+//                        .blockingSubscribe
+
+    //возвращает список тредов одной борды с одним оп-постом в каждом треде
     fun getThreadOpPosts(boardId: String): Observable<List<BoardThread>> =
         dvachDbDao.getThreadOpPosts(boardId)
             .subscribeOn(Schedulers.io())
-            .switchMap { threads ->
-                val modelsOpPosts = LinkedList<BoardThread> ()
-                threads.forEach {
-                        thread -> getPost(thread.boardId, thread.num)
-                    .subscribe { post -> modelsOpPosts.add(opPostToThread(thread, post)) }
+            .flatMap { threads ->
+                Observable.create<List<BoardThread>> { emitter ->
+
+                    //                Log.d("M_DvachDbRepository", "threads = $threads")
+                    val modelsOpPosts = LinkedList<BoardThread>()
+                    threads.forEach { thread ->
+                        //                    Log.d("M_DvachDbRepository", "thread = $thread")
+                        getPost(thread.boardId, thread.num)
+                            .subscribe { post ->
+                                                        Log.d("M_DvachDbRepository", "post = $post")
+                                modelsOpPosts.add(opPostToThread(thread, post))
+                        Log.d("M_DvachDbRepository", "modelsOpPosts = $modelsOpPosts")
+                                emitter.onNext(modelsOpPosts)
+//                    Observable.just(modelsOpPosts)
+                            }
+                    }
+//                    emitter.onNext(modelsOpPosts)
+//                   Observable.just(modelsOpPosts)
                 }
-                return@switchMap Observable.just(modelsOpPosts)
             }
 
 
@@ -193,7 +234,25 @@ class DvachDbRepository @Inject constructor(){
         title = post.subject,
         isHidden = thread.isHidden,
         isDownloaded = thread.isDownloaded,
-        isFavorite = thread.isFavorite
+        isFavorite = thread.isFavorite,
+        posts = listOf(post)
+    )
+
+    private fun toModelBoards(boards: List<StoredBoard>): List<Board>{
+        val modelBoards = LinkedList<Board>()
+        boards.forEach { board ->
+            getThreadOpPosts(board.id)
+                .subscribe{ threads ->
+                    modelBoards.add(toModelBoard(board,threads))
+                }
+        }
+        return modelBoards
+    }
+
+    private fun toModelBoard(board: StoredBoard, threads: List<BoardThread>): Board = Board(
+        name = board.name,
+        id = board.id,
+        threads = threads
     )
 
     private fun toModelBoardName(board: StoredBoard): Board = Board(

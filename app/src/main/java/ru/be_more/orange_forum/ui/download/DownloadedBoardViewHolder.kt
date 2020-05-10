@@ -12,6 +12,6 @@ class DownloadedBoardViewHolder(itemView: View?) : GroupViewHolder(itemView) {
 private var categoryTitle: TextView = itemView!!.findViewById(R.id.tv_downloaded_board_title)
 
     fun setBoardTitle(boardName: String) {
-        categoryTitle.text = boardName;
+        categoryTitle.text = boardName
     }
 }
