@@ -33,12 +33,15 @@ import javax.inject.Inject
 class DvachDbRepository @Inject constructor(){
 
     private lateinit var dvachDbDao: DvachDao
-    private lateinit var db: AppDatabase
+    private var db: AppDatabase = App.getDatabase()
     private var disposable: LinkedList<Disposable> = LinkedList()
 
-    fun initDatabase() : DvachDao{
-        db = App.getDatabase()
+    init {
+
         dvachDbDao = db.dvachDao()
+    }
+
+    fun initDatabase() : DvachDao{
         return dvachDbDao
     }
 
@@ -131,10 +134,26 @@ class DvachDbRepository @Inject constructor(){
 
 
 
-    fun getDownloads(): Observable<List<Board>> =
+    fun getBoardNames(): Observable<List<Board>> =
         dvachDbDao.getBoards()
             .subscribeOn(Schedulers.io())
-            .zipWith()
+            .switchMap { boards ->
+                val boardNames = LinkedList<Board>()
+                boards.forEach { board -> boardNames.add(toModelBoardName(board)) }
+                return@switchMap Observable.just(boardNames)
+            }
+
+    fun getThreadOpPosts(boardId: String): Observable<List<BoardThread>> =
+        dvachDbDao.getThreadOpPosts(boardId)
+            .subscribeOn(Schedulers.io())
+            .switchMap { threads ->
+                val modelsOpPosts = LinkedList<BoardThread> ()
+                threads.forEach {
+                        thread -> getPost(thread.boardId, thread.num)
+                    .subscribe { post -> modelsOpPosts.add(opPostToThread(thread, post)) }
+                }
+                return@switchMap Observable.just(modelsOpPosts)
+            }
 
 
     fun getOpPosts(boardId: String): Observable<List<Post>> =
@@ -169,6 +188,18 @@ class DvachDbRepository @Inject constructor(){
                 toModelPost(post, files)
             })
 
+    private fun opPostToThread(thread: StoredThread, post: Post): BoardThread = BoardThread(
+        num = post.num,
+        title = post.subject,
+        isHidden = thread.isHidden,
+        isDownloaded = thread.isDownloaded,
+        isFavorite = thread.isFavorite
+    )
+
+    private fun toModelBoardName(board: StoredBoard): Board = Board(
+        name = board.name,
+        id = board.id
+    )
 
     private fun toStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
         num = thread.num,

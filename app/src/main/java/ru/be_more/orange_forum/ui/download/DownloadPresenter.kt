@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.download
 
+import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -31,10 +32,21 @@ class DownloadPresenter : MvpPresenter<DownloadView>() {
 
     override fun onFirstViewAttach(){
         disposables.add(
-            dbRepo.getDownloads()
+            dbRepo.getBoardNames()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{viewState.loadDownloads(it)}
+                .subscribe{boards ->
+                    boards.map { board ->
+                        dbRepo.getThreadOpPosts(board.id)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe (
+                                { threads -> board.threads = threads },
+                                { Log.d("M_DownloadPresenter", "error = $it") }
+                            )
+                    }
+                    viewState.loadDownloads(boards)
+                }
         )
     }
 

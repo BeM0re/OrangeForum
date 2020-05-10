@@ -12,6 +12,7 @@ import ru.be_more.orange_forum.repositories.DvachDbRepository
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
+import ru.be_more.orange_forum.ui.download.DownloadFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
 import java.util.*
 import javax.inject.Inject
@@ -98,7 +99,15 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     fun makeDownloadedFragment() {
-        val fragment = TempFragment()
+        val fragment = DownloadFragment.getDownloadFragment({boardId, threadNum, title ->
+            this.boardId = boardId
+            this.threadTitle = title
+            viewState.setActionBarTitle(title)
+            setThread(threadNum)
+        },
+        {
+            boardId, threadNum -> "" //TODO сделать удаление треда
+        })
         viewState.showDownloadedFragment(fragment)
     }
 

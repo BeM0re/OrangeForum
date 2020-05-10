@@ -9,7 +9,7 @@ import ru.be_more.orange_forum.model.Category
 
 class DownloadedBoardViewHolder(itemView: View?) : GroupViewHolder(itemView) {
 
-private var categoryTitle: TextView = itemView!!.findViewById(R.id.tv_category_title)
+private var categoryTitle: TextView = itemView!!.findViewById(R.id.tv_downloaded_board_title)
 
     fun setBoardTitle(boardName: String) {
         categoryTitle.text = boardName;

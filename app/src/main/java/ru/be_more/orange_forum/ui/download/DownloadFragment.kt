@@ -58,6 +58,11 @@ class DownloadFragment private constructor(
         bus.register(this)
     }
 
+    override fun onDestroy() {
+        bus.unregister(this)
+        super.onDestroy()
+    }
+
     override fun loadDownloads(boards: List<Board>) {
         adapter = DownloadAdapter(boards, this, this, this)
 
