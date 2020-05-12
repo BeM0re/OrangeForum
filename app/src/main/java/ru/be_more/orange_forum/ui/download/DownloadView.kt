@@ -13,6 +13,7 @@ import java.security.MessageDigest
 @StateStrategyType(value = AddToEndStrategy::class)
 interface DownloadView  : MvpView {
     fun loadDownloads(boards: List<Board>)
+    fun loadDownloads()
     fun showPic(attachment: Attachment)
     fun showPost(post: Post)
     fun hideModal()

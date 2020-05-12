@@ -1,6 +1,8 @@
 package ru.be_more.orange_forum.ui.download
 
+import android.os.Handler
 import android.util.Log
+import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -8,6 +10,7 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.model.Attachment
+import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.ModalContent
 import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.repositories.DvachApiRepository
@@ -25,6 +28,8 @@ class DownloadPresenter : MvpPresenter<DownloadView>() {
     private var disposables : LinkedList<Disposable?> = LinkedList()
 
     private val modalStack: Stack<ModalContent> = Stack()
+    private lateinit var boards : List<Board>
+    private var timestamp: Long = 0
 
     init {
         App.getComponent().inject(this)
@@ -52,11 +57,14 @@ class DownloadPresenter : MvpPresenter<DownloadView>() {
             dbRepo.getBoards()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{ boards ->
-                    Log.d("M_DvachDbRepository", "Presenter boards = $boards")
-                    viewState.loadDownloads(boards)
-//                    Log.d("M_DvachDbRepository", "presenter ok")
-                }
+                .subscribe({ boards ->
+                    this.boards = boards
+                    Handler().postDelayed({
+                        viewState.loadDownloads()
+                    }, 10)
+                },
+                    {Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it")}
+                )
         )
     }
 
@@ -102,4 +110,6 @@ class DownloadPresenter : MvpPresenter<DownloadView>() {
         } else
             viewState.hideModal()
     }
+
+    fun getBoards(): List<Board> = this.boards
 }

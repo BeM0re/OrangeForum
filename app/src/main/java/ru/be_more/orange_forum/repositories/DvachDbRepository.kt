@@ -137,27 +137,32 @@ class DvachDbRepository @Inject constructor(){
                 return@switchMap Observable.just(boardNames)
             }
 
-
     fun getBoards(): Observable<List<Board>> =
         dvachDbDao.getBoards()
             .subscribeOn(Schedulers.io())
             .flatMap { boards ->
+//                Log.d("M_DvachDbRepository", "board = $boards")
                 Observable.create<List<Board>> { emitter ->
                     val modelBoards = LinkedList<Board>()
                     boards.forEach { board ->
                         getThreadOpPosts(board.id)
                             .subscribeOn(Schedulers.io())
-                            .subscribe { threads ->
+                            .subscribe ({ threads ->
+//                                Log.d("M_DvachDbRepository", "threads = $threads")
+                                modelBoards.remove(modelBoards.find { boardToFind -> boardToFind.id == board.id })
                                 modelBoards.add(toModelBoard(board, threads))
                                 emitter.onNext(modelBoards)
-                            }
+//                                Log.d("M_DvachDbRepository", "modelBoards = $modelBoards")
+                            },
+                                { Log.d("M_DvachDbRepository", "getThreadOpPosts error = $it")}
+                            )
                     }
                 }
 
             }
 
     //возвращает список тредов одной борды с одним оп-постом в каждом треде
-    fun getThreadOpPosts(boardId: String): Observable<List<BoardThread>> =
+    private fun getThreadOpPosts(boardId: String): Observable<List<BoardThread>> =
         dvachDbDao.getThreadOpPosts(boardId)
             .subscribeOn(Schedulers.io())
             .flatMap { threads ->
@@ -165,14 +170,15 @@ class DvachDbRepository @Inject constructor(){
                     val modelsOpPosts = LinkedList<BoardThread>()
                     threads.forEach { thread ->
                         getPost(thread.boardId, thread.num)
-                            .subscribe { post ->
+                            .subscribe ({ post ->
                                 modelsOpPosts.add(opPostToThread(thread, post))
                                 emitter.onNext(modelsOpPosts)
-                            }
+                            },
+                                { Log.d("M_DvachDbRepository", "getPost error = $it")}
+                            )
                     }
                 }
             }
-
 
     fun getOpPosts(boardId: String): Observable<List<Post>> =
         dvachDbDao.getOpPosts(boardId)
@@ -183,7 +189,6 @@ class DvachDbRepository @Inject constructor(){
                         .subscribe { modelsOpPosts.add(it) }}
                 return@switchMap Observable.just(modelsOpPosts)
             }
-
 
     fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
         dvachDbDao.getThread(boardId, threadNum)
