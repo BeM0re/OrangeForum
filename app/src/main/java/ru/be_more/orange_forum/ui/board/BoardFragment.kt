@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.ui.board
 
 import android.graphics.drawable.ClipDrawable.HORIZONTAL
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -96,6 +97,10 @@ class BoardFragment: MvpAppCompatFragment(),
         boardPresenter.putContentInStack(attachment)
 
         showPic(attachment)
+    }
+
+    override fun onThumbnailListener(fullPicUri: Uri, duration: String?) {
+        //this doesn't work with local files
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {

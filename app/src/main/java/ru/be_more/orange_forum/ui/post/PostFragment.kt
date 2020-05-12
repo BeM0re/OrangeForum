@@ -56,6 +56,7 @@ class PostFragment : MvpAppCompatFragment(), PostView {
 
     private fun showPost(post: Post){
 
+
         v_post1_pic_full_background.visibility = View.VISIBLE
 
         ll_post_layout.setBackgroundColor(resources.getColor(R.color.color_background))
@@ -92,25 +93,30 @@ class PostFragment : MvpAppCompatFragment(), PostView {
     }
 
     private fun showAttachment(pic: Attachment) {
+        Log.d("M_PostFragment", "pic = $pic")
+
         v_post1_pic_full_background.visibility = View.VISIBLE
         pb_post1_pic_loading.visibility = View.VISIBLE
 
         if(pic.duration == "") {
-            val fullPicGlideUrl = GlideUrl(
-                pic.url,
-                LazyHeaders.Builder()
-                    .addHeader(
-                        "Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
-                                "_ga=GA1.2.57010468.1498700728; " +
-                                "ageallow=1; " +
-                                "_gid=GA1.2.1910512907.1585793763; " +
-                                "_gat=1"
-                    ).build()
-            )
+            var fullPicGlideUrl: GlideUrl? = null
+            if(pic.uri == null) {
+                fullPicGlideUrl = GlideUrl(
+                    pic.url,
+                    LazyHeaders.Builder()
+                        .addHeader(
+                            "Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
+                                    "_ga=GA1.2.57010468.1498700728; " +
+                                    "ageallow=1; " +
+                                    "_gid=GA1.2.1910512907.1585793763; " +
+                                    "_gat=1"
+                        ).build()
+                )
+            }
             iv_post1_pic_full.resetZoom()
             iv_post1_pic_full.visibility = View.VISIBLE
             Glide.with(this)
-                .load(fullPicGlideUrl)
+                .load(if (pic.uri != null) pic.uri else fullPicGlideUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(

@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.download
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -64,14 +65,12 @@ class DownloadFragment private constructor(
     }
 
     override fun loadDownloads(boards: List<Board>) {
-//        Log.d("M_DownloadFragment", "1")
                 adapter = DownloadAdapter(boards, this, this, this)
                 recyclerView.adapter = adapter
 
     }
 
     override fun loadDownloads() {
-//        Log.d("M_DownloadFragment", "1")
         adapter = DownloadAdapter(downloadPresenter.getBoards(), this, this, this)
         recyclerView.adapter = adapter
 
@@ -103,9 +102,20 @@ class DownloadFragment private constructor(
 
     override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
 
-        fl_board_post.visibility = View.VISIBLE
+        fl_downloaded_board_post.visibility = View.VISIBLE
 
         val attachment = Attachment(fullPicUrl, duration)
+
+        downloadPresenter.putContentInStack(attachment)
+
+        showPic(attachment)
+    }
+
+    override fun onThumbnailListener(fullPicUri: Uri, duration: String?) {
+
+        fl_downloaded_board_post.visibility = View.VISIBLE
+
+        val attachment = Attachment("", duration, fullPicUri)
 
         downloadPresenter.putContentInStack(attachment)
 
@@ -118,7 +128,7 @@ class DownloadFragment private constructor(
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_downloaded_board_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
     }
 
@@ -131,7 +141,7 @@ class DownloadFragment private constructor(
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_downloaded_board_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
     }
 

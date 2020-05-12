@@ -15,7 +15,6 @@
         tools:layout_editor_absoluteY="1dp"
         tools:listitem="@layout/item_board_op"/>
 
-
     <FrameLayout
         android:id="@+id/fl_board_post"
         android:layout_width="match_parent"

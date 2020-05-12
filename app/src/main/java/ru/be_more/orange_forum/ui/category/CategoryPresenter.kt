@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.category
 
+import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -25,7 +26,10 @@ class CategoryPresenter : MvpPresenter<CategoryView>() {
         disposable = repo.getCategories()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe{viewState.loadCategories(it)}
+            .subscribe(
+                { viewState.loadCategories(it) },
+                { App.showToast("Can't load categories") }
+            )
     }
 
     override fun onDestroy() {

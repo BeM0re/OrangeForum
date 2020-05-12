@@ -309,8 +309,10 @@ class DvachDbRepository @Inject constructor(){
     )
 
     private fun toModelFile(file: StoredFile): AttachFile = AttachFile(
-        path = file.localPath,
-        thumbnail = file.localThumbnail,
+        path = file.webPath,
+        thumbnail = file.webThumbnail,
+        localPath = file.localPath,
+        localThumbnail = file.localThumbnail,
         duration = file.duration
     )
 }

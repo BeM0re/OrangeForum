@@ -8,5 +8,7 @@ data class AttachFile(
     var tn_width: Int = 0,
     var path: String = "",
     var thumbnail: String = "",
-    var duration : String = ""
+    var duration : String = "",
+    var localPath: String = "",
+    var localThumbnail: String = ""
 )
