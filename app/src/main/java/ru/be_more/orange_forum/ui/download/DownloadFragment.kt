@@ -65,13 +65,13 @@ class DownloadFragment private constructor(
     }
 
     override fun loadDownloads(boards: List<Board>) {
-                adapter = DownloadAdapter(boards, this, this, this)
-                recyclerView.adapter = adapter
-
+        adapter = DownloadAdapter(boards, this, this, this)
+        recyclerView.adapter = adapter
     }
 
     override fun loadDownloads() {
-        adapter = DownloadAdapter(downloadPresenter.getBoards(), this, this, this)
+        adapter = DownloadAdapter(
+            downloadPresenter.getBoards(), this, this, this)
         recyclerView.adapter = adapter
 
     }

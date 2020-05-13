@@ -42,14 +42,15 @@ class DownloadPresenter : MvpPresenter<DownloadView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ boards ->
-                    Log.d("M_DownloadPresenter", "boards = $boards")
+//                    Log.d("M_DownloadPresenter", "boards = $boards")
                     this.boards = boards
-                    viewState.loadDownloads()
-//                    Handler().postDelayed({
-//                        viewState.loadDownloads()
-//                    }, 10)
+//                    viewState.loadDownloads(boards)
+//                    Log.d("M_DownloadPresenter", "boards = $boards")
+                    Handler().postDelayed({
+                        viewState.loadDownloads()
+                    }, 10)
                 },
-                    {Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it")}
+                    { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
                 )
         )
     }
@@ -74,7 +75,7 @@ class DownloadPresenter : MvpPresenter<DownloadView>() {
                         this.putContentInStack(it)
                         viewState.showPost(it)
                     },
-                    { viewState.showToast("Пост не найден") }
+                    {  App.showToast("Пост не найден" ) }
                 )
 
         )

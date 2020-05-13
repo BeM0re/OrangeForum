@@ -10,12 +10,7 @@ data class StoredCategory(
     val name: String
 )
 
-@Entity(
-    tableName = "boards"
-    /*foreignKeys = [ForeignKey(entity = StoredCategory::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("categoryId"),
-        onDelete = ForeignKey.CASCADE)]*/)
+@Entity(tableName = "boards")
 data class StoredBoard(
     @PrimaryKey val id: String,
     val categoryId: String,
@@ -58,7 +53,6 @@ data class StoredPost(
     val timestamp: Int,
     val number: Int, //Порядковый номер в треде
     @TypeConverters(ReplyConverter::class) val replies: Stack<Int> = Stack()
-//    @PrimaryKey(autoGenerate = true) val id: Long? = null
 )
 
 @Entity(

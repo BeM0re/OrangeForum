@@ -14,10 +14,13 @@ class ReplyConverter {
 
     @TypeConverter
     fun toReplies(data: String): Stack<Int> {
-        val replies = data.substring(0, data.length-1)
         val result: Stack<Int> = Stack()
-        replies.split(",").forEach {
-            result.add(it.toInt())
+
+        if (data.isNotEmpty()){
+            val replies = data.substring(0, data.length-1)
+            replies.split(",").forEach {
+                result.add(it.toInt())
+            }
         }
         return result
     }

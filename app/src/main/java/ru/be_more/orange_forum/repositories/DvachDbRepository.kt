@@ -148,17 +148,14 @@ class DvachDbRepository @Inject constructor(){
             dvachDbDao.getOpPosts(),
             dvachDbDao.getFiles(),
             Function4 { boards, threads, posts, files ->
+//                Log.d("M_DvachDbRepository", "boards = $boards")
+//                Log.d("M_DvachDbRepository", "threads = $threads")
+//                Log.d("M_DvachDbRepository", "posts = $posts")
+//                Log.d("M_DvachDbRepository", "files = $files")
                 val boardResult = LinkedList<Board>()
                 boards.forEach{ board ->
                     boardResult.add(toModelBoard(board))
-                    val threadResult = toModelThreads(threads.filter { it.boardId == board.id })
-
-
-                    /*boardResult.last.threads.forEach { thread ->
-                        var a = boardResult.last.threads.find { it.num == thread.num }
-                    }*/
-
-                    boardResult.last.threads = threadResult
+                    boardResult.last.threads = toModelThreads(threads.filter { it.boardId == board.id })
                 }
 
                 posts.forEach { post ->

@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.download
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,10 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
                       var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<DownloadedBoardViewHolder, DownloadedThreadViewHolder>(groups){
 
+    override fun onGroupClick(flatPos: Int): Boolean {
+        return super.onGroupClick(flatPos)
+    }
+
     override fun onCreateGroupViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -32,6 +37,7 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
         parent: ViewGroup,
         viewType: Int
     ): DownloadedThreadViewHolder {
+        Log.d("M_DownloadAdapter", "parent = $parent")
         val inflater = LayoutInflater.from(parent.context)
         val view: View = inflater.inflate(R.layout.item_board_op, parent, false)
         return DownloadedThreadViewHolder(view, picListener)
