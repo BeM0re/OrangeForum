@@ -25,6 +25,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 class DvachDbRepository @Inject constructor(){
@@ -148,14 +149,12 @@ class DvachDbRepository @Inject constructor(){
             dvachDbDao.getOpPosts(),
             dvachDbDao.getFiles(),
             Function4 { boards, threads, posts, files ->
-//                Log.d("M_DvachDbRepository", "boards = $boards")
-//                Log.d("M_DvachDbRepository", "threads = $threads")
-//                Log.d("M_DvachDbRepository", "posts = $posts")
-//                Log.d("M_DvachDbRepository", "files = $files")
                 val boardResult = LinkedList<Board>()
                 boards.forEach{ board ->
-                    boardResult.add(toModelBoard(board))
-                    boardResult.last.threads = toModelThreads(threads.filter { it.boardId == board.id })
+                    boardResult.add(toModelBoard(
+                        board,
+                        toModelThreads(threads.filter { it.boardId == board.id })
+                    ))
                 }
 
                 posts.forEach { post ->

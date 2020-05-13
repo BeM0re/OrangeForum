@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
@@ -20,7 +21,23 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
                       var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<DownloadedBoardViewHolder, DownloadedThreadViewHolder>(groups){
 
+    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
+        Log.d("M_DownloadAdapter", "observer")
+        super.registerAdapterDataObserver(observer)
+    }
+
+    override fun onFailedToRecycleView(holder: RecyclerView.ViewHolder): Boolean {
+        Log.d("M_DownloadAdapter", "recycled failed")
+        return super.onFailedToRecycleView(holder)
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        Log.d("M_DownloadAdapter", "attached")
+        super.onAttachedToRecyclerView(recyclerView)
+    }
+
     override fun onGroupClick(flatPos: Int): Boolean {
+        Log.d("M_DownloadAdapter", "click")
         return super.onGroupClick(flatPos)
     }
 
