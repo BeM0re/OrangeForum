@@ -8,7 +8,7 @@ data class Post (
     var comment: String,
     var date: String,
     var email: String,
-    var files: List<AttachFile>,
+    var files: List<AttachFile> = listOf(),
     var files_count: Int,
     var op: Int,
     var posts_count: Int,

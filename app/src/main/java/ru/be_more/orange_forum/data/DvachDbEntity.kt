@@ -80,5 +80,6 @@ data class StoredFile(
     var webThumbnail: String = "",
     var localThumbnail: String = "",
     var duration : String = "",
+    var isOpPostFile: Boolean = false,
     @PrimaryKey(autoGenerate = true) val id: Long? = null
 )

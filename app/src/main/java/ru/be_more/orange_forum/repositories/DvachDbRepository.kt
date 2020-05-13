@@ -11,6 +11,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function4
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.*
@@ -66,7 +67,9 @@ class DvachDbRepository @Inject constructor(){
     private fun savePost(post: Post, threadNum: Int, boardId: String){
         dvachDbDao.insertPost(toStoredPost(post, threadNum, boardId))
         post.files.forEach { file ->
-            Observable.fromCallable { dvachDbDao.insertFile(toStoredFile(file, post.num, boardId)) }
+            Observable.fromCallable {
+                dvachDbDao.insertFile(toStoredFile(file, post.num, boardId, post.number))
+            }
                 .subscribeOn(Schedulers.io())
                 .subscribe({},
                     { Log.d("M_DvachDbRepository", "$it") })
@@ -136,6 +139,42 @@ class DvachDbRepository @Inject constructor(){
                 boards.forEach { board -> boardNames.add(toModelBoardName(board)) }
                 return@switchMap Observable.just(boardNames)
             }
+
+
+    fun getDownloads(): Observable<List<Board>> =
+        Observable.zip(
+            dvachDbDao.getBoards(),
+            dvachDbDao.getThread(),
+            dvachDbDao.getOpPosts(),
+            dvachDbDao.getFiles(),
+            Function4 { boards, threads, posts, files ->
+                val boardResult = LinkedList<Board>()
+                boards.forEach{ board ->
+                    boardResult.add(toModelBoard(board))
+                    val threadResult = toModelThreads(threads.filter { it.boardId == board.id })
+
+
+                    /*boardResult.last.threads.forEach { thread ->
+                        var a = boardResult.last.threads.find { it.num == thread.num }
+                    }*/
+
+                    boardResult.last.threads = threadResult
+                }
+
+                posts.forEach { post ->
+                    boardResult.find { it.id == post.boardId }
+                        ?.threads?.find { it.num == post.threadNum }
+                        ?.posts = listOf(toModelPost(
+                        post,
+                        files.filter { it.postNum == post.num && it.boardId == post.boardId})
+                    )
+                }
+
+                boardResult
+            }
+        )
+
+
 
     fun getBoards(): Observable<List<Board>> =
         dvachDbDao.getBoards()
@@ -237,6 +276,11 @@ class DvachDbRepository @Inject constructor(){
         threads = threads
     )
 
+    private fun toModelBoard(board: StoredBoard): Board = Board(
+        name = board.name,
+        id = board.id
+    )
+
     private fun toModelBoardName(board: StoredBoard): Board = Board(
         name = board.name,
         id = board.id
@@ -260,6 +304,19 @@ class DvachDbRepository @Inject constructor(){
         posts = posts
     )
 
+    private fun toModelThreads(threads: List<StoredThread>): List<BoardThread> {
+        val result =  LinkedList<BoardThread>()
+        threads.forEach { thread ->
+            result.add(BoardThread(
+                num = thread.num,
+                title = thread.title,
+                isHidden = thread.isHidden,
+                isDownloaded = thread.isHidden,
+                isFavorite = thread.isFavorite)
+        ) }
+        return result
+    }
+
     private fun toStoredPost(post: Post, threadNum: Int, boardId: String): StoredPost = StoredPost(
         boardId = boardId,
         num = post.num,
@@ -277,7 +334,7 @@ class DvachDbRepository @Inject constructor(){
         replies = post.replies
     )
 
-    private fun toStoredFile(file: AttachFile, postNum: Int, boardId: String): StoredFile = StoredFile(
+    private fun toStoredFile(file: AttachFile, postNum: Int, boardId: String, postNumber: Int = 0): StoredFile = StoredFile(
         boardId = boardId,
         postNum = postNum,
         displayName = file.displayName,
@@ -289,7 +346,8 @@ class DvachDbRepository @Inject constructor(){
         localPath = if (file.duration == "") downloadImage(file.path).toString() else "",
         webThumbnail = file.thumbnail,
         localThumbnail = downloadImage(file.thumbnail).toString(),
-        duration = file.duration
+        duration = file.duration,
+        isOpPostFile = postNumber == 1
     )
 
     private fun toModelPost(post: StoredPost, files: List<StoredFile>): Post = Post(
@@ -308,6 +366,42 @@ class DvachDbRepository @Inject constructor(){
         files = files.map { toModelFile(it) }
     )
 
+    private fun toModelPost(post: StoredPost): Post = Post(
+        num = post.num,
+        name = post.name,
+        comment = post.comment,
+        date = post.date,
+        email = post.email,
+        files_count = post.files_count,
+        op = post.op,
+        posts_count = post.posts_count,
+        subject = post.subject,
+        timestamp = post.timestamp,
+        number = post.number,
+        replies = post.replies
+    )
+
+    private fun toModelPosts(posts: List<StoredPost>): List<Post> {
+        val result =  LinkedList<Post>()
+        posts.forEach { post ->
+            result.add(Post(
+                num = post.num,
+                name = post.name,
+                comment = post.comment,
+                date = post.date,
+                email = post.email,
+                files_count = post.files_count,
+                op = post.op,
+                posts_count = post.posts_count,
+                subject = post.subject,
+                timestamp = post.timestamp,
+                number = post.number,
+                replies = post.replies)
+            )
+        }
+        return result
+    }
+
     private fun toModelFile(file: StoredFile): AttachFile = AttachFile(
         path = file.webPath,
         thumbnail = file.webThumbnail,
@@ -315,4 +409,18 @@ class DvachDbRepository @Inject constructor(){
         localThumbnail = file.localThumbnail,
         duration = file.duration
     )
+
+    private fun toModelFiles(files: List<StoredFile>): List<AttachFile> {
+        val result =  LinkedList<AttachFile>()
+        files.forEach { file ->
+            result.add(AttachFile(
+                path = file.webPath,
+                thumbnail = file.webThumbnail,
+                localPath = file.localPath,
+                localThumbnail = file.localThumbnail,
+                duration = file.duration)
+            )
+        }
+        return result
+    }
 }

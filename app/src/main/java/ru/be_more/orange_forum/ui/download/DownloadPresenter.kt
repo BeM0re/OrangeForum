@@ -36,32 +36,18 @@ class DownloadPresenter : MvpPresenter<DownloadView>() {
     }
 
     override fun onFirstViewAttach(){
-        /*disposables.add(
-            dbRepo.getBoardNames()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{boards ->
-                    boards.map { board ->
-                        dbRepo.getThreadOpPosts(board.id)
-                            .subscribeOn(Schedulers.io())
-//                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe (
-                                { threads -> board.threads = threads },
-                                { Log.d("M_DownloadPresenter", "error = $it") }
-                            )
-                    }
-                    viewState.loadDownloads(boards)
-                }
-        )*/
         disposables.add(
-            dbRepo.getBoards()
+            dbRepo.getDownloads()
+//                    dbRepo.getBoards()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ boards ->
+                    Log.d("M_DownloadPresenter", "boards = $boards")
                     this.boards = boards
-                    Handler().postDelayed({
-                        viewState.loadDownloads()
-                    }, 10)
+                    viewState.loadDownloads()
+//                    Handler().postDelayed({
+//                        viewState.loadDownloads()
+//                    }, 10)
                 },
                     {Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it")}
                 )
