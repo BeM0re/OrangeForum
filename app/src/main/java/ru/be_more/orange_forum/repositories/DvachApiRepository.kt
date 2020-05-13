@@ -59,7 +59,7 @@ class DvachApiRepository @Inject constructor(){
         dvachApi.getDvachPostsRx(boardId, threadNum, cookie)
             .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
-            .map { entity -> toThread(entity, threadNum) }
+            .map { entity -> toThread(entity, threadNum)}
             .map { entity -> findResponses(entity)}
 
 

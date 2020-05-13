@@ -93,7 +93,7 @@ class PostFragment : MvpAppCompatFragment(), PostView {
     }
 
     private fun showAttachment(pic: Attachment) {
-        Log.d("M_PostFragment", "pic = $pic")
+//        Log.d("M_PostFragment", "pic = $pic")
 
         v_post1_pic_full_background.visibility = View.VISIBLE
         pb_post1_pic_loading.visibility = View.VISIBLE

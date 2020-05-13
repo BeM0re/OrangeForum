@@ -57,6 +57,7 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
             }
             holder.setCommentListener(linkListener)
             holder.setRemoveButton(group.id, thread, downloadListener)
+            holder.setDivider()
             holder.setIntoThreadButton(View.OnClickListener {
                 downloadListener.intoThreadClick(
                     group.id,

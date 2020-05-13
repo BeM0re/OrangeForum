@@ -13,7 +13,8 @@
         android:layout_height="match_parent"
         android:background="#80000000"
         android:visibility="gone"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
+
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -152,7 +153,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/splash"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <VideoView
         android:id="@+id/vv_post1_video"

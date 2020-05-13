@@ -31,6 +31,7 @@ class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnCli
     private var postsWithPic: TextView = itemView!!.findViewById(R.id.tv_board_op_with_pic)
     private var pickThreadButton: Button = itemView!!.findViewById(R.id.btn_board_op_into)
     private var hideButton: Button = itemView!!.findViewById(R.id.btn_board_op_hide)
+    private var dividerView: View = itemView!!.findViewById(R.id.v_post1_pic_divider)
 
     fun setSenderName (param: String){
         senderName.text = param
@@ -77,11 +78,13 @@ class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnCli
     }
 
     fun setTotalPosts (param: Int){
-        totalPosts.text ="Пропущено $param постов"
+//        totalPosts.text ="Пропущено $param постов"
+        totalPosts.visibility = View.GONE
     }
 
     fun setPostsWithPic (param: Int){
-        postsWithPic.text = "$param c картинками"
+//        postsWithPic.text = "$param c картинками"
+        postsWithPic.visibility = View.GONE
     }
 
     fun setIntoThreadButton(listener: View.OnClickListener) {
@@ -99,6 +102,10 @@ class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnCli
         hideButton.setOnClickListener {
             listener.onRemoveClick(boardId, thread.num)
         }
+    }
+
+    fun setDivider(){
+        dividerView.visibility = View.VISIBLE
     }
 
 }
