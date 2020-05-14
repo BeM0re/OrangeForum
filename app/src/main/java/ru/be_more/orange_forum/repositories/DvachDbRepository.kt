@@ -131,16 +131,6 @@ class DvachDbRepository @Inject constructor(){
         )
     }
 
-    fun getBoardNames(): Observable<List<Board>> =
-        dvachDbDao.getBoards()
-            .subscribeOn(Schedulers.io())
-            .switchMap { boards ->
-                val boardNames = LinkedList<Board>()
-                boards.forEach { board -> boardNames.add(toModelBoardName(board)) }
-                return@switchMap Observable.just(boardNames)
-            }
-
-
     fun getDownloads(): Observable<List<Board>> =
         Observable.zip(
             dvachDbDao.getBoards(),
@@ -169,69 +159,6 @@ class DvachDbRepository @Inject constructor(){
             }
         )
 
-
-
-    fun getBoards(): Observable<List<Board>> =
-        dvachDbDao.getBoards()
-            .subscribeOn(Schedulers.io())
-            .flatMap { boards ->
-//                Log.d("M_DvachDbRepository", "board = $boards")
-                Observable.create<List<Board>> { emitter ->
-                    val modelBoards = LinkedList<Board>()
-                    boards.forEach { board ->
-                        getThreadOpPosts(board.id)
-                            .subscribeOn(Schedulers.io())
-                            .subscribe ({ threads ->
-//                                Log.d("M_DvachDbRepository", "threads = $threads")
-                                modelBoards.remove(modelBoards.find { boardToFind -> boardToFind.id == board.id })
-                                modelBoards.add(toModelBoard(board, threads))
-                                emitter.onNext(modelBoards)
-//                                Log.d("M_DvachDbRepository", "modelBoards = $modelBoards")
-                            },
-                                { Log.d("M_DvachDbRepository", "getThreadOpPosts error = $it")}
-                            )
-                    }
-                }
-
-            }
-
-    //возвращает список тредов одной борды с одним оп-постом в каждом треде
-    private fun getThreadOpPosts(boardId: String): Observable<List<BoardThread>> =
-        dvachDbDao.getThreadOpPosts(boardId)
-            .subscribeOn(Schedulers.io())
-            .flatMap { threads ->
-                Observable.create<List<BoardThread>> { emitter ->
-                    val modelsOpPosts = LinkedList<BoardThread>()
-                    threads.forEach { thread ->
-                        getPost(thread.boardId, thread.num)
-                            .subscribe ({ post ->
-                                modelsOpPosts.add(opPostToThread(thread, post))
-                                emitter.onNext(modelsOpPosts)
-                            },
-                                { Log.d("M_DvachDbRepository", "getPost error = $it")}
-                            )
-                    }
-                }
-            }
-
-    fun getOpPosts(boardId: String): Observable<List<Post>> =
-        dvachDbDao.getOpPosts(boardId)
-            .subscribeOn(Schedulers.io())
-            .switchMap { opPosts ->
-                val modelsOpPosts = LinkedList<Post> ()
-                    opPosts.forEach { opPost -> getPost(opPost.boardId, opPost.threadNum)
-                        .subscribe { modelsOpPosts.add(it) }}
-                return@switchMap Observable.just(modelsOpPosts)
-            }
-
-    fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
-        dvachDbDao.getThread(boardId, threadNum)
-            .subscribeOn(Schedulers.io())
-            .zipWith(getPosts(boardId, threadNum), BiFunction {thread, posts ->
-                toModelThread(thread, posts)
-            })
-
-
     fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<BoardThread?> =
         dvachDbDao.getThreadOrEmpty(boardId, threadNum)
             .subscribeOn(Schedulers.io())
@@ -257,40 +184,10 @@ class DvachDbRepository @Inject constructor(){
                 toModelPost(post, files)
             })
 
-    private fun opPostToThread(thread: StoredThread, post: Post): BoardThread = BoardThread(
-        num = post.num,
-        title = post.subject,
-        isHidden = thread.isHidden,
-        isDownloaded = thread.isDownloaded,
-        isFavorite = thread.isFavorite,
-        posts = listOf(post)
-    )
-
-    private fun toModelBoards(boards: List<StoredBoard>): List<Board>{
-        val modelBoards = LinkedList<Board>()
-        boards.forEach { board ->
-            getThreadOpPosts(board.id)
-                .subscribe{ threads ->
-                    modelBoards.add(toModelBoard(board,threads))
-                }
-        }
-        return modelBoards
-    }
-
     private fun toModelBoard(board: StoredBoard, threads: List<BoardThread>): Board = Board(
         name = board.name,
         id = board.id,
         threads = threads
-    )
-
-    private fun toModelBoard(board: StoredBoard): Board = Board(
-        name = board.name,
-        id = board.id
-    )
-
-    private fun toModelBoardName(board: StoredBoard): Board = Board(
-        name = board.name,
-        id = board.id
     )
 
     private fun toStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
@@ -380,42 +277,6 @@ class DvachDbRepository @Inject constructor(){
         files = files.map { toModelFile(it) }
     )
 
-    private fun toModelPost(post: StoredPost): Post = Post(
-        num = post.num,
-        name = post.name,
-        comment = post.comment,
-        date = post.date,
-        email = post.email,
-        files_count = post.files_count,
-        op = post.op,
-        posts_count = post.posts_count,
-        subject = post.subject,
-        timestamp = post.timestamp,
-        number = post.number,
-        replies = post.replies
-    )
-
-    private fun toModelPosts(posts: List<StoredPost>): List<Post> {
-        val result =  LinkedList<Post>()
-        posts.forEach { post ->
-            result.add(Post(
-                num = post.num,
-                name = post.name,
-                comment = post.comment,
-                date = post.date,
-                email = post.email,
-                files_count = post.files_count,
-                op = post.op,
-                posts_count = post.posts_count,
-                subject = post.subject,
-                timestamp = post.timestamp,
-                number = post.number,
-                replies = post.replies)
-            )
-        }
-        return result
-    }
-
     private fun toModelFile(file: StoredFile): AttachFile = AttachFile(
         path = file.webPath,
         thumbnail = file.webThumbnail,
@@ -423,18 +284,4 @@ class DvachDbRepository @Inject constructor(){
         localThumbnail = file.localThumbnail,
         duration = file.duration
     )
-
-    private fun toModelFiles(files: List<StoredFile>): List<AttachFile> {
-        val result =  LinkedList<AttachFile>()
-        files.forEach { file ->
-            result.add(AttachFile(
-                path = file.webPath,
-                thumbnail = file.webThumbnail,
-                localPath = file.localPath,
-                localThumbnail = file.localThumbnail,
-                duration = file.duration)
-            )
-        }
-        return result
-    }
 }
