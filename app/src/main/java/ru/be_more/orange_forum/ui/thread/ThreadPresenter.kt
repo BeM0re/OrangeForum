@@ -146,6 +146,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         disposables.forEach {
             it?.dispose()
         }
+        threadInteractor.destroy()
         super.onDestroy()
     }
 

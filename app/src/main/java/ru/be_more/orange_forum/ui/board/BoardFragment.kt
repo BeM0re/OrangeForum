@@ -79,12 +79,13 @@ class BoardFragment: MvpAppCompatFragment(),
         )
     }
 
-    override fun onThreadClick(threadNum: Int, threadTitle: String) {
+    override fun onIntoThreadClick(threadNum: Int, threadTitle: String) {
         if (boardPresenter.listener != null)
             boardPresenter.listener!!(threadNum, threadTitle)
     }
 
-    override fun onHideClick(threadNum: Int) {
+    override fun onHideClick(threadNum: Int, isHidden: Boolean) {
+        boardPresenter.hideThread(threadNum, isHidden)
         adapter.notifyDataSetChanged()
     }
 

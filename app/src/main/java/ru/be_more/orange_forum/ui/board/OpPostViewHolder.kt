@@ -108,14 +108,14 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
             hideButton.visibility = View.GONE
             itemView.setOnClickListener {
                 thread.isHidden = false
-                listener.onHideClick(thread.num)
+                listener.onHideClick(thread.num, thread.isHidden)
             }
         }
         else{
             hideButton.visibility = View.VISIBLE
             hideButton.setOnClickListener {
                 thread.isHidden = true
-                listener.onHideClick(thread.num)
+                listener.onHideClick(thread.num, thread.isHidden)
             }
         }
     }

@@ -44,7 +44,7 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
             }
             holder.setCommentListener(linkListener)
             holder.setHideButton(thread, boardListener)
-            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread.num, thread.title) }, thread.isHidden)
+            holder.setIntoThreadButton(View.OnClickListener { boardListener.onIntoThreadClick(thread.num, thread.title) }, thread.isHidden)
         }
     }
 

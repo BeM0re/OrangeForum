@@ -1,10 +1,7 @@
 package ru.be_more.orange_forum.interactors
 
-import android.util.Log
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function3
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.repositories.DvachApiRepository
@@ -42,4 +39,51 @@ class ThreadInteractor @Inject constructor() {
                 }
             }
         )
+
+    fun getBoard(boardId: String): Observable<List<BoardThread>> =
+        Observable.zip(
+            dbRepo.getThreadsOnBoard(boardId),
+            apiRepo.getBoard(boardId),
+            BiFunction { localThreads, webThreads ->
+                localThreads.forEach { localThread ->
+                    val webIndex = webThreads.indexOfFirst { it.num == localThread.num }
+
+                    if (webIndex == -1){ //удаляем инфу об утонувших несохраненных тредах
+                        if (!localThread.isDownloaded)
+                            dbRepo.deleteThread(boardId, localThread.num)
+                    }
+                    else{
+                        webThreads[webIndex].isFavorite = localThread.isFavorite
+                        webThreads[webIndex].isHidden = localThread.isHidden
+                        webThreads[webIndex].isDownloaded = localThread.isDownloaded
+                    }
+                }
+                webThreads
+            }
+        )
+
+    fun markThreadFavorite(boardId: String, threadNum: Int){
+        dbRepo.markThreadFavorite(boardId, threadNum)
+    }
+
+    fun unmarkThreadFavorite(boardId: String, threadNum: Int){
+        dbRepo.unmarkThreadFavorite(boardId, threadNum)
+    }
+
+    fun markThreadHidden(boardId: String, threadNum: Int){
+        dbRepo.markThreadHidden(boardId, threadNum)
+    }
+
+    fun unmarkThreadHidden(boardId: String, threadNum: Int): Observable<Unit> =
+        Observable.fromCallable {
+            dbRepo.unmarkThreadHidden(boardId, threadNum)
+        }
+
+    fun deleteThread(boardId: String, threadNum: Int){
+
+    }
+
+    fun destroy(){
+        dbRepo.destroy()
+    }
 }

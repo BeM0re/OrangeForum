@@ -31,11 +31,14 @@ class DvachDbRepository @Inject constructor(){
 
     private var dvachDbDao: DvachDao
     private var db: AppDatabase = App.getDatabase()
-    private var disposable: LinkedList<Disposable> = LinkedList()
+    private var disposables: LinkedList<Disposable> = LinkedList()
 
     init {
-
         dvachDbDao = db.dvachDao()
+    }
+
+    fun destroy(){
+        disposables.forEach { it.dispose() }
     }
 
     fun initDatabase() : DvachDao{
@@ -44,7 +47,7 @@ class DvachDbRepository @Inject constructor(){
 
     fun saveThread(thread: BoardThread, boardId: String, boardName: String) {
 
-        disposable.add(
+        disposables.add(
             dvachDbDao.getBoardCount(boardId)
                 .subscribeOn(Schedulers.io())
                 .subscribe({boardCount ->
@@ -61,7 +64,6 @@ class DvachDbRepository @Inject constructor(){
                     { Log.d("M_DvachDbRepository", "error = $it") },
                     { Log.d("M_DvachDbRepository", "Done") })
         )
-
     }
 
     private fun savePost(post: Post, threadNum: Int, boardId: String){
@@ -169,6 +171,15 @@ class DvachDbRepository @Inject constructor(){
                     BoardThread(0)
             })
 
+    fun getThreadsOnBoard(boardId: String): Observable<List<BoardThread>> =
+        dvachDbDao.getThreadsOnBoard(boardId)
+            .subscribeOn(Schedulers.io())
+            .map { threads -> toModelThreads(threads) }
+
+    fun deleteThread(boardId: String, threadNum: Int) {
+        dvachDbDao.deleteThread(boardId, threadNum)
+    }
+
     fun getPosts(boardId: String, threadNum: Int): Observable<List<Post>> =
         dvachDbDao.getPosts(boardId, threadNum)
             .subscribeOn(Schedulers.io())
@@ -183,6 +194,41 @@ class DvachDbRepository @Inject constructor(){
             .zipWith(dvachDbDao.getFiles(postNum), BiFunction {post, files ->
                 toModelPost(post, files)
             })
+
+
+
+    fun markThreadFavorite(boardId: String, threadNum: Int) {
+        dvachDbDao.markThreadFavorite(boardId, threadNum)
+    }
+
+    fun unmarkThreadFavorite(boardId: String, threadNum: Int) {
+        dvachDbDao.unmarkThreadFavorite(boardId, threadNum)
+    }
+
+    fun markThreadHidden(boardId: String, threadNum: Int) {
+        disposables.add(
+            dvachDbDao.getThreadOrEmpty(boardId, threadNum)
+                .subscribe { thread ->
+                    if (thread.isNotEmpty())
+                        dvachDbDao.markThreadHidden(boardId, threadNum)
+                    else
+                        dvachDbDao.insertThread(
+                            StoredThread(
+                            threadNum,
+                            "",
+                            boardId,
+                            isHidden = true)
+                        )
+                }
+        )
+    }
+
+    fun unmarkThreadHidden(boardId: String, threadNum: Int) {
+        dvachDbDao.unmarkThreadHidden(boardId, threadNum)
+    }
+
+
+
 
     private fun toModelBoard(board: StoredBoard, threads: List<BoardThread>): Board = Board(
         name = board.name,

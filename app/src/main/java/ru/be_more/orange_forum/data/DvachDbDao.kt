@@ -34,8 +34,8 @@ interface DvachDao {
     @Query("SELECT * FROM threads")
     fun getThread(): Observable<List<StoredThread>>
 
-//    @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = (SELECT num FROM posts WHERE num = threadNum and boardId = :boardId)")
-//    fun getThreadOpPosts(boardId: String): Observable<List<StoredThread>>
+    @Query("SELECT * FROM threads WHERE boardId = :boardId")
+    fun getThreadsOnBoard(boardId: String): Observable<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId")
     fun getThreadOpPosts(boardId: String): Observable<List<StoredThread>>
@@ -67,6 +67,24 @@ interface DvachDao {
     @Query("SELECT * FROM files WHERE isOpPostFile = 1")
     fun getFiles(): Observable<List<StoredFile>>
 
+    @Query("UPDATE threads SET isFavorite = 1 WHERE boardId = :boardId AND num = :threadNum")
+    fun markThreadFavorite(boardId: String, threadNum: Int)
+
+    @Query("UPDATE threads SET isFavorite = 0 WHERE boardId = :boardId AND num = :threadNum")
+    fun unmarkThreadFavorite(boardId: String, threadNum: Int)
+
+    @Query("UPDATE threads SET isHidden = 1 WHERE boardId = :boardId AND num = :threadNum")
+    fun markThreadHidden(boardId: String, threadNum: Int)
+
+    @Query("UPDATE threads SET isHidden = 0 WHERE boardId = :boardId AND num = :threadNum")
+    fun unmarkThreadHidden(boardId: String, threadNum: Int)
+
+    @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum")
+    fun deleteThread(boardId: String, threadNum: Int)
+
+
+
+
 
     @Insert
     fun insertCategory(category: StoredCategory)
@@ -82,9 +100,6 @@ interface DvachDao {
 
     @Insert
     fun insertFile(file: StoredFile)
-
-    @Delete
-    fun deleteThread(thread: StoredThread)
 
     @Query("UPDATE files SET localPath = :url WHERE id = :id")
     fun setDownloadedFile(id: String, url: String)
