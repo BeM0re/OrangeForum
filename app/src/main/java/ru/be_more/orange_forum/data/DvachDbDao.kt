@@ -27,6 +27,10 @@ interface DvachDao {
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun getThread(boardId: String, threadNum: Int): Observable<StoredThread>
 
+    //возвращает список из 1 или 0 элементов
+    @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
+    fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<List<StoredThread>>
+
     @Query("SELECT * FROM threads")
     fun getThread(): Observable<List<StoredThread>>
 
@@ -53,6 +57,9 @@ interface DvachDao {
 
     @Query("SELECT * FROM files WHERE postNum = :postNum")
     fun getFiles(postNum: Int): Observable<List<StoredFile>>
+
+    @Query("SELECT * FROM files WHERE threadNum = :postNum")
+    fun getAllFilesFromThread(postNum: Int): Observable<List<StoredFile>>
 
     @Query("SELECT * FROM files WHERE boardId = :boardId")
     fun getFiles(boardId: String): Observable<List<StoredFile>>

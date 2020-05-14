@@ -25,12 +25,11 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 class DvachDbRepository @Inject constructor(){
 
-    private lateinit var dvachDbDao: DvachDao
+    private var dvachDbDao: DvachDao
     private var db: AppDatabase = App.getDatabase()
     private var disposable: LinkedList<Disposable> = LinkedList()
 
@@ -69,7 +68,7 @@ class DvachDbRepository @Inject constructor(){
         dvachDbDao.insertPost(toStoredPost(post, threadNum, boardId))
         post.files.forEach { file ->
             Observable.fromCallable {
-                dvachDbDao.insertFile(toStoredFile(file, post.num, boardId, post.number))
+                dvachDbDao.insertFile(toStoredFile(file, post.num, boardId, post.number, threadNum))
             }
                 .subscribeOn(Schedulers.io())
                 .subscribe({},
@@ -232,10 +231,22 @@ class DvachDbRepository @Inject constructor(){
                 toModelThread(thread, posts)
             })
 
+
+    fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<BoardThread?> =
+        dvachDbDao.getThreadOrEmpty(boardId, threadNum)
+            .subscribeOn(Schedulers.io())
+            .zipWith(getPosts(boardId, threadNum), BiFunction {threads, posts ->
+                if (threads.isNotEmpty())
+                    toModelThread(threads[0], posts)
+                else
+                    BoardThread(0)
+            })
+
     fun getPosts(boardId: String, threadNum: Int): Observable<List<Post>> =
         dvachDbDao.getPosts(boardId, threadNum)
             .subscribeOn(Schedulers.io())
-            .zipWith(dvachDbDao.getFiles(threadNum), BiFunction {posts, files ->
+            .zipWith(dvachDbDao.getAllFilesFromThread(threadNum), BiFunction {posts, files ->
+                Log.d("M_DvachDbRepository", "files = $files")
                 posts.map { post -> toModelPost(post, files.filter { it.postNum == post.num }) }
             })
 
@@ -287,7 +298,7 @@ class DvachDbRepository @Inject constructor(){
         title = thread.title,
         boardId = boardId,
         isHidden = thread.isHidden,
-        isDownloaded = thread.isHidden,
+        isDownloaded = true,
         isFavorite = thread.isFavorite
     )
 
@@ -330,7 +341,13 @@ class DvachDbRepository @Inject constructor(){
         replies = post.replies
     )
 
-    private fun toStoredFile(file: AttachFile, postNum: Int, boardId: String, postNumber: Int = 0): StoredFile = StoredFile(
+    private fun toStoredFile(
+        file: AttachFile,
+        postNum: Int,
+        boardId: String,
+        postNumber: Int = 0,
+        threadNum: Int
+    ): StoredFile = StoredFile(
         boardId = boardId,
         postNum = postNum,
         displayName = file.displayName,
@@ -343,7 +360,8 @@ class DvachDbRepository @Inject constructor(){
         webThumbnail = file.thumbnail,
         localThumbnail = downloadImage(file.thumbnail).toString(),
         duration = file.duration,
-        isOpPostFile = postNumber == 1
+        isOpPostFile = postNumber == 1,
+        threadNum = threadNum
     )
 
     private fun toModelPost(post: StoredPost, files: List<StoredFile>): Post = Post(

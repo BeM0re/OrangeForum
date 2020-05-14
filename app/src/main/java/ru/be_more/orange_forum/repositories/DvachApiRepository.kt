@@ -58,7 +58,8 @@ class DvachApiRepository @Inject constructor(){
     fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
         dvachApi.getDvachPostsRx(boardId, threadNum, cookie)
             .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "get thread via api error = $throwable") }
+            .onErrorReturn { DvachThread() }
             .map { entity -> toThread(entity, threadNum)}
             .map { entity -> findResponses(entity)}
 

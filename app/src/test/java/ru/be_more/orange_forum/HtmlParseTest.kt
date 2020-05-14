@@ -3,9 +3,13 @@ package ru.be_more.orange_forum
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.junit.Test
+import ru.be_more.orange_forum.interactors.ThreadInteractor
 import java.util.logging.Logger
 
 class HtmlParseTest {
+
+
+
     @Test
     fun parseTest() {
 
@@ -25,6 +29,7 @@ class HtmlParseTest {
 
 //        ParseHtml.parse(html)
     }
+
 
 
     companion object {

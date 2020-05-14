@@ -21,26 +21,6 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
                       var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<DownloadedBoardViewHolder, DownloadedThreadViewHolder>(groups){
 
-    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
-        Log.d("M_DownloadAdapter", "observer")
-        super.registerAdapterDataObserver(observer)
-    }
-
-    override fun onFailedToRecycleView(holder: RecyclerView.ViewHolder): Boolean {
-        Log.d("M_DownloadAdapter", "recycled failed")
-        return super.onFailedToRecycleView(holder)
-    }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        Log.d("M_DownloadAdapter", "attached")
-        super.onAttachedToRecyclerView(recyclerView)
-    }
-
-    override fun onGroupClick(flatPos: Int): Boolean {
-        Log.d("M_DownloadAdapter", "click")
-        return super.onGroupClick(flatPos)
-    }
-
     override fun onCreateGroupViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -54,7 +34,6 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
         parent: ViewGroup,
         viewType: Int
     ): DownloadedThreadViewHolder {
-        Log.d("M_DownloadAdapter", "parent = $parent")
         val inflater = LayoutInflater.from(parent.context)
         val view: View = inflater.inflate(R.layout.item_board_op, parent, false)
         return DownloadedThreadViewHolder(view, picListener)

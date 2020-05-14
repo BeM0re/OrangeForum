@@ -15,6 +15,7 @@ import ru.be_more.orange_forum.bus.DownloadedThreadEntered
 import ru.be_more.orange_forum.bus.FavoriteThreadEntered
 import ru.be_more.orange_forum.bus.UndownloadedThreadEntered
 import ru.be_more.orange_forum.bus.UnfavoriteThreadEntered
+import ru.be_more.orange_forum.interactors.ThreadInteractor
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.BoardThread
@@ -29,6 +30,9 @@ import javax.inject.Inject
 class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     private lateinit var adapter : ThreadAdapter
+
+    @Inject
+    lateinit var threadInteractor: ThreadInteractor
 
     @Inject
     lateinit var repo : DvachApiRepository
@@ -51,7 +55,10 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         this.threadNum = threadNum
 
         disposables.add(
-            repo.getThread(boardId, threadNum)
+
+
+//            repo.getThread(boardId, threadNum)
+            threadInteractor.getThread(boardId, threadNum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -60,7 +67,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                         viewState.loadThread(thread)
                     },
                     {
-                        Log.d("M_ThreadPresenter", "$it")
+                        Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
                     }
                 )
         )

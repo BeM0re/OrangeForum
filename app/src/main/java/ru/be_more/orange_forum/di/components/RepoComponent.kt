@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.di.components
 
 import dagger.Component
 import ru.be_more.orange_forum.di.modules.RepoModule
+import ru.be_more.orange_forum.interactors.ThreadInteractor
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.ui.board.BoardPresenter
 import ru.be_more.orange_forum.ui.category.CategoryPresenter
@@ -25,6 +26,8 @@ interface RepoComponent {
     fun inject(presenter: MainPresenter)
 
     fun inject(presenter: DownloadPresenter)
+
+    fun inject(interactor: ThreadInteractor)
 
     fun getApiRepo(): DvachApiRepository
 
