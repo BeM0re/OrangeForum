@@ -66,9 +66,10 @@ class ThreadInteractor @Inject constructor() {
         dbRepo.markThreadFavorite(boardId, threadNum)
     }
 
-    fun unmarkThreadFavorite(boardId: String, threadNum: Int){
-        dbRepo.unmarkThreadFavorite(boardId, threadNum)
-    }
+    fun unmarkThreadFavorite(boardId: String, threadNum: Int): Observable<Unit> =
+        Observable.fromCallable {
+            dbRepo.unmarkThreadFavorite(boardId, threadNum)
+        }
 
     fun markThreadHidden(boardId: String, threadNum: Int){
         dbRepo.markThreadHidden(boardId, threadNum)

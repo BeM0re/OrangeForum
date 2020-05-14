@@ -184,7 +184,6 @@ class DvachDbRepository @Inject constructor(){
         dvachDbDao.getPosts(boardId, threadNum)
             .subscribeOn(Schedulers.io())
             .zipWith(dvachDbDao.getAllFilesFromThread(threadNum), BiFunction {posts, files ->
-                Log.d("M_DvachDbRepository", "files = $files")
                 posts.map { post -> toModelPost(post, files.filter { it.postNum == post.num }) }
             })
 
@@ -198,7 +197,21 @@ class DvachDbRepository @Inject constructor(){
 
 
     fun markThreadFavorite(boardId: String, threadNum: Int) {
-        dvachDbDao.markThreadFavorite(boardId, threadNum)
+        disposables.add(
+            dvachDbDao.getThreadOrEmpty(boardId, threadNum)
+                .subscribe { thread ->
+                    if (thread.isNotEmpty())
+                        dvachDbDao.markThreadFavorite(boardId, threadNum)
+                    else
+                        dvachDbDao.insertThread(
+                            StoredThread(
+                                threadNum,
+                                "",
+                                boardId,
+                                isFavorite = true)
+                        )
+                }
+        )
     }
 
     fun unmarkThreadFavorite(boardId: String, threadNum: Int) {

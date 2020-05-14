@@ -2,11 +2,13 @@ package ru.be_more.orange_forum.ui.main
 
 import android.util.Log
 import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.interactors.ThreadInteractor
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.repositories.DvachDbRepository
 import ru.be_more.orange_forum.ui.TempFragment
@@ -24,6 +26,8 @@ class MainPresenter : MvpPresenter<MainView>() {
     lateinit var apiRepo : DvachApiRepository
     @Inject
     lateinit var dbRepo : DvachDbRepository
+    @Inject
+    lateinit var threadInteractor: ThreadInteractor
 
     private lateinit var boardId :String
     private lateinit var boardTitle :String
@@ -135,11 +139,21 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     fun markThreadFavorite() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        threadInteractor.markThreadFavorite(boardId, threadNum)
+        viewState.turnFavoriteIcon(true)
     }
 
     fun removeFavoriteMark() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        disposables.add(
+            threadInteractor.unmarkThreadFavorite(boardId, threadNum)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe ({
+                    viewState.turnFavoriteIcon(false)
+                },
+                    { Log.d("M_MainPresenter", "main remove favorite error = $it") }
+                )
+        )
     }
 
 

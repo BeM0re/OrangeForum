@@ -99,6 +99,17 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         bottomNavigationView.menu.getItem(2).isEnabled = true
     }
 
+    override fun turnFavoriteIcon(isFavorite: Boolean) {
+        Log.d("M_MainActivity", "isFavorite = $isFavorite")
+        toolbar.menu.findItem(R.id.navigation_favorite).isVisible = !isFavorite
+        toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = isFavorite
+    }
+
+    override fun turnDownloadedIcon(isDownloaded: Boolean) {
+        toolbar.menu.findItem(R.id.navigation_download).isVisible = !isDownloaded
+        toolbar.menu.findItem(R.id.navigation_download_done).isVisible = isDownloaded
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         setTheme(R.style.AppTheme)

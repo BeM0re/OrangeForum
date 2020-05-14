@@ -186,7 +186,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     override fun setOnPostButtonClickListener() {
 
         captchaResponse.observe(this, Observer {
-            Log.d("M_ThreadFragment", "trigger")
             threadPresenter.setCaptchaResponse(it)
         })
 
@@ -313,7 +312,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     @Subscribe
     public fun onBackPressed(event: BackPressed) {
 
-        Log.d("M_ThreadFragment", "back")
         if (fl_thread_post.visibility != View.GONE)
             threadPresenter.onBackPressed()
         else
