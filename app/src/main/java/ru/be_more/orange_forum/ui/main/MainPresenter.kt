@@ -148,9 +148,8 @@ class MainPresenter : MvpPresenter<MainView>() {
             threadInteractor.unmarkThreadFavorite(boardId, threadNum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe ({
-                    viewState.turnFavoriteIcon(false)
-                },
+                .subscribe (
+                    { viewState.turnFavoriteIcon(false) },
                     { Log.d("M_MainPresenter", "main remove favorite error = $it") }
                 )
         )

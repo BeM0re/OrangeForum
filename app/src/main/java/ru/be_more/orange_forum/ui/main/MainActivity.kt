@@ -100,7 +100,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun turnFavoriteIcon(isFavorite: Boolean) {
-        Log.d("M_MainActivity", "isFavorite = $isFavorite")
         toolbar.menu.findItem(R.id.navigation_favorite).isVisible = !isFavorite
         toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = isFavorite
     }

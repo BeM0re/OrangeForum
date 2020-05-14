@@ -38,17 +38,11 @@ class DownloadPresenter : MvpPresenter<DownloadView>() {
     override fun onFirstViewAttach(){
         disposables.add(
             dbRepo.getDownloads()
-//                    dbRepo.getBoards()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ boards ->
-//                    Log.d("M_DownloadPresenter", "boards = $boards")
                     this.boards = boards
-//                    viewState.loadDownloads(boards)
-//                    Log.d("M_DownloadPresenter", "boards = $boards")
-                    Handler().postDelayed({
-                        viewState.loadDownloads()
-                    }, 10)
+                    viewState.loadDownloads()
                 },
                     { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
                 )

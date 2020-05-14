@@ -31,7 +31,7 @@ interface DvachDao {
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<List<StoredThread>>
 
-    @Query("SELECT * FROM threads")
+    @Query("SELECT * FROM threads WHERE isDownloaded = 1")
     fun getThread(): Observable<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId")
