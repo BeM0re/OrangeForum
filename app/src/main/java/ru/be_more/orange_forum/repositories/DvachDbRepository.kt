@@ -29,6 +29,11 @@ import javax.inject.Inject
 
 class DvachDbRepository @Inject constructor(){
 
+    enum class Purpose{
+        DOWNLOAD,
+        FAVORITE
+    }
+
     private var dvachDbDao: DvachDao
     private var db: AppDatabase = App.getDatabase()
     private var disposables: LinkedList<Disposable> = LinkedList()
@@ -45,7 +50,7 @@ class DvachDbRepository @Inject constructor(){
         return dvachDbDao
     }
 
-    fun saveThread(thread: BoardThread, boardId: String, boardName: String) {
+    fun saveThread(thread: BoardThread, boardId: String, boardName: String, purpose: Purpose) {
 
         disposables.add(
             dvachDbDao.getBoardCount(boardId)
@@ -55,7 +60,13 @@ class DvachDbRepository @Inject constructor(){
                         dvachDbDao.insertBoard(StoredBoard(boardId, "", boardName))
                     }
 
-                    dvachDbDao.insertThread(toStoredThread(thread, boardId))
+                    when (purpose){
+                        Purpose.DOWNLOAD ->
+                            dvachDbDao.insertThread(downloadedToStoredThread(thread, boardId))
+                        Purpose.FAVORITE ->
+                            dvachDbDao.insertThread(favoriteToStoredThread(thread, boardId))
+                    }
+
 
                     thread.posts.forEach { post ->
                         savePost(post, thread.num, boardId)
@@ -136,16 +147,18 @@ class DvachDbRepository @Inject constructor(){
     fun getDownloads(): Observable<List<Board>> =
         Observable.zip(
             dvachDbDao.getBoards(),
-            dvachDbDao.getThread(),
+            dvachDbDao.getDownloadedThreads(),
             dvachDbDao.getOpPosts(),
-            dvachDbDao.getFiles(),
+            dvachDbDao.getOpFiles(),
             Function4 { boards, threads, posts, files ->
                 val boardResult = LinkedList<Board>()
                 boards.forEach{ board ->
-                    boardResult.add(toModelBoard(
-                        board,
-                        toModelThreads(threads.filter { it.boardId == board.id })
-                    ))
+                    val thread = threads.filter { it.boardId == board.id }
+                    if (thread.isNotEmpty())
+                        boardResult.add(toModelBoard(
+                            board,
+                            toModelThreads(thread)
+                        ))
                 }
 
                 posts.forEach { post ->
@@ -160,6 +173,37 @@ class DvachDbRepository @Inject constructor(){
                 boardResult
             }
         )
+
+    fun getFavorites(): Observable<List<Board>> =
+        Observable.zip(
+            dvachDbDao.getBoards(),
+            dvachDbDao.getFavoriteThreads(),
+            dvachDbDao.getOpPosts(),
+            dvachDbDao.getOpFiles(),
+            Function4 { boards, threads, posts, files ->
+                val boardResult = LinkedList<Board>()
+                boards.forEach{ board ->
+                    val thread = threads.filter { it.boardId == board.id }
+                    if (thread.isNotEmpty())
+                        boardResult.add(toModelBoard(
+                            board,
+                            toModelThreads(thread)
+                        ))
+                }
+
+                posts.forEach { post ->
+                    boardResult.find { it.id == post.boardId }
+                        ?.threads?.find { it.num == post.threadNum }
+                        ?.posts = listOf(toModelPost(
+                        post,
+                        files.filter { it.postNum == post.num && it.boardId == post.boardId})
+                    )
+                }
+
+                boardResult
+            }
+        )
+
 
     fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<BoardThread?> =
         dvachDbDao.getThreadOrEmpty(boardId, threadNum)
@@ -249,13 +293,22 @@ class DvachDbRepository @Inject constructor(){
         threads = threads
     )
 
-    private fun toStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
+    private fun downloadedToStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
         num = thread.num,
         title = thread.title,
         boardId = boardId,
         isHidden = thread.isHidden,
         isDownloaded = true,
         isFavorite = thread.isFavorite
+    )
+
+    private fun favoriteToStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
+        num = thread.num,
+        title = thread.title,
+        boardId = boardId,
+        isHidden = thread.isHidden,
+        isDownloaded = thread.isDownloaded,
+        isFavorite = true
     )
 
     private fun toModelThread(thread: StoredThread, posts: List<Post>): BoardThread = BoardThread(

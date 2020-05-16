@@ -32,7 +32,10 @@ interface DvachDao {
     fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE isDownloaded = 1")
-    fun getThread(): Observable<List<StoredThread>>
+    fun getDownloadedThreads(): Observable<List<StoredThread>>
+
+    @Query("SELECT * FROM threads WHERE isFavorite = 1")
+    fun getFavoriteThreads(): Observable<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId")
     fun getThreadsOnBoard(boardId: String): Observable<List<StoredThread>>
@@ -65,7 +68,7 @@ interface DvachDao {
     fun getFiles(boardId: String): Observable<List<StoredFile>>
 
     @Query("SELECT * FROM files WHERE isOpPostFile = 1")
-    fun getFiles(): Observable<List<StoredFile>>
+    fun getOpFiles(): Observable<List<StoredFile>>
 
     @Query("UPDATE threads SET isFavorite = 1 WHERE boardId = :boardId AND num = :threadNum")
     fun markThreadFavorite(boardId: String, threadNum: Int)
