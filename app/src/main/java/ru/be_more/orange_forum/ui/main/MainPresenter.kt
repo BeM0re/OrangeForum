@@ -1,7 +1,6 @@
 package ru.be_more.orange_forum.ui.main
 
 import android.util.Log
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -48,6 +47,10 @@ class MainPresenter : MvpPresenter<MainView>() {
         super.onDestroy()
         disposables.forEach { it?.dispose() }
     }
+
+    fun getBoardId() = this.boardId
+
+    fun getThreadNum() = this.threadNum
 
     private fun setBoard(boardId: String){
         this.boardId = boardId
@@ -105,8 +108,8 @@ class MainPresenter : MvpPresenter<MainView>() {
             viewState.setActionBarTitle(title)
             setThread(threadNum)
         },
-            {
-                    boardId, threadNum -> "" //TODO сделать удаление избранного
+            { boardId, threadNum ->
+                removeFavoriteMark(boardId, threadNum, true)
             })
         viewState.showFavoriteFragment(fragment)
     }
@@ -142,7 +145,7 @@ class MainPresenter : MvpPresenter<MainView>() {
         )
     }
 
-    fun deleteThread() {
+    fun deleteThread(boardId: String, threadNum: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -151,14 +154,19 @@ class MainPresenter : MvpPresenter<MainView>() {
         viewState.turnFavoriteIcon(true)
     }
 
-    fun removeFavoriteMark() {
+    fun removeFavoriteMark(boardId: String, threadNum: Int, isFavoriteFragmentFrom: Boolean = false) {
         disposables.add(
             threadInteractor.unmarkThreadFavorite(boardId, threadNum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe (
-                    { viewState.turnFavoriteIcon(false) },
-                    { Log.d("M_MainPresenter", "main remove favorite error = $it") }
+                .subscribe(
+                    {  },
+                    {Log.d("M_MainPresenter", "unmark favorite error = $it")},
+                    {
+                        viewState.refreshFavorite()
+                        if(!isFavoriteFragmentFrom)
+                            viewState.turnFavoriteIcon(false)
+                    }
                 )
         )
     }

@@ -36,7 +36,20 @@ class FavoritePresenter : MvpPresenter<FavoriteView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ boards ->
-                    Log.d("M_FavoritePresenter", "boards = $boards")
+                    this.boards = boards
+                    viewState.loadFavorites()
+                },
+                    { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
+                )
+        )
+    }
+
+    fun refreshData(){
+        disposables.add(
+            interactor.getFavorites()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ boards ->
                     this.boards = boards
                     viewState.loadFavorites()
                 },

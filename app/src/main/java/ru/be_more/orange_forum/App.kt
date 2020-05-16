@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.widget.Toast
 import androidx.room.Room
+import com.anadeainc.rxbus.BusProvider
 import ru.be_more.orange_forum.data.AppDatabase
 import ru.be_more.orange_forum.di.components.DaggerRepoComponent
 import ru.be_more.orange_forum.di.components.RepoComponent
@@ -16,6 +17,8 @@ open class App : Application() {
         private var instance: App? = null
         private var database: AppDatabase? = null
         private var component: RepoComponent = DaggerRepoComponent.create()
+
+        fun getBusInstance() = BusProvider.getInstance()
 
         fun applicationContext(): Context = instance!!.applicationContext
 

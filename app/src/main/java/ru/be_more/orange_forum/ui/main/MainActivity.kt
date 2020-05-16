@@ -172,7 +172,9 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_download_done -> {
-                mainPresenter.deleteThread()
+                mainPresenter.deleteThread(
+                    mainPresenter.getBoardId(),
+                    mainPresenter.getThreadNum())
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite -> {
@@ -180,7 +182,10 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite_added -> {
-                mainPresenter.removeFavoriteMark()
+                mainPresenter.removeFavoriteMark(
+                    mainPresenter.getBoardId(),
+                    mainPresenter.getThreadNum(),
+                    false)
                 return@OnMenuItemClickListener true
             }
         }
@@ -195,6 +200,14 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     override fun onBackPressed() {
         bus.post(BackPressed)
 //        super.onBackPressed()
+    }
+
+    override fun refreshFavorite() {
+        bus.post(RefreshFavorite)
+    }
+
+    override fun refreshDownload() {
+        bus.post(RefreshDownload)
     }
 
     @Subscribe

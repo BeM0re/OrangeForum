@@ -7,6 +7,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.bus.RefreshFavorite
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Post
@@ -96,10 +97,11 @@ class ThreadInteractor @Inject constructor() {
         )
     }
 
-    fun unmarkThreadFavorite(boardId: String, threadNum: Int): Observable<Unit> =
+    fun unmarkThreadFavorite(boardId: String, threadNum: Int) =
         Observable.fromCallable {
             dbRepo.unmarkThreadFavorite(boardId, threadNum)
         }
+
 
     fun markThreadHidden(boardId: String, threadNum: Int){
         dbRepo.markThreadHidden(boardId, threadNum)

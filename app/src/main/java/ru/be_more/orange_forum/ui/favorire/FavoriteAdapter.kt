@@ -75,5 +75,6 @@ class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
         group: ExpandableGroup<*>?
     ) {
         holder.setBoardTitle((group as Board).name)
+        holder.expand()
     }
 }

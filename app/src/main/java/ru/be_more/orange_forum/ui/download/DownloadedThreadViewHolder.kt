@@ -30,7 +30,7 @@ class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnCli
     private var totalPosts: TextView = itemView!!.findViewById(R.id.tv_board_op_total)
     private var postsWithPic: TextView = itemView!!.findViewById(R.id.tv_board_op_with_pic)
     private var pickThreadButton: Button = itemView!!.findViewById(R.id.btn_board_op_into)
-    private var hideButton: Button = itemView!!.findViewById(R.id.btn_board_op_hide)
+    private var removeButton: Button = itemView!!.findViewById(R.id.btn_board_op_hide)
     private var dividerView: View = itemView!!.findViewById(R.id.v_post1_pic_divider)
 
     fun setSenderName (param: String){
@@ -97,9 +97,9 @@ class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnCli
     }
 
     fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownloadListener) {
-        hideButton.visibility = View.GONE
-        hideButton.text = "Удалить"
-        hideButton.setOnClickListener {
+//        removeButton.visibility = View.GONE
+        removeButton.text = "Удалить"
+        removeButton.setOnClickListener {
             listener.onRemoveClick(boardId, thread.num)
         }
     }

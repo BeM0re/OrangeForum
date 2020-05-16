@@ -18,6 +18,8 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.bus.RefreshDownload
+import ru.be_more.orange_forum.bus.RefreshFavorite
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.DownloadListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -166,7 +168,11 @@ class DownloadFragment private constructor(
             downloadPresenter.onBackPressed()
         else
             bus.post(AppToBeClosed)
+    }
 
+    @Subscribe
+    public fun refreshDownload(event: RefreshDownload) {
+        adapter.notifyDataSetChanged()
     }
 
     companion object {

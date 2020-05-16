@@ -26,4 +26,6 @@ interface MainView  : MvpView {
     fun showPrefFragment(prefFragment: Fragment)
     fun turnFavoriteIcon(isFavorite: Boolean)
     fun turnDownloadedIcon(isDownloaded: Boolean)
+    fun refreshFavorite()
+    fun refreshDownload()
 }

@@ -18,6 +18,7 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.bus.RefreshFavorite
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.DownloadListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -165,6 +166,12 @@ class FavoriteFragment private constructor(
             bus.post(AppToBeClosed)
 
     }
+
+    @Subscribe
+    public fun refreshFavorite(event: RefreshFavorite) {
+        favoritePresenter.refreshData()
+    }
+
 
     companion object {
         fun getFavoriteFragment (
