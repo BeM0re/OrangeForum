@@ -51,41 +51,56 @@ class DvachDbRepository @Inject constructor(){
     }
 
     fun saveThread(thread: BoardThread, boardId: String, boardName: String, purpose: Purpose) {
-
         disposables.add(
-            dvachDbDao.getBoardCount(boardId)
-                .subscribeOn(Schedulers.io())
-                .subscribe({boardCount ->
-                    if (boardCount ==0){
+            Observable.zip(dvachDbDao.getBoardCount(boardId),
+                dvachDbDao.getThreadCount(boardId, thread.num),
+                BiFunction <Int, Int, Unit> { boardCount, threadCount ->
+                    if (boardCount == 0){
                         dvachDbDao.insertBoard(StoredBoard(boardId, "", boardName))
                     }
-
                     when (purpose){
-                        Purpose.DOWNLOAD ->
-                            dvachDbDao.insertThread(downloadedToStoredThread(thread, boardId))
-                        Purpose.FAVORITE ->
-                            dvachDbDao.insertThread(favoriteToStoredThread(thread, boardId))
+                        Purpose.DOWNLOAD -> {
+                            if (threadCount == 0) {
+                                dvachDbDao.insertThread(downloadedToStoredThread(thread, boardId))
+                                //вставляем все, в т.ч. оп-пост
+                                thread.posts.forEach { post -> savePost(post, thread.num, boardId) }
+                            }
+                            else {
+                                //оп-пост уже есть в базе. вставляем, начиная со 2-го поста
+                                dvachDbDao.markThreadDownload(boardId, thread.num)
+                                thread.posts.subList(1, thread.posts.size)
+                                    .forEach { post -> savePost(post, thread.num, boardId) }
+                            }
+                        }
+                        Purpose.FAVORITE ->{
+                            if (threadCount == 0) {
+                                dvachDbDao.insertThread(favoriteToStoredThread(thread, boardId))
+                                savePost(thread.posts[0], thread.num, boardId)
+                            }
+                            else
+                                dvachDbDao.markThreadFavorite(boardId, thread.num)
+
+                        }
                     }
 
-
-                    thread.posts.forEach { post ->
-                        savePost(post, thread.num, boardId)
-                    }
-                },
-                    { Log.d("M_DvachDbRepository", "error = $it") },
-                    { Log.d("M_DvachDbRepository", "Done") })
+                }
+            )
+            .observeOn(Schedulers.io())
+            .subscribe({},
+                {Log.d("M_DvachDbRepository", "orror = $it")})
         )
     }
 
     private fun savePost(post: Post, threadNum: Int, boardId: String){
         dvachDbDao.insertPost(toStoredPost(post, threadNum, boardId))
         post.files.forEach { file ->
-            Observable.fromCallable {
+            /*Observable.fromCallable {
                 dvachDbDao.insertFile(toStoredFile(file, post.num, boardId, post.number, threadNum))
             }
                 .subscribeOn(Schedulers.io())
                 .subscribe({},
-                    { Log.d("M_DvachDbRepository", "$it") })
+                    { Log.d("M_DvachDbRepository", "$it") })*/
+            dvachDbDao.insertFile(toStoredFile(file, post.num, boardId, post.number, threadNum))
         }
     }
 

@@ -40,6 +40,7 @@ data class StoredThread(
         onDelete = ForeignKey.CASCADE)])
 data class StoredPost(
     val boardId: String,
+//    @PrimaryKey val num: Int,
     @PrimaryKey val num: Int,
     val threadNum: Int,
     val name: String,

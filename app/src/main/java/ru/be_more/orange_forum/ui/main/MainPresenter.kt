@@ -15,6 +15,7 @@ import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 import ru.be_more.orange_forum.ui.download.DownloadFragment
+import ru.be_more.orange_forum.ui.favorire.FavoriteFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
 import java.util.*
 import javax.inject.Inject
@@ -98,7 +99,15 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     fun makeFavoriteFragment() {
-        val fragment = TempFragment()
+        val fragment = FavoriteFragment.getFavoriteFragment({ boardId, threadNum, title ->
+            this.boardId = boardId
+            this.threadTitle = title
+            viewState.setActionBarTitle(title)
+            setThread(threadNum)
+        },
+            {
+                    boardId, threadNum -> "" //TODO сделать удаление избранного
+            })
         viewState.showFavoriteFragment(fragment)
     }
 
@@ -124,9 +133,8 @@ class MainPresenter : MvpPresenter<MainView>() {
         disposables.add(
             apiRepo.getThread(boardId, threadNum)
                 .subscribeOn(Schedulers.io())
-                .subscribe (
-                    {
-                        dbRepo.saveThread(it, boardId, boardTitle)
+                .subscribe ( {
+                        dbRepo.saveThread(it, boardId, boardTitle, DvachDbRepository.Purpose.DOWNLOAD)
                     },
                     {
                         App.showToast("Ошибка")
@@ -139,7 +147,7 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     fun markThreadFavorite() {
-        threadInteractor.markThreadFavorite(boardId, threadNum)
+        threadInteractor.markThreadFavorite(boardId, threadNum, boardTitle)
         viewState.turnFavoriteIcon(true)
     }
 

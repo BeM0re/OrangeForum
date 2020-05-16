@@ -111,7 +111,7 @@ class BoardPresenter : MvpPresenter<BoardView>() {
 
     fun favoriteThread(threadNum: Int, isFavorite: Boolean) {
         if (isFavorite)
-            interactor.markThreadFavorite(boardId, threadNum)
+            interactor.markThreadFavorite(boardId, threadNum, board.title)
         else
             interactor.unmarkThreadFavorite(boardId, threadNum)
     }

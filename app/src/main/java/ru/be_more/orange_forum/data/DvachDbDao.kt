@@ -24,6 +24,10 @@ interface DvachDao {
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun getBoard(boardId: String): Observable<StoredBoard>
 
+
+    @Query("SELECT COUNT(num) FROM threads WHERE boardId = :boardId AND num =:threadNum")
+    fun getThreadCount(boardId: String, threadNum: Int): Observable<Int>
+
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun getThread(boardId: String, threadNum: Int): Observable<StoredThread>
 
@@ -69,6 +73,9 @@ interface DvachDao {
 
     @Query("SELECT * FROM files WHERE isOpPostFile = 1")
     fun getOpFiles(): Observable<List<StoredFile>>
+
+    @Query("UPDATE threads SET isDownloaded = 1 WHERE boardId = :boardId AND num = :threadNum")
+    fun markThreadDownload(boardId: String, threadNum: Int)
 
     @Query("UPDATE threads SET isFavorite = 1 WHERE boardId = :boardId AND num = :threadNum")
     fun markThreadFavorite(boardId: String, threadNum: Int)

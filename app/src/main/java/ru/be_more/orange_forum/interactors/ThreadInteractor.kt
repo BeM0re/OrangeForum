@@ -1,7 +1,9 @@
 package ru.be_more.orange_forum.interactors
 
+import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
@@ -10,6 +12,7 @@ import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.repositories.DvachDbRepository
+import java.util.*
 import javax.inject.Inject
 
 //TODO разбить на несколько интеракторов
@@ -20,6 +23,8 @@ class ThreadInteractor @Inject constructor() {
 
     @Inject
     lateinit var dbRepo : DvachDbRepository
+
+    private val disposables = LinkedList<Disposable>()
 
     init {
         App.getComponent().inject(this)
@@ -67,13 +72,28 @@ class ThreadInteractor @Inject constructor() {
             }
         )
 
-    fun markThreadFavorite(boardId: String, threadNum: Int){
-        apiRepo.getPost(boardId, threadNum)
-            .observeOn(Schedulers.io())
-            .subscribe{
-                dbRepo.saveThread()
-        }
-        dbRepo.markThreadFavorite(boardId, threadNum)
+    fun markThreadFavorite(boardId: String, threadNum: Int, boardTitle: String){
+        disposables.add(
+            apiRepo.getPost(boardId, threadNum)
+                .observeOn(Schedulers.io())
+                .subscribe(
+                    { post ->
+                        val thread = BoardThread(
+                            num = threadNum,
+                            posts = listOf(post),
+                            title = post.subject
+                        )
+                        dbRepo.saveThread(thread,
+                            boardId,
+                            boardTitle,
+                            DvachDbRepository.Purpose.FAVORITE)
+                    },
+                    {
+                        App.showToast("Ошибка")
+                        Log.d("M_ThreadInteractor", "Interactor add to fav error = $it")
+                    }
+                )
+        )
     }
 
     fun unmarkThreadFavorite(boardId: String, threadNum: Int): Observable<Unit> =
@@ -104,5 +124,6 @@ class ThreadInteractor @Inject constructor() {
 
     fun destroy(){
         dbRepo.destroy()
+        disposables.forEach { it.dispose() }
     }
 }
