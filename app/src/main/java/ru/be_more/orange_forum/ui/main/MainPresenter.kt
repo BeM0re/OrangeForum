@@ -122,7 +122,7 @@ class MainPresenter : MvpPresenter<MainView>() {
             setThread(threadNum)
         },
         {
-            boardId, threadNum -> "" //TODO сделать удаление треда
+            boardId, threadNum -> deleteThread(boardId, threadNum, true)
         })
         viewState.showDownloadedFragment(fragment)
     }
@@ -143,10 +143,13 @@ class MainPresenter : MvpPresenter<MainView>() {
                         App.showToast("Ошибка")
                     })
         )
+        viewState.turnDownloadedIcon(true)
     }
 
-    fun deleteThread(boardId: String, threadNum: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun deleteThread(boardId: String, threadNum: Int, isDownloadFragmentFrom: Boolean) {
+        disposables.add( threadInteractor.deleteThread(boardId, threadNum) )
+        if(!isDownloadFragmentFrom)
+            viewState.turnDownloadedIcon(false)
     }
 
     fun markThreadFavorite() {

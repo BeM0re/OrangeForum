@@ -65,6 +65,9 @@ interface DvachDao {
     @Query("SELECT * FROM files WHERE postNum = :postNum")
     fun getFiles(postNum: Int): Observable<List<StoredFile>>
 
+    @Query("SELECT * FROM files WHERE boardId = :boardId AND threadNum = :threadNum")
+    fun getFiles(boardId: String, threadNum: Int): Observable<List<StoredFile>>
+
     @Query("SELECT * FROM files WHERE threadNum = :postNum")
     fun getAllFilesFromThread(postNum: Int): Observable<List<StoredFile>>
 
@@ -89,9 +92,17 @@ interface DvachDao {
     @Query("UPDATE threads SET isHidden = 0 WHERE boardId = :boardId AND num = :threadNum")
     fun unmarkThreadHidden(boardId: String, threadNum: Int)
 
-    @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum")
+    @Query("UPDATE threads SET isDownloaded = 0 WHERE boardId = :boardId AND num = :threadNum")
+    fun unmarkThreadDownload(boardId: String, threadNum: Int)
+
+    @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum AND isFavorite = 0")
     fun deleteThread(boardId: String, threadNum: Int)
 
+    @Query("DELETE FROM posts WHERE boardId = :boardId AND threadNum = :threadNum AND threadNum != num")
+    fun deletePosts(boardId: String, threadNum: Int)
+
+    @Query("DELETE FROM files WHERE boardId = :boardId AND threadNum = :threadNum AND threadNum != postNum")
+    fun deleteFiles(boardId: String, threadNum: Int)
 
 
 

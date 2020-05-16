@@ -14,6 +14,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function4
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.bus.RefreshDownload
 import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.model.Board
@@ -23,6 +24,7 @@ import ru.be_more.orange_forum.services.DVACH_ROOT_URL
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.net.URI
 import java.util.*
 import javax.inject.Inject
 
@@ -61,6 +63,7 @@ class DvachDbRepository @Inject constructor(){
                     when (purpose){
                         Purpose.DOWNLOAD -> {
                             if (threadCount == 0) {
+                                Log.d("M_DvachDbRepository", "1")
                                 dvachDbDao.insertThread(downloadedToStoredThread(thread, boardId))
                                 //вставляем все, в т.ч. оп-пост
                                 thread.posts.forEach { post -> savePost(post, thread.num, boardId) }
@@ -69,7 +72,11 @@ class DvachDbRepository @Inject constructor(){
                                 //оп-пост уже есть в базе. вставляем, начиная со 2-го поста
                                 dvachDbDao.markThreadDownload(boardId, thread.num)
                                 thread.posts.subList(1, thread.posts.size)
-                                    .forEach { post -> savePost(post, thread.num, boardId) }
+                                    .forEach { post ->
+                                        Log.d("M_DvachDbRepository", "2")
+                                        savePost(post, thread.num, boardId)
+
+                                    }
                             }
                         }
                         Purpose.FAVORITE ->{
@@ -87,7 +94,7 @@ class DvachDbRepository @Inject constructor(){
             )
             .observeOn(Schedulers.io())
             .subscribe({},
-                {Log.d("M_DvachDbRepository", "orror = $it")})
+                {Log.d("M_DvachDbRepository", "on save thread error = $it")})
         )
     }
 
@@ -138,6 +145,16 @@ class DvachDbRepository @Inject constructor(){
             Log.e("M_DvachDbRepository", "Image NOT saved. Error = $e")
             return null
         }
+    }
+
+    private fun deleteImage(path: String){
+        try {
+            App.applicationContext().contentResolver.delete(Uri.parse(path), null, null)
+        }
+        catch (e: java.lang.Exception){
+            Log.d("M_DvachDbRepository", "on delete error = $e")
+        }
+
     }
 
     @Throws(IOException::class)
@@ -216,7 +233,8 @@ class DvachDbRepository @Inject constructor(){
     fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<BoardThread?> =
         dvachDbDao.getThreadOrEmpty(boardId, threadNum)
             .subscribeOn(Schedulers.io())
-            .zipWith(getPosts(boardId, threadNum), BiFunction {threads, posts ->
+            .zipWith(getPosts(boardId, threadNum),
+                BiFunction {threads, posts ->
                 if (threads.isNotEmpty())
                     toModelThread(threads[0], posts)
                 else
@@ -228,9 +246,27 @@ class DvachDbRepository @Inject constructor(){
             .subscribeOn(Schedulers.io())
             .map { threads -> toModelThreads(threads) }
 
-    fun deleteThread(boardId: String, threadNum: Int) {
-        dvachDbDao.deleteThread(boardId, threadNum)
-    }
+    fun deleteThread(boardId: String, threadNum: Int): Disposable =
+        dvachDbDao.getFiles(boardId, threadNum)
+            .subscribe (
+                { files ->
+
+                    files.forEach { file ->
+                        if (file.localPath.isNotEmpty())
+                            deleteImage(file.localPath)
+                        if (file.localThumbnail.isNotEmpty())
+                            deleteImage(file.localThumbnail)
+                    }
+                    dvachDbDao.deleteThread(boardId, threadNum)
+                    dvachDbDao.deletePosts(boardId, threadNum)
+                    dvachDbDao.deleteFiles(boardId, threadNum)
+                    dvachDbDao.unmarkThreadDownload(boardId, threadNum)
+                    App.getBusInstance().post(RefreshDownload)
+                },
+                { Log.d("M_DvachDbRepository", "on delete thread error = $it") }
+            )
+
+
 
     fun getPosts(boardId: String, threadNum: Int): Observable<List<Post>> =
         dvachDbDao.getPosts(boardId, threadNum)
@@ -303,7 +339,7 @@ class DvachDbRepository @Inject constructor(){
         num = thread.num,
         title = thread.title,
         isHidden = thread.isHidden,
-        isDownloaded = thread.isHidden,
+        isDownloaded = thread.isDownloaded,
         isFavorite = thread.isFavorite,
         posts = posts
     )
@@ -315,7 +351,7 @@ class DvachDbRepository @Inject constructor(){
                 num = thread.num,
                 title = thread.title,
                 isHidden = thread.isHidden,
-                isDownloaded = thread.isHidden,
+                isDownloaded = thread.isDownloaded,
                 isFavorite = thread.isFavorite)
         ) }
         return result

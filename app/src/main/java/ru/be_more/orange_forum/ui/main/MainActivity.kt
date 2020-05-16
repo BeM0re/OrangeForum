@@ -174,7 +174,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             R.id.navigation_download_done -> {
                 mainPresenter.deleteThread(
                     mainPresenter.getBoardId(),
-                    mainPresenter.getThreadNum())
+                    mainPresenter.getThreadNum(),
+                    false)
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite -> {

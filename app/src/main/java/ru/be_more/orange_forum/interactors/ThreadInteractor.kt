@@ -61,7 +61,7 @@ class ThreadInteractor @Inject constructor() {
 
                     if (webIndex == -1){ //удаляем инфу об утонувших несохраненных тредах
                         if (!localThread.isDownloaded)
-                            dbRepo.deleteThread(boardId, localThread.num)
+                            disposables.add( dbRepo.deleteThread(boardId, localThread.num) )
                     }
                     else{
                         webThreads[webIndex].isFavorite = localThread.isFavorite
@@ -112,9 +112,10 @@ class ThreadInteractor @Inject constructor() {
             dbRepo.unmarkThreadHidden(boardId, threadNum)
         }
 
-    fun deleteThread(boardId: String, threadNum: Int){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    fun deleteThread(boardId: String, threadNum: Int) =
+        dbRepo.deleteThread(boardId, threadNum)
+
+
 
     fun getFavorites(): Observable<List<Board>> =
         dbRepo.getFavorites()
