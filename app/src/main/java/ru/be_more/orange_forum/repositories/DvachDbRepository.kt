@@ -94,13 +94,7 @@ class DvachDbRepository @Inject constructor(){
     private fun savePost(post: Post, threadNum: Int, boardId: String){
         dvachDbDao.insertPost(toStoredPost(post, threadNum, boardId))
         post.files.forEach { file ->
-            /*Observable.fromCallable {
-                dvachDbDao.insertFile(toStoredFile(file, post.num, boardId, post.number, threadNum))
-            }
-                .subscribeOn(Schedulers.io())
-                .subscribe({},
-                    { Log.d("M_DvachDbRepository", "$it") })*/
-            dvachDbDao.insertFile(toStoredFile(file, post.num, boardId, post.number, threadNum))
+            dvachDbDao.insertFile(toStoredFile(file, post.num, boardId, threadNum))
         }
     }
 
@@ -138,7 +132,6 @@ class DvachDbRepository @Inject constructor(){
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
                 out.flush()
                 out.close()
-//                Log.d("M_DvachDbRepository", "Image saved. Path = $fileName")
             }
             return fileName
         } catch (e: Exception) {
@@ -253,26 +246,6 @@ class DvachDbRepository @Inject constructor(){
                 toModelPost(post, files)
             })
 
-
-
-    fun markThreadFavorite(boardId: String, threadNum: Int) {
-        disposables.add(
-            dvachDbDao.getThreadOrEmpty(boardId, threadNum)
-                .subscribe { thread ->
-                    if (thread.isNotEmpty())
-                        dvachDbDao.markThreadFavorite(boardId, threadNum)
-                    else
-                        dvachDbDao.insertThread(
-                            StoredThread(
-                                threadNum,
-                                "",
-                                boardId,
-                                isFavorite = true)
-                        )
-                }
-        )
-    }
-
     fun unmarkThreadFavorite(boardId: String, threadNum: Int) {
         dvachDbDao.unmarkThreadFavorite(boardId, threadNum)
     }
@@ -369,7 +342,6 @@ class DvachDbRepository @Inject constructor(){
         file: AttachFile,
         postNum: Int,
         boardId: String,
-        postNumber: Int = 0,
         threadNum: Int
     ): StoredFile = StoredFile(
         boardId = boardId,
@@ -384,7 +356,7 @@ class DvachDbRepository @Inject constructor(){
         webThumbnail = file.thumbnail,
         localThumbnail = downloadImage(file.thumbnail).toString(),
         duration = file.duration,
-        isOpPostFile = postNumber == 1,
+        isOpPostFile = postNum == threadNum,
         threadNum = threadNum
     )
 

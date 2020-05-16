@@ -55,9 +55,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         this.threadNum = threadNum
 
         disposables.add(
-
-
-//            repo.getThread(boardId, threadNum)
             threadInteractor.getThread(boardId, threadNum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

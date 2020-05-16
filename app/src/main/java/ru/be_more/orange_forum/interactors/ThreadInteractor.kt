@@ -38,7 +38,7 @@ class ThreadInteractor @Inject constructor() {
                 return@BiFunction if (localThread.num == 0) // в базе вообще нет данных о треде
                     webThread
                 else{
-                    if (localThread.posts.isNotEmpty()) // тред полностью скачан
+                    if (localThread.isDownloaded) // тред полностью скачан
                         localThread
                     else{ // о треде есть заметки (избранное, скрытое)
                         webThread.copy(

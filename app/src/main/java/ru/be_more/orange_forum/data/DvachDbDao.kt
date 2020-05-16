@@ -50,7 +50,7 @@ interface DvachDao {
     @Query("SELECT * FROM posts WHERE boardId = :boardId AND num = threadNum")
     fun getOpPosts(boardId: String): Observable<List<StoredPost>>
 
-    @Query("SELECT * FROM posts WHERE number = 1")
+    @Query("SELECT * FROM posts WHERE num = threadNum")
     fun getOpPosts(): Observable<List<StoredPost>>
 
     @Query("SELECT * FROM posts WHERE boardId = :boardId")

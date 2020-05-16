@@ -36,6 +36,7 @@ class FavoritePresenter : MvpPresenter<FavoriteView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ boards ->
+                    Log.d("M_FavoritePresenter", "boards = $boards")
                     this.boards = boards
                     viewState.loadFavorites()
                 },
