@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
 import kotlinx.android.synthetic.main.fragment_thread.*
+import kotlinx.android.synthetic.main.item_post.*
 import kotlinx.android.synthetic.main.item_thread_response_form.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
@@ -200,19 +201,21 @@ class ThreadFragment : MvpAppCompatFragment(),
         //        btn_response_submit.setOnClickListener { threadPresenter.post() }
     }
 
-    override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
+    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
 
-        fl_thread_post.visibility = View.VISIBLE
+        var attachment: Attachment? = null
 
-        val attachment = Attachment(fullPicUrl, duration)
+        if (fullPicUri != null)
+            attachment = Attachment("", duration, fullPicUri)
+        else if (!fullPicUrl.isNullOrEmpty())
+            attachment = Attachment(fullPicUrl, duration)
 
-        threadPresenter.putContentInStack(attachment)
+        if (attachment != null) {
+            threadPresenter.putContentInStack(attachment)
+            showPic(attachment)
+            fl_thread_post.visibility = View.VISIBLE
+        }
 
-        showPic(attachment)
-    }
-
-    override fun onThumbnailListener(fullPicUri: Uri, duration: String?) {
-        //this doesn't work with local files
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {

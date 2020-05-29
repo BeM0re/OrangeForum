@@ -54,7 +54,7 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
                 .into(pic1)
 
             pic1.visibility = View.VISIBLE
-            pic1.setOnClickListener { listener.onThumbnailListener(fullPicUrl, file1.duration) }
+            pic1.setOnClickListener { listener.onThumbnailListener(fullPicUrl, file1.duration, null) }
 
             //нужно именно .isNullOrEmpty
             if (!file1.duration.isNullOrEmpty()){
@@ -85,7 +85,7 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
                     .into(pic2)
 
                 pic2.visibility = View.VISIBLE
-                pic2.setOnClickListener { listener.onThumbnailListener(fullPicUrl, file2.duration) }
+                pic2.setOnClickListener { listener.onThumbnailListener(fullPicUrl, file2.duration, null) }
 
 
                 if (!file2.duration.isNullOrEmpty()) {
@@ -110,7 +110,8 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
 
             pic1.visibility = View.VISIBLE
             pic1.setOnClickListener {
-                listener.onThumbnailListener(Uri.parse(file1.localPath), file1.duration)
+                listener.onThumbnailListener(
+                    null , file1.duration, Uri.parse(file1.localPath))
             }
 
             //нужно именно .isNullOrEmpty
@@ -130,7 +131,8 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
 
                 pic2.visibility = View.VISIBLE
                 pic2.setOnClickListener {
-                    listener.onThumbnailListener(Uri.parse(file2.localPath), file2.duration)
+                    listener.onThumbnailListener(
+                        null, file2.duration, Uri.parse(file2.localPath))
                 }
 
 

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
 import kotlinx.android.synthetic.main.fragment_board.*
+import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
@@ -89,19 +90,21 @@ class BoardFragment: MvpAppCompatFragment(),
         adapter.notifyDataSetChanged()
     }
 
-    override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
+    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
 
-        fl_board_post.visibility = View.VISIBLE
+        var attachment: Attachment? = null
 
-        val attachment = Attachment(fullPicUrl, duration)
+        if (fullPicUri != null)
+            attachment = Attachment("", duration, fullPicUri)
+        else if (!fullPicUrl.isNullOrEmpty())
+            attachment = Attachment(fullPicUrl, duration)
 
-        boardPresenter.putContentInStack(attachment)
+        if (attachment != null) {
+            boardPresenter.putContentInStack(attachment)
+            showPic(attachment)
+            fl_board_post.visibility = View.VISIBLE
+        }
 
-        showPic(attachment)
-    }
-
-    override fun onThumbnailListener(fullPicUri: Uri, duration: String?) {
-        //this doesn't work with local files
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
@@ -176,5 +179,6 @@ class BoardFragment: MvpAppCompatFragment(),
             return board
         }
     }
+
 
 }
