@@ -102,8 +102,6 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         setOnScrollListener()
 
-
-
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
         srl_thread.setOnRefreshListener {
@@ -219,7 +217,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-
         if (chanLink != null) {
             val post = threadPresenter.thread.posts.find { it.num == chanLink.third }
 
@@ -233,7 +230,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun onLinkClick(postNum: Int) {
-
         val post = threadPresenter.thread.posts.find { it.num == postNum }
 
         if (post != null) {
@@ -311,15 +307,12 @@ class ThreadFragment : MvpAppCompatFragment(),
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-
     @Subscribe
-    public fun onBackPressed(event: BackPressed) {
-
+    fun onBackPressed(event: BackPressed) {
         if (fl_thread_post.visibility != View.GONE)
             threadPresenter.onBackPressed()
         else
             bus.post(AppToBeClosed)
-
     }
 
     @JavascriptInterface

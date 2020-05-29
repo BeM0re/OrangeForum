@@ -200,7 +200,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun onBackPressed() {
         bus.post(BackPressed)
-//        super.onBackPressed()
     }
 
     override fun refreshFavorite() {
