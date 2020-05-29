@@ -57,6 +57,7 @@ class MainPresenter : MvpPresenter<MainView>() {
         if (boardId == "")
             viewState.hideBoardMenuItem()
         else {
+            setThread(0)
             viewState.showBoardMenuItem()
             makeBoardFragment()
         }
