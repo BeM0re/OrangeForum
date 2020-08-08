@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+androidExtensions {
+    experimental = true
+}
 apply plugin: "kotlin-kapt"
 
 android {
@@ -78,7 +81,6 @@ dependencies {
     implementation "androidx.room:room-runtime:2.2.5"
     implementation "androidx.room:room-rxjava2:2.2.5"
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
-
 
     //Retrofit2
     implementation "com.squareup.retrofit2:retrofit:2.7.2"

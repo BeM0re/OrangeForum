@@ -24,7 +24,6 @@ interface DvachDao {
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun getBoard(boardId: String): Observable<StoredBoard>
 
-
     @Query("SELECT COUNT(num) FROM threads WHERE boardId = :boardId AND num =:threadNum")
     fun getThreadCount(boardId: String, threadNum: Int): Observable<Int>
 

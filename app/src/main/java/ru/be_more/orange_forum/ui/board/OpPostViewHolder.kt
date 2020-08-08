@@ -1,119 +1,106 @@
 package ru.be_more.orange_forum.ui.board
 
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_board_op.*
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.custom.ExpandableTextView
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 
+class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener ) :
+    ChildViewHolder(itemView), LayoutContainer {
 
-class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener) :
-    ChildViewHolder(itemView) {
-
-    private var senderName: TextView = itemView!!.findViewById(R.id.tv_board_op_name)
-    private var isOp: TextView = itemView!!.findViewById(R.id.tv_board_op_check)
-    private var date: TextView = itemView!!.findViewById(R.id.tv_board_op_datetime)
-    private var threadNum: TextView = itemView!!.findViewById(R.id.tv_board_op_num)
-    private var title: TextView = itemView!!.findViewById(R.id.tv_board_op_subject)
-    private var pics: RecyclerView = itemView!!.findViewById(R.id.rv_op_post_pics)
-    private var comment: ExpandableTextView = itemView!!.findViewById(R.id.tv_board_op_comment)
-    private var totalPosts: TextView = itemView!!.findViewById(R.id.tv_board_op_total)
-    private var postsWithPic: TextView = itemView!!.findViewById(R.id.tv_board_op_with_pic)
-    private var pickThreadButton: Button = itemView!!.findViewById(R.id.btn_board_op_into)
-    private var hideButton: Button = itemView!!.findViewById(R.id.btn_board_op_hide)
+    override val containerView: View?
+        get() = itemView
 
     fun setSenderName (param: String){
-        senderName.text = param
+        tv_board_op_name.text = param
     }
     fun setIsOp (isOp: Boolean, isHidden: Boolean){
         if(isOp)
-            this.isOp.visibility=View.VISIBLE
+            tv_board_op_check.visibility=View.VISIBLE
         else
-            this.isOp.visibility=View.GONE
+            tv_board_op_check.visibility=View.GONE
     }
     fun setDate (param: String){
-        date.text = param
+        tv_board_op_datetime.text = param
     }
     fun setThreadNum (param: Int){
-        threadNum.text = param.toString()
+        tv_board_op_num.text = param.toString()
     }
     fun setTitle (param: String){
-        title.text = param
+        tv_board_op_subject.text = param
     }
 
     fun setPics (urls: List<AttachFile>, isHidden: Boolean){
         if (urls.isNotEmpty() && !isHidden){
             val adapter = PostPicAdapter(urls, listener = listener)
 
-            pics.layoutManager = LinearLayoutManager(App.getInstance())
-            pics.adapter = adapter
-            pics.visibility = View.VISIBLE
+            rv_op_post_pics.layoutManager = LinearLayoutManager(App.getInstance())
+            rv_op_post_pics.adapter = adapter
+            rv_op_post_pics.visibility = View.VISIBLE
         }
         else{
-            pics.visibility = View.GONE
-            pics.adapter = null
+            rv_op_post_pics.visibility = View.GONE
+            rv_op_post_pics.adapter = null
         }
     }
 
     fun setComment (param: String, isHidden: Boolean){
         if (param != "" && !isHidden) {
-            comment.text = param
-            comment.visibility = View.VISIBLE
+            tv_board_op_comment.text = param
+            tv_board_op_comment.visibility = View.VISIBLE
         }
         else {
-            comment.visibility = View.GONE
-            comment.text = ""
+            tv_board_op_comment.visibility = View.GONE
+            tv_board_op_comment.text = ""
         }
     }
 
     fun setTotalPosts (param: Int, isHidden: Boolean){
         if(isHidden)
-            totalPosts.visibility = View.GONE
+            tv_board_op_total.visibility = View.GONE
         else
-            totalPosts.text ="Пропущено $param постов"
+            tv_board_op_total.text ="Пропущено $param постов"
     }
 
     fun setPostsWithPic (param: Int, isHidden: Boolean){
         if(isHidden)
-            postsWithPic.visibility = View.GONE
+            tv_board_op_with_pic.visibility = View.GONE
         else
-            postsWithPic.text = "$param c картинками"
+            tv_board_op_with_pic.text = "$param c картинками"
     }
 
     fun setIntoThreadButton(listener: View.OnClickListener, isHidden: Boolean) {
         if (isHidden)
-            pickThreadButton.visibility = View.GONE
+            btn_board_op_into.visibility = View.GONE
         else {
-            pickThreadButton.setOnClickListener(listener)
-            pickThreadButton.visibility = View.VISIBLE
+            btn_board_op_into.setOnClickListener(listener)
+            btn_board_op_into.visibility = View.VISIBLE
         }
     }
 
     fun setCommentListener(listener: LinkOnClickListener){
-        comment.setListener(listener)
+        tv_board_op_comment.setListener(listener)
     }
 
     fun setHideButton(thread: BoardThread, listener: BoardOnClickListener) {
         if(thread.isHidden) {
-            hideButton.visibility = View.GONE
+            btn_board_op_hide.visibility = View.GONE
             itemView.setOnClickListener {
                 thread.isHidden = false
                 listener.onHideClick(thread.num, thread.isHidden)
             }
         }
         else{
-            hideButton.visibility = View.VISIBLE
-            hideButton.setOnClickListener {
+            btn_board_op_hide.visibility = View.VISIBLE
+            btn_board_op_hide.setOnClickListener {
                 thread.isHidden = true
                 listener.onHideClick(thread.num, thread.isHidden)
             }
