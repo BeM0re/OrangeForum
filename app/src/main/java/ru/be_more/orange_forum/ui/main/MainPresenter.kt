@@ -33,6 +33,7 @@ class MainPresenter : MvpPresenter<MainView>() {
     private lateinit var boardTitle :String
     private var threadNum :Int = 0
     private lateinit var threadTitle :String
+    private lateinit var currentFragmentTag: String
 
     private var disposables : LinkedList<Disposable?> = LinkedList()
 
@@ -46,6 +47,12 @@ class MainPresenter : MvpPresenter<MainView>() {
     override fun onDestroy() {
         super.onDestroy()
         disposables.forEach { it?.dispose() }
+    }
+
+    fun getCurrentFragmentTag() = this.currentFragmentTag
+
+    fun setCurrentFragmentTag(tag: String){
+        this.currentFragmentTag = tag
     }
 
     fun getBoardId() = this.boardId
@@ -86,6 +93,8 @@ class MainPresenter : MvpPresenter<MainView>() {
             }
 
         viewState.showCategoryFragment(fragment)
+        currentFragmentTag = CAT_TAG
+
     }
 
     fun makeBoardFragment() {
@@ -94,12 +103,16 @@ class MainPresenter : MvpPresenter<MainView>() {
                 this.threadTitle = title
                 setThread(threadNum)
             }, this.boardId)
+
         viewState.showBoardFragment(fragment)
+        currentFragmentTag = BOARD_TAG
     }
 
     fun makeThreadFragment() {
         val fragment = ThreadFragment.getThreadFragment(boardId, threadNum)
+
         viewState.showThreadFragment(fragment)
+        currentFragmentTag = THREAD_TAG
     }
 
     fun makeFavoriteFragment() {
@@ -112,7 +125,9 @@ class MainPresenter : MvpPresenter<MainView>() {
             { boardId, threadNum ->
                 removeFavoriteMark(boardId, threadNum, true)
             })
+
         viewState.showFavoriteFragment(fragment)
+        currentFragmentTag = FAVORITE_TAG
     }
 
     fun makeDownloadedFragment() {
@@ -125,12 +140,15 @@ class MainPresenter : MvpPresenter<MainView>() {
         {
             boardId, threadNum -> deleteThread(boardId, threadNum, true)
         })
+
         viewState.showDownloadedFragment(fragment)
+        currentFragmentTag = DOWNLOAD_TAG
     }
 
     fun makePrefFragment() {
         val fragment = TempFragment()
         viewState.showPrefFragment(fragment)
+        currentFragmentTag = PREF_TAG
     }
 
     fun downloadThread() {
@@ -175,5 +193,13 @@ class MainPresenter : MvpPresenter<MainView>() {
         )
     }
 
+    companion object{
+        const val CAT_TAG = "CAT_FRAGMENT"
+        const val BOARD_TAG = "BOARD_FRAGMENT"
+        const val THREAD_TAG = "THREAD_FRAGMENT"
+        const val FAVORITE_TAG = "FAVORITE_FRAGMENT"
+        const val DOWNLOAD_TAG = "DOWNLOAD_FRAGMENT"
+        const val PREF_TAG = "PREF_FRAGMENT"
+    }
 
 }

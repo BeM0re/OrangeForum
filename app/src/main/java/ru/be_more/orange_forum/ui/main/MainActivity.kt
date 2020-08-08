@@ -17,7 +17,14 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
+import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.BOARD_TAG
+import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.CAT_TAG
+import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.DOWNLOAD_TAG
+import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.FAVORITE_TAG
+import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.PREF_TAG
+import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.THREAD_TAG
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
+
 
 class MainActivity : MvpAppCompatActivity(), MainView {
 
@@ -31,56 +38,128 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         supportActionBar?.title = title
     }
 
+
+    //TODO отрефакторить покрасивее
     override fun showCategoryFragment(categoryFragment: CategoryFragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, categoryFragment, categoryFragment.javaClass.simpleName)
-            .commit()
+        when {
+            supportFragmentManager.findFragmentByTag(CAT_TAG) != null -> supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .show(supportFragmentManager.findFragmentByTag(CAT_TAG)!!)
+                .commit()
+            supportFragmentManager.findFragmentById(R.id.container) == null -> supportFragmentManager
+                .beginTransaction()
+                .add(R.id.container, categoryFragment, CAT_TAG)
+                .show(categoryFragment)
+                .commit()
+            else -> supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .add(R.id.container, categoryFragment, CAT_TAG)
+                .show(categoryFragment)
+                .commit()
+        }
+
+        mainPresenter.setCurrentFragmentTag(CAT_TAG)
+
         setActionBarTitle()
     }
 
     override fun showBoardFragment(boardFragment: BoardFragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, boardFragment, boardFragment.javaClass.simpleName)
-            .commit()
+        if (supportFragmentManager.findFragmentByTag(BOARD_TAG) != null)
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .show(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
+                .commit()
+        else{
+            Log.e("M_MainActivity",mainPresenter.getCurrentFragmentTag())
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .add(R.id.container, boardFragment, BOARD_TAG)
+                .show(boardFragment)
+                .commit()
+
+        }
+
         setActionBarTitle(mainPresenter.getBoardTitle())
 
         bottomNavigationView!!.menu.getItem(1).isChecked = true
     }
 
     override fun showThreadFragment(threadFragment: ThreadFragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, threadFragment, threadFragment.javaClass.simpleName)
-            .commit()
+        if (supportFragmentManager.findFragmentByTag(THREAD_TAG) != null)
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .show(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
+                .commit()
+        else
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .add(R.id.container, threadFragment, THREAD_TAG)
+                .show(threadFragment)
+                .commit()
+
         setActionBarTitle(mainPresenter.getThreadTitle())
 
         bottomNavigationView!!.menu.getItem(2).isChecked = true
     }
 
     override fun showFavoriteFragment(favoriteFragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, favoriteFragment, favoriteFragment.javaClass.simpleName)
-            .commit()
+        if (supportFragmentManager.findFragmentByTag(FAVORITE_TAG) != null)
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .show(supportFragmentManager.findFragmentByTag(FAVORITE_TAG)!!)
+                .commit()
+        else
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .add(R.id.container, favoriteFragment, FAVORITE_TAG)
+                .show(favoriteFragment)
+                .commit()
+
         setActionBarTitle("Favorites")
     }
 
     override fun showDownloadedFragment(downloadedFragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, downloadedFragment, downloadedFragment.javaClass.simpleName)
-            .commit()
+        if (supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG) != null)
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .show(supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG)!!)
+                .commit()
+        else
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .add(R.id.container, downloadedFragment, DOWNLOAD_TAG)
+                .show(downloadedFragment)
+                .commit()
+
         setActionBarTitle("Downloaded")
     }
 
     override fun showPrefFragment(prefFragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, prefFragment, prefFragment.javaClass.simpleName)
-            .commit()
-        setActionBarTitle("Downloaded")
+        if (supportFragmentManager.findFragmentByTag(PREF_TAG) != null)
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .show(supportFragmentManager.findFragmentByTag(PREF_TAG)!!)
+                .commit()
+        else
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .add(R.id.container, prefFragment, PREF_TAG)
+                .show(prefFragment)
+                .commit()
+
+        setActionBarTitle("Preferences")
     }
 
     override fun hideBoardMenuItem(){
