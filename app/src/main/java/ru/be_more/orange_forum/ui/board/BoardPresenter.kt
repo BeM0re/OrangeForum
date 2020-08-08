@@ -98,7 +98,7 @@ class BoardPresenter : MvpPresenter<BoardView>() {
     }
 
     fun hideThread(threadNum: Int, isHidden: Boolean) {
-        if (isHidden)
+        if (!isHidden)
             interactor.markThreadHidden(boardId, threadNum)
         else
             disposables.add(

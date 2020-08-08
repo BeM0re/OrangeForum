@@ -308,9 +308,6 @@ class DvachDbRepository @Inject constructor(){
         dvachDbDao.unmarkThreadHidden(boardId, threadNum)
     }
 
-
-
-
     private fun toModelBoard(board: StoredBoard, threads: List<BoardThread>): Board = Board(
         name = board.name,
         id = board.id,
