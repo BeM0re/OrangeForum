@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_primary">#2A1956</color>
-    <color name="color_primary_dark">#1C0E42</color>
-    <color name="color_primary_light">#473770</color>
-    <!--    <color name="color_accent">#FC4C4C</color>-->
-    <color name="color_accent">#4Fd149</color>
-    <color name="color_accent_night">#2196F3</color>
-    <color name="color_accent_secondary">#BEAC32EE</color>
+    <color name="color_primary">#666666</color>
+    <color name="color_primary_dark">#A44200</color>
+    <color name="color_primary_light">#FEAA72</color>
+    <color name="color_accent">#fc6600</color>
+    <color name="color_accent_night">#fc6600</color>
+    <color name="color_accent_secondary">#2196F3</color>
     <color name="color_gray">#9CA9BA</color>
     <color name="color_gray_dark">#675F7F</color>
     <color name="color_gray_light">#ECECEC</color>
@@ -14,17 +13,7 @@
     <color name="color_divider_dark">#1F000000</color>
     <color name="color_divider_light">#1FFFFFFF</color>
 
-
-    <color name="color_avatar1">#A695E7</color>
-    <color name="color_avatar2">#65AADD</color>
-    <color name="color_avatar3">#FAA774</color>
-    <color name="color_avatar4">#6EC9CB</color>
-    <color name="color_avatar5">#7BC862</color>
-    <color name="color_avatar6">#E17076</color>
-    <color name="color_avatar7">#AD366B</color>
-    <color name="color_avatar8">#00BFA5</color>
-    <color name="color_avatar9">#B746F0</color>
-    <color name="color_avatar10">#4D66F1</color>
+    <color name="color_background">#eeeeee</color>
 
     <color name="color_indicator">#581F99</color>
     <color name="color_green">#4Fd149</color>
