@@ -12,10 +12,5 @@
 /captures
 .externalNativeBuild
 .cxx
-<<<<<<< Updated upstream
 app/debug
 app/release
-=======
-app/release/output.json
-*.apk
->>>>>>> Stashed changes
