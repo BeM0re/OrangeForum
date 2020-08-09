@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_download.*
 import kotlinx.android.synthetic.main.fragment_thread.*
@@ -21,10 +22,8 @@ import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.bus.RefreshDownload
 import ru.be_more.orange_forum.bus.RefreshFavorite
-import ru.be_more.orange_forum.interfaces.CloseModalListener
-import ru.be_more.orange_forum.interfaces.DownloadListener
-import ru.be_more.orange_forum.interfaces.LinkOnClickListener
-import ru.be_more.orange_forum.interfaces.PicOnClickListener
+import ru.be_more.orange_forum.consts.DOWNLOAD_TAG
+import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Post
@@ -46,7 +45,8 @@ class DownloadFragment private constructor(
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : DownloadAdapter
 
-    private var bus = BusProvider.getInstance()
+//    private var bus = BusProvider.getInstance()
+    private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -59,11 +59,32 @@ class DownloadFragment private constructor(
         recyclerView = rv_downloaded_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        bus.register(this)
+//        bus.register(this)
+
+        disposable = App.getBus().subscribe({
+
+            Log.d("M_DownloadFragment", "back")
+            Log.d("M_DownloadFragment","pair = $it")
+            if(it.first is BackPressed && it.second == DOWNLOAD_TAG) {
+                if (fl_downloaded_board_post.visibility != View.GONE){
+                    Log.d("M_DownloadFragment","1")
+                    downloadPresenter.onBackPressed()
+                    }
+                else {
+                    Log.d("M_DownloadFragment","2")
+                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+                }
+            }
+        },
+            {
+                Log.e("M_DownloadFragment","bus error = \n $it")
+            }
+        )
     }
 
     override fun onDestroy() {
-        bus.unregister(this)
+//        bus.unregister(this)
+        disposable?.dispose()
         super.onDestroy()
     }
 
@@ -116,6 +137,7 @@ class DownloadFragment private constructor(
             downloadPresenter.putContentInStack(attachment)
             showPic(attachment)
             fl_downloaded_board_post.visibility = View.VISIBLE
+            Log.d("M_DownloadFragment","visibility = ${fl_downloaded_board_post.visibility}")
         }
 
     }
@@ -128,11 +150,12 @@ class DownloadFragment private constructor(
             ?.beginTransaction()
             ?.replace(R.id.fl_downloaded_board_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
+        Log.d("M_DownloadFragment","showed")
     }
 
     override fun showPost(post: Post){
 
-        fl_board_post.visibility = View.VISIBLE
+        fl_downloaded_board_post.visibility = View.VISIBLE
 
         val fragment = PostFragment.getPostFragment(
             post,this,this, this)
@@ -156,15 +179,15 @@ class DownloadFragment private constructor(
         App.showToast(message )
     }
 
-    @Subscribe
-    public fun onBackPressed(event: BackPressed) {
-
-        Log.d("M_ThreadFragment", "back")
-        if (fl_downloaded_board_post.visibility != View.GONE)
-            downloadPresenter.onBackPressed()
-        else
-            bus.post(AppToBeClosed)
-    }
+//    @Subscribe
+//    public fun onBackPressed(event: BackPressed) {
+//
+//        Log.d("M_DownloadFragment", "back")
+//        if (fl_downloaded_board_post.visibility != View.GONE)
+//            downloadPresenter.onBackPressed()
+//        else
+//            bus.post(AppToBeClosed)
+//    }
 
     @Subscribe
     public fun refreshDownload(event: RefreshDownload) {

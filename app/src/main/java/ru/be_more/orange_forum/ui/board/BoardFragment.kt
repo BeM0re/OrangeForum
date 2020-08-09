@@ -21,13 +21,10 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
-import ru.be_more.orange_forum.interfaces.BoardOnClickListener
-import ru.be_more.orange_forum.interfaces.CloseModalListener
-import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.Post
-import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 
@@ -161,7 +158,7 @@ class BoardFragment: MvpAppCompatFragment(),
     @Subscribe
     public fun onBackPressed(event: BackPressed) {
 
-        Log.d("M_ThreadFragment", "back")
+        Log.d("M_BoardFragment", "back")
         if (fl_board_post.visibility != View.GONE)
             boardPresenter.onBackPressed()
         else
