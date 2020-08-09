@@ -3,10 +3,7 @@ package ru.be_more.orange_forum
 import android.app.Application
 import android.content.Context
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.room.Room
-import com.anadeainc.rxbus.BusProvider
-import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import ru.be_more.orange_forum.bus.Event
@@ -24,7 +21,6 @@ open class App : Application() {
         private var component: RepoComponent = DaggerRepoComponent.create()
         private var bus:Subject<Pair<Event, String>> = PublishSubject.create()
 
-        fun getBusInstance() = BusProvider.getInstance()
 
         fun applicationContext(): Context = instance!!.applicationContext
 

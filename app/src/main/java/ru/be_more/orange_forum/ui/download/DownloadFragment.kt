@@ -8,21 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anadeainc.rxbus.BusProvider
-import com.anadeainc.rxbus.Subscribe
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_download.*
-import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.bus.AppToBeClosed
-import ru.be_more.orange_forum.bus.BackPressed
-import ru.be_more.orange_forum.bus.RefreshDownload
-import ru.be_more.orange_forum.bus.RefreshFavorite
+import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.consts.DOWNLOAD_TAG
+import ru.be_more.orange_forum.consts.POST_IN_DOWNLOAD_TAG
+import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
@@ -45,7 +40,6 @@ class DownloadFragment private constructor(
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : DownloadAdapter
 
-//    private var bus = BusProvider.getInstance()
     private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -59,8 +53,6 @@ class DownloadFragment private constructor(
         recyclerView = rv_downloaded_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-//        bus.register(this)
-
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == DOWNLOAD_TAG) {
                 if (fl_downloaded_board_post.visibility != View.GONE)
@@ -68,6 +60,8 @@ class DownloadFragment private constructor(
                 else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
+            if (it.first is RefreshDownload && it.second == DOWNLOAD_TAG)
+                adapter.notifyDataSetChanged()
         },
         {
             Log.e("M_DownloadFragment","bus error = \n $it")
@@ -75,7 +69,6 @@ class DownloadFragment private constructor(
     }
 
     override fun onDestroy() {
-//        bus.unregister(this)
         disposable?.dispose()
         super.onDestroy()
     }
@@ -139,7 +132,7 @@ class DownloadFragment private constructor(
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_downloaded_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_downloaded_board_post, fragment, POST_IN_DOWNLOAD_TAG)
             ?.commit()
     }
 
@@ -152,7 +145,7 @@ class DownloadFragment private constructor(
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_downloaded_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_downloaded_board_post, fragment, POST_IN_DOWNLOAD_TAG)
             ?.commit()
     }
 
@@ -162,26 +155,19 @@ class DownloadFragment private constructor(
 
     override fun hideModal() {
         fl_downloaded_board_post.visibility = View.GONE
+
+        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
+
+        if (fragmentManager?.findFragmentByTag(POST_IN_DOWNLOAD_TAG) != null)
+            fragmentManager
+                ?.beginTransaction()
+                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_DOWNLOAD_TAG)!!)
+
         downloadPresenter.clearStack()
     }
 
     override fun showToast(message: String) {
         App.showToast(message )
-    }
-
-//    @Subscribe
-//    public fun onBackPressed(event: BackPressed) {
-//
-//        Log.d("M_DownloadFragment", "back")
-//        if (fl_downloaded_board_post.visibility != View.GONE)
-//            downloadPresenter.onBackPressed()
-//        else
-//            bus.post(AppToBeClosed)
-//    }
-
-    @Subscribe
-    public fun refreshDownload(event: RefreshDownload) {
-        adapter.notifyDataSetChanged()
     }
 
     companion object {
