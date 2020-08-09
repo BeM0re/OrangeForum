@@ -62,7 +62,6 @@ class DownloadFragment private constructor(
 //        bus.register(this)
 
         disposable = App.getBus().subscribe({
-
             if(it.first is BackPressed && it.second == DOWNLOAD_TAG) {
                 if (fl_downloaded_board_post.visibility != View.GONE)
                     downloadPresenter.onBackPressed()
@@ -70,10 +69,9 @@ class DownloadFragment private constructor(
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
         },
-            {
-                Log.e("M_DownloadFragment","bus error = \n $it")
-            }
-        )
+        {
+            Log.e("M_DownloadFragment","bus error = \n $it")
+        })
     }
 
     override fun onDestroy() {
