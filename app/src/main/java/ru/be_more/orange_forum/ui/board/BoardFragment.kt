@@ -11,21 +11,18 @@ import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anadeainc.rxbus.BusProvider
-import com.anadeainc.rxbus.Subscribe
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
-import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
-import ru.be_more.orange_forum.bus.ThreadEntered
+import ru.be_more.orange_forum.bus.VideoToBeClosed
 import ru.be_more.orange_forum.consts.BOARD_TAG
-import ru.be_more.orange_forum.consts.DOWNLOAD_TAG
-import ru.be_more.orange_forum.consts.THREAD_TAG
+import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
+import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
@@ -73,7 +70,7 @@ class BoardFragment: MvpAppCompatFragment(),
             }
         },
         {
-            Log.e("M_ThreadFragment","bus error = \n $it")
+            Log.e("M_BoardFragment","bus error = \n $it")
         })
     }
 
@@ -140,7 +137,7 @@ class BoardFragment: MvpAppCompatFragment(),
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_board_post, fragment, POST_IN_BOARD_TAG)
             ?.commit()
     }
 
@@ -153,12 +150,20 @@ class BoardFragment: MvpAppCompatFragment(),
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_board_post, fragment, POST_IN_BOARD_TAG)
             ?.commit()
     }
 
     override fun hideModal() {
         fl_board_post.visibility = View.GONE
+
+        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
+
+        if (fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG) != null)
+            fragmentManager
+                ?.beginTransaction()
+                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG)!!)
+
         boardPresenter.clearStack()
     }
 
