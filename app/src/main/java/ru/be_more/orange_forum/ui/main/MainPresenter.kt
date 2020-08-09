@@ -165,7 +165,7 @@ class MainPresenter : MvpPresenter<MainView>() {
                         dbRepo.saveThread(it, boardId, boardTitle, DvachDbRepository.Purpose.DOWNLOAD)
                     },
                     {
-                        App.showToast("Ошибка")
+                        App.showToast("downloading error = $it")
                     })
         )
         viewState.turnDownloadedIcon(true)

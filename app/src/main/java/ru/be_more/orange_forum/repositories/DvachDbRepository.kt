@@ -15,6 +15,7 @@ import io.reactivex.functions.Function4
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.bus.RefreshDownload
+import ru.be_more.orange_forum.consts.DOWNLOAD_TAG
 import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.AttachFile
 import ru.be_more.orange_forum.model.Board
@@ -261,7 +262,7 @@ class DvachDbRepository @Inject constructor(){
                     dvachDbDao.deletePosts(boardId, threadNum)
                     dvachDbDao.deleteFiles(boardId, threadNum)
                     dvachDbDao.unmarkThreadDownload(boardId, threadNum)
-                    App.getBusInstance().post(RefreshDownload)
+                    App.getBus().onNext(Pair(RefreshDownload, DOWNLOAD_TAG))
                 },
                 { Log.d("M_DvachDbRepository", "on delete thread error = $it") }
             )
