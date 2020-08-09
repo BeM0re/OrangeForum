@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
@@ -21,6 +22,10 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.bus.ThreadEntered
+import ru.be_more.orange_forum.consts.BOARD_TAG
+import ru.be_more.orange_forum.consts.DOWNLOAD_TAG
+import ru.be_more.orange_forum.consts.THREAD_TAG
 import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
@@ -45,7 +50,7 @@ class BoardFragment: MvpAppCompatFragment(),
     private lateinit var recyclerView : RecyclerView
     private lateinit var adapter : BoardAdapter
 
-    private var bus = BusProvider.getInstance()
+    private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -59,11 +64,21 @@ class BoardFragment: MvpAppCompatFragment(),
         recyclerView = rv_thread_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        bus.register(this)
+        disposable = App.getBus().subscribe({
+            if(it.first is BackPressed && it.second == BOARD_TAG) {
+                if (fl_board_post.visibility != View.GONE)
+                    boardPresenter.onBackPressed()
+                else
+                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+            }
+        },
+        {
+            Log.e("M_ThreadFragment","bus error = \n $it")
+        })
     }
 
     override fun onDestroy() {
-        bus.unregister(this)
+        disposable?.dispose()
         super.onDestroy()
     }
 
@@ -153,17 +168,6 @@ class BoardFragment: MvpAppCompatFragment(),
 
     override fun showToast(message: String) {
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    @Subscribe
-    public fun onBackPressed(event: BackPressed) {
-
-        Log.d("M_BoardFragment", "back")
-        if (fl_board_post.visibility != View.GONE)
-            boardPresenter.onBackPressed()
-        else
-            bus.post(AppToBeClosed)
-
     }
 
     companion object {
