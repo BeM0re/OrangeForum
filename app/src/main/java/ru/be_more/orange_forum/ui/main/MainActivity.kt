@@ -101,6 +101,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
         setActionBarTitle(mainPresenter.getThreadTitle())
 
+        App.getBus().onNext(Pair(ThreadEntered, THREAD_TAG))
+
         bottomNavigationView!!.menu.getItem(2).isChecked = true
     }
 
@@ -211,6 +213,10 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+
+            if (mainPresenter.getCurrentFragmentTag() == THREAD_TAG)
+                removeThreadMarks()
+
             when (menuItem.itemId) {
                 R.id.navigation_category -> {
                     mainPresenter.makeCategoryFragment()
@@ -288,21 +294,50 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         bus.post(RefreshDownload)
     }
 
+    private fun removeThreadMarks(){
+        toolbar.menu.findItem(R.id.navigation_download).isVisible = false
+        toolbar.menu.findItem(R.id.navigation_download_done).isVisible = false
+        toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
+        toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
+        toolbar.menu.findItem(R.id.navigation_pref).isVisible = true
+    }
+
     private fun subscribeInit(){
            disposable = App.getBus().subscribe (
                {
-                   if (it.first is AppToBeClosed) {
-                       if (System.currentTimeMillis() - timestamp < 2000)
-                           super.onBackPressed()
-                       else {
-                           timestamp = System.currentTimeMillis()
-                           Toast.makeText(
-                               applicationContext,
-                               "Нажмите назад еще раз, чтобы закрыть приложение",
-                               Toast.LENGTH_SHORT
-                           ).show()
+                   when (it.first) {
+                       is AppToBeClosed -> {
+                           if (System.currentTimeMillis() - timestamp < 2000)
+                               super.onBackPressed()
+                           else {
+                               timestamp = System.currentTimeMillis()
+                               Toast.makeText(
+                                   applicationContext,
+                                   "Нажмите назад еще раз, чтобы закрыть приложение",
+                                   Toast.LENGTH_SHORT
+                               ).show()
+                           }
+                       }
+
+                       is UndownloadedThreadEntered -> {
+                           toolbar.menu.findItem(R.id.navigation_download).isVisible = true
+                           toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
+                       }
+
+                       is DownloadedThreadEntered -> {
+                           toolbar.menu.findItem(R.id.navigation_download_done).isVisible = true
+                           toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
+                       }
+
+                       is FavoriteThreadEntered -> {
+                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
+                       }
+
+                       is UnfavoriteThreadEntered -> {
+                           toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
                        }
                    }
+
                },
                {
                    Log.e("M_MainActivity","bus error = \n $it")
@@ -329,7 +364,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         }
     }*/
 
-    @Subscribe
+/*    @Subscribe
     fun showDownloadThreadButtons(event: UndownloadedThreadEntered){
         toolbar.menu.findItem(R.id.navigation_download).isVisible = true
         toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
@@ -358,5 +393,5 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
         toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
         toolbar.menu.findItem(R.id.navigation_pref).isVisible = true
-    }
+    }*/
 }

@@ -63,17 +63,11 @@ class DownloadFragment private constructor(
 
         disposable = App.getBus().subscribe({
 
-            Log.d("M_DownloadFragment", "back")
-            Log.d("M_DownloadFragment","pair = $it")
             if(it.first is BackPressed && it.second == DOWNLOAD_TAG) {
-                if (fl_downloaded_board_post.visibility != View.GONE){
-                    Log.d("M_DownloadFragment","1")
+                if (fl_downloaded_board_post.visibility != View.GONE)
                     downloadPresenter.onBackPressed()
-                    }
-                else {
-                    Log.d("M_DownloadFragment","2")
+                else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
-                }
             }
         },
             {
@@ -137,7 +131,6 @@ class DownloadFragment private constructor(
             downloadPresenter.putContentInStack(attachment)
             showPic(attachment)
             fl_downloaded_board_post.visibility = View.VISIBLE
-            Log.d("M_DownloadFragment","visibility = ${fl_downloaded_board_post.visibility}")
         }
 
     }
@@ -150,7 +143,6 @@ class DownloadFragment private constructor(
             ?.beginTransaction()
             ?.replace(R.id.fl_downloaded_board_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
-        Log.d("M_DownloadFragment","showed")
     }
 
     override fun showPost(post: Post){
