@@ -84,20 +84,37 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         bottomNavigationView!!.menu.getItem(1).isChecked = true
     }
 
-    override fun showThreadFragment(threadFragment: ThreadFragment) {
-        if (supportFragmentManager.findFragmentByTag(THREAD_TAG) != null)
-            supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .show(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
-                .commit()
-        else
+    override fun showThreadFragment(threadFragment: ThreadFragment, isNew: Boolean) {
+        Log.d("M_MainActivity","thread = $threadFragment")
+        Log.d("M_MainActivity","isNew = $isNew")
+        if (supportFragmentManager.findFragmentByTag(THREAD_TAG) == null) {
+            Log.d("M_MainActivity","thread null")
             supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
                 .add(R.id.container, threadFragment, THREAD_TAG)
                 .show(threadFragment)
                 .commit()
+        }
+        else if (isNew) {
+            Log.d("M_MainActivity","thread new")
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .remove(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
+                .add(R.id.container, threadFragment, THREAD_TAG)
+                .show(threadFragment)
+                .commit()
+        }
+        else {
+            Log.d("M_MainActivity","thread old")
+            supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .show(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
+                .commit()
+        }
+
 
         setActionBarTitle(mainPresenter.getThreadTitle())
 
@@ -227,7 +244,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_thread -> {
-                    mainPresenter.makeThreadFragment()
+                    mainPresenter.makeThreadFragment(false)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_favorites -> {
@@ -281,8 +298,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun onBackPressed() {
-//        bus.post(BackPressed)
-//        Log.d("M_MainActivity","Back pressed")
         App.getBus().onNext(Pair(BackPressed, mainPresenter.getCurrentFragmentTag()))
     }
 
@@ -347,51 +362,4 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     }
 
- /*   @Subscribe
-    public fun closeApp(event: AppToBeClosed){
-        Log.d("M_MainActivity","close")
-        if(System.currentTimeMillis() - timestamp < 2000) {
-            Log.d("M_MainActivity","1")
-            super.onBackPressed()
-        }
-        else {
-            Log.d("M_MainActivity","2")
-            timestamp = System.currentTimeMillis()
-            Toast.makeText(applicationContext,
-                "Нажмите назад еще раз, чтобы закрыть приложение",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }*/
-
-/*    @Subscribe
-    fun showDownloadThreadButtons(event: UndownloadedThreadEntered){
-        toolbar.menu.findItem(R.id.navigation_download).isVisible = true
-        toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
-    }
-
-    @Subscribe
-    fun showUndownloadThreadButtons(event: DownloadedThreadEntered){
-        toolbar.menu.findItem(R.id.navigation_download_done).isVisible = true
-        toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
-    }
-
-    @Subscribe
-    fun showFavoriteThreadButtons(event: FavoriteThreadEntered){
-        toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
-    }
-
-    @Subscribe
-    fun showUnfavoriteThreadButtons(event: UnfavoriteThreadEntered){
-        toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
-    }
-
-    @Subscribe
-    fun hideThreadControlButtons(event: ThreadLeaved){
-        toolbar.menu.findItem(R.id.navigation_download).isVisible = false
-        toolbar.menu.findItem(R.id.navigation_download_done).isVisible = false
-        toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
-        toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
-        toolbar.menu.findItem(R.id.navigation_pref).isVisible = true
-    }*/
 }

@@ -72,13 +72,19 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     private fun setThread(threadNum: Int){
-        this.threadNum = threadNum
-        if (threadNum == 0)
-            viewState.hideThreadMenuItem()
-        else {
-            viewState.showThreadMenuItem()
-            makeThreadFragment()
+        when (threadNum ){
+            0 -> viewState.hideThreadMenuItem()
+            this.threadNum -> {
+                viewState.showThreadMenuItem()
+                makeThreadFragment(false)
+            }
+            else -> {
+                this.threadNum = threadNum
+                viewState.showThreadMenuItem()
+                makeThreadFragment(true)
+            }
         }
+
     }
 
     fun getBoardTitle(): String? = this.boardTitle
@@ -108,10 +114,10 @@ class MainPresenter : MvpPresenter<MainView>() {
         currentFragmentTag = BOARD_TAG
     }
 
-    fun makeThreadFragment() {
+    fun makeThreadFragment(isNew: Boolean) {
         val fragment = ThreadFragment.getThreadFragment(boardId, threadNum)
 
-        viewState.showThreadFragment(fragment)
+        viewState.showThreadFragment(fragment, isNew)
         currentFragmentTag = THREAD_TAG
     }
 

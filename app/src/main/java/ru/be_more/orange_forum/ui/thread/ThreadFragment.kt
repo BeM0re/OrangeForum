@@ -83,7 +83,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     private lateinit var recyclerView : RecyclerView
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
-//    private var bus = BusProvider.getInstance()
     private var disposable: Disposable? = null
 
 
@@ -99,7 +98,6 @@ class ThreadFragment : MvpAppCompatFragment(),
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-//        bus.register(this)
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == THREAD_TAG) {
                 if (fl_thread_post.visibility != View.GONE)
@@ -144,8 +142,7 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun onDestroy() {
-//        bus.post(ThreadLeaved)
-//        bus.unregister(this)
+
         disposable?.dispose()
         super.onDestroy()
     }
@@ -191,17 +188,13 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         if (thread.isDownloaded)
             App.getBus().onNext(Pair(DownloadedThreadEntered, ""))
-//            bus.post(DownloadedThreadEntered)
         else
             App.getBus().onNext(Pair(UndownloadedThreadEntered, ""))
-//            bus.post(UndownloadedThreadEntered)
 
         if (thread.isFavorite)
             App.getBus().onNext(Pair(UnfavoriteThreadEntered, ""))
-//            bus.post(UnfavoriteThreadEntered)
         else
             App.getBus().onNext(Pair(FavoriteThreadEntered, ""))
-//            bus.post(FavoriteThreadEntered)
     }
 
     override fun hideResponseFab() {
@@ -332,15 +325,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     override fun showToast(message: String) {
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
-/*
-    @Subscribe
-    public fun onBackPressed(event: BackPressed) {
-        Log.d("M_ThreadFragment","back")
-        if (fl_thread_post.visibility != View.GONE)
-            threadPresenter.onBackPressed()
-        else
-            bus.post(AppToBeClosed)
-    }*/
 
     @JavascriptInterface
     fun responsePushed(token: String) {
