@@ -44,12 +44,10 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
     private val modalStack: Stack<ModalContent> = Stack()
-    private var bus = BusProvider.getInstance()
 
     fun init(boardId: String, threadNum: Int){
         App.getComponent().inject(this)
 
-        bus.register(this)
 
         this.boardId = boardId
         this.threadNum = threadNum
@@ -140,7 +138,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     override fun onDestroy() {
-        bus.unregister(this)
         disposables.forEach {
             it?.dispose()
         }
