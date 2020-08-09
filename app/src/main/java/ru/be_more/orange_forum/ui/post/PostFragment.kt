@@ -17,10 +17,19 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.item_post.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.bus.AppToBeClosed
+import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.bus.VideoToBeClosed
+import ru.be_more.orange_forum.consts.BOARD_TAG
+import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
+import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
@@ -40,6 +49,7 @@ class PostFragment : MvpAppCompatFragment(), PostView {
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
     private lateinit var closeModalListener: CloseModalListener
+    private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -52,6 +62,19 @@ class PostFragment : MvpAppCompatFragment(), PostView {
         postPresenter.init(content, picListener, linkListener)
 
         setClosingViewClickListener()
+
+        disposable = App.getBus().subscribe({
+            if(it.first is VideoToBeClosed && it.second == POST_TAG)
+                hideModal()
+        },
+            {
+                Log.e("M_PostFragment","bus error = \n $it")
+            })
+    }
+
+    override fun onDestroy() {
+        disposable?.dispose()
+        super.onDestroy()
     }
 
     private fun showPost(post: Post){
@@ -201,6 +224,8 @@ class PostFragment : MvpAppCompatFragment(), PostView {
         tv_item_post_comment.text = ""
         tv_item_post_subject.text = ""
         tv_item_post_replies.text = ""
+
+        disposable?.dispose()
 
         closeModalListener.onCloseModalListener()
 

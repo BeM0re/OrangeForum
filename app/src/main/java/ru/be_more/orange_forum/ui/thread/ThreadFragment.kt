@@ -26,8 +26,7 @@ import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
-import ru.be_more.orange_forum.consts.FAVORITE_TAG
-import ru.be_more.orange_forum.consts.THREAD_TAG
+import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
@@ -269,7 +268,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_thread_post, fragment, POST_IN_THREAD_TAG)
             ?.commit()
     }
 
@@ -282,12 +281,20 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_thread_post, fragment, POST_IN_THREAD_TAG)
             ?.commit()
     }
 
     override fun hideModal() {
         fl_thread_post.visibility = View.GONE
+
+        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
+
+        if (fragmentManager?.findFragmentByTag(POST_IN_THREAD_TAG) != null)
+            fragmentManager
+                ?.beginTransaction()
+                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_THREAD_TAG)!!)
+
         threadPresenter.clearStack()
     }
 
