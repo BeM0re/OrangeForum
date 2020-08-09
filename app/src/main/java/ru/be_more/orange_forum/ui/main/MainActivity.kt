@@ -3,26 +3,22 @@ package ru.be_more.orange_forum.ui.main
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
 import moxy.presenter.InjectPresenter
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
+import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
-import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.BOARD_TAG
-import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.CAT_TAG
-import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.DOWNLOAD_TAG
-import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.FAVORITE_TAG
-import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.PREF_TAG
-import ru.be_more.orange_forum.ui.main.MainPresenter.Companion.THREAD_TAG
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
 
 
@@ -33,6 +29,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     private val bus = BusProvider.getInstance()
     private var timestamp: Long = 0
+    private var disposable: Disposable? = null
 
     override fun setActionBarTitle(title: String? ){
         supportActionBar?.title = title
@@ -73,7 +70,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 .show(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
                 .commit()
         else{
-            Log.e("M_MainActivity",mainPresenter.getCurrentFragmentTag())
             supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
@@ -204,11 +200,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         bottomNavigationView.selectedItemId = R.id.navigation_category
 
         bus.register(this)
-
+        subscribeInit()
     }
 
     override fun onDestroy() {
         bus.unregister(this)
+        disposable?.dispose()
         super.onDestroy()
     }
 
@@ -278,7 +275,9 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun onBackPressed() {
-        bus.post(BackPressed)
+//        bus.post(BackPressed)
+//        Log.d("M_MainActivity","Back pressed")
+        App.getBus().onNext(Pair(BackPressed, mainPresenter.getCurrentFragmentTag()))
     }
 
     override fun refreshFavorite() {
@@ -289,19 +288,46 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         bus.post(RefreshDownload)
     }
 
-    @Subscribe
-    fun closeApp(event: AppToBeClosed){
+    private fun subscribeInit(){
+           disposable = App.getBus().subscribe (
+               {
+                   if (it.first is AppToBeClosed) {
+                       if (System.currentTimeMillis() - timestamp < 2000)
+                           super.onBackPressed()
+                       else {
+                           timestamp = System.currentTimeMillis()
+                           Toast.makeText(
+                               applicationContext,
+                               "Нажмите назад еще раз, чтобы закрыть приложение",
+                               Toast.LENGTH_SHORT
+                           ).show()
+                       }
+                   }
+               },
+               {
+                   Log.e("M_MainActivity","bus error = \n $it")
+               }
+           )
+
+
+    }
+
+ /*   @Subscribe
+    public fun closeApp(event: AppToBeClosed){
+        Log.d("M_MainActivity","close")
         if(System.currentTimeMillis() - timestamp < 2000) {
+            Log.d("M_MainActivity","1")
             super.onBackPressed()
         }
         else {
+            Log.d("M_MainActivity","2")
             timestamp = System.currentTimeMillis()
             Toast.makeText(applicationContext,
                 "Нажмите назад еще раз, чтобы закрыть приложение",
                 Toast.LENGTH_SHORT
             ).show()
         }
-    }
+    }*/
 
     @Subscribe
     fun showDownloadThreadButtons(event: UndownloadedThreadEntered){

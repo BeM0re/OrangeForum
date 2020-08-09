@@ -7,6 +7,7 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.interactors.ThreadInteractor
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.repositories.DvachDbRepository
@@ -191,15 +192,6 @@ class MainPresenter : MvpPresenter<MainView>() {
                     }
                 )
         )
-    }
-
-    companion object{
-        const val CAT_TAG = "CAT_FRAGMENT"
-        const val BOARD_TAG = "BOARD_FRAGMENT"
-        const val THREAD_TAG = "THREAD_FRAGMENT"
-        const val FAVORITE_TAG = "FAVORITE_FRAGMENT"
-        const val DOWNLOAD_TAG = "DOWNLOAD_FRAGMENT"
-        const val PREF_TAG = "PREF_FRAGMENT"
     }
 
 }

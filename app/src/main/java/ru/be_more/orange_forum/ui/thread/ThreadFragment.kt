@@ -308,7 +308,8 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     @Subscribe
-    fun onBackPressed(event: BackPressed) {
+    public fun onBackPressed(event: BackPressed) {
+        Log.d("M_ThreadFragment","back")
         if (fl_thread_post.visibility != View.GONE)
             threadPresenter.onBackPressed()
         else
