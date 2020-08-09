@@ -62,18 +62,11 @@ class FavoriteFragment private constructor(
 //        bus.register(this)
 
         disposable = App.getBus().subscribe({
-
-            Log.d("M_FavoriteFragment", "back")
-            Log.d("M_FavoriteFragment","pair = $it")
             if(it.first is BackPressed && it.second == FAVORITE_TAG) {
-                if (fl_favorite_board_post.visibility != View.GONE){
-                    Log.d("M_FavoriteFragment","1")
+                if (fl_favorite_board_post.visibility != View.GONE)
                     favoritePresenter.onBackPressed()
-                }
-                else {
-                    Log.d("M_FavoriteFragment","2")
+                else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
-                }
             }
         },
             {
