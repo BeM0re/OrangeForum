@@ -68,7 +68,6 @@ class BoardPresenter : MvpPresenter<BoardView>() {
         modalStack.pop()
 
         if(!modalStack.empty()) {
-
             when(val content = modalStack.peek()){
                 is Attachment -> viewState.showPic(content)
                 is Post -> viewState.showPost(content)

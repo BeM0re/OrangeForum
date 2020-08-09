@@ -177,6 +177,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     fun onBackPressed() {
+        Log.d("M_ThreadPresenter","back")
         modalStack.pop()
 
         if(!modalStack.empty()) {
