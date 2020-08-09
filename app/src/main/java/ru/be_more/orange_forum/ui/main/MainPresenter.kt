@@ -34,7 +34,7 @@ class MainPresenter : MvpPresenter<MainView>() {
     private lateinit var boardTitle :String
     private var threadNum :Int = 0
     private lateinit var threadTitle :String
-    private lateinit var currentFragmentTag: String
+    private var currentFragmentTag: String = ""
 
     private var disposables : LinkedList<Disposable?> = LinkedList()
 
@@ -86,7 +86,6 @@ class MainPresenter : MvpPresenter<MainView>() {
     fun getThreadTitle(): String? = this.threadTitle
 
     fun makeCategoryFragment() {
-
         val fragment=
             CategoryFragment.getCategoryFragment { boardId, title ->
                 this.boardTitle = title

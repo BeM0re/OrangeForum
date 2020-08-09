@@ -62,6 +62,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                     {
                         thread = it
                         viewState.loadThread(thread)
+                        viewState.setThreadMarks(thread)
                     },
                     {
                         Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
@@ -209,5 +210,9 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                 )
 
         )
+    }
+
+    fun setThreadMarks(){
+        viewState.setThreadMarks(thread)
     }
 }

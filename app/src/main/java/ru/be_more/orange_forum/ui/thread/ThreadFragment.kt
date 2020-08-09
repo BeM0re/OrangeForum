@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
+import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.main.fragment_favorite.*
 import kotlinx.android.synthetic.main.fragment_thread.*
 import kotlinx.android.synthetic.main.item_post.*
 import kotlinx.android.synthetic.main.item_thread_response_form.*
@@ -24,6 +26,8 @@ import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
+import ru.be_more.orange_forum.consts.FAVORITE_TAG
+import ru.be_more.orange_forum.consts.THREAD_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
@@ -79,7 +83,8 @@ class ThreadFragment : MvpAppCompatFragment(),
     private lateinit var recyclerView : RecyclerView
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
-    private var bus = BusProvider.getInstance()
+//    private var bus = BusProvider.getInstance()
+    private var disposable: Disposable? = null
 
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -94,7 +99,21 @@ class ThreadFragment : MvpAppCompatFragment(),
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        bus.register(this)
+//        bus.register(this)
+        disposable = App.getBus().subscribe({
+            if(it.first is BackPressed && it.second == THREAD_TAG) {
+                if (fl_thread_post.visibility != View.GONE)
+                    threadPresenter.onBackPressed()
+                else
+                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+            }
+            if (it.first is ThreadEntered && it.second == THREAD_TAG)
+                threadPresenter.setThreadMarks()
+        },
+            {
+                Log.e("M_ThreadFragment","bus error = \n $it")
+            }
+        )
 
 //        setOnBackgroundViewClickListener()
 
@@ -125,8 +144,9 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun onDestroy() {
-        bus.post(ThreadLeaved)
-        bus.unregister(this)
+//        bus.post(ThreadLeaved)
+//        bus.unregister(this)
+        disposable?.dispose()
         super.onDestroy()
     }
 
@@ -159,23 +179,29 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun loadThread(thread: BoardThread) {
 
-        if (thread.isDownloaded)
-            bus.post(DownloadedThreadEntered)
-        else
-            bus.post(UndownloadedThreadEntered)
-
-
-        if (thread.isFavorite)
-            bus.post(UnfavoriteThreadEntered)
-        else
-            bus.post(FavoriteThreadEntered)
-
         threadPresenter.initAdapter(thread, this, this)
 
         recyclerView.adapter = threadPresenter.getAdapter()
         recyclerView.addItemDecoration(
             DividerItemDecoration(recyclerView.context, HORIZONTAL)
         )
+    }
+
+    override fun setThreadMarks(thread: BoardThread){
+
+        if (thread.isDownloaded)
+            App.getBus().onNext(Pair(DownloadedThreadEntered, ""))
+//            bus.post(DownloadedThreadEntered)
+        else
+            App.getBus().onNext(Pair(UndownloadedThreadEntered, ""))
+//            bus.post(UndownloadedThreadEntered)
+
+        if (thread.isFavorite)
+            App.getBus().onNext(Pair(UnfavoriteThreadEntered, ""))
+//            bus.post(UnfavoriteThreadEntered)
+        else
+            App.getBus().onNext(Pair(FavoriteThreadEntered, ""))
+//            bus.post(FavoriteThreadEntered)
     }
 
     override fun hideResponseFab() {
@@ -306,7 +332,7 @@ class ThreadFragment : MvpAppCompatFragment(),
     override fun showToast(message: String) {
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
-
+/*
     @Subscribe
     public fun onBackPressed(event: BackPressed) {
         Log.d("M_ThreadFragment","back")
@@ -314,7 +340,7 @@ class ThreadFragment : MvpAppCompatFragment(),
             threadPresenter.onBackPressed()
         else
             bus.post(AppToBeClosed)
-    }
+    }*/
 
     @JavascriptInterface
     fun responsePushed(token: String) {
