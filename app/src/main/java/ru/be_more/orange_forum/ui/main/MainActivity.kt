@@ -6,8 +6,6 @@ import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import com.anadeainc.rxbus.BusProvider
-import com.anadeainc.rxbus.Subscribe
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*

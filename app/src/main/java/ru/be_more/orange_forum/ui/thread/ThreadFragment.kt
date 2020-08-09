@@ -14,12 +14,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anadeainc.rxbus.BusProvider
-import com.anadeainc.rxbus.Subscribe
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_favorite.*
 import kotlinx.android.synthetic.main.fragment_thread.*
-import kotlinx.android.synthetic.main.item_post.*
 import kotlinx.android.synthetic.main.item_thread_response_form.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter

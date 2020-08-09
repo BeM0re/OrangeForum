@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anadeainc.rxbus.Subscribe
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_favorite.*
@@ -19,7 +18,11 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.bus.RefreshFavorite
+import ru.be_more.orange_forum.bus.VideoToBeClosed
 import ru.be_more.orange_forum.consts.FAVORITE_TAG
+import ru.be_more.orange_forum.consts.POST_IN_DOWNLOAD_TAG
+import ru.be_more.orange_forum.consts.POST_IN_FAVORITE_TAG
+import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.DownloadListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -68,6 +71,8 @@ class FavoriteFragment private constructor(
                 else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
+            if (it.first is RefreshFavorite && it.second == FAVORITE_TAG)
+                favoritePresenter.refreshData()
         },
             {
                 Log.e("M_FavoriteFragment","bus error = \n $it")
@@ -142,7 +147,7 @@ class FavoriteFragment private constructor(
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_favorite_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_favorite_board_post, fragment, POST_IN_FAVORITE_TAG)
             ?.commit()
     }
 
@@ -155,7 +160,7 @@ class FavoriteFragment private constructor(
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_favorite_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_favorite_board_post, fragment, POST_IN_FAVORITE_TAG)
             ?.commit()
     }
 
@@ -165,24 +170,19 @@ class FavoriteFragment private constructor(
 
     override fun hideModal() {
         fl_favorite_board_post.visibility = View.GONE
+
+        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
+
+        if (fragmentManager?.findFragmentByTag(POST_IN_FAVORITE_TAG) != null)
+            fragmentManager
+                ?.beginTransaction()
+                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_FAVORITE_TAG)!!)
+
         favoritePresenter.clearStack()
     }
 
     override fun showToast(message: String) {
         App.showToast(message )
-    }
-
-  /*  @Subscribe
-    public fun onBackPressed(event: BackPressed) {
-        if (fl_downloaded_board_post.visibility != View.GONE)
-            favoritePresenter.onBackPressed()
-        else
-            bus.post(AppToBeClosed)
-    }*/
-
-    @Subscribe
-    public fun refreshFavorite(event: RefreshFavorite) {
-        favoritePresenter.refreshData()
     }
 
 
