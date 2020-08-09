@@ -8,11 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.anadeainc.rxbus.BusProvider
 import com.anadeainc.rxbus.Subscribe
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
-import kotlinx.android.synthetic.main.fragment_download.*
-import kotlinx.android.synthetic.main.fragment_thread.*
+import kotlinx.android.synthetic.main.fragment_favorite.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
@@ -20,6 +19,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.bus.RefreshFavorite
+import ru.be_more.orange_forum.consts.FAVORITE_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.DownloadListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -45,24 +45,45 @@ class FavoriteFragment private constructor(
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : FavoriteAdapter
 
-    private var bus = BusProvider.getInstance()
+//    private var bus = BusProvider.getInstance()
+    private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?) : View? =
-        inflater.inflate(R.layout.fragment_download, container, false)
+        inflater.inflate(R.layout.fragment_favorite, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView = rv_downloaded_list
+        recyclerView = rv_favorite_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        bus.register(this)
+//        bus.register(this)
+
+        disposable = App.getBus().subscribe({
+
+            Log.d("M_FavoriteFragment", "back")
+            Log.d("M_FavoriteFragment","pair = $it")
+            if(it.first is BackPressed && it.second == FAVORITE_TAG) {
+                if (fl_favorite_board_post.visibility != View.GONE){
+                    Log.d("M_FavoriteFragment","1")
+                    favoritePresenter.onBackPressed()
+                }
+                else {
+                    Log.d("M_FavoriteFragment","2")
+                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+                }
+            }
+        },
+            {
+                Log.e("M_FavoriteFragment","bus error = \n $it")
+            }
+        )
     }
 
     override fun onDestroy() {
-        bus.unregister(this)
+//        bus.unregister(this)
         super.onDestroy()
     }
 
@@ -121,14 +142,14 @@ class FavoriteFragment private constructor(
 
     override fun showPic(attachment: Attachment){
 
-        fl_downloaded_board_post.visibility = View.VISIBLE
+        fl_favorite_board_post.visibility = View.VISIBLE
 
         val fragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_downloaded_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_favorite_board_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
     }
 
@@ -141,7 +162,7 @@ class FavoriteFragment private constructor(
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_downloaded_board_post, fragment, fragment.javaClass.simpleName)
+            ?.replace(R.id.fl_favorite_board_post, fragment, fragment.javaClass.simpleName)
             ?.commit()
     }
 
@@ -150,7 +171,7 @@ class FavoriteFragment private constructor(
     }
 
     override fun hideModal() {
-        fl_downloaded_board_post.visibility = View.GONE
+        fl_favorite_board_post.visibility = View.GONE
         favoritePresenter.clearStack()
     }
 
@@ -158,16 +179,13 @@ class FavoriteFragment private constructor(
         App.showToast(message )
     }
 
-    @Subscribe
+  /*  @Subscribe
     public fun onBackPressed(event: BackPressed) {
-
-        Log.d("M_ThreadFragment", "back")
         if (fl_downloaded_board_post.visibility != View.GONE)
             favoritePresenter.onBackPressed()
         else
             bus.post(AppToBeClosed)
-
-    }
+    }*/
 
     @Subscribe
     public fun refreshFavorite(event: RefreshFavorite) {
