@@ -19,7 +19,7 @@ interface MainView  : MvpView {
     fun showThreadMenuItem()
     fun setActionBarTitle(title:String? = "Orange Forum")
     fun showCategoryFragment(categoryFragment: CategoryFragment)
-    fun showBoardFragment(boardFragment: BoardFragment)
+    fun showBoardFragment(boardFragment: BoardFragment, isNew: Boolean)
     fun showThreadFragment(threadFragment: ThreadFragment, isNew: Boolean)
     fun showFavoriteFragment(favoriteFragment: Fragment)
     fun showDownloadedFragment(downloadedFragment: Fragment)

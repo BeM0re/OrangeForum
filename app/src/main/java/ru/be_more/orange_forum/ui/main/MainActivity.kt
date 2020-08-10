@@ -57,21 +57,26 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         setActionBarTitle()
     }
 
-    override fun showBoardFragment(boardFragment: BoardFragment) {
-        if (supportFragmentManager.findFragmentByTag(BOARD_TAG) != null)
-            supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .show(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
-                .commit()
-        else{
-            supportFragmentManager
+    override fun showBoardFragment(boardFragment: BoardFragment, isNew: Boolean) {
+        when{
+            supportFragmentManager.findFragmentByTag(BOARD_TAG) == null -> supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
                 .add(R.id.container, boardFragment, BOARD_TAG)
                 .show(boardFragment)
                 .commit()
-
+            isNew -> supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .remove(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
+                .add(R.id.container, boardFragment, BOARD_TAG)
+                .show(boardFragment)
+                .commit()
+            else -> supportFragmentManager
+                .beginTransaction()
+                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                .show(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
+                .commit()
         }
 
         setActionBarTitle(mainPresenter.getBoardTitle())
@@ -223,7 +228,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_board -> {
-                    mainPresenter.makeBoardFragment()
+                    mainPresenter.makeBoardFragment(false)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_thread -> {
