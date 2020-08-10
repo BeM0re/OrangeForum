@@ -12,6 +12,7 @@ import ru.be_more.orange_forum.model.Post
 @StateStrategyType(value = AddToEndStrategy::class)
 interface BoardView  : MvpView {
     fun loadBoard(board: Board)
+    fun setBoardMarks (isFavorite: Boolean)
     fun showPic(attachment: Attachment)
     fun showPost(post: Post)
     fun hideModal()

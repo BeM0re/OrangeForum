@@ -11,7 +11,7 @@ import ru.be_more.orange_forum.model.Post
 @StateStrategyType(value = AddToEndStrategy::class)
 interface ThreadView  : MvpView {
     fun loadThread(thread: BoardThread)
-    fun setThreadMarks (thread: BoardThread)
+    fun setThreadMarks (isDownloaded: Boolean, isFavorite: Boolean)
     fun hideResponseFab()
     fun setWebView()
     fun setOnPostButtonClickListener()

@@ -17,12 +17,11 @@ import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.bus.AppToBeClosed
-import ru.be_more.orange_forum.bus.BackPressed
-import ru.be_more.orange_forum.bus.VideoToBeClosed
+import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.consts.BOARD_TAG
 import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
 import ru.be_more.orange_forum.consts.POST_TAG
+import ru.be_more.orange_forum.consts.THREAD_TAG
 import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
@@ -41,7 +40,6 @@ class BoardFragment: MvpAppCompatFragment(),
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var boardPresenter : BoardPresenter
 
-    private var timestamp: Long = 0
     private var listener: ((Int, String) -> Unit)? = null
     private var id: String = ""
     private lateinit var recyclerView : RecyclerView
@@ -57,9 +55,12 @@ class BoardFragment: MvpAppCompatFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         boardPresenter.init(id, listener)
         recyclerView = rv_thread_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
+
+
 
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == BOARD_TAG) {
@@ -68,6 +69,8 @@ class BoardFragment: MvpAppCompatFragment(),
                 else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
+            if (it.first is BoardEntered && it.second == BOARD_TAG)
+                boardPresenter.setThreadMarks()
         },
         {
             Log.e("M_BoardFragment","bus error = \n $it")
@@ -87,6 +90,13 @@ class BoardFragment: MvpAppCompatFragment(),
         recyclerView.addItemDecoration(
             DividerItemDecoration(recyclerView.context, HORIZONTAL)
         )
+    }
+
+    override fun setBoardMarks(isFavorite: Boolean) {
+        if (isFavorite)
+            App.getBus().onNext(Pair(FavoriteBoardEntered, ""))
+        else
+            App.getBus().onNext(Pair(UnfavoriteBoardEntered, ""))
     }
 
     override fun onIntoThreadClick(threadNum: Int, threadTitle: String) {

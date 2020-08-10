@@ -24,6 +24,12 @@ interface DvachDao {
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun getBoard(boardId: String): Observable<StoredBoard>
 
+    @Query("UPDATE boards SET isFavorite = 1 WHERE id = :boardId ")
+    fun markBoardFavorite(boardId: String)
+
+    @Query("UPDATE boards SET isFavorite = 0 WHERE id = :boardId")
+    fun unmarkBoardFavorite(boardId: String)
+
     @Query("SELECT COUNT(num) FROM threads WHERE boardId = :boardId AND num =:threadNum")
     fun getThreadCount(boardId: String, threadNum: Int): Observable<Int>
 
