@@ -22,7 +22,8 @@ interface DvachDao {
     fun getBoards(): Observable<List<StoredBoard>>
 
     @Query("SELECT * FROM boards WHERE id = :boardId")
-    fun getBoard(boardId: String): Observable<StoredBoard>
+    fun getBoard(boardId: String): Observable<List<StoredBoard>>
+//     список для того, чтобы 0 тоже возвращался. Тут либо 0, либо 1
 
     @Query("UPDATE boards SET isFavorite = 1 WHERE id = :boardId ")
     fun markBoardFavorite(boardId: String)
