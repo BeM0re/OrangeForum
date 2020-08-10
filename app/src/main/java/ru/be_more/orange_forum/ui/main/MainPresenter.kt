@@ -30,7 +30,7 @@ class MainPresenter : MvpPresenter<MainView>() {
     @Inject
     lateinit var threadInteractor: ThreadInteractor
 
-    private lateinit var boardId :String
+    private var boardId :String = ""
     private lateinit var boardTitle :String
     private var threadNum :Int = 0
     private lateinit var threadTitle :String
@@ -61,18 +61,24 @@ class MainPresenter : MvpPresenter<MainView>() {
     fun getThreadNum() = this.threadNum
 
     private fun setBoard(boardId: String){
-        this.boardId = boardId
-        if (boardId == "")
-            viewState.hideBoardMenuItem()
-        else {
-            setThread(0)
-            viewState.showBoardMenuItem()
-            makeBoardFragment()
+        when (boardId){
+            "" -> viewState.hideBoardMenuItem()
+            this.boardId -> {
+                viewState.showBoardMenuItem()
+                makeBoardFragment(false)
+            }
+            else -> {
+                this.boardId = boardId
+                setThread(0)
+                viewState.showBoardMenuItem()
+                makeBoardFragment(true)
+
+            }
         }
     }
 
     private fun setThread(threadNum: Int){
-        when (threadNum ){
+        when (threadNum){
             0 -> viewState.hideThreadMenuItem()
             this.threadNum -> {
                 viewState.showThreadMenuItem()
@@ -103,14 +109,14 @@ class MainPresenter : MvpPresenter<MainView>() {
 
     }
 
-    fun makeBoardFragment() {
+    fun makeBoardFragment(isNew: Boolean) {
         val fragment =
             BoardFragment.getBoardFragment({ threadNum, title ->
                 this.threadTitle = title
                 setThread(threadNum)
             }, this.boardId)
 
-        viewState.showBoardFragment(fragment)
+        viewState.showBoardFragment(fragment, isNew)
         currentFragmentTag = BOARD_TAG
     }
 
