@@ -59,7 +59,7 @@ class DvachDbRepository @Inject constructor(){
                 dvachDbDao.getThreadCount(boardId, thread.num),
                 BiFunction <Int, Int, Unit> { boardCount, threadCount ->
                     if (boardCount == 0){
-                        dvachDbDao.insertBoard(StoredBoard(boardId, "", boardName))
+                        dvachDbDao.insertBoard(StoredBoard(boardId, "", boardName, false))
                     }
                     when (purpose){
                         Purpose.DOWNLOAD -> {
@@ -96,6 +96,22 @@ class DvachDbRepository @Inject constructor(){
             .observeOn(Schedulers.io())
             .subscribe({},
                 {Log.d("M_DvachDbRepository", "on save thread error = $it")})
+        )
+    }
+
+    fun markBoardFavorite(boardId: String, boardName: String) {
+        disposables.add(
+            dvachDbDao.getBoardCount(boardId)
+                .observeOn(Schedulers.io())
+                .subscribe ({ boardCount ->
+                    if (boardCount == 0)
+                        dvachDbDao.insertBoard(StoredBoard(boardId, "", boardName, true))
+                    else
+                        dvachDbDao.markBoardFavorite(boardId)
+                },
+                    {
+                        Log.d("M_DvachDbRepository","on favoriting a board error = $it")
+                    })
         )
     }
 
@@ -230,7 +246,6 @@ class DvachDbRepository @Inject constructor(){
             }
         )
 
-
     fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<BoardThread?> =
         dvachDbDao.getThreadOrEmpty(boardId, threadNum)
             .subscribeOn(Schedulers.io())
@@ -242,10 +257,17 @@ class DvachDbRepository @Inject constructor(){
                     BoardThread(0)
             })
 
-    fun getThreadsOnBoard(boardId: String): Observable<List<BoardThread>> =
+    fun getBoard(boardId: String): Observable<Board> =
+        dvachDbDao.getBoard(boardId)
+            .observeOn(Schedulers.io())
+            .zipWith(dvachDbDao.getThreadsOnBoard(boardId), BiFunction { board, threads ->
+                toModelBoard(board, toModelThreads(threads))
+            })
+
+/*    fun getThreadsOnBoard(boardId: String): Observable<List<BoardThread>> =
         dvachDbDao.getThreadsOnBoard(boardId)
             .subscribeOn(Schedulers.io())
-            .map { threads -> toModelThreads(threads) }
+            .map { threads -> toModelThreads(threads) }*/
 
     fun deleteThread(boardId: String, threadNum: Int): Disposable =
         dvachDbDao.getFiles(boardId, threadNum)
@@ -267,8 +289,6 @@ class DvachDbRepository @Inject constructor(){
                 { Log.d("M_DvachDbRepository", "on delete thread error = $it") }
             )
 
-
-
     fun getPosts(boardId: String, threadNum: Int): Observable<List<Post>> =
         dvachDbDao.getPosts(boardId, threadNum)
             .subscribeOn(Schedulers.io())
@@ -285,6 +305,10 @@ class DvachDbRepository @Inject constructor(){
 
     fun unmarkThreadFavorite(boardId: String, threadNum: Int) {
         dvachDbDao.unmarkThreadFavorite(boardId, threadNum)
+    }
+
+    fun unmarkBoardFavorite(boardId: String) {
+        dvachDbDao.unmarkBoardFavorite(boardId)
     }
 
     fun markThreadHidden(boardId: String, threadNum: Int) {
@@ -309,10 +333,12 @@ class DvachDbRepository @Inject constructor(){
         dvachDbDao.unmarkThreadHidden(boardId, threadNum)
     }
 
+    //TODO добавить toStoredBoard
     private fun toModelBoard(board: StoredBoard, threads: List<BoardThread>): Board = Board(
         name = board.name,
         id = board.id,
-        threads = threads
+        threads = threads,
+        isFavorite = board.isFavorite
     )
 
     private fun downloadedToStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
