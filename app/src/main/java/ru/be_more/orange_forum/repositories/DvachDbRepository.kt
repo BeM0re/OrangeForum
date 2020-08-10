@@ -260,8 +260,11 @@ class DvachDbRepository @Inject constructor(){
     fun getBoard(boardId: String): Observable<Board> =
         dvachDbDao.getBoard(boardId)
             .observeOn(Schedulers.io())
-            .zipWith(dvachDbDao.getThreadsOnBoard(boardId), BiFunction { board, threads ->
-                toModelBoard(board, toModelThreads(threads))
+            .zipWith(dvachDbDao.getThreadsOnBoard(boardId), BiFunction { probablyBoard, threads ->
+                return@BiFunction if (probablyBoard.isNotEmpty())
+                    toModelBoard(probablyBoard[0], toModelThreads(threads))
+                else
+                    Board("", boardId, toModelThreads(threads), false)
             })
 
 /*    fun getThreadsOnBoard(boardId: String): Observable<List<BoardThread>> =
