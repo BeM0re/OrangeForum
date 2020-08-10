@@ -17,7 +17,6 @@ import ru.be_more.orange_forum.model.BoardThread
 
 class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
                       var downloadListener: DownloadListener,
-                      var linkListener: LinkOnClickListener,
                       var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<FavoriteBoardViewHolder, FavoriteThreadViewHolder>(groups){
 
@@ -35,7 +34,7 @@ class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
         viewType: Int
     ): FavoriteThreadViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_board_op, parent, false)
+        val view: View = inflater.inflate(R.layout.item_favorite_op, parent, false)
         return FavoriteThreadViewHolder(view, picListener)
     }
 
@@ -51,14 +50,10 @@ class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
             holder.setDate(thread.posts[0].date)
             holder.setThreadNum(thread.posts[0].num)
             holder.setTitle(thread.posts[0].subject)
-            holder.setComment(thread.posts[0].comment)
-            holder.setTotalPosts(thread.posts[0].posts_count)
-            holder.setPostsWithPic(thread.posts[0].files_count)
             if (thread.posts[0].files.isNotEmpty()) {
-                holder.setPics(thread.posts[0].files)
+                holder.setPics(thread.posts[0].files[0])
             }
-            holder.setCommentListener(linkListener)
-            holder.setRemoveButton(group.id, thread, downloadListener)
+//            holder.setRemoveButton(group.id, thread, downloadListener) //TODO добавить удоление из избраного
             holder.setDivider()
             holder.setIntoThreadButton(View.OnClickListener {
                 downloadListener.intoThreadClick(

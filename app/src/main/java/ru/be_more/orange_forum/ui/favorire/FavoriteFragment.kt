@@ -86,13 +86,13 @@ class FavoriteFragment private constructor(
     }
 
     override fun loadFavorites(boards: List<Board>) {
-        FavoriteAdapter(boards, this, this, this)
+        FavoriteAdapter(boards, this, this)
         recyclerView.adapter = adapter
     }
 
     override fun loadFavorites() {
         adapter = FavoriteAdapter(
-            favoritePresenter.getBoards(), this, this, this)
+            favoritePresenter.getBoards(), this, this)
         recyclerView.adapter = adapter
 
     }
