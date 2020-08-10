@@ -2,12 +2,10 @@ package ru.be_more.orange_forum.interactors
 
 import android.util.Log
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.bus.RefreshFavorite
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Post
@@ -25,7 +23,7 @@ class ThreadInteractor @Inject constructor() {
     @Inject
     lateinit var dbRepo : DvachDbRepository
 
-    private val disposables = LinkedList<Disposable>()
+    private val disposables = LinkedList<Disposable>() //TODO сделать отдельные диспы, а не массив
 
     init {
         App.getComponent().inject(this)
@@ -51,25 +49,32 @@ class ThreadInteractor @Inject constructor() {
             }
         )
 
-    fun getBoard(boardId: String): Observable<List<BoardThread>> =
+    fun getBoard(boardId: String): Observable<Board> =
         Observable.zip(
-            dbRepo.getThreadsOnBoard(boardId),
-            apiRepo.getBoard(boardId),
-            BiFunction { localThreads, webThreads ->
-                localThreads.forEach { localThread ->
+//            dbRepo.getThreadsOnBoard(boardId),
+            dbRepo.getBoard(boardId),
+            apiRepo.getThreads(boardId),
+            BiFunction { localBoard, webThreads ->
+
+                Log.d("M_ThreadInteractor","1")
+                localBoard.threads.forEach { localThread ->
+                    Log.d("M_ThreadInteractor","2")
                     val webIndex = webThreads.indexOfFirst { it.num == localThread.num }
 
+                    Log.d("M_ThreadInteractor","3")
                     if (webIndex == -1){ //удаляем инфу об утонувших несохраненных тредах
                         if (!localThread.isDownloaded)
                             disposables.add( dbRepo.deleteThread(boardId, localThread.num) )
                     }
                     else{
+                        Log.d("M_ThreadInteractor","4")
                         webThreads[webIndex].isFavorite = localThread.isFavorite
                         webThreads[webIndex].isHidden = localThread.isHidden
                         webThreads[webIndex].isDownloaded = localThread.isDownloaded
                     }
                 }
-                webThreads
+                Log.d("M_ThreadInteractor","5")
+                return@BiFunction localBoard.copy(threads = webThreads)
             }
         )
 
@@ -102,6 +107,14 @@ class ThreadInteractor @Inject constructor() {
             dbRepo.unmarkThreadFavorite(boardId, threadNum)
         }
 
+    fun markBoardFavorite(boardId: String, boardTitle: String){
+        dbRepo.markBoardFavorite(boardId, boardTitle)
+    }
+
+    fun unmarkBoardFavorite(boardId: String) =
+        Observable.fromCallable {
+            dbRepo.unmarkBoardFavorite(boardId)
+        }
 
     fun markThreadHidden(boardId: String, threadNum: Int){
         dbRepo.markThreadHidden(boardId, threadNum)

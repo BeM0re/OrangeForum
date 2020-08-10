@@ -43,7 +43,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     fun init(boardId: String, threadNum: Int){
         App.getComponent().inject(this)
 
-
         this.boardId = boardId
         this.threadNum = threadNum
 
@@ -55,7 +54,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                     {
                         thread = it
                         viewState.loadThread(thread)
-                        viewState.setThreadMarks(thread)
+                        viewState.setThreadMarks(thread.isDownloaded, thread.isFavorite)
                     },
                     {
                         Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
@@ -206,6 +205,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     fun setThreadMarks(){
-        viewState.setThreadMarks(thread)
+        viewState.setThreadMarks(thread.isDownloaded, thread.isFavorite)
     }
 }

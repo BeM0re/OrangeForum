@@ -208,7 +208,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
         bottomNavigationView.selectedItemId = R.id.navigation_category
 
-        subscribeInit()
+        subscribe()
     }
 
     override fun onDestroy() {
@@ -266,14 +266,15 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite -> {
-                mainPresenter.markThreadFavorite()
+                mainPresenter.markFavorite()
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite_added -> {
-                mainPresenter.removeFavoriteMark(
+                mainPresenter.unmarkFavorite()
+                /*mainPresenter.removeThreadFavoriteMark(
                     mainPresenter.getBoardId(),
                     mainPresenter.getThreadNum(),
-                    false)
+                    false)*/
                 return@OnMenuItemClickListener true
             }
         }
@@ -290,13 +291,11 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun refreshFavorite() {
-//        bus.post(RefreshFavorite)
         App.getBus().onNext(Pair(RefreshFavorite, FAVORITE_TAG))
     }
 
     override fun refreshDownload() {
         App.getBus().onNext(Pair(RefreshDownload, DOWNLOAD_TAG))
-//        bus.post(RefreshDownload)
     }
 
     private fun removeThreadMarks(){
@@ -307,7 +306,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         toolbar.menu.findItem(R.id.navigation_pref).isVisible = true
     }
 
-    private fun subscribeInit(){
+    private fun subscribe(){
            disposable = App.getBus().subscribe (
                {
                    when (it.first) {
@@ -335,11 +334,19 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                        }
 
                        is FavoriteThreadEntered -> {
-                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
+                           toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
                        }
 
                        is UnfavoriteThreadEntered -> {
+                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
+                       }
+
+                       is FavoriteBoardEntered -> {
                            toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
+                       }
+
+                       is UnfavoriteBoardEntered -> {
+                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
                        }
                    }
 

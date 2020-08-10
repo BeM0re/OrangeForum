@@ -28,7 +28,7 @@ class MainPresenter : MvpPresenter<MainView>() {
     @Inject
     lateinit var dbRepo : DvachDbRepository
     @Inject
-    lateinit var threadInteractor: ThreadInteractor
+    lateinit var interactor: ThreadInteractor
 
     private var boardId :String = ""
     private lateinit var boardTitle :String
@@ -135,7 +135,7 @@ class MainPresenter : MvpPresenter<MainView>() {
             setThread(threadNum)
         },
             { boardId, threadNum ->
-                removeFavoriteMark(boardId, threadNum, true)
+                removeThreadFavoriteMark(boardId, threadNum, true)
             })
 
         viewState.showFavoriteFragment(fragment)
@@ -178,19 +178,59 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     fun deleteThread(boardId: String, threadNum: Int, isDownloadFragmentFrom: Boolean) {
-        disposables.add( threadInteractor.deleteThread(boardId, threadNum) )
+        disposables.add( interactor.deleteThread(boardId, threadNum) )
         if(!isDownloadFragmentFrom)
             viewState.turnDownloadedIcon(false)
     }
 
-    fun markThreadFavorite() {
-        threadInteractor.markThreadFavorite(boardId, threadNum, boardTitle)
+    fun markFavorite() {
+        if (currentFragmentTag == BOARD_TAG)
+            interactor.markBoardFavorite(boardId, boardTitle)
+        else
+            interactor.markThreadFavorite(boardId, threadNum, boardTitle)
+
         viewState.turnFavoriteIcon(true)
     }
 
-    fun removeFavoriteMark(boardId: String, threadNum: Int, isFavoriteFragmentFrom: Boolean = false) {
+    fun unmarkFavorite() {
+        if (currentFragmentTag == BOARD_TAG)
+            removeBoardFavoriteMark(boardId, false)
+        else
+            removeThreadFavoriteMark(boardId, threadNum, false)
+
+        viewState.turnFavoriteIcon(false)
+    }
+
+/*    fun markThreadFavorite() {
+        interactor.markThreadFavorite(boardId, threadNum, boardTitle)
+        viewState.turnFavoriteIcon(true)
+    }*/
+
+    private fun removeThreadFavoriteMark(boardId: String, threadNum: Int, isFavoriteFragmentFrom: Boolean = false) {
         disposables.add(
-            threadInteractor.unmarkThreadFavorite(boardId, threadNum)
+            interactor.unmarkThreadFavorite(boardId, threadNum)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {  },
+                    {Log.d("M_MainPresenter", "unmark favorite error = $it")},
+                    {
+                        viewState.refreshFavorite()
+                        if(!isFavoriteFragmentFrom)
+                            viewState.turnFavoriteIcon(false)
+                    }
+                )
+        )
+    }
+
+/*    fun markBoardFavorite() {
+        interactor.markBoardFavorite(boardId, boardTitle)
+        viewState.turnFavoriteIcon(true)
+    }*/
+
+    private fun removeBoardFavoriteMark(boardId: String, isFavoriteFragmentFrom: Boolean = false) {
+        disposables.add(
+            interactor.unmarkBoardFavorite(boardId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

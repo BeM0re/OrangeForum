@@ -49,7 +49,7 @@ class DvachApiRepository @Inject constructor(){
 //            .doOnEach {Log.d("M_DvachApiRepository", "$it") }
             .map { entity -> toCategories(entity) }
 
-    fun getBoard(boardId: String): Observable<List<BoardThread>> =
+    fun getThreads(boardId: String): Observable<List<BoardThread>> =
         dvachApi.getDvachThreadsRx(boardId)
             .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }

@@ -137,7 +137,6 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun onDestroy() {
-
         disposable?.dispose()
         super.onDestroy()
     }
@@ -179,17 +178,16 @@ class ThreadFragment : MvpAppCompatFragment(),
         )
     }
 
-    override fun setThreadMarks(thread: BoardThread){
-
-        if (thread.isDownloaded)
+    override fun setThreadMarks(isDownloaded: Boolean, isFavorite: Boolean){
+        if (isDownloaded)
             App.getBus().onNext(Pair(DownloadedThreadEntered, ""))
         else
             App.getBus().onNext(Pair(UndownloadedThreadEntered, ""))
 
-        if (thread.isFavorite)
-            App.getBus().onNext(Pair(UnfavoriteThreadEntered, ""))
-        else
+        if (isFavorite)
             App.getBus().onNext(Pair(FavoriteThreadEntered, ""))
+        else
+            App.getBus().onNext(Pair(UnfavoriteThreadEntered, ""))
     }
 
     override fun hideResponseFab() {

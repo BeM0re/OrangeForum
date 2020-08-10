@@ -40,13 +40,12 @@ class BoardPresenter : MvpPresenter<BoardView>() {
             this.boardId = boardId
 
         disposables.add(
-//            repo.getBoard(this.boardId)
             interactor.getBoard(this.boardId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{
-                    board = Board("", this.boardId, it)
+                .subscribe{ board ->
                     viewState.loadBoard(board)
+                    viewState.setBoardMarks(board.isFavorite)
                 }
         )
     }
@@ -108,11 +107,15 @@ class BoardPresenter : MvpPresenter<BoardView>() {
         )
     }
 
-    fun favoriteThread(threadNum: Int, isFavorite: Boolean) {
+    fun setThreadMarks(){
+        viewState.setBoardMarks(board.isFavorite)
+    }
+
+  /*  fun favoriteThread(threadNum: Int, isFavorite: Boolean) {
         if (isFavorite)
             interactor.markThreadFavorite(boardId, threadNum, board.title)
         else
             interactor.unmarkThreadFavorite(boardId, threadNum)
     }
-
+*/
 }

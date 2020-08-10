@@ -14,7 +14,8 @@ data class StoredCategory(
 data class StoredBoard(
     @PrimaryKey val id: String,
     val categoryId: String,
-    val name: String
+    val name: String,
+    val isFavorite: Boolean = false
 )
 
 @Entity(
