@@ -12,5 +12,7 @@
     <string name="op_check">#OP</string>
     <string name="no_invisible_recaptcha_error">The app works only with invisible recaptcha for now, which is unavailable</string>
     <string name="captchaHtml">asd</string>
+    <string name="play_icon_description">Play icon</string>
+    <string name="oppic_description">OpPic</string>
 
 </resources>
