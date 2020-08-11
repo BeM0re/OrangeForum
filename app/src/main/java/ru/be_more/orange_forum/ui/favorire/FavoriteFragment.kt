@@ -85,10 +85,10 @@ class FavoriteFragment private constructor(
         super.onDestroy()
     }
 
-    override fun loadFavorites(boards: List<Board>) {
+   /* override fun loadFavorites(boards: List<Board>) {
         FavoriteAdapter(boards, this, this)
         recyclerView.adapter = adapter
-    }
+    }*/
 
     override fun loadFavorites() {
         adapter = FavoriteAdapter(

@@ -44,7 +44,8 @@ class FavoritePresenter : MvpPresenter<FavoriteView>() {
         )
     }
 
-    fun refreshData(){
+    fun refreshData(){ //TODO не работает
+        Log.d("M_FavoritePresenter","refresh")
         disposables.add(
             interactor.getFavorites()
                 .subscribeOn(Schedulers.io())
@@ -53,7 +54,7 @@ class FavoritePresenter : MvpPresenter<FavoriteView>() {
                     this.boards = boards
                     viewState.loadFavorites()
                 },
-                    { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
+                    { Log.d("M_DownloadPresenter", "Presenter on refresh error = $it") }
                 )
         )
     }

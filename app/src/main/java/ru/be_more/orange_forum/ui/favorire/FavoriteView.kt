@@ -12,7 +12,7 @@ import java.security.MessageDigest
 
 @StateStrategyType(value = AddToEndStrategy::class)
 interface FavoriteView  : MvpView {
-    fun loadFavorites(boards: List<Board>)
+//    fun loadFavorites(boards: List<Board>)
     fun loadFavorites()
     fun showPic(attachment: Attachment)
     fun showPost(post: Post)
