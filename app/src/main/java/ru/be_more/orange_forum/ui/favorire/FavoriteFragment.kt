@@ -93,6 +93,13 @@ class FavoriteFragment private constructor(
     override fun loadFavorites() {
         adapter = FavoriteAdapter(
             favoritePresenter.getBoards(), this, this)
+
+        // Iterate and toggle groups
+        for (i in (adapter.groups.size - 1) downTo 0) {
+            if (! adapter.isGroupExpanded(i))
+                adapter.toggleGroup(i)
+        }
+
         recyclerView.adapter = adapter
 
     }
