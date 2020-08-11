@@ -51,29 +51,23 @@ class ThreadInteractor @Inject constructor() {
 
     fun getBoard(boardId: String): Observable<Board> =
         Observable.zip(
-//            dbRepo.getThreadsOnBoard(boardId),
             dbRepo.getBoard(boardId),
             apiRepo.getThreads(boardId),
             BiFunction { localBoard, webThreads ->
 
-                Log.d("M_ThreadInteractor","1")
                 localBoard.threads.forEach { localThread ->
-                    Log.d("M_ThreadInteractor","2")
                     val webIndex = webThreads.indexOfFirst { it.num == localThread.num }
 
-                    Log.d("M_ThreadInteractor","3")
-                    if (webIndex == -1){ //удаляем инфу об утонувших несохраненных тредах
+                    if (webIndex == -1){ //удаляем инфу об утонувших несохраненных тредах //TODO не работает
                         if (!localThread.isDownloaded)
                             disposables.add( dbRepo.deleteThread(boardId, localThread.num) )
                     }
                     else{
-                        Log.d("M_ThreadInteractor","4")
                         webThreads[webIndex].isFavorite = localThread.isFavorite
                         webThreads[webIndex].isHidden = localThread.isHidden
                         webThreads[webIndex].isDownloaded = localThread.isDownloaded
                     }
                 }
-                Log.d("M_ThreadInteractor","5")
                 return@BiFunction localBoard.copy(threads = webThreads)
             }
         )

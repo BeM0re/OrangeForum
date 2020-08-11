@@ -22,7 +22,7 @@ class BoardPresenter : MvpPresenter<BoardView>() {
 
     @Inject
     lateinit var repo : DvachApiRepository
-    private lateinit var board :Board
+    private var board :Board = Board("", "", listOf(), false)
     private var disposables: LinkedList<Disposable?> = LinkedList()
     private var boardId: String = ""
     var listener: ((threadNum: Int, threadTitle: String) -> Unit)? = null
@@ -107,7 +107,7 @@ class BoardPresenter : MvpPresenter<BoardView>() {
         )
     }
 
-    fun setThreadMarks(){
+    fun setBoardMarks(){
         viewState.setBoardMarks(board.isFavorite)
     }
 

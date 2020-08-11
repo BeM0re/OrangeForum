@@ -21,7 +21,6 @@ import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.consts.BOARD_TAG
 import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
 import ru.be_more.orange_forum.consts.POST_TAG
-import ru.be_more.orange_forum.consts.THREAD_TAG
 import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
@@ -55,14 +54,12 @@ class BoardFragment: MvpAppCompatFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         boardPresenter.init(id, listener)
         recyclerView = rv_thread_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-
-
         disposable = App.getBus().subscribe({
+            Log.d("M_BoardFragment","event = $it")
             if(it.first is BackPressed && it.second == BOARD_TAG) {
                 if (fl_board_post.visibility != View.GONE)
                     boardPresenter.onBackPressed()
@@ -70,7 +67,7 @@ class BoardFragment: MvpAppCompatFragment(),
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
             if (it.first is BoardEntered && it.second == BOARD_TAG)
-                boardPresenter.setThreadMarks()
+                boardPresenter.setBoardMarks()
         },
         {
             Log.e("M_BoardFragment","bus error = \n $it")
@@ -93,6 +90,7 @@ class BoardFragment: MvpAppCompatFragment(),
     }
 
     override fun setBoardMarks(isFavorite: Boolean) {
+        Log.d("M_BoardFragment","BoardEntered")
         if (isFavorite)
             App.getBus().onNext(Pair(FavoriteBoardEntered, ""))
         else
