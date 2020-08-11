@@ -81,6 +81,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
         setActionBarTitle(mainPresenter.getBoardTitle())
 
+        App.getBus().onNext(Pair(BoardEntered, BOARD_TAG))
+
         bottomNavigationView!!.menu.getItem(1).isChecked = true
     }
 
@@ -219,7 +221,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
 
-            if (mainPresenter.getCurrentFragmentTag() == THREAD_TAG)
+            //не делать при первом запуске приложения, когда ни одного фрагмента не создано и кнопки == null
+            if (mainPresenter.getCurrentFragmentTag() != "")
                 removeThreadMarks()
 
             when (menuItem.itemId) {
