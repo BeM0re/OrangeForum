@@ -20,11 +20,10 @@ import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.bus.RefreshFavorite
 import ru.be_more.orange_forum.bus.VideoToBeClosed
 import ru.be_more.orange_forum.consts.FAVORITE_TAG
-import ru.be_more.orange_forum.consts.POST_IN_DOWNLOAD_TAG
 import ru.be_more.orange_forum.consts.POST_IN_FAVORITE_TAG
 import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
-import ru.be_more.orange_forum.interfaces.DownloadListener
+import ru.be_more.orange_forum.interfaces.FavoriteListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.Attachment
@@ -34,10 +33,11 @@ import ru.be_more.orange_forum.ui.post.PostFragment
 
 class FavoriteFragment private constructor(
     var intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
+    var intoBoardClickListener: (boardId: String, boardName: String) -> Unit,
     var onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit):
     MvpAppCompatFragment(),
     FavoriteView,
-    DownloadListener,
+    FavoriteListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
@@ -81,7 +81,7 @@ class FavoriteFragment private constructor(
     }
 
     override fun onDestroy() {
-//        bus.unregister(this)
+        disposable?.dispose()
         super.onDestroy()
     }
 
@@ -99,6 +99,10 @@ class FavoriteFragment private constructor(
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
         intoThreadClickListener(boardId, threadNum, threadTitle)
+    }
+
+    override fun intoBoardClick(boardId: String, boardName: String) {
+        intoBoardClickListener(boardId, boardName)
     }
 
     override fun onRemoveClick(boardId: String, threadNum: Int) {
@@ -185,12 +189,12 @@ class FavoriteFragment private constructor(
         App.showToast(message )
     }
 
-
     companion object {
         fun getFavoriteFragment (
             intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
+            intoBoardClickListener: (boardId: String, boardName: String) -> Unit,
             onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit
-        ): FavoriteFragment = FavoriteFragment(intoThreadClickListener, onRemoveClickListener)
+        ): FavoriteFragment = FavoriteFragment(intoThreadClickListener, intoBoardClickListener, onRemoveClickListener)
 
     }
 }

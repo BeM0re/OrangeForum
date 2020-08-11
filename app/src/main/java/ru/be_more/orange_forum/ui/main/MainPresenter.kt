@@ -72,7 +72,6 @@ class MainPresenter : MvpPresenter<MainView>() {
                 setThread(0)
                 viewState.showBoardMenuItem()
                 makeBoardFragment(true)
-
             }
         }
     }
@@ -128,12 +127,20 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     fun makeFavoriteFragment() {
-        val fragment = FavoriteFragment.getFavoriteFragment({ boardId, threadNum, title ->
-            this.boardId = boardId
-            this.threadTitle = title
-            viewState.setActionBarTitle(title)
-            setThread(threadNum)
-        },
+        val fragment = FavoriteFragment.getFavoriteFragment({
+                boardId, threadNum, title ->
+                this.boardId = boardId
+                this.threadTitle = title
+                viewState.setActionBarTitle(title)
+                setThread(threadNum)
+            },
+            {
+                boardId, boardName->
+                this.boardId = boardId
+                this.boardTitle = boardName
+                viewState.setActionBarTitle(boardName)
+                setBoard(boardId)
+            },
             { boardId, threadNum ->
                 removeThreadFavoriteMark(boardId, threadNum, true)
             })

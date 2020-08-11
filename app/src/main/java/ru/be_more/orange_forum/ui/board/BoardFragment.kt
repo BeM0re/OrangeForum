@@ -59,7 +59,6 @@ class BoardFragment: MvpAppCompatFragment(),
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
         disposable = App.getBus().subscribe({
-            Log.d("M_BoardFragment","event = $it")
             if(it.first is BackPressed && it.second == BOARD_TAG) {
                 if (fl_board_post.visibility != View.GONE)
                     boardPresenter.onBackPressed()
@@ -90,7 +89,6 @@ class BoardFragment: MvpAppCompatFragment(),
     }
 
     override fun setBoardMarks(isFavorite: Boolean) {
-        Log.d("M_BoardFragment","BoardEntered")
         if (isFavorite)
             App.getBus().onNext(Pair(FavoriteBoardEntered, ""))
         else

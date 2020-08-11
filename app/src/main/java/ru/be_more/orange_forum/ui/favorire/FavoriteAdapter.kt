@@ -1,22 +1,19 @@
 package ru.be_more.orange_forum.ui.favorire
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.interfaces.DownloadListener
-import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.interfaces.FavoriteListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.BoardThread
 
 
 class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
-                      var downloadListener: DownloadListener,
+                      var favoriteListener: FavoriteListener,
                       var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<FavoriteBoardViewHolder, FavoriteThreadViewHolder>(groups){
 
@@ -56,7 +53,7 @@ class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
 //            holder.setRemoveButton(group.id, thread, downloadListener) //TODO добавить удоление из избраного
             holder.setDivider()
             holder.setIntoThreadButton(View.OnClickListener {
-                downloadListener.intoThreadClick(
+                favoriteListener.intoThreadClick(
                     group.id,
                     thread.num,
                     thread.title
@@ -69,7 +66,14 @@ class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
         holder: FavoriteBoardViewHolder, flatPosition: Int,
         group: ExpandableGroup<*>?
     ) {
-        holder.setBoardTitle((group as Board).name)
+        val board = group as Board
+        holder.setBoardTitle(board.name)
+        holder.setIntoBoardListener(View.OnClickListener {
+            favoriteListener.intoBoardClick(
+                board.id,
+                board.name
+            )
+        })
         holder.expand()
     }
 }
