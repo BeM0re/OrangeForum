@@ -231,6 +231,11 @@ class DvachDbRepository @Inject constructor(){
                             board,
                             toModelThreads(thread)
                         ))
+                    else if (board.isFavorite)
+                        boardResult.add(toModelBoard(
+                            board,
+                            listOf()
+                        ))
                 }
 
                 posts.forEach { post ->
