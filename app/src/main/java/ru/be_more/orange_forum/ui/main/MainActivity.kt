@@ -131,6 +131,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 .commit()
 
         setActionBarTitle("Favorites")
+
+        App.getBus().onNext(Pair(ThreadEntered, FAVORITE_TAG))
     }
 
     override fun showDownloadedFragment(downloadedFragment: Fragment) {
