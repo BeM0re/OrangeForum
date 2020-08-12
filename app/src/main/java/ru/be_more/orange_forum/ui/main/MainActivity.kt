@@ -58,6 +58,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun showBoardFragment(boardFragment: BoardFragment, isNew: Boolean) {
+        removeThreadMarks()
+
         when{
             supportFragmentManager.findFragmentByTag(BOARD_TAG) == null -> supportFragmentManager
                 .beginTransaction()
@@ -257,6 +259,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
             R.id.navigation_pref -> {
 //                mainPresenter.makePrefFragment()
+                val size = supportFragmentManager.fragments.size
+                Log.d("M_MainActivity","$size fragments:")
+                for (fragment in supportFragmentManager.fragments){
+                    Log.d("M_MainActivity","$fragment")
+                }
+
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_download -> {
@@ -314,6 +322,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     private fun subscribe(){
            disposable = App.getBus().subscribe (
                {
+                   Log.d("M_MainActivity","event = $it")
                    when (it.first) {
                        is AppToBeClosed -> {
                            if (System.currentTimeMillis() - timestamp < 2000)
@@ -348,10 +357,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
                        is FavoriteBoardEntered -> {
                            toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
+                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
                        }
 
                        is UnfavoriteBoardEntered -> {
                            toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
+                           toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
                        }
                    }
 
