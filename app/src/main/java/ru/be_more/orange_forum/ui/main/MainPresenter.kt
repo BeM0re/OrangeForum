@@ -61,19 +61,15 @@ class MainPresenter : MvpPresenter<MainView>() {
     fun getThreadNum() = this.threadNum
 
     private fun setBoard(boardId: String){
-        Log.d("M_MainPresenter","make board")
         when (boardId){
             "" -> {
-                Log.d("M_MainPresenter","1")
                 viewState.hideBoardMenuItem()
             }
             this.boardId -> {
-                Log.d("M_MainPresenter","2")
                 viewState.showBoardMenuItem()
                 makeBoardFragment(false)
             }
             else -> {
-                Log.d("M_MainPresenter","3")
                 this.boardId = boardId
                 setThread(0)
                 viewState.showBoardMenuItem()
@@ -142,8 +138,6 @@ class MainPresenter : MvpPresenter<MainView>() {
             },
             {
                 boardId, boardName->
-                Log.d("M_MainPresenter","board = $boardId")
-//                this.boardId = boardId
                 this.boardTitle = boardName
                 viewState.setActionBarTitle(boardName)
                 setBoard(boardId)
