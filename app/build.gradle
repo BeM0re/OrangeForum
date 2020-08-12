@@ -19,7 +19,7 @@ android {
         applicationId "ru.be_more.orange_forum"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 5
+        versionCode 7
         versionName "0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

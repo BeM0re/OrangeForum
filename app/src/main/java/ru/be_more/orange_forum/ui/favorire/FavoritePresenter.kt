@@ -44,8 +44,7 @@ class FavoritePresenter : MvpPresenter<FavoriteView>() {
         )
     }
 
-    fun refreshData(){ //TODO не работает
-        Log.d("M_FavoritePresenter","refresh")
+    fun refreshData(){
         disposables.add(
             interactor.getFavorites()
                 .subscribeOn(Schedulers.io())
