@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.ui.main
 
 import android.util.Log
+import androidx.fragment.app.Fragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -60,35 +61,41 @@ class MainPresenter : MvpPresenter<MainView>() {
 
     fun getThreadNum() = this.threadNum
 
-    private fun setBoard(boardId: String){
+    fun setBoard(boardId: String){
         when (boardId){
             "" -> {
                 viewState.hideBoardMenuItem()
+                Log.d("M_MainPresenter","4")
             }
             this.boardId -> {
+
+                Log.d("M_MainPresenter","5")
                 viewState.showBoardMenuItem()
-                makeBoardFragment(false)
+                viewState.showBoardFragment(false)
             }
             else -> {
+                Log.d("M_MainPresenter","6")
                 this.boardId = boardId
                 setThread(0)
                 viewState.showBoardMenuItem()
-                makeBoardFragment(true)
+                viewState.showBoardFragment(true)
             }
         }
     }
 
-    private fun setThread(threadNum: Int){
+    fun setThread(threadNum: Int){
         when (threadNum){
             0 -> viewState.hideThreadMenuItem()
             this.threadNum -> {
+                Log.d("M_MainPresenter","1")
                 viewState.showThreadMenuItem()
-                makeThreadFragment(false)
+                viewState.showThreadFragment(false)
             }
             else -> {
+                Log.d("M_MainPresenter","1")
                 this.threadNum = threadNum
                 viewState.showThreadMenuItem()
-                makeThreadFragment(true)
+                viewState.showThreadFragment(true)
             }
         }
 
@@ -97,80 +104,6 @@ class MainPresenter : MvpPresenter<MainView>() {
     fun getBoardTitle(): String? = this.boardTitle
 
     fun getThreadTitle(): String? = this.threadTitle
-
-    fun makeCategoryFragment() {
-        val fragment=
-            CategoryFragment.getCategoryFragment { boardId, title ->
-                this.boardTitle = title
-                setBoard(boardId)
-            }
-
-        viewState.showCategoryFragment(fragment)
-        currentFragmentTag = CAT_TAG
-
-    }
-
-    fun makeBoardFragment(isNew: Boolean) {
-        val fragment =
-            BoardFragment.getBoardFragment({ threadNum, title ->
-                this.threadTitle = title
-                setThread(threadNum)
-            }, this.boardId)
-
-        viewState.showBoardFragment(fragment, isNew)
-        currentFragmentTag = BOARD_TAG
-    }
-
-    fun makeThreadFragment(isNew: Boolean) {
-        val fragment = ThreadFragment.getThreadFragment(boardId, threadNum)
-
-        viewState.showThreadFragment(fragment, isNew)
-        currentFragmentTag = THREAD_TAG
-    }
-
-    fun makeFavoriteFragment() {
-        val fragment = FavoriteFragment.getFavoriteFragment({
-                boardId, threadNum, title ->
-                this.boardId = boardId
-                this.threadTitle = title
-                viewState.setActionBarTitle(title)
-                setThread(threadNum)
-            },
-            {
-                boardId, boardName->
-                this.boardTitle = boardName
-                viewState.setActionBarTitle(boardName)
-                setBoard(boardId)
-            },
-            { boardId, threadNum ->
-                removeThreadFavoriteMark(boardId, threadNum, true)
-            })
-
-        viewState.showFavoriteFragment(fragment)
-        viewState.refreshFavorite()
-        currentFragmentTag = FAVORITE_TAG
-    }
-
-    fun makeDownloadedFragment() {
-        val fragment = DownloadFragment.getDownloadFragment({boardId, threadNum, title ->
-            this.boardId = boardId
-            this.threadTitle = title
-            viewState.setActionBarTitle(title)
-            setThread(threadNum)
-        },
-        {
-            boardId, threadNum -> deleteThread(boardId, threadNum, true)
-        })
-
-        viewState.showDownloadedFragment(fragment)
-        currentFragmentTag = DOWNLOAD_TAG
-    }
-
-    fun makePrefFragment() {
-        val fragment = TempFragment()
-        viewState.showPrefFragment(fragment)
-        currentFragmentTag = PREF_TAG
-    }
 
     fun downloadThread() {
         disposables.add(
@@ -215,7 +148,7 @@ class MainPresenter : MvpPresenter<MainView>() {
         viewState.turnFavoriteIcon(true)
     }*/
 
-    private fun removeThreadFavoriteMark(boardId: String, threadNum: Int, isFavoriteFragmentFrom: Boolean = false) {
+    fun removeThreadFavoriteMark(boardId: String, threadNum: Int, isFavoriteFragmentFrom: Boolean = false) {
         disposables.add(
             interactor.unmarkThreadFavorite(boardId, threadNum)
                 .subscribeOn(Schedulers.io())
@@ -252,6 +185,14 @@ class MainPresenter : MvpPresenter<MainView>() {
                     }
                 )
         )
+    }
+
+    fun setThreadTitle(title: String) {
+        this.threadTitle = title
+    }
+
+    fun setBoardTitle(title: String) {
+        this.boardTitle = title
     }
 
 }
