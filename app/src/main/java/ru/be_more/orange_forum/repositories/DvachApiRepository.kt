@@ -45,14 +45,14 @@ class DvachApiRepository @Inject constructor(){
     fun getCategories(): Observable<List<Category>>  =
         dvachApi.getDvachCategoriesRx("get_boards")
             .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "Getting category error = $throwable") }
 //            .doOnEach {Log.d("M_DvachApiRepository", "$it") }
             .map { entity -> toCategories(entity) }
 
     fun getThreads(boardId: String): Observable<List<BoardThread>> =
         dvachApi.getDvachThreadsRx(boardId)
             .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "Getting thread error = $throwable") }
             .map { entity -> toBoard(entity) }
 
     fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
@@ -68,7 +68,7 @@ class DvachApiRepository @Inject constructor(){
     fun getPost(boardId: String, postNum: Int): Observable<Post> =
         dvachApi.getDvachPostRx("get_post", boardId, postNum, cookie)
             .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "error = $throwable") }
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "Getting post error = $throwable") }
             .map { entity -> toPost(entity[0]) }
 
     fun postResponse (

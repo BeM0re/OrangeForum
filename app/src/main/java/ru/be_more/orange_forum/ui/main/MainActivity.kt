@@ -68,31 +68,48 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     override fun showBoardFragment(isNew: Boolean) {
         removeThreadMarks()
 
-        val fragment =
-            BoardFragment.getBoardFragment({ threadNum, title ->
-                mainPresenter.setThreadTitle(title)
-                mainPresenter.setThread(threadNum)
-            }, mainPresenter.getBoardId())
-
         when{
-            supportFragmentManager.findFragmentByTag(BOARD_TAG) == null -> supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, fragment, BOARD_TAG)
-                .show(fragment)
-                .commit()
-            isNew -> supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .remove(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
-                .add(R.id.container, fragment, BOARD_TAG)
-                .show(fragment)
-                .commit()
-            else -> supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .show(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
-                .commit()
+            supportFragmentManager.findFragmentByTag(BOARD_TAG) == null ->
+                with(supportFragmentManager.beginTransaction()){
+                    val fragment =
+                        BoardFragment.getBoardFragment({ threadNum, title ->
+                            mainPresenter.setThreadTitle(title)
+                            mainPresenter.setThread(threadNum)
+                        }, mainPresenter.getBoardId())
+
+                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                    add(R.id.container, fragment, BOARD_TAG)
+                    show(fragment)
+                    commit()
+                }
+
+            isNew ->
+                with(supportFragmentManager.beginTransaction()){
+
+                    val fragment =
+                        BoardFragment.getBoardFragment({ threadNum, title ->
+                            mainPresenter.setThreadTitle(title)
+                            mainPresenter.setThread(threadNum)
+                        }, mainPresenter.getBoardId())
+
+                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                    remove(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
+                    add(R.id.container, fragment, BOARD_TAG)
+                    show(fragment)
+                    commit()
+                }
+            else ->
+                with(supportFragmentManager.beginTransaction()){
+                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                    show(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
+                    commit()
+                }
+
         }
 
         mainPresenter.setCurrentFragmentTag(BOARD_TAG)
@@ -106,27 +123,42 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun showThreadFragment(isNew: Boolean) {
 
-        val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
+        removeThreadMarks()
+
+//        val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
 
         when {
-            supportFragmentManager.findFragmentByTag(THREAD_TAG) == null -> supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, fragment, THREAD_TAG)
-                .show(fragment)
-                .commit()
-            isNew -> supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .remove(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
-                .add(R.id.container, fragment, THREAD_TAG)
-                .show(fragment)
-                .commit()
-            else -> supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .show(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
-                .commit()
+            supportFragmentManager.findFragmentByTag(THREAD_TAG) == null ->
+                with(supportFragmentManager.beginTransaction()){
+                    val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
+
+                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                    add(R.id.container, fragment, THREAD_TAG)
+                    show(fragment)
+                    commit()
+                }
+            isNew ->
+                with(supportFragmentManager.beginTransaction()) {
+                    val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
+
+                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+                    remove(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
+                    add(R.id.container, fragment, THREAD_TAG)
+                    show(fragment)
+                    commit()
+                }
+            else ->
+                with(supportFragmentManager.beginTransaction()) {
+
+                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                    show(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
+                    commit()
+                }
         }
 
         mainPresenter.setCurrentFragmentTag(THREAD_TAG)
@@ -142,12 +174,16 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
         val fragment = FavoriteFragment.getFavoriteFragment({
                 boardId, threadNum, title ->
+            mainPresenter.setBoard("")
+            mainPresenter.setBoardAvailability(false)
+            removeThreadMarks()
             mainPresenter.setBoardId(boardId)
             mainPresenter.setThreadTitle(title)
             setActionBarTitle(title)
             mainPresenter.setThread(threadNum)
         },
             { boardId, boardName->
+                removeThreadMarks()
                 mainPresenter.setBoardTitle(boardName)
                 setActionBarTitle(boardName)
                 mainPresenter.setBoard(boardId)
@@ -326,6 +362,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 for (fragment in supportFragmentManager.fragments){
                     Log.d("M_MainActivity","$fragment")
                 }
+                Log.d("M_MainActivity","active = ${supportFragmentManager.findFragmentById(R.id.container)}")
 
                 return@OnMenuItemClickListener true
             }
@@ -382,8 +419,10 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     private fun subscribe(){
+
            disposable = App.getBus().subscribe (
                {
+                   Log.d("M_MainActivity","event = ${it}")
                    when (it.first) {
                        is AppToBeClosed -> {
                            if (System.currentTimeMillis() - timestamp < 2000)
@@ -410,10 +449,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
                        is FavoriteThreadEntered -> {
                            toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
+                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
                        }
 
                        is UnfavoriteThreadEntered -> {
                            toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
+                           toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
                        }
 
                        is FavoriteBoardEntered -> {

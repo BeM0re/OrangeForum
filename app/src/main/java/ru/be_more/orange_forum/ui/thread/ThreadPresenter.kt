@@ -171,7 +171,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     fun onBackPressed() {
-        Log.d("M_ThreadPresenter","back")
         modalStack.pop()
 
         if(!modalStack.empty()) {
@@ -198,7 +197,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                         this.putContentInStack(it)
                         viewState.showPost(it)
                     },
-                    { viewState.showToast("Пост не найден") }
+                    { App.showToast("Пост не найден") }
                 )
 
         )
