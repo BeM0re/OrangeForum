@@ -45,10 +45,13 @@ class BoardPresenter : MvpPresenter<BoardView>() {
             interactor.getBoard(this.boardId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{ board ->
+                .subscribe({ board ->
                     viewState.loadBoard(board)
                     viewState.setBoardMarks(board.isFavorite)
-                }
+                },
+                    {
+                        Log.e("M_BoardPresenter","Getting board error = $it")
+                })
 //        )
     }
 
@@ -94,7 +97,7 @@ class BoardPresenter : MvpPresenter<BoardView>() {
                         this.putContentInStack(it)
                         viewState.showPost(it)
                     },
-                    { viewState.showToast("Пост не найден") }
+                    { App.showToast("Пост не найден") }
                 )
 
 //        )
