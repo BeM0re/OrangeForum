@@ -15,8 +15,11 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.consts.*
+import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
+import ru.be_more.orange_forum.ui.download.DownloadFragment
+import ru.be_more.orange_forum.ui.favorire.FavoriteFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
 
 
@@ -32,7 +35,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         supportActionBar?.title = title
     }
 
-    override fun showCategoryFragment(categoryFragment: CategoryFragment) {
+    override fun showCategoryFragment() {
+        val fragment = CategoryFragment.getCategoryFragment { boardId, title ->
+                mainPresenter.setBoardTitle(title)
+                mainPresenter.setBoard(boardId)
+            }
+
         when {
             supportFragmentManager.findFragmentByTag(CAT_TAG) != null -> supportFragmentManager
                 .beginTransaction()
@@ -41,14 +49,14 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 .commit()
             supportFragmentManager.findFragmentById(R.id.container) == null -> supportFragmentManager
                 .beginTransaction()
-                .add(R.id.container, categoryFragment, CAT_TAG)
-                .show(categoryFragment)
+                .add(R.id.container, fragment, CAT_TAG)
+                .show(fragment)
                 .commit()
             else -> supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, categoryFragment, CAT_TAG)
-                .show(categoryFragment)
+                .add(R.id.container, fragment, CAT_TAG)
+                .show(fragment)
                 .commit()
         }
 
@@ -57,22 +65,28 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         setActionBarTitle()
     }
 
-    override fun showBoardFragment(boardFragment: BoardFragment, isNew: Boolean) {
+    override fun showBoardFragment(isNew: Boolean) {
         removeThreadMarks()
+
+        val fragment =
+            BoardFragment.getBoardFragment({ threadNum, title ->
+                mainPresenter.setThreadTitle(title)
+                mainPresenter.setThread(threadNum)
+            }, mainPresenter.getBoardId())
 
         when{
             supportFragmentManager.findFragmentByTag(BOARD_TAG) == null -> supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, boardFragment, BOARD_TAG)
-                .show(boardFragment)
+                .add(R.id.container, fragment, BOARD_TAG)
+                .show(fragment)
                 .commit()
             isNew -> supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
                 .remove(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
-                .add(R.id.container, boardFragment, BOARD_TAG)
-                .show(boardFragment)
+                .add(R.id.container, fragment, BOARD_TAG)
+                .show(fragment)
                 .commit()
             else -> supportFragmentManager
                 .beginTransaction()
@@ -81,6 +95,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 .commit()
         }
 
+        mainPresenter.setCurrentFragmentTag(BOARD_TAG)
+
         setActionBarTitle(mainPresenter.getBoardTitle())
 
         App.getBus().onNext(Pair(BoardEntered, BOARD_TAG))
@@ -88,20 +104,23 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         bottomNavigationView!!.menu.getItem(1).isChecked = true
     }
 
-    override fun showThreadFragment(threadFragment: ThreadFragment, isNew: Boolean) {
+    override fun showThreadFragment(isNew: Boolean) {
+
+        val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
+
         when {
             supportFragmentManager.findFragmentByTag(THREAD_TAG) == null -> supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, threadFragment, THREAD_TAG)
-                .show(threadFragment)
+                .add(R.id.container, fragment, THREAD_TAG)
+                .show(fragment)
                 .commit()
             isNew -> supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
                 .remove(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
-                .add(R.id.container, threadFragment, THREAD_TAG)
-                .show(threadFragment)
+                .add(R.id.container, fragment, THREAD_TAG)
+                .show(fragment)
                 .commit()
             else -> supportFragmentManager
                 .beginTransaction()
@@ -110,6 +129,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 .commit()
         }
 
+        mainPresenter.setCurrentFragmentTag(THREAD_TAG)
+
         setActionBarTitle(mainPresenter.getThreadTitle())
 
         App.getBus().onNext(Pair(ThreadEntered, THREAD_TAG))
@@ -117,7 +138,25 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         bottomNavigationView!!.menu.getItem(2).isChecked = true
     }
 
-    override fun showFavoriteFragment(favoriteFragment: Fragment) {
+    override fun showFavoriteFragment() {
+
+        val fragment = FavoriteFragment.getFavoriteFragment({
+                boardId, threadNum, title ->
+            mainPresenter.setBoard(boardId)
+            mainPresenter.setThreadTitle(title)
+            setActionBarTitle(title)
+            mainPresenter.setThread(threadNum)
+        },
+            {
+                    boardId, boardName->
+                mainPresenter.setBoardTitle(boardName)
+                setActionBarTitle(boardName)
+                mainPresenter.setBoard(boardId)
+            },
+            { boardId, threadNum ->
+                mainPresenter.removeThreadFavoriteMark(boardId, threadNum, true)
+            })
+
         if (supportFragmentManager.findFragmentByTag(FAVORITE_TAG) != null)
             supportFragmentManager
                 .beginTransaction()
@@ -128,16 +167,31 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, favoriteFragment, FAVORITE_TAG)
-                .show(favoriteFragment)
+                .add(R.id.container, fragment, FAVORITE_TAG)
+                .show(fragment)
                 .commit()
+
+        mainPresenter.setCurrentFragmentTag(FAVORITE_TAG)
 
         setActionBarTitle("Favorites")
 
-        App.getBus().onNext(Pair(ThreadEntered, FAVORITE_TAG))
+        refreshFavorite()
+
+//        App.getBus().onNext(Pair(ThreadEntered, FAVORITE_TAG))
     }
 
-    override fun showDownloadedFragment(downloadedFragment: Fragment) {
+    override fun showDownloadedFragment() {
+
+        val fragment = DownloadFragment.getDownloadFragment({ boardId, threadNum, title ->
+            mainPresenter.setBoard(boardId)
+            mainPresenter.setThreadTitle(title)
+            setActionBarTitle(title)
+            mainPresenter.setThread(threadNum)
+        },
+            {
+                    boardId, threadNum -> mainPresenter.deleteThread(boardId, threadNum, true)
+            })
+
         if (supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG) != null)
             supportFragmentManager
                 .beginTransaction()
@@ -148,14 +202,21 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, downloadedFragment, DOWNLOAD_TAG)
-                .show(downloadedFragment)
+                .add(R.id.container, fragment, DOWNLOAD_TAG)
+                .show(fragment)
                 .commit()
 
+        mainPresenter.setCurrentFragmentTag(FAVORITE_TAG)
+
         setActionBarTitle("Downloaded")
+
+        refreshDownload()
     }
 
-    override fun showPrefFragment(prefFragment: Fragment) {
+    override fun showPrefFragment() {
+
+        val fragment = TempFragment()
+
         if (supportFragmentManager.findFragmentByTag(PREF_TAG) != null)
             supportFragmentManager
                 .beginTransaction()
@@ -166,11 +227,13 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             supportFragmentManager
                 .beginTransaction()
                 .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, prefFragment, PREF_TAG)
-                .show(prefFragment)
+                .add(R.id.container, fragment, PREF_TAG)
+                .show(fragment)
                 .commit()
 
         setActionBarTitle("Preferences")
+
+        mainPresenter.setCurrentFragmentTag(PREF_TAG)
     }
 
     override fun hideBoardMenuItem(){
@@ -231,23 +294,23 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
             when (menuItem.itemId) {
                 R.id.navigation_category -> {
-                    mainPresenter.makeCategoryFragment()
+                    showCategoryFragment()
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_board -> {
-                    mainPresenter.makeBoardFragment(false)
+                    showBoardFragment(false)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_thread -> {
-                    mainPresenter.makeThreadFragment(false)
+                    showThreadFragment(false)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_favorites -> {
-                    mainPresenter.makeFavoriteFragment()
+                    showFavoriteFragment()
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_downloaded -> {
-                    mainPresenter.makeDownloadedFragment()
+                    showDownloadedFragment()
                     return@OnNavigationItemSelectedListener true
                 }
             }
@@ -322,7 +385,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     private fun subscribe(){
            disposable = App.getBus().subscribe (
                {
-                   Log.d("M_MainActivity","event = $it")
                    when (it.first) {
                        is AppToBeClosed -> {
                            if (System.currentTimeMillis() - timestamp < 2000)
@@ -365,7 +427,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                            toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
                        }
                    }
-
                },
                {
                    Log.e("M_MainActivity","bus error = \n $it")

@@ -24,6 +24,7 @@ class BoardPresenter : MvpPresenter<BoardView>() {
     lateinit var repo : DvachApiRepository
     private var board :Board = Board("", "", listOf(), false)
     private var disposables: LinkedList<Disposable?> = LinkedList()
+    private var disposable: Disposable? = null
     private var boardId: String = ""
     var listener: ((threadNum: Int, threadTitle: String) -> Unit)? = null
 
@@ -39,7 +40,8 @@ class BoardPresenter : MvpPresenter<BoardView>() {
         if (!boardId.isNullOrEmpty())
             this.boardId = boardId
 
-        disposables.add(
+//        disposables.add(
+        disposable =
             interactor.getBoard(this.boardId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -47,11 +49,12 @@ class BoardPresenter : MvpPresenter<BoardView>() {
                     viewState.loadBoard(board)
                     viewState.setBoardMarks(board.isFavorite)
                 }
-        )
+//        )
     }
 
     override fun onDestroy() {
-        disposables.forEach { it?.dispose() }
+//        disposables.forEach { it?.dispose() }
+        disposable?.dispose()
         super.onDestroy()
     }
 
@@ -80,7 +83,9 @@ class BoardPresenter : MvpPresenter<BoardView>() {
     }
 
     fun getSinglePost(boardId: String, postNum: Int){
-        disposables.add(
+        disposable?.dispose()
+        disposable =
+//        disposables.add(
             repo.getPost(boardId, postNum)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -92,19 +97,22 @@ class BoardPresenter : MvpPresenter<BoardView>() {
                     { viewState.showToast("Пост не найден") }
                 )
 
-        )
+//        )
     }
 
     fun hideThread(threadNum: Int, isHidden: Boolean) {
         if (!isHidden)
             interactor.markThreadHidden(boardId, threadNum)
-        else
-            disposables.add(
+        else {
+//            disposables.add(
+            disposable?.dispose()
+            disposable =
                 interactor.unmarkThreadHidden(boardId, threadNum)
                     .subscribeOn(Schedulers.io())
                     .subscribe({},
                         { Log.d("M_BoardPresenter", "error = $it") })
-        )
+//            )
+        }
     }
 
     fun setBoardMarks(){
