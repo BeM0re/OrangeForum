@@ -127,5 +127,8 @@ dependencies {
     //HTML parser
     implementation 'org.jsoup:jsoup:1.8.3'
 
+    //leak tracer
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
+
 
 }
