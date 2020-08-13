@@ -36,6 +36,7 @@ class MainPresenter : MvpPresenter<MainView>() {
     private var threadNum :Int = 0
     private lateinit var threadTitle :String
     private var currentFragmentTag: String = ""
+    private var isBoardAvailable = true
 
     private var disposables : LinkedList<Disposable?> = LinkedList()
 
@@ -62,19 +63,22 @@ class MainPresenter : MvpPresenter<MainView>() {
     fun getThreadNum() = this.threadNum
 
     fun setBoard(boardId: String){
+        if (!isBoardAvailable){
+            this.boardId = boardId
+            setThread(0)
+            viewState.showBoardMenuItem()
+            viewState.showBoardFragment(true)
+        }
+
         when (boardId){
             "" -> {
                 viewState.hideBoardMenuItem()
-                Log.d("M_MainPresenter","4")
             }
             this.boardId -> {
-
-                Log.d("M_MainPresenter","5")
                 viewState.showBoardMenuItem()
                 viewState.showBoardFragment(false)
             }
             else -> {
-                Log.d("M_MainPresenter","6")
                 this.boardId = boardId
                 setThread(0)
                 viewState.showBoardMenuItem()
@@ -87,12 +91,10 @@ class MainPresenter : MvpPresenter<MainView>() {
         when (threadNum){
             0 -> viewState.hideThreadMenuItem()
             this.threadNum -> {
-                Log.d("M_MainPresenter","1")
                 viewState.showThreadMenuItem()
                 viewState.showThreadFragment(false)
             }
             else -> {
-                Log.d("M_MainPresenter","1")
                 this.threadNum = threadNum
                 viewState.showThreadMenuItem()
                 viewState.showThreadFragment(true)
@@ -197,6 +199,10 @@ class MainPresenter : MvpPresenter<MainView>() {
 
     fun setBoardId(boardId: String) {
         this.boardId = boardId
+    }
+
+    fun setBoardAvailability(isAvailable: Boolean) {
+        this.isBoardAvailable = isAvailable
     }
 
 }
