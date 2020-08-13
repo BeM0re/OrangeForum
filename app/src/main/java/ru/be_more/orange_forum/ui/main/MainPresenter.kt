@@ -195,4 +195,8 @@ class MainPresenter : MvpPresenter<MainView>() {
         this.boardTitle = title
     }
 
+    fun setBoardId(boardId: String) {
+        this.boardId = boardId
+    }
+
 }

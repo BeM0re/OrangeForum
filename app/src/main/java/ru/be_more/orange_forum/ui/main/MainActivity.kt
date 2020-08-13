@@ -142,13 +142,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
         val fragment = FavoriteFragment.getFavoriteFragment({
                 boardId, threadNum, title ->
-            mainPresenter.setBoard(boardId)
+            mainPresenter.setBoardId(boardId)
             mainPresenter.setThreadTitle(title)
             setActionBarTitle(title)
             mainPresenter.setThread(threadNum)
         },
-            {
-                    boardId, boardName->
+            { boardId, boardName->
                 mainPresenter.setBoardTitle(boardName)
                 setActionBarTitle(boardName)
                 mainPresenter.setBoard(boardId)
@@ -183,7 +182,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     override fun showDownloadedFragment() {
 
         val fragment = DownloadFragment.getDownloadFragment({ boardId, threadNum, title ->
-            mainPresenter.setBoard(boardId)
+            mainPresenter.setBoardId(boardId)
             mainPresenter.setThreadTitle(title)
             setActionBarTitle(title)
             mainPresenter.setThread(threadNum)
