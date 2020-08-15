@@ -42,22 +42,28 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             }
 
         when {
-            supportFragmentManager.findFragmentByTag(CAT_TAG) != null -> supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .show(supportFragmentManager.findFragmentByTag(CAT_TAG)!!)
-                .commit()
+            supportFragmentManager.findFragmentByTag(CAT_TAG) != null ->
+                with(supportFragmentManager.beginTransaction()){
+                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                    show(supportFragmentManager.findFragmentByTag(CAT_TAG)!!)
+                    commit()
+                }
             supportFragmentManager.findFragmentById(R.id.container) == null -> supportFragmentManager
                 .beginTransaction()
                 .add(R.id.container, fragment, CAT_TAG)
                 .show(fragment)
                 .commit()
-            else -> supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, fragment, CAT_TAG)
-                .show(fragment)
-                .commit()
+            else ->
+                with(supportFragmentManager.beginTransaction()) {
+                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                    add(R.id.container, fragment, CAT_TAG)
+                    show(fragment)
+                    commit()
+                }
         }
 
         mainPresenter.setCurrentFragmentTag(CAT_TAG)
@@ -66,7 +72,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun showBoardFragment(isNew: Boolean) {
-        removeThreadMarks()
+//        removeThreadMarks()
 
         when{
             supportFragmentManager.findFragmentByTag(BOARD_TAG) == null ->
@@ -123,7 +129,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun showThreadFragment(isNew: Boolean) {
 
-        removeThreadMarks()
+//        removeThreadMarks()
 
 //        val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
 
@@ -174,7 +180,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
         val fragment = FavoriteFragment.getFavoriteFragment({
                 boardId, threadNum, title ->
-            mainPresenter.setBoard("")
+//            mainPresenter.setBoard("")
             mainPresenter.setBoardAvailability(false)
             removeThreadMarks()
             mainPresenter.setBoardId(boardId)
@@ -193,18 +199,23 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             })
 
         if (supportFragmentManager.findFragmentByTag(FAVORITE_TAG) != null)
-            supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .show(supportFragmentManager.findFragmentByTag(FAVORITE_TAG)!!)
-                .commit()
+            with(supportFragmentManager.beginTransaction()){
+                if(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                    hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                show(supportFragmentManager.findFragmentByTag(FAVORITE_TAG)!!)
+                commit()
+            }
+
         else
-            supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, fragment, FAVORITE_TAG)
-                .show(fragment)
-                .commit()
+            with(supportFragmentManager.beginTransaction()) {
+                if(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                    hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                add(R.id.container, fragment, FAVORITE_TAG)
+                show(fragment)
+                commit()
+            }
 
         mainPresenter.setCurrentFragmentTag(FAVORITE_TAG)
 
@@ -228,20 +239,24 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             })
 
         if (supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG) != null)
-            supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .show(supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG)!!)
-                .commit()
-        else
-            supportFragmentManager
-                .beginTransaction()
-                .hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                .add(R.id.container, fragment, DOWNLOAD_TAG)
-                .show(fragment)
-                .commit()
+            with(supportFragmentManager.beginTransaction()) {
+                if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                    hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
 
-        mainPresenter.setCurrentFragmentTag(FAVORITE_TAG)
+                show(supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG)!!)
+                commit()
+            }
+        else
+            with(supportFragmentManager.beginTransaction()) {
+                if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
+                    hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
+
+                add(R.id.container, fragment, DOWNLOAD_TAG)
+                show(fragment)
+                commit()
+            }
+
+        mainPresenter.setCurrentFragmentTag(DOWNLOAD_TAG)
 
         setActionBarTitle("Downloaded")
 
@@ -358,11 +373,12 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             R.id.navigation_pref -> {
 //                mainPresenter.makePrefFragment()
                 val size = supportFragmentManager.fragments.size
-                Log.d("M_MainActivity","$size fragments:")
-                for (fragment in supportFragmentManager.fragments){
-                    Log.d("M_MainActivity","$fragment")
-                }
+//                Log.d("M_MainActivity","$size fragments:")
+//                for (fragment in supportFragmentManager.fragments){
+//                    Log.d("M_MainActivity","$fragment")
+//                }
                 Log.d("M_MainActivity","active = ${supportFragmentManager.findFragmentById(R.id.container)}")
+                Log.d("M_MainActivity","saved tag = ${mainPresenter.getCurrentFragmentTag()}")
 
                 return@OnMenuItemClickListener true
             }
@@ -422,7 +438,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
            disposable = App.getBus().subscribe (
                {
-                   Log.d("M_MainActivity","event = ${it}")
+//                   Log.d("M_MainActivity","event = ${it}")
                    when (it.first) {
                        is AppToBeClosed -> {
                            if (System.currentTimeMillis() - timestamp < 2000)
