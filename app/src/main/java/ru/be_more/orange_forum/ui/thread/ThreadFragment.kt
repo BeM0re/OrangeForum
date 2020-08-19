@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -32,7 +34,6 @@ import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
-import java.lang.Exception
 
 /*const val PAGE_HTML = "<html>\n" +
         "<head>\n" +
@@ -61,6 +62,8 @@ import java.lang.Exception
         "</html>\n" +
         "\n"*/
 
+const val CSS = "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />"
+
 
 class ThreadFragment : MvpAppCompatFragment(),
     PicOnClickListener,
@@ -74,7 +77,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     private var timestamp: Long = 0
     private lateinit var boardId: String
-    private var threadId: Int = 0
+    private var threadNum: Int = 0
     private lateinit var recyclerView : RecyclerView
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
@@ -89,7 +92,7 @@ class ThreadFragment : MvpAppCompatFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        threadPresenter.init(boardId, threadId)
+        threadPresenter.init(boardId, threadNum)
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
@@ -134,6 +137,10 @@ class ThreadFragment : MvpAppCompatFragment(),
         })*/
 
         fab_thread_respond.setOnClickListener { threadPresenter.showFooter() }
+
+        fab_to_posting.setOnClickListener {
+            setNewWebView()
+        }
     }
 
     override fun onDestroy() {
@@ -167,6 +174,44 @@ class ThreadFragment : MvpAppCompatFragment(),
         wv_post_captcha.addJavascriptInterface(ThreadFragment(), "Android")*/
 
     }
+    override fun setNewWebView() {
+
+        wv_thread_posting.webViewClient = object : WebViewClient(){
+            override fun onPageFinished(view: WebView, url: String) {
+
+                val css = ".cntnt{display:none;}" +
+                        "div.thread-nav-mob{display:none!important;}" +
+                        "#postform{display:block!important;}"
+                val js = "var style = document.createElement('style'); style.innerHTML = '$css'; document.head.appendChild(style);"
+                wv_thread_posting.evaluateJavascript(js,null)
+                wv_thread_posting.visibility = View.VISIBLE
+                super.onPageFinished(view, url)
+            }
+        }
+
+        wv_thread_posting.settings.userAgentString =
+            "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
+                    "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 " +
+                    "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
+
+//        wv_thread_posting.visibility = View.VISIBLE
+        wv_thread_posting.settings.javaScriptEnabled = true
+        wv_thread_posting.settings.javaScriptCanOpenWindowsAutomatically = true
+        wv_thread_posting.settings.builtInZoomControls = true
+//        wv_thread_posting.settings.pluginState = WebSettings.PluginState.ON
+        wv_thread_posting.settings.allowContentAccess = true
+        wv_thread_posting.settings.domStorageEnabled = true
+        wv_thread_posting.settings.loadWithOverviewMode = true
+        wv_thread_posting.settings.useWideViewPort = true
+        wv_thread_posting.settings.displayZoomControls = false
+        wv_thread_posting.settings.setSupportZoom(true)
+        wv_thread_posting.settings.defaultTextEncodingName = "utf-8"
+//        wv_thread_posting.loadUrl("https://2ch.hk/$boardId/res/$threadNum.html")
+        wv_thread_posting.loadDataWithBaseURL("https://2ch.hk/$boardId/res/$threadNum.html", "", "text/html; charset=UTF-8", null, null)
+//        wv_thread_posting.addJavascriptInterface(ThreadFragment(), "Android")
+
+    }
+
 
     override fun loadThread(thread: BoardThread) {
 
@@ -338,7 +383,7 @@ class ThreadFragment : MvpAppCompatFragment(),
         fun getThreadFragment ( boardId: String, threadId: Int): ThreadFragment {
             val thread = ThreadFragment()
             thread.boardId = boardId
-            thread.threadId = threadId
+            thread.threadNum = threadId
 
             return thread
         }
