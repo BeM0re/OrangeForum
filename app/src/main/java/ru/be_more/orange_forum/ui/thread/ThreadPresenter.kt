@@ -140,7 +140,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     fun showFooter() {
-        adapter.setIsFooterShown(true)
+        adapter.setIsFooterShown(false)
 //        viewState.setWebView()
         viewState.setOnPostButtonClickListener()
     }
