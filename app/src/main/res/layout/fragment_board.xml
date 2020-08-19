@@ -15,49 +15,15 @@
         tools:layout_editor_absoluteY="1dp"
         tools:listitem="@layout/item_board_op"/>
 
-    <View
-        android:id="@+id/v_op_post_pic_full_background"
+    <FrameLayout
+        android:id="@+id/fl_board_post"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#80000000"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
-    <ImageView
-        android:id="@+id/iv_op_post_pic_full"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:src="@drawable/splash"
-        android:visibility="gone"
-        tools:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/rv_thread_list"
-        app:layout_constraintTop_toTopOf="@+id/rv_thread_list"
-        android:padding="@dimen/spacing_normal_16"/>
-
-    <VideoView
-        android:id="@+id/vv_op_post_video"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:foregroundGravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/rv_thread_list"
-        app:layout_constraintTop_toTopOf="@+id/rv_thread_list"
-        android:padding="@dimen/spacing_normal_16"
+        app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"/>
-
-
-    <ProgressBar
-        android:id="@+id/pb_op_pos_pic_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/rv_thread_list"
-        app:layout_constraintTop_toTopOf="@+id/rv_thread_list"
-        android:visibility="gone"
-        tools:visibility="visible"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,27 +1,29 @@
 package ru.be_more.orange_forum.ui.board
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.BoardOnClickListener
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 
 
 class BoardAdapter(var threads: List<BoardThread> = listOf(),
-                   private var picListener: PostOnClickListener,
-                   private var boardListener: BoardOnClickListener) :
-    RecyclerView.Adapter<OpPostViewHolder>(){
+                   private var picListener: PicOnClickListener,
+                   private var boardListener: BoardOnClickListener,
+                   private val linkListener: LinkOnClickListener
+) : RecyclerView.Adapter<OpPostViewHolder>(){
 
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OpPostViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
-        return OpPostViewHolder(inflater.inflate(R.layout.item_board_op, parent, false), picListener)
+        return OpPostViewHolder(inflater.inflate(R.layout.item_board_op, parent, false), picListener )
     }
 
     override fun getItemCount(): Int = threads.size
@@ -30,18 +32,19 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
         val thread: BoardThread? = threads[position]
         if(thread != null){
             holder.setSenderName(thread.posts[0].name)
-            holder.setIsOp(thread.posts[0].op > 0)
+            holder.setIsOp(thread.posts[0].op > 0, thread.isHidden)
             holder.setDate(thread.posts[0].date)
             holder.setThreadNum(thread.posts[0].num)
             holder.setTitle(thread.posts[0].subject)
-            holder.setComment(thread.posts[0].comment)
-            holder.setTotalPosts(thread.posts[0].posts_count)
-            holder.setPostsWithPic(thread.posts[0].files_count)
+            holder.setComment(thread.posts[0].comment, thread.isHidden)
+            holder.setTotalPosts(thread.posts[0].posts_count, thread.isHidden)
+            holder.setPostsWithPic(thread.posts[0].files_count, thread.isHidden)
             if(thread.posts[0].files.isNotEmpty()){
-                holder.setPics(thread.posts[0].files)
+                holder.setPics(thread.posts[0].files, thread.isHidden)
             }
-            holder.setHideButton()
-            holder.setIntoThreadButton(View.OnClickListener { boardListener.onThreadClick(thread.num) })
+            holder.setCommentListener(linkListener)
+            holder.setHideButton(thread, boardListener)
+            holder.setIntoThreadButton(View.OnClickListener { boardListener.onIntoThreadClick(thread.num, thread.title) }, thread.isHidden)
         }
     }
 

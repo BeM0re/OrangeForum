@@ -1,17 +1,16 @@
 package ru.be_more.orange_forum.ui.post
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
-import ru.be_more.orange_forum.ui.board.BoardOnClickListener
 
 
-class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PostOnClickListener) :
+class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PicOnClickListener) :
     RecyclerView.Adapter<PosPicViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PosPicViewHolder {
@@ -42,7 +41,8 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: Post
             }
         }
 
-        holder.itemView.setOnClickListener { Log.d("M_PostPicAdapter", "Click on ${holder.itemView}")}
+        //хз что это, может потом вспомню зачем это начал делать
+//        holder.itemView.setOnClickListener { Log.d("M_PostPicAdapter", "Click on ${holder.itemView}")}
     }
 
     fun updateData(data:List<AttachFile>){

@@ -1,48 +1,51 @@
 package ru.be_more.orange_forum.ui.board
 
 import android.graphics.drawable.ClipDrawable.HORIZONTAL
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.MediaController
+import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
+import leakcanary.AppWatcher
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.bus.*
+import ru.be_more.orange_forum.consts.BOARD_TAG
+import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
+import ru.be_more.orange_forum.consts.POST_TAG
+import ru.be_more.orange_forum.interfaces.*
+import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.ui.post.PostFragment
 
 
 //TODO сделать динамическое количество картинок через ресайклер
 class BoardFragment: MvpAppCompatFragment(),
+    BoardView,
     BoardOnClickListener,
-    PostOnClickListener,
-    BoardView {
+    PicOnClickListener,
+    LinkOnClickListener,
+    CloseModalListener {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var boardPresenter : BoardPresenter
 
-    private var timestamp: Long = 0
-    private var listener: ((Int) -> Unit)? = null
+    private var listener: ((Int, String) -> Unit)? = null
     private var id: String = ""
     private lateinit var recyclerView : RecyclerView
     private lateinit var adapter : BoardAdapter
+
+    private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -55,10 +58,36 @@ class BoardFragment: MvpAppCompatFragment(),
         boardPresenter.init(id, listener)
         recyclerView = rv_thread_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
+
+        disposable = App.getBus().subscribe({
+            if(it.first is BackPressed && it.second == BOARD_TAG) {
+                if (fl_board_post.visibility != View.GONE)
+                    boardPresenter.onBackPressed()
+                else
+                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+            }
+            if (it.first is BoardEntered && it.second == BOARD_TAG)
+                boardPresenter.setBoardMarks()
+        },
+        {
+            Log.e("M_BoardFragment","bus error = \n $it")
+        })
+    }
+
+    override fun onDestroy() {
+        disposable?.dispose()
+        disposable = null
+
+        super.onDestroy()
+        AppWatcher.objectWatcher.watch(
+            watchedObject = this,
+            description = "MyService received Service#onDestroy() callback"
+        )
     }
 
     override fun loadBoard(board: Board) {
-        adapter = BoardAdapter(board.threads, this, this)
+        adapter = BoardAdapter(
+            board.threads, this, this, this)
 
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(
@@ -66,8 +95,102 @@ class BoardFragment: MvpAppCompatFragment(),
         )
     }
 
+    override fun setBoardMarks(isFavorite: Boolean) {
+        if (isFavorite)
+            App.getBus().onNext(Pair(FavoriteBoardEntered, ""))
+        else
+            App.getBus().onNext(Pair(UnfavoriteBoardEntered, ""))
+    }
+
+    override fun onIntoThreadClick(threadNum: Int, threadTitle: String) {
+        if (boardPresenter.listener != null)
+            boardPresenter.listener!!(threadNum, threadTitle)
+    }
+
+    override fun onHideClick(threadNum: Int, isHidden: Boolean) {
+        boardPresenter.hideThread(threadNum, isHidden)
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
+
+        var attachment: Attachment? = null
+
+        if (fullPicUri != null)
+            attachment = Attachment("", duration, fullPicUri)
+        else if (!fullPicUrl.isNullOrEmpty())
+            attachment = Attachment(fullPicUrl, duration)
+
+        if (attachment != null) {
+            boardPresenter.putContentInStack(attachment)
+            showPic(attachment)
+            fl_board_post.visibility = View.VISIBLE
+        }
+
+    }
+
+    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
+        if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
+            showToast("Пост не найден")
+        else
+            boardPresenter.getSinglePost(chanLink.first, chanLink.third)
+    }
+
+    override fun onLinkClick(postNum: Int) {
+        boardPresenter.getSinglePost(postNum)
+    }
+
+    override fun onLinkClick(externalLink: String?) {
+        Log.d("M_ThreadPresenter", "outer link = $externalLink")
+    }
+
+    override fun showPic(attachment: Attachment){
+        val fragment = PostFragment.getPostFragment(
+            attachment,this,this, this)
+
+        fragmentManager
+            ?.beginTransaction()
+            ?.replace(R.id.fl_board_post, fragment, POST_IN_BOARD_TAG)
+            ?.commit()
+    }
+
+    override fun showPost(post: Post){
+
+        fl_board_post.visibility = View.VISIBLE
+
+        val fragment = PostFragment.getPostFragment(
+            post,this,this, this)
+
+        fragmentManager
+            ?.beginTransaction()
+            ?.replace(R.id.fl_board_post, fragment, POST_IN_BOARD_TAG)
+            ?.commit()
+    }
+
+    override fun hideModal() {
+        fl_board_post.visibility = View.GONE
+
+        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
+
+        if (fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG) != null)
+            fragmentManager
+                ?.beginTransaction()
+                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG)!!)
+
+        boardPresenter.clearStack()
+    }
+
+    override fun onCloseModalListener(){
+        hideModal()
+    }
+
+    override fun showToast(message: String) {
+        Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
     companion object {
-        fun getBoardFragment (listener: (threadNum: Int) -> Unit, id: String): BoardFragment {
+        fun getBoardFragment (listener: (threadNum: Int, threadTitle: String) -> Unit,
+                              id: String): BoardFragment {
             val board = BoardFragment()
             board.listener = listener
             board.id = id
@@ -76,89 +199,5 @@ class BoardFragment: MvpAppCompatFragment(),
         }
     }
 
-    override fun onThreadClick(threadNum: Int) {
-        if (boardPresenter.listener != null)
-            boardPresenter.listener!!(threadNum)
-    }
-
-    override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
-
-        v_op_post_pic_full_background.visibility = View.VISIBLE
-        pb_op_pos_pic_loading.visibility = View.VISIBLE
-
-        if(duration == "") {
-            val fullPicGlideUrl = GlideUrl(
-                fullPicUrl,
-                LazyHeaders.Builder()
-                    .addHeader(
-                        "Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
-                                "_ga=GA1.2.57010468.1498700728; " +
-                                "ageallow=1; " +
-                                "_gid=GA1.2.1910512907.1585793763; " +
-                                "_gat=1"
-                    )
-                    .build()
-            )
-            iv_op_post_pic_full.visibility = View.VISIBLE
-            Glide.with(this)
-                .load(fullPicGlideUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.d("M_BoardFragment", "$e")
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        pb_op_pos_pic_loading.visibility = View.GONE
-                        return false
-                    }
-                })
-                .into(iv_op_post_pic_full)
-            
-
-            iv_op_post_pic_full.setOnClickListener {
-                v_op_post_pic_full_background.visibility = View.GONE
-                iv_op_post_pic_full.visibility = View.GONE
-            }
-        }
-        else{
-            vv_op_post_video.setVideoURI(Uri.parse(fullPicUrl))
-            vv_op_post_video.visibility = View.VISIBLE
-            vv_op_post_video.setMediaController(MediaController(this.context))
-            vv_op_post_video.requestFocus(0)
-            vv_op_post_video.start()
-            pb_op_pos_pic_loading.visibility = View.GONE
-
-            vv_op_post_video.setOnClickListener {
-                if(System.currentTimeMillis() - timestamp < 3000) {
-                    pb_op_pos_pic_loading.visibility = View.GONE
-                    vv_op_post_video.visibility = View.GONE
-                    v_op_post_pic_full_background.visibility = View.GONE
-                }
-                else
-                    timestamp = System.currentTimeMillis()
-            }
-        }
-
-        v_op_post_pic_full_background.setOnClickListener {
-            v_op_post_pic_full_background.visibility = View.GONE
-            iv_op_post_pic_full.visibility = View.GONE
-            Glide.with(this).clear(iv_op_post_pic_full)
-            pb_op_pos_pic_loading.visibility = View.GONE
-            vv_op_post_video.visibility = View.GONE
-        }
-    }
 
 }

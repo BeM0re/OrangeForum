@@ -4,19 +4,17 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.text.SpannableStringBuilder
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.text.HtmlCompat
 import ru.be_more.orange_forum.R
 
 
 class ExpandableTextView  @JvmOverloads constructor(
     context: Context,attrs: AttributeSet? = null)
-    : AppCompatTextView(context, attrs), View.OnClickListener {
+    : LinkedTextView(context, attrs), View.OnClickListener {
 
     private val defaultTrimLength = 300
     private val readMore = " ..."
-//    private val readMore = " <html><body>...</body></html>"
 
     private var originalText :String = ""
     private var trimmedText = ""
@@ -29,11 +27,12 @@ class ExpandableTextView  @JvmOverloads constructor(
         trimLength = typedArray.getInt(R.styleable.ExpandableTextView_trimLength, defaultTrimLength)
         typedArray.recycle()
         setOnClickListener(this)
+
     }
 
     private fun setText() {
-        super.setText(HtmlCompat.fromHtml(getDisplayableText(), HtmlCompat.FROM_HTML_MODE_LEGACY),
-            bufferType)
+//        Log.d("M_TextView", "${getDisplayableText()}")
+        super.setText(getDisplayableText(),bufferType)
 //        super.setText(getDisplayableText())
     }
 
@@ -49,6 +48,8 @@ class ExpandableTextView  @JvmOverloads constructor(
         trimmedText = getTrimmedText()
         bufferType = type
         trim = true
+
+
         setText()
     }
 
@@ -61,7 +62,8 @@ class ExpandableTextView  @JvmOverloads constructor(
     }
 
     override fun onClick(v: View?) {
-        trim = !trim
+//        trim = !trim
+        trim = false
         setText()
         requestFocusFromTouch()
     }

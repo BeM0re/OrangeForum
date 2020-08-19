@@ -1,7 +1,6 @@
 package ru.be_more.orange_forum.ui.thread
 
 import android.graphics.drawable.ClipDrawable.HORIZONTAL
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,33 +8,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
-import android.webkit.WebSettings
-import android.widget.MediaController
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_thread.*
 import kotlinx.android.synthetic.main.item_thread_response_form.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.bus.*
+import ru.be_more.orange_forum.consts.*
+import ru.be_more.orange_forum.interfaces.CloseModalListener
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
+import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.ui.custom.CustomScrollListener
+import ru.be_more.orange_forum.ui.post.PostFragment
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
+import java.lang.Exception
 
-const val PAGE_HTML = "<html>\n" +
+/*const val PAGE_HTML = "<html>\n" +
         "<head>\n" +
         "    <script type=\"text/javascript\">\n" +
         "    var sendParams = function() {\n" +
@@ -60,12 +59,15 @@ const val PAGE_HTML = "<html>\n" +
         "    </form>" +
         "</body>\n" +
         "</html>\n" +
-        "\n"
+        "\n"*/
 
 
 class ThreadFragment : MvpAppCompatFragment(),
-    PostOnClickListener,
-    ThreadView {
+    PicOnClickListener,
+    LinkOnClickListener,
+    ThreadView,
+    CustomOnScrollListener,
+    CloseModalListener {
 
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var threadPresenter : ThreadPresenter
@@ -75,6 +77,9 @@ class ThreadFragment : MvpAppCompatFragment(),
     private var threadId: Int = 0
     private lateinit var recyclerView : RecyclerView
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
+
+    private var disposable: Disposable? = null
+
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -88,11 +93,33 @@ class ThreadFragment : MvpAppCompatFragment(),
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
+        disposable = App.getBus().subscribe({
+            if(it.first is BackPressed && it.second == THREAD_TAG) {
+                if (fl_thread_post.visibility != View.GONE)
+                    threadPresenter.onBackPressed()
+                else
+                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+            }
+            if (it.first is ThreadEntered && it.second == THREAD_TAG)
+                threadPresenter.setThreadMarks()
+        },
+            {
+                Log.e("M_ThreadFragment","bus error = \n $it")
+            }
+        )
+
+//        setOnBackgroundViewClickListener()
+
+        setUpDownButtonOnCLickListener()
+
+        setOnScrollListener()
+
+        //Swipe to refresh. maybe return later
+        /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
         srl_thread.setOnRefreshListener {
             srl_thread.isRefreshing = false
             threadPresenter.updateThreadData()
-        }
+        }*/
 
         //TODO вернуть после API
 /*        rv_post_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -107,6 +134,11 @@ class ThreadFragment : MvpAppCompatFragment(),
         })*/
 
         fab_thread_respond.setOnClickListener { threadPresenter.showFooter() }
+    }
+
+    override fun onDestroy() {
+        disposable?.dispose()
+        super.onDestroy()
     }
 
     override fun setWebView() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
@@ -138,7 +170,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun loadThread(thread: BoardThread) {
 
-        threadPresenter.initAdapter(thread, this)
+        threadPresenter.initAdapter(thread, this, this)
 
         recyclerView.adapter = threadPresenter.getAdapter()
         recyclerView.addItemDecoration(
@@ -146,14 +178,25 @@ class ThreadFragment : MvpAppCompatFragment(),
         )
     }
 
+    override fun setThreadMarks(isDownloaded: Boolean, isFavorite: Boolean){
+        if (isDownloaded)
+            App.getBus().onNext(Pair(DownloadedThreadEntered, ""))
+        else
+            App.getBus().onNext(Pair(UndownloadedThreadEntered, ""))
+
+        if (isFavorite)
+            App.getBus().onNext(Pair(FavoriteThreadEntered, ""))
+        else
+            App.getBus().onNext(Pair(UnfavoriteThreadEntered, ""))
+    }
+
     override fun hideResponseFab() {
         fab_thread_respond.visibility = View.GONE
     }
 
-    override fun setOnPostClickListener() {
+    override fun setOnPostButtonClickListener() {
 
         captchaResponse.observe(this, Observer {
-            Log.d("M_ThreadFragment", "trigger")
             threadPresenter.setCaptchaResponse(it)
         })
 
@@ -161,96 +204,131 @@ class ThreadFragment : MvpAppCompatFragment(),
         btn_response_submit.setOnClickListener {
 //            wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
 
+            Toast.makeText(App.applicationContext(),
+                "Постинг отключен пока макака не сделает API", Toast.LENGTH_LONG).show()
         }
 
         //        btn_response_submit.setOnClickListener { threadPresenter.post() }
     }
 
-    override fun onThumbnailListener(fullPicUrl: String, duration: String?) {
+    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
 
-        v_post_pic_full_background.visibility = View.VISIBLE
-        pb_post_pic_loading.visibility = View.VISIBLE
+        var attachment: Attachment? = null
 
-        if(duration == "") {
-            val fullPicGlideUrl = GlideUrl(
-                fullPicUrl,
-                LazyHeaders.Builder()
-                    .addHeader(
-                        "Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
-                                "_ga=GA1.2.57010468.1498700728; " +
-                                "ageallow=1; " +
-                                "_gid=GA1.2.1910512907.1585793763; " +
-                                "_gat=1"
-                    )
-                    .build()
-            )
-            iv_post_pic_full.visibility = View.VISIBLE
-            Glide.with(this)
-                .load(fullPicGlideUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.d("M_BoardFragment", "$e")
-                        return false
-                    }
+        if (fullPicUri != null)
+            attachment = Attachment("", duration, fullPicUri)
+        else if (!fullPicUrl.isNullOrEmpty())
+            attachment = Attachment(fullPicUrl, duration)
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        pb_post_pic_loading.visibility = View.GONE
-                        return false
-                    }
-                })
-                .into(iv_post_pic_full)
-
-            iv_post_pic_full.setOnClickListener {
-                v_post_pic_full_background.visibility = View.GONE
-                iv_post_pic_full.visibility = View.GONE
-            }
-        }
-        else{
-            vv_post_video.setVideoURI(Uri.parse(fullPicUrl))
-            vv_post_video.visibility = View.VISIBLE
-            vv_post_video.setMediaController(MediaController(this.context))
-            vv_post_video.requestFocus(0)
-            vv_post_video.start()
-            pb_post_pic_loading.visibility = View.GONE
-
-            vv_post_video.setOnClickListener {
-                if(System.currentTimeMillis() - timestamp < 3000) {
-                    pb_post_pic_loading.visibility = View.GONE
-                    vv_post_video.visibility = View.GONE
-                    v_post_pic_full_background.visibility = View.GONE
-                }
-                else
-                    timestamp = System.currentTimeMillis()
-            }
+        if (attachment != null) {
+            threadPresenter.putContentInStack(attachment)
+            showPic(attachment)
+            fl_thread_post.visibility = View.VISIBLE
         }
 
-        v_post_pic_full_background.setOnClickListener {
-            v_post_pic_full_background.visibility = View.GONE
-            iv_post_pic_full.visibility = View.GONE
-            Glide.with(this).clear(iv_post_pic_full)
-            pb_post_pic_loading.visibility = View.GONE
-            vv_post_video.visibility = View.GONE
+    }
+
+    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
+        if (chanLink != null) {
+            val post = threadPresenter.thread.posts.find { it.num == chanLink.third }
+
+            if (post != null) {
+                threadPresenter.putContentInStack(post)
+                showPost(post)
+            }
+            else
+                threadPresenter.getSinglePost(chanLink.first, chanLink.third)
         }
     }
 
+    override fun onLinkClick(postNum: Int) {
+        val post = threadPresenter.thread.posts.find { it.num == postNum }
+
+        if (post != null) {
+            threadPresenter.putContentInStack(post)
+            showPost(post)
+        }
+        else
+            threadPresenter.getSinglePost(postNum)
+    }
+
+    override fun onLinkClick(externalLink: String?) {
+        Log.d("M_ThreadPresenter", "outer link = $externalLink")
+    }
+
+    override fun showPic(attachment: Attachment){
+        val fragment = PostFragment.getPostFragment(
+            attachment,this,this, this)
+
+        fragmentManager
+            ?.beginTransaction()
+            ?.replace(R.id.fl_thread_post, fragment, POST_IN_THREAD_TAG)
+            ?.commit()
+    }
+
+    override fun showPost(post: Post){
+
+        fl_thread_post.visibility = View.VISIBLE
+
+        val fragment = PostFragment.getPostFragment(
+            post,this,this, this)
+
+        fragmentManager
+            ?.beginTransaction()
+            ?.replace(R.id.fl_thread_post, fragment, POST_IN_THREAD_TAG)
+            ?.commit()
+    }
+
+    override fun hideModal() {
+        fl_thread_post.visibility = View.GONE
+
+        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
+
+        if (fragmentManager?.findFragmentByTag(POST_IN_THREAD_TAG) != null)
+            fragmentManager
+                ?.beginTransaction()
+                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_THREAD_TAG)!!)
+
+        threadPresenter.clearStack()
+    }
+
+    private fun setUpDownButtonOnCLickListener(){
+        fab_thread_up.setOnClickListener {
+            recyclerView.scrollToPosition(0)
+        }
+        fab_thread_down.setOnClickListener {
+            recyclerView.scrollToPosition(threadPresenter.getAdapter().itemCount - 1)
+        }
+    }
+
+    private fun setOnScrollListener(){
+        val scrollListener = CustomScrollListener(this)
+
+        recyclerView.setOnScrollChangeListener(scrollListener)
+    }
+
+    override fun onScrolling(){
+        Log.d("M_ThreadFragment", "scroll")
+        fab_thread_up.visibility = View.VISIBLE
+        fab_thread_down.visibility = View.VISIBLE
+    }
+
+    override fun onScrollStop(){
+        Log.d("M_ThreadFragment", "stop scroll")
+        fab_thread_up.visibility = View.GONE
+        fab_thread_down.visibility = View.GONE
+    }
+
+    override fun onCloseModalListener(){
+        hideModal()
+    }
+
+    override fun showToast(message: String) {
+        Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
+    }
 
     @JavascriptInterface
     fun responsePushed(token: String) {
-
-        Toast.makeText(App.applicationContext(), "Постинг отключен пока макака не сделает API", Toast.LENGTH_LONG)
-
 //        Log.d("M_ThreadFragment", "token = \"$token\"")
 //        threadPresenter.setCaptchaResponse(token)
 //        this.captchaResponse.postValue(token)
@@ -265,4 +343,5 @@ class ThreadFragment : MvpAppCompatFragment(),
             return thread
         }
     }
+
 }

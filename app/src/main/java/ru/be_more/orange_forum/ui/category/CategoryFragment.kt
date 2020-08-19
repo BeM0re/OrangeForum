@@ -10,11 +10,12 @@ import kotlinx.android.synthetic.main.fragment_category.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.model.Board
+import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.model.Category
 
 
-class CategoryFragment private constructor(var listener: (boardId: String) -> Unit):
+class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,
+                                                                      boardTitle: String) -> Unit):
     MvpAppCompatFragment(),
     CategoryView,
     CategoryOnClickListener {
@@ -43,13 +44,13 @@ class CategoryFragment private constructor(var listener: (boardId: String) -> Un
         recyclerView.adapter = adapter
     }
 
-    override fun onBoardClick(boardId: String) {
-        listener(boardId)
+    override fun onBoardClick(boardId: String, boardTitle: String) {
+        onBoardClickListener(boardId, boardTitle)
     }
 
     companion object {
-        fun getCategoryFragment (listener: (boardId: String) -> Unit): CategoryFragment {
-            return CategoryFragment(listener)
+        fun getCategoryFragment (onBoardClickListener: (boardId: String, boardTitle: String) -> Unit): CategoryFragment {
+            return CategoryFragment(onBoardClickListener)
         }
     }
 }

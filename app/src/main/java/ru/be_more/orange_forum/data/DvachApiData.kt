@@ -30,76 +30,76 @@ data class DvachBoardName(
 )
 
 data class DvachBoard(
-    var BoardName : String = "",
-    var threads: List<DvachPost> = listOf()
+    val BoardName : String = "",
+    val threads: List<DvachPost> = listOf()
 )
 
 data class DvachThread(
-    var posts_count: Int = 0,
-    var title: String = "",
-    var threads: List<DvachPosts> = listOf(DvachPosts())
+    val posts_count: Int = 0,
+    val title: String = "",
+    val threads: List<DvachPosts> = listOf(DvachPosts())
 )
 
 data class DvachPosts(
-    var posts: List<DvachPost> = listOf()
+    val posts: List<DvachPost> = listOf()
 )
 
 data class DvachPost(
-    var num: Int,
-    var name: String,
-    var comment: String,
-    var date: String,
-    var email: String,
-    var files: List<DvachFile>,
-    var files_count: Int,
-    var op: Int,
-    var posts_count: Int,
-    var subject: String,
-    var timestamp: Int,
-    var number: Int
+    val num: Int,
+    val name: String,
+    val comment: String,
+    val date: String,
+    val email: String,
+    val files: List<DvachFile>,
+    val files_count: Int,
+    val op: Int,
+    val posts_count: Int,
+    val subject: String,
+    val timestamp: Int,
+    val number: Int
 )
 
 data class DvachFile(
-    var displayname: String,
-    var height: Int,
-    var width: Int,
-    var tn_height: Int,
-    var tn_width: Int,
-    var path: String,
-    var thumbnail: String,
-    var duration: String = ""
+    val displayname: String,
+    val height: Int,
+    val width: Int,
+    val tn_height: Int,
+    val tn_width: Int,
+    val path: String,
+    val thumbnail: String,
+    val duration: String = ""
 )
 
 data class CaptchaTypes(
-    var enabled: Int,
-    var result : Int,
-    var types: List<CaptchaType>
+    val enabled: Int,
+    val result : Int,
+    val types: List<CaptchaType>
 )
 
 data class CaptchaType(
-    var expires : Int,
-    var id: String
+    val expires : Int,
+    val id: String
 )
 
 data class GetCaptchaResponse(
-    var id: String,
-    var result: Int,
-    var type: String,
-    var description: String
+    val id: String,
+    val result: Int,
+    val type: String,
+    val description: String
 )
 
 data class DvachPostResponse(
-    var error : String,
-    var Status :String,
-    var Num: Int,
-    var Reason: String
+    val error : String,
+    val Status :String,
+    val Num: Int,
+    val Reason: String
 )
 
 data class GoogleCaptchaResponse(
-    var success: Boolean,
-    var challenge_ts: String,  // timestamp of the challenge load (ISO format yyyy-MM-dd'T'HH:mm:ssZZ)
-    var apk_package_name: String, // the package name of the app where the reCAPTCHA was solved
+    val success: Boolean,
+    val challenge_ts: String,  // timestamp of the challenge load (ISO format yyyy-MM-dd'T'HH:mm:ssZZ)
+    val apk_package_name: String, // the package name of the app where the reCAPTCHA was solved
 
     @SerializedName(value = "error-codes" )
-    var error_codes: List<String>
+    val error_codes: List<String>
 )

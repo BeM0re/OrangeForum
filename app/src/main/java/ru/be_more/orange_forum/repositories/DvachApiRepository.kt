@@ -2,10 +2,6 @@ package ru.be_more.orange_forum.repositories
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.gms.safetynet.SafetyNet
-import com.google.android.gms.safetynet.SafetyNetApi
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -13,24 +9,26 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import retrofit2.Call
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.model.*
 import ru.be_more.orange_forum.services.ApiFactory
+import ru.be_more.orange_forum.utils.ParseHtml
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 
 const val cookie = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
 const val SECRET = "6Ler0ukUAAAAAFZD0uzKYrkK4ne8jVJn6B52x43z"
 const val OPEN_KEY = "6Ler0ukUAAAAAA0GXsEhYa-rgoA6HojFJmn2aTTC"
-object DvachApiRepository {
+
+class DvachApiRepository @Inject constructor(){
 
     private val dvachApi = ApiFactory.dvachApi
     private val googleCaptchaApi = ApiFactory.googleCaptcha
     private var isLoading : Observable<Boolean> = Observable.just(false)
     private lateinit var disposable: Disposable
+
 
     fun getCaptchaTypes(): Observable<CaptchaType>? =
         dvachApi.getDvachCaptchaTypesRx("b", cookie) //TODO убрать захардкоженное
@@ -43,6 +41,35 @@ object DvachApiRepository {
 
     fun getMobileCaptcha(): Observable<ResponseBody>  =
         dvachApi.getMobileCaptchaRx()
+
+    fun getCategories(): Observable<List<Category>>  =
+        dvachApi.getDvachCategoriesRx("get_boards")
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "Getting category error = $throwable") }
+//            .doOnEach {Log.d("M_DvachApiRepository", "$it") }
+            .map { entity -> toCategories(entity) }
+
+    fun getThreads(boardId: String): Observable<List<BoardThread>> =
+        dvachApi.getDvachThreadsRx(boardId)
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "Getting thread error = $throwable") }
+            .map { entity -> toBoard(entity) }
+
+    fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
+        dvachApi.getDvachPostsRx(boardId, threadNum, cookie)
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "get thread via api error = $throwable") }
+            .onErrorReturn { DvachThread() }
+            .map { entity -> toThread(entity, threadNum)}
+            .map { entity -> findResponses(entity)}
+
+
+
+    fun getPost(boardId: String, postNum: Int): Observable<Post> =
+        dvachApi.getDvachPostRx("get_post", boardId, postNum, cookie)
+            .subscribeOn(Schedulers.io())
+            .doOnError { throwable -> Log.d("M_DvachApiRepository", "Getting post error = $throwable") }
+            .map { entity -> toPost(entity[0]) }
 
     fun postResponse (
         boardId: String,
@@ -86,6 +113,7 @@ object DvachApiRepository {
 
 
 
+        //TODO вернуть после нормального API
        /* SafetyNet.getClient(App.applicationContext()).verifyWithRecaptcha(
             OPEN_KEY
 //        chaptcha_id
@@ -155,26 +183,6 @@ object DvachApiRepository {
 
 
 
-
-    fun getCategories(): Observable<List<Category>>  =
-        dvachApi.getDvachCategoriesRx("get_boards")
-            .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
-            .map { entity -> toCategories(entity) }
-
-    fun getBoard(boardId: String): Observable<List<BoardThread>> =
-        dvachApi.getDvachThreadsRx(boardId)
-            .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
-            .map { entity -> toBoard(entity) }
-
-    fun getThread(boardId: String, threadNum: Int): Observable<BoardThread> =
-        dvachApi.getDvachPostsRx(boardId, threadNum, cookie)
-            .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.d("M_DvachApiRepository", "$throwable") }
-            .map { entity -> toThread(entity, threadNum) }
-
-
     private fun toCategories (allCategories: DvachCategories?) : List<Category> {
 
         if(allCategories == null)
@@ -233,7 +241,8 @@ object DvachApiRepository {
 
     private fun toThread(dvachOpPost: DvachPost) = BoardThread(
         num = dvachOpPost.num,
-        posts = listOf(toPost(dvachOpPost))
+        posts = listOf(toPost(dvachOpPost)),
+        title = dvachOpPost.subject
     )
     private fun toThread(dvachThread: DvachThread, threadNum: Int) = BoardThread(
         num = threadNum,
@@ -262,5 +271,21 @@ object DvachApiRepository {
         duration = if(file.duration.isNullOrEmpty()) "" else file.duration
     )
 
+    private fun findResponses(board: BoardThread): BoardThread {
+
+        board.posts.forEach { post ->
+            //replies - на какие посты ответы
+            val replies = ParseHtml.findReply(post.comment)
+
+            //пост с номером post.num отвечает на пост с номером reply
+            //reply сохраняет, что на него ссылается post.num
+            replies.forEach { reply ->
+                board.posts.find { it.num == reply }
+                    ?.replies?.add(post.num)
+            }
+        }
+
+        return board
+    }
 
 }

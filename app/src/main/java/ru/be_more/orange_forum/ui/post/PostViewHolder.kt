@@ -1,20 +1,20 @@
-package ru.be_more.orange_forum.ui.thread
+package ru.be_more.orange_forum.ui.post
 
 import android.view.View
 import android.widget.TextView
-import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
-import ru.be_more.orange_forum.ui.custom.ExpandableTextView
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
-import ru.be_more.orange_forum.ui.post.PostPicAdapter
+import ru.be_more.orange_forum.ui.custom.LinkedTextView
+import ru.be_more.orange_forum.ui.thread.ThreadViewHolder
+import java.util.*
 
 
-class PostViewHolder(itemView: View, private val listener: PostOnClickListener) :
+class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
     ThreadViewHolder(itemView) {
 
     private var senderNumber: TextView = itemView.findViewById(R.id.tv_item_post_number)
@@ -24,7 +24,8 @@ class PostViewHolder(itemView: View, private val listener: PostOnClickListener) 
     private var num: TextView = itemView.findViewById(R.id.tv_item_post_num)
     private var title: TextView = itemView.findViewById(R.id.tv_item_post_subject)
     private var pics: RecyclerView = itemView.findViewById(R.id.rv_item_post_pics)
-    private var comment: TextView = itemView.findViewById(R.id.tv_item_post_comment)
+    private var comment: LinkedTextView = itemView.findViewById(R.id.tv_item_post_comment)
+    private var replyPosts: LinkedTextView = itemView.findViewById(R.id.tv_item_post_replies)
 
     fun setNumber (param: Int){
         senderNumber.text = param.toString()
@@ -71,7 +72,7 @@ class PostViewHolder(itemView: View, private val listener: PostOnClickListener) 
     }
     fun setComment (param: String){
         if (param != "") {
-            comment.text = HtmlCompat.fromHtml(param, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            comment.text = param
             comment.visibility = View.VISIBLE
         }
         else {
@@ -79,6 +80,29 @@ class PostViewHolder(itemView: View, private val listener: PostOnClickListener) 
             comment.text = ""
         }
     }
+
+    fun setCommentListener(listener: LinkOnClickListener){
+        comment.setListener(listener)
+    }
+
+    fun setReplies(replies: Stack<Int>, listener: LinkOnClickListener) {
+        replyPosts.text = ""
+        var replyResult = ""
+
+        replies.forEach { reply ->
+
+            replyResult = if (replyResult == "")
+                "<a href='$reply'>>>$reply</a>"
+            else
+                "$replyResult <a href='$reply'>>>$reply</a>"
+
+            replyPosts.text = replyResult
+
+            replyPosts.setListener(listener)
+        }
+
+    }
+
 
 }
 

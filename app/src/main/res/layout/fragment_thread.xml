@@ -1,70 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+<!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     android:id="@+id/srl_thread"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent">-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_thread_bottom_third"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="483dp" />
 
 
-        <androidx.recyclerview.widget.RecyclerView
+       <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_post_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout_editor_absoluteX="1dp"
             tools:layout_editor_absoluteY="1dp"
             tools:listitem="@layout/item_post"/>
-
-        <View
-            android:id="@+id/v_post_pic_full_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#80000000"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/iv_post_pic_full"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:src="@drawable/splash"
-            android:visibility="gone"
-            tools:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/rv_post_list"
-            app:layout_constraintTop_toTopOf="@+id/rv_post_list"
-            android:padding="@dimen/spacing_normal_16"/>
-
-        <VideoView
-            android:id="@+id/vv_post_video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/rv_post_list"
-            app:layout_constraintTop_toTopOf="@+id/rv_post_list"
-            android:padding="@dimen/spacing_normal_16"
-            android:visibility="gone"/>
-
-
-        <ProgressBar
-            android:id="@+id/pb_post_pic_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/rv_post_list"
-            app:layout_constraintTop_toTopOf="@+id/rv_post_list"
-            android:visibility="gone"
-            tools:visibility="visible"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_thread_respond"
@@ -80,7 +42,41 @@
             android:visibility="gone"/>
 <!--        TODO после API убрать визибилити-->
 
+    <FrameLayout
+        android:id="@+id/fl_thread_post"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foregroundGravity="center"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_thread_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/gl_thread_bottom_third"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="@dimen/spacing_small_8"
+        android:layout_marginRight="@dimen/spacing_normal_16"
+        app:backgroundTint="@color/color_accent"
+        android:src="@drawable/ic_keyboard_arrow_up_white_24dp"
+        app:tint="@android:color/white"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_thread_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gl_thread_bottom_third"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/spacing_small_8"
+        android:layout_marginRight="@dimen/spacing_normal_16"
+        app:backgroundTint="@color/color_accent"
+        android:src="@drawable/ic_keyboard_arrow_down_white_24dp"
+        app:tint="@android:color/white"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+<!--</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->

@@ -1,115 +1,108 @@
 package ru.be_more.orange_forum.ui.board
 
-import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.text.HtmlCompat
-import androidx.lifecycle.Transformations.map
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_board_op.*
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.interfaces.BoardOnClickListener
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.AttachFile
-import ru.be_more.orange_forum.ui.custom.ExpandableTextView
-import ru.be_more.orange_forum.ui.post.PostOnClickListener
+import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 
+class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener ) :
+    ChildViewHolder(itemView), LayoutContainer {
 
-class OpPostViewHolder(itemView: View?, private var listener: PostOnClickListener) :
-    ChildViewHolder(itemView) {
-
-    private var senderName: TextView = itemView!!.findViewById(R.id.tv_board_op_name)
-    private var isOp: TextView = itemView!!.findViewById(R.id.tv_board_op_check)
-    private var date: TextView = itemView!!.findViewById(R.id.tv_board_op_datetime)
-    private var threadNum: TextView = itemView!!.findViewById(R.id.tv_board_op_num)
-    private var title: TextView = itemView!!.findViewById(R.id.tv_board_op_subject)
-    private var pics: RecyclerView = itemView!!.findViewById(R.id.rv_op_post_pics)
-    private var comment: ExpandableTextView = itemView!!.findViewById(R.id.tv_board_op_comment)
-    private var totalPosts: TextView = itemView!!.findViewById(R.id.tv_board_op_total)
-    private var postsWithPic: TextView = itemView!!.findViewById(R.id.tv_board_op_with_pic)
-    private var pickThreadButton: Button = itemView!!.findViewById(R.id.btn_board_op_into)
-    private var hideButton: Button = itemView!!.findViewById(R.id.btn_board_op_hide)
+    override val containerView: View?
+        get() = itemView
 
     fun setSenderName (param: String){
-        senderName.text = param
+        tv_board_op_name.text = param
     }
-    fun setIsOp (param: Boolean){
-        if(param)
-            isOp.visibility=View.VISIBLE
+    fun setIsOp (isOp: Boolean, isHidden: Boolean){
+        if(isOp)
+            tv_board_op_check.visibility=View.VISIBLE
         else
-            isOp.visibility=View.GONE
+            tv_board_op_check.visibility=View.GONE
     }
     fun setDate (param: String){
-        date.text = param
+        tv_board_op_datetime.text = param
     }
     fun setThreadNum (param: Int){
-        threadNum.text = param.toString()
+        tv_board_op_num.text = param.toString()
     }
     fun setTitle (param: String){
-        title.text = param
+        tv_board_op_subject.text = param
     }
 
-    fun setPics (urls: List<AttachFile>){
-        if (urls.isNotEmpty()){
+    fun setPics (urls: List<AttachFile>, isHidden: Boolean){
+        if (urls.isNotEmpty() && !isHidden){
             val adapter = PostPicAdapter(urls, listener = listener)
 
-            pics.layoutManager = LinearLayoutManager(App.getInstance())
-            pics.adapter = adapter
-            pics.visibility = View.VISIBLE
+            rv_op_post_pics.layoutManager = LinearLayoutManager(App.getInstance())
+            rv_op_post_pics.adapter = adapter
+            rv_op_post_pics.visibility = View.VISIBLE
         }
         else{
-            pics.visibility = View.GONE
-            pics.adapter = null
+            rv_op_post_pics.visibility = View.GONE
+            rv_op_post_pics.adapter = null
         }
     }
-    fun setComment (param: String){
-        if (param != "") {
-            comment.text = param
-            comment.visibility = View.VISIBLE
+
+    fun setComment (param: String, isHidden: Boolean){
+        if (param != "" && !isHidden) {
+            tv_board_op_comment.text = param
+            tv_board_op_comment.visibility = View.VISIBLE
         }
         else {
-            comment.visibility = View.GONE
-            comment.text = ""
+            tv_board_op_comment.visibility = View.GONE
+            tv_board_op_comment.text = ""
         }
     }
-    fun setTotalPosts (param: Int){
-        totalPosts.text ="Пропущено $param постов"
-    }
-    fun setPostsWithPic (param: Int){
-        postsWithPic.text = "$param c картинками"
-    }
-    fun setIntoThreadButton(listener: View.OnClickListener) {
-        pickThreadButton.setOnClickListener(listener)
-    }
-    fun setHideButton() {
-        hideButton.setOnClickListener {
-            isOp.visibility = View.GONE
-            pics.visibility = View.GONE
-            comment.visibility = View.GONE
-            totalPosts.visibility = View.GONE
-            postsWithPic.visibility = View.GONE
-            hideButton.visibility = View.GONE
-            pickThreadButton.visibility = View.GONE
 
-            itemView.setBackgroundColor(Color.parseColor("#00000004"))
+    fun setTotalPosts (param: Int, isHidden: Boolean){
+        if(isHidden)
+            tv_board_op_total.visibility = View.GONE
+        else
+            tv_board_op_total.text ="Пропущено $param постов"
+    }
+
+    fun setPostsWithPic (param: Int, isHidden: Boolean){
+        if(isHidden)
+            tv_board_op_with_pic.visibility = View.GONE
+        else
+            tv_board_op_with_pic.text = "$param c картинками"
+    }
+
+    fun setIntoThreadButton(listener: View.OnClickListener, isHidden: Boolean) {
+        if (isHidden)
+            btn_board_op_into.visibility = View.GONE
+        else {
+            btn_board_op_into.setOnClickListener(listener)
+            btn_board_op_into.visibility = View.VISIBLE
+        }
+    }
+
+    fun setCommentListener(listener: LinkOnClickListener){
+        tv_board_op_comment.setListener(listener)
+    }
+
+    fun setHideButton(thread: BoardThread, listener: BoardOnClickListener) {
+        if(thread.isHidden) {
+            btn_board_op_hide.visibility = View.GONE
             itemView.setOnClickListener {
-                isOp.visibility = View.VISIBLE
-                pics.visibility = View.VISIBLE
-                comment.visibility = View.VISIBLE
-                totalPosts.visibility = View.VISIBLE
-                postsWithPic.visibility = View.VISIBLE
-                hideButton.visibility = View.VISIBLE
-                pickThreadButton.visibility = View.VISIBLE
-                itemView.setOnClickListener {  }
-                itemView.setBackgroundColor(Color.parseColor("#000000FF"))
+                thread.isHidden = false
+                listener.onHideClick(thread.num, thread.isHidden)
+            }
+        }
+        else{
+            btn_board_op_hide.visibility = View.VISIBLE
+            btn_board_op_hide.setOnClickListener {
+                thread.isHidden = true
+                listener.onHideClick(thread.num, thread.isHidden)
             }
         }
     }
