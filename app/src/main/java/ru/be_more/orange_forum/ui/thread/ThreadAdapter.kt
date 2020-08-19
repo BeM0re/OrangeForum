@@ -38,7 +38,7 @@ class ThreadAdapter(var thread: BoardThread,
         return if (isFooterShown)
             thread.posts.size +1
         else
-            thread.posts.size +1 //TODO Убрать +1 потом
+            thread.posts.size  //TODO Убрать +1 потом
     }
 
     override fun getItemViewType(position: Int): Int {
