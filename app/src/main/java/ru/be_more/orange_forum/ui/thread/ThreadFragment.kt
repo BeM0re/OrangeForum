@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -35,7 +36,39 @@ import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 
-/*const val PAGE_HTML = "<html>\n" +
+const val PAGE_HTML = "<html>\n" +
+        "<head>\n" +
+        "    <script type=\"text/javascript\">\n" +
+        "    var sendParams = function() {\n" +
+        "       var responseEl = document.getElementById(\"g-recaptcha-response\");\n" +
+        "\t   var response = responseEl.value;\n" +
+        "\t   return JSON.stringify(response);\n" +
+        "    };\n" +
+        "  </script>\n" +
+        "    <script type=\"text/javascript\">\n" +
+        "      var onloadCallback = function() {\n" +
+        "         grecaptcha.render('html_element', {\n" +
+        "          'sitekey' : '6LeQYz4UAAAAAL8JCk35wHSv6cuEV5PyLhI6IxsM'\n" +
+        "        });" +
+        "      };\n" +
+        "  </script>\n" +
+        "</head>\n" +
+        "<body>\n" +
+        "<form action=\"?\" method=\"POST\">\n\n" +
+        "      <div id=\"html_element\"></div>" +
+        "      <div class=\"g-recaptcha\" data-sitekey=\"6LeQYz4UAAAAAL8JCk35wHSv6cuEV5PyLhI6IxsM\"></div>\n" +
+        "      <br/>\n" +
+        "      <input type=\"submit\" value=\"Submit\">\n" +
+        "    </form>" +
+        "<script src=\"http://www.google.com/recaptcha/api.js?onload=onloadCallback\"\n" + "&render=explicit" +
+        "        async defer>\n" +
+        "</script>\n" +
+        "</body>\n" +
+        "</html>\n" +
+        "\n"
+
+/*
+const val PAGE_HTML = "<html>\n" +
         "<head>\n" +
         "    <script type=\"text/javascript\">\n" +
         "    var sendParams = function() {\n" +
@@ -51,18 +84,18 @@ import ru.be_more.orange_forum.interfaces.PicOnClickListener
         "  </script>\n" +
         "</head>\n" +
         "<body>\n" +
-        "<script src=\"//www.google.com/recaptcha/api.js?onload=onloadCallback\"\n" + //&render=explicit
+        "<script src=\"//www.google.com/recaptcha/api.js?onload=onloadCallback\"\n" + "&render=explicit" +
         "        async defer>\n" +
         "</script>\n" +
         "<form id='demo-form' action=\"?\" method=\"POST\">\n" +
-        "      <button class=\"g-recaptcha\" data-sitekey=\"6LdwXD4UAAAAAHxyTiwSMuge1-pf1ZiEL4qva_xu\" data-callback='onSubmit'>Submit</button>\n" +
+//        "      <button class=\"g-recaptcha\" data-sitekey=\"6LdwXD4UAAAAAHxyTiwSMuge1-pf1ZiEL4qva_xu\" data-callback='onSubmit'>Submit</button>\n" +
+        "      <button class=\"g-recaptcha\" data-sitekey=\"6LeQYz4UAAAAAL8JCk35wHSv6cuEV5PyLhI6IxsM\" data-callback='onSubmit'>Submit</button>\n" +
         "      <br/>\n" +
         "    </form>" +
         "</body>\n" +
         "</html>\n" +
-        "\n"*/
-
-const val CSS = "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />"
+        "\n"
+*/
 
 
 class ThreadFragment : MvpAppCompatFragment(),
@@ -91,6 +124,8 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Log.d("M_ThreadFragment","$PAGE_HTML")
 
         threadPresenter.init(boardId, threadNum)
         recyclerView = rv_post_list
@@ -138,6 +173,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         fab_thread_respond.setOnClickListener { threadPresenter.showFooter() }
 
+
         fab_to_posting.setOnClickListener {
             setNewWebView()
         }
@@ -150,7 +186,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun setWebView() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
 
-/*        wv_post_captcha.settings.userAgentString =
+        wv_post_captcha.settings.userAgentString =
             "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
                     "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 " +
                     "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
@@ -171,7 +207,7 @@ class ThreadFragment : MvpAppCompatFragment(),
         wv_post_captcha.settings.defaultTextEncodingName = "utf-8"
 
         wv_post_captcha.loadDataWithBaseURL("https://2ch.hk", PAGE_HTML, "text/html; charset=UTF-8", null, null)
-        wv_post_captcha.addJavascriptInterface(ThreadFragment(), "Android")*/
+        wv_post_captcha.addJavascriptInterface(ThreadFragment(), "Android")
 
     }
     override fun setNewWebView() {
@@ -179,9 +215,11 @@ class ThreadFragment : MvpAppCompatFragment(),
         wv_thread_posting.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView, url: String) {
 
-                val css = ".cntnt{display:none;}" +
+                val css = "" +
+//                        ".cntnt{display:none;}" +
                         "div.thread-nav-mob{display:none!important;}" +
-                        "#postform{display:block!important;}"
+//                        "#postform{display:block!important;}" +
+                        ".rules{display:none!important;}"
                 val js = "var style = document.createElement('style'); style.innerHTML = '$css'; document.head.appendChild(style);"
                 wv_thread_posting.evaluateJavascript(js,null)
                 wv_thread_posting.visibility = View.VISIBLE
@@ -206,8 +244,8 @@ class ThreadFragment : MvpAppCompatFragment(),
         wv_thread_posting.settings.displayZoomControls = false
         wv_thread_posting.settings.setSupportZoom(true)
         wv_thread_posting.settings.defaultTextEncodingName = "utf-8"
-//        wv_thread_posting.loadUrl("https://2ch.hk/$boardId/res/$threadNum.html")
-        wv_thread_posting.loadDataWithBaseURL("https://2ch.hk/$boardId/res/$threadNum.html", "", "text/html; charset=UTF-8", null, null)
+        wv_thread_posting.loadUrl("https://2ch.hk/$boardId/res/$threadNum.html")
+//        wv_thread_posting.loadDataWithBaseURL("https://2ch.hk/$boardId/res/$threadNum.html", "", "text/html; charset=UTF-8", null, null)
 //        wv_thread_posting.addJavascriptInterface(ThreadFragment(), "Android")
 
     }
@@ -247,13 +285,13 @@ class ThreadFragment : MvpAppCompatFragment(),
 
 
         btn_response_submit.setOnClickListener {
-//            wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
+            wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
 
-            Toast.makeText(App.applicationContext(),
-                "Постинг отключен пока макака не сделает API", Toast.LENGTH_LONG).show()
+//            Toast.makeText(App.applicationContext(),
+//                "Постинг отключен пока макака не сделает API", Toast.LENGTH_LONG).show()
         }
 
-        //        btn_response_submit.setOnClickListener { threadPresenter.post() }
+//                btn_response_submit.setOnClickListener { threadPresenter.post() }
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
@@ -374,9 +412,9 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     @JavascriptInterface
     fun responsePushed(token: String) {
-//        Log.d("M_ThreadFragment", "token = \"$token\"")
-//        threadPresenter.setCaptchaResponse(token)
-//        this.captchaResponse.postValue(token)
+        Log.d("M_ThreadFragment", "token = \"$token\"")
+        threadPresenter.setCaptchaResponse(token)
+        this.captchaResponse.postValue(token)
     }
 
     companion object {

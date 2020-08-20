@@ -62,14 +62,14 @@
             android:text="Выбрать фото" />
 
 
-<!--    <WebView
+    <WebView
         android:id="@+id/wv_post_captcha"
         android:layout_width="200dp"
         android:layout_height="200dp"
         app:layout_constraintBottom_toBottomOf="@+id/rv_post_list"
         app:layout_constraintEnd_toEndOf="@+id/rv_post_list"
         app:layout_constraintStart_toStartOf="@+id/rv_post_list"
-        app:layout_constraintTop_toTopOf="@+id/rv_post_list"/>-->
+        app:layout_constraintTop_toTopOf="@+id/rv_post_list"/>
 
         <Button
             android:id="@+id/btn_response_submit"

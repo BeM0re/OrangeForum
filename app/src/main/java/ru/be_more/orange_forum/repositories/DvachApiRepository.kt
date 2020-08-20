@@ -188,6 +188,9 @@ class DvachApiRepository @Inject constructor(){
         if(allCategories == null)
             return listOf()
 
+
+
+
         val adult = Category(
             title = "Взрослым",
             items = getBoardNames(allCategories.adult)

@@ -22,6 +22,28 @@ data class DvachCategories(
     @SerializedName(value = "Японская культура" )
     val japan : List<DvachBoardName> = listOf()
 )
+{
+
+/*
+    override fun iterator(): Iterator<List<DvachBoardName>> {
+        return CatIterator(this)
+    }
+    class CatIterator (cats: DvachCategories): Iterator <List<DvachBoardName>>{
+        private val list : List<String> = listOf("Взрослым","Игры", "Политика", "Пользовательские",
+            "Разное", "Творчество", "Тематика", "Техника и софт", "Японская культура")
+
+        override fun hasNext(): Boolean {
+            list
+        }
+
+        override fun next(): List<DvachBoardName> {
+            
+        }
+
+    }*/
+
+}
+
 data class DvachBoardName(
     val default_name : String,
     val category : String,
