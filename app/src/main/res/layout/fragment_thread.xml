@@ -38,7 +38,7 @@
         android:layout_marginEnd="@dimen/spacing_normal_16"
         android:layout_marginBottom="@dimen/spacing_normal_16"
         android:src="@drawable/ic_create_black_24dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:backgroundTint="@color/color_accent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,7 +90,8 @@
         app:backgroundTint="@color/color_accent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        android:visibility="gone"/>
 
     <WebView
         android:id="@+id/wv_thread_posting"

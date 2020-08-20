@@ -76,17 +76,19 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribe (
                     {
-                        if(it.id == "invisible_recaptcha") { //TODO переделать на нативную капчу после API
+                        Log.d("M_ThreadPresenter","captchas = $it")
+//                        if(it.id == "invisible_recaptcha") { //TODO переделать на нативную капчу после API
+                        if(it.id == "recaptcha") {
 
-//                            viewState.setWebView()
+                            viewState.setWebView()
 
                             isInvisibleRecaptcha = true
-                            disposables.add(repo.getCaptchaId("invisible_recaptcha")
+                            disposables.add(repo.getCaptchaId("recaptcha")
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(
                                     { response -> //response is Captcha
-                                        Log.d("M_ThreadPresenter", "$response")
-                                        postResponse(response.id, "invisible_recaptcha")
+                                        Log.d("M_ThreadPresenter", "captchaResponse = $response")
+                                        postResponse(response.id, "recaptcha")
                                     },
                                     { throwable ->
                                         Log.d("M_ThreadPresenter", "getCaptchaId error = $throwable")
@@ -140,8 +142,8 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     }
 
     fun showFooter() {
-        adapter.setIsFooterShown(false)
-//        viewState.setWebView()
+        adapter.setIsFooterShown(true)
+        viewState.setWebView()
         viewState.setOnPostButtonClickListener()
     }
 
