@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
-import leakcanary.AppWatcher
+//import leakcanary.AppWatcher
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
@@ -79,10 +79,10 @@ class BoardFragment: MvpAppCompatFragment(),
         disposable = null
 
         super.onDestroy()
-        AppWatcher.objectWatcher.watch(
-            watchedObject = this,
-            description = "MyService received Service#onDestroy() callback"
-        )
+//        AppWatcher.objectWatcher.watch(
+//            watchedObject = this,
+//            description = "MyService received Service#onDestroy() callback"
+//        )
     }
 
     override fun loadBoard(board: Board) {

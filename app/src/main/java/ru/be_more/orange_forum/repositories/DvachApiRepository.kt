@@ -180,9 +180,47 @@ class DvachApiRepository @Inject constructor(){
     private fun toCategories (allCategories: Map<String, List<DvachBoardName>>) : List<Category> {
         Log.d("M_DvachApiRepository","$allCategories")
 
-        return allCategories.map {
-            Category(it.key, getBoardNames(it.value))
-        }
+
+
+
+        val adult = Category(
+            title = "Взрослым",
+            items = getBoardNames(allCategories.adult)
+        )
+        val games = Category(
+            title = "Игры",
+            items = getBoardNames(allCategories.games)
+        )
+        val politics = Category(
+            title = "Политика",
+            items = getBoardNames(allCategories.politics)
+        )
+        val custom = Category(
+            title = "Пользовательские",
+            items = getBoardNames(allCategories.custom)
+        )
+        val other = Category(
+            title = "Разное",
+            items = getBoardNames(allCategories.other)
+        )
+        val art = Category(
+            title = "Творчество",
+            items = getBoardNames(allCategories.art)
+        )
+        val thematics = Category(
+            title = "Тематика",
+            items = getBoardNames(allCategories.thematics)
+        )
+        val tech = Category(
+            title = "Техника и софт",
+            items = getBoardNames(allCategories.tech)
+        )
+        val japan = Category(
+            title = "Японская культура",
+            items = getBoardNames(allCategories.japan)
+        )
+
+        return listOf(adult, games, politics, custom, other, art, thematics, tech, japan)
     }
 
     private fun getBoardNames(dvachBoards : List<DvachBoardName>) =
