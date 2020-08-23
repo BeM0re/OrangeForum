@@ -143,7 +143,7 @@ class ThreadFragment : MvpAppCompatFragment(),
         },
             {
                 Log.e("M_ThreadFragment","bus error = \n $it")
-            }
+            } 
         )
 
 //        setOnBackgroundViewClickListener()
