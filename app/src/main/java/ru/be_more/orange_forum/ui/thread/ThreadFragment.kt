@@ -72,8 +72,12 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == THREAD_TAG) {
-                if (fl_thread_post.visibility != View.GONE)
-                    threadPresenter.onBackPressed()
+                if (fl_thread_post.visibility != View.GONE){
+                    if (fragmentManager?.findFragmentByTag(RESPONSE_TAG) != null)
+                        hideResponseForm()
+                    else
+                        threadPresenter.onBackPressed()
+                }
                 else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
@@ -115,6 +119,17 @@ class ThreadFragment : MvpAppCompatFragment(),
         /*fab_to_posting.setOnClickListener {
             setNewWebView()
         }*/
+    }
+
+    private fun hideResponseForm() {
+        fl_thread_post.visibility = View.GONE
+        fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+
+        //will be called only when fragmentManager?.findFragmentByTag(RESPONSE_TAG) not null
+        fragmentManager
+            ?.beginTransaction()
+            ?.remove(fragmentManager?.findFragmentByTag(RESPONSE_TAG)!!)
+            ?.commit()
     }
 
     override fun onDestroy() {
