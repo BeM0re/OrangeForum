@@ -2,26 +2,6 @@ package ru.be_more.orange_forum.data
 
 import com.google.gson.annotations.SerializedName
 
-data class DvachCategories(
-    @SerializedName(value = "Взрослым")
-    val adult : List<DvachBoardName> = listOf(),
-    @SerializedName(value = "Игры")
-    val games : List<DvachBoardName> = listOf(),
-    @SerializedName(value = "Политика")
-    val politics : List<DvachBoardName> = listOf(),
-    @SerializedName(value = "Пользовательские")
-    val custom : List<DvachBoardName> = listOf(),
-    @SerializedName(value = "Разное")
-    val other : List<DvachBoardName> = listOf(),
-    @SerializedName(value = "Творчество")
-    val art : List<DvachBoardName> = listOf(),
-    @SerializedName(value = "Тематика")
-    val thematics : List<DvachBoardName> = listOf(),
-    @SerializedName(value = "Техника и софт")
-    val tech : List<DvachBoardName> = listOf(),
-    @SerializedName(value = "Японская культура" )
-    val japan : List<DvachBoardName> = listOf()
-)
 data class DvachBoardName(
     val default_name : String,
     val category : String,
