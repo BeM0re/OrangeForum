@@ -27,17 +27,14 @@ class DvachApiRepository @Inject constructor(){
     private val dvachApi = ApiFactory.dvachApi
     private val googleCaptchaApi = ApiFactory.googleCaptcha
     private var isLoading : Observable<Boolean> = Observable.just(false)
-    private lateinit var disposable: Disposable
 
 
     fun getCaptchaTypes(): Observable<CaptchaType>? =
         dvachApi.getDvachCaptchaTypesRx("b", cookie) //TODO убрать захардкоженное
-//            .doOnEach { Log.d("M_DvachApiRepository", "cap type = ${it.value}") }
             .flatMap { Observable.fromIterable(it.types) }
 
     fun getCaptchaId(captchaType: String): Observable<GetCaptchaResponse>  =
         dvachApi.getDvachCaptchaIdRx(captchaType, cookie) //TODO убрать захардкоженное
-//            .doOnEach { Log.d("M_DvachApiRepository", "cap id = ${it.value}") }
 
     fun getMobileCaptcha(): Observable<ResponseBody>  =
         dvachApi.getMobileCaptchaRx()
@@ -46,7 +43,6 @@ class DvachApiRepository @Inject constructor(){
         dvachApi.getDvachCategoriesRx("get_boards")
             .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.d("M_DvachApiRepository", "Getting category error = $throwable") }
-//            .doOnEach {Log.d("M_DvachApiRepository", "$it") }
             .map { entity -> toCategories(entity) }
 
     fun getThreads(boardId: String): Observable<List<BoardThread>> =
@@ -181,51 +177,12 @@ class DvachApiRepository @Inject constructor(){
         )
     }
 
+    private fun toCategories (allCategories: Map<String, List<DvachBoardName>>) : List<Category> {
+        Log.d("M_DvachApiRepository","$allCategories")
 
-
-    private fun toCategories (allCategories: DvachCategories?) : List<Category> {
-
-        if(allCategories == null)
-            return listOf()
-
-        val adult = Category(
-            title = "Взрослым",
-            items = getBoardNames(allCategories.adult)
-        )
-        val games = Category(
-            title = "Игры",
-            items = getBoardNames(allCategories.games)
-        )
-        val politics = Category(
-            title = "Политика",
-            items = getBoardNames(allCategories.politics)
-        )
-        val custom = Category(
-            title = "Пользовательские",
-            items = getBoardNames(allCategories.custom)
-        )
-        val other = Category(
-            title = "Разное",
-            items = getBoardNames(allCategories.other)
-        )
-        val art = Category(
-            title = "Творчество",
-            items = getBoardNames(allCategories.art)
-        )
-        val thematics = Category(
-            title = "Тематика",
-            items = getBoardNames(allCategories.thematics)
-        )
-        val tech = Category(
-            title = "Техника и софт",
-            items = getBoardNames(allCategories.tech)
-        )
-        val japan = Category(
-            title = "Японская культура",
-            items = getBoardNames(allCategories.japan)
-        )
-
-        return listOf(adult, games, politics, custom, other, art, thematics, tech, japan)
+        return allCategories.map {
+            Category(it.key, getBoardNames(it.value))
+        }
     }
 
     private fun getBoardNames(dvachBoards : List<DvachBoardName>) =

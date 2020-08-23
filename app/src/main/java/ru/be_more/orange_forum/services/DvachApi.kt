@@ -11,7 +11,7 @@ import ru.be_more.orange_forum.data.*
 interface DvachApi{
 
     @GET("makaba/mobile.fcgi")
-    fun getDvachCategoriesRx(@Query("task") task : String): Observable<DvachCategories>
+    fun getDvachCategoriesRx(@Query("task") task : String): Observable<Map<String, List<DvachBoardName>>>
 
     @GET("{board}/catalog.json")
     fun getDvachThreadsRx(@Path("board") board : String): Observable<DvachBoard>
