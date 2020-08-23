@@ -10,6 +10,7 @@ import ru.be_more.orange_forum.ui.download.DownloadPresenter
 import ru.be_more.orange_forum.ui.favorire.FavoritePresenter
 import ru.be_more.orange_forum.ui.main.MainPresenter
 import ru.be_more.orange_forum.ui.post.PostPresenter
+import ru.be_more.orange_forum.ui.response.ResponsePresenter
 import ru.be_more.orange_forum.ui.thread.ThreadPresenter
 import javax.inject.Singleton
 
@@ -29,6 +30,8 @@ interface RepoComponent {
     fun inject(presenter: DownloadPresenter)
 
     fun inject(presenter: FavoritePresenter)
+
+    fun inject(presenter: ResponsePresenter)
 
     fun inject(interactor: ThreadInteractor)
 

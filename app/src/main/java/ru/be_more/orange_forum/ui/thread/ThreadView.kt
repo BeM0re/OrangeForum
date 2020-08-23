@@ -13,7 +13,7 @@ interface ThreadView  : MvpView {
     fun loadThread(thread: BoardThread)
     fun setThreadMarks (isDownloaded: Boolean, isFavorite: Boolean)
     fun hideResponseFab()
-    fun setWebView()
+    fun showResponseForm()
     fun setNewWebView()
     fun setOnPostButtonClickListener()
     fun showPic(attachment: Attachment)

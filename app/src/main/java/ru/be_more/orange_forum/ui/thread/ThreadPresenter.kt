@@ -80,7 +80,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 //                        if(it.id == "invisible_recaptcha") { //TODO переделать на нативную капчу после API
                         if(it.id == "recaptcha") {
 
-                            viewState.setWebView()
+                            viewState.showResponseForm()
 
                             isInvisibleRecaptcha = true
                             disposables.add(repo.getCaptchaId("recaptcha")
@@ -143,8 +143,8 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
 
     fun showFooter() {
         adapter.setIsFooterShown(true)
-        viewState.setWebView()
-        viewState.setOnPostButtonClickListener()
+        viewState.showResponseForm()
+//        viewState.setOnPostButtonClickListener()
     }
 
     fun initAdapter(thread: BoardThread,
