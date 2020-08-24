@@ -68,7 +68,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         }
     }
 
-    fun post(){
+    /*fun post(){
         isInvisibleRecaptcha = false
         disposables.add(
             repo.getCaptchaTypes()
@@ -110,28 +110,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         )
 
 
-    }
-
-    private fun postResponse(captchaId:String, captchaType:String){
-
-        disposables.add( //TODO после API доделать (убрать зашитые данные, брать из полей вью)
-            repo.postResponse(
-                boardId = boardId,
-                threadNum = threadNum ,
-                comment = "test",
-                captcha_type = captchaType,
-                g_recaptcha_response = "",
-                chaptcha_id = captchaId,
-                files = listOf()
-            )
-                .subscribeOn(Schedulers.io())
-                .subscribe (
-                    { response -> Log.d("M_ThreadPresenter", "post response = $response") },
-                    { throwable ->  Log.d("M_ThreadPresenter", "post error = $throwable") }
-                )
-        )
-
-    }
+    }*/
 
     override fun onDestroy() {
         disposables.forEach {

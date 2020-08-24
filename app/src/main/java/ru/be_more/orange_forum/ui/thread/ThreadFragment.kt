@@ -139,9 +139,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun showResponseForm() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
 
-        val fragment = ResponseFragment()
-
-        Log.d("M_ThreadFragment","123")
+        val fragment = ResponseFragment(boardId, threadNum)
 
         fl_thread_post.visibility = View.VISIBLE
         fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
@@ -150,50 +148,8 @@ class ThreadFragment : MvpAppCompatFragment(),
             ?.beginTransaction()
             ?.replace(R.id.fl_thread_post, fragment, RESPONSE_TAG)
             ?.commit()
-
-
     }
-    override fun setNewWebView() {
-/*
 
-        wv_thread_posting.webViewClient = object : WebViewClient(){
-            override fun onPageFinished(view: WebView, url: String) {
-
-                val css = "" +
-//                        ".cntnt{display:none;}" +
-                        "div.thread-nav-mob{display:none!important;}" +
-//                        "#postform{display:block!important;}" +
-                        ".rules{display:none!important;}"
-                val js = "var style = document.createElement('style'); style.innerHTML = '$css'; document.head.appendChild(style);"
-                wv_thread_posting.evaluateJavascript(js,null)
-                wv_thread_posting.visibility = View.VISIBLE
-                super.onPageFinished(view, url)
-            }
-        }
-
-        wv_thread_posting.settings.userAgentString =
-            "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
-                    "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 " +
-                    "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
-
-//        wv_thread_posting.visibility = View.VISIBLE
-        wv_thread_posting.settings.javaScriptEnabled = true
-        wv_thread_posting.settings.javaScriptCanOpenWindowsAutomatically = true
-        wv_thread_posting.settings.builtInZoomControls = true
-//        wv_thread_posting.settings.pluginState = WebSettings.PluginState.ON
-        wv_thread_posting.settings.allowContentAccess = true
-        wv_thread_posting.settings.domStorageEnabled = true
-        wv_thread_posting.settings.loadWithOverviewMode = true
-        wv_thread_posting.settings.useWideViewPort = true
-        wv_thread_posting.settings.displayZoomControls = false
-        wv_thread_posting.settings.setSupportZoom(true)
-        wv_thread_posting.settings.defaultTextEncodingName = "utf-8"
-        wv_thread_posting.loadUrl("https://2ch.hk/$boardId/res/$threadNum.html")
-//        wv_thread_posting.loadDataWithBaseURL("https://2ch.hk/$boardId/res/$threadNum.html", "", "text/html; charset=UTF-8", null, null)
-//        wv_thread_posting.addJavascriptInterface(ThreadFragment(), "Android")
-*/
-
-    }
 
     override fun loadThread(thread: BoardThread) {
 
@@ -227,21 +183,6 @@ class ThreadFragment : MvpAppCompatFragment(),
             threadPresenter.setCaptchaResponse(it)
         })
 
-
-        btn_response_submit.setOnClickListener {
-
-            CookieManager.getInstance().flush()
-            Log.d("M_ThreadFragment", "google.com = "+CookieManager.getInstance().getCookie(".google.com"))
-            Log.d("M_ThreadFragment", "www.google.com = "+CookieManager.getInstance().getCookie("www.google.com"))
-            Log.d("M_ThreadFragment", "2ch.hk = "+CookieManager.getInstance().getCookie(".2ch.hk"))
-
-
-
-            wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
-
-//             threadPresenter.post()
-
-        }
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
@@ -360,12 +301,12 @@ class ThreadFragment : MvpAppCompatFragment(),
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    @JavascriptInterface
+/*    @JavascriptInterface
     fun responsePushed(token: String) {
         Log.d("M_ThreadFragment", "token = \"$token\"")
         threadPresenter.setCaptchaResponse(token)
         this.captchaResponse.postValue(token)
-    }
+    }*/
 
     companion object {
         fun getThreadFragment ( boardId: String, threadId: Int): ThreadFragment {
