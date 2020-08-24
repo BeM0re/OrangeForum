@@ -81,25 +81,23 @@ class DvachApiRepository @Inject constructor(){
         files : List<File>): Observable<DvachPostResponse>  {
 
         val requestTask =
-            RequestBody.create(MediaType.parse("multipart/form-data"), "post")
+            RequestBody.create(MediaType.parse("text/plain"), "post")
         val requestCookie =
-            RequestBody.create(MediaType.parse("multipart/form-data"), cookie)
+            RequestBody.create(MediaType.parse("text/plain"), cookie)
         val requestBoardId =
-            RequestBody.create(MediaType.parse("multipart/form-data"), boardId)
+            RequestBody.create(MediaType.parse("text/plain"), boardId)
         val requestThreadNum =
-            RequestBody.create(MediaType.parse("multipart/form-data"), ""+threadNum)
+            RequestBody.create(MediaType.parse("text/plain"), ""+threadNum)
         val requestComment =
-            RequestBody.create(MediaType.parse("multipart/form-data"), comment)
+            RequestBody.create(MediaType.parse("text/plain"), comment)
         val requestCaptchaType =
-            RequestBody.create(MediaType.parse("multipart/form-data"), captcha_type)
+            RequestBody.create(MediaType.parse("text/plain"), captcha_type)
         val requestGRecaptchaResponse =
-            RequestBody.create(MediaType.parse("multipart/form-data"), g_recaptcha_response)
+            RequestBody.create(MediaType.parse("text/plain"), g_recaptcha_response)
         val requestChaptchaId =
-            RequestBody.create(MediaType.parse("multipart/form-data"), chaptcha_id)
+            RequestBody.create(MediaType.parse("text/plain"), chaptcha_id)
 
         val requestFiles: LinkedList<MultipartBody.Part> = LinkedList()
-
-        val gCaptchaResponse: MutableLiveData<String> = MutableLiveData()
 
         files.forEach {file ->
             val requestFile: RequestBody =
@@ -163,6 +161,7 @@ class DvachApiRepository @Inject constructor(){
                 }
             }*/
 
+        Log.d("M_DvachApiRepository","token = $g_recaptcha_response")
 
         return dvachApi.postThreadResponseRx(
             cookie = requestCookie,
