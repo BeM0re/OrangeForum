@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.data
 
 import com.google.gson.annotations.SerializedName
 
+
 data class DvachBoardName(
     val default_name : String,
     val category : String,

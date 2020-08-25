@@ -7,7 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.JavascriptInterface
+import android.webkit.*
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -22,44 +23,21 @@ import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
-import ru.be_more.orange_forum.consts.*
+import ru.be_more.orange_forum.consts.POST_IN_THREAD_TAG
+import ru.be_more.orange_forum.consts.POST_TAG
+import ru.be_more.orange_forum.consts.RESPONSE_TAG
+import ru.be_more.orange_forum.consts.THREAD_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
-import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
+import ru.be_more.orange_forum.interfaces.LinkOnClickListener
+import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.Post
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
-import ru.be_more.orange_forum.interfaces.PicOnClickListener
-import java.lang.Exception
+import ru.be_more.orange_forum.ui.response.ResponseFragment
 
-/*const val PAGE_HTML = "<html>\n" +
-        "<head>\n" +
-        "    <script type=\"text/javascript\">\n" +
-        "    var sendParams = function() {\n" +
-        "       var responseEl = document.getElementById(\"g-recaptcha-response\");\n" +
-        "\t   var response = responseEl.value;\n" +
-        "\t   return JSON.stringify(response);\n" +
-        "    };\n" +
-        "  </script>\n" +
-        "    <script type=\"text/javascript\">\n" +
-        "      var onloadCallback = function() {\n" +
-        "        grecaptcha.execute()" +
-        "      };\n" +
-        "  </script>\n" +
-        "</head>\n" +
-        "<body>\n" +
-        "<script src=\"//www.google.com/recaptcha/api.js?onload=onloadCallback\"\n" + //&render=explicit
-        "        async defer>\n" +
-        "</script>\n" +
-        "<form id='demo-form' action=\"?\" method=\"POST\">\n" +
-        "      <button class=\"g-recaptcha\" data-sitekey=\"6LdwXD4UAAAAAHxyTiwSMuge1-pf1ZiEL4qva_xu\" data-callback='onSubmit'>Submit</button>\n" +
-        "      <br/>\n" +
-        "    </form>" +
-        "</body>\n" +
-        "</html>\n" +
-        "\n"*/
 
 
 class ThreadFragment : MvpAppCompatFragment(),
@@ -72,13 +50,12 @@ class ThreadFragment : MvpAppCompatFragment(),
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var threadPresenter : ThreadPresenter
 
-    private var timestamp: Long = 0
     private lateinit var boardId: String
-    private var threadId: Int = 0
+    private var threadNum: Int = 0
     private lateinit var recyclerView : RecyclerView
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
-
     private var disposable: Disposable? = null
+    private var responseFragment: ResponseFragment? = null
 
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -89,14 +66,18 @@ class ThreadFragment : MvpAppCompatFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        threadPresenter.init(boardId, threadId)
+        threadPresenter.init(boardId, threadNum)
         recyclerView = rv_post_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == THREAD_TAG) {
-                if (fl_thread_post.visibility != View.GONE)
-                    threadPresenter.onBackPressed()
+                if (fl_thread_post.visibility != View.GONE){
+                    if (fragmentManager?.findFragmentByTag(RESPONSE_TAG) != null)
+                        hideResponseForm()
+                    else
+                        threadPresenter.onBackPressed()
+                }
                 else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
@@ -108,11 +89,12 @@ class ThreadFragment : MvpAppCompatFragment(),
             }
         )
 
-//        setOnBackgroundViewClickListener()
-
         setUpDownButtonOnCLickListener()
 
         setOnScrollListener()
+
+        fab_thread_respond.setOnClickListener { showResponseForm() }
+        fab_close_posting.setOnClickListener { hideResponseForm() }
 
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
@@ -132,8 +114,23 @@ class ThreadFragment : MvpAppCompatFragment(),
                 }
             }
         })*/
+    }
 
-        fab_thread_respond.setOnClickListener { threadPresenter.showFooter() }
+    private fun hideResponseForm() {
+
+        fab_thread_down.visibility = View.VISIBLE
+        fab_thread_up.visibility = View.VISIBLE
+        fab_thread_respond.visibility = View.VISIBLE
+        fab_close_posting.visibility = View.GONE
+
+        fl_thread_post.visibility = View.GONE
+        fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+
+        //will be called only when fragmentManager?.findFragmentByTag(RESPONSE_TAG) not null
+        fragmentManager
+            ?.beginTransaction()
+            ?.remove(fragmentManager?.findFragmentByTag(RESPONSE_TAG)!!)
+            ?.commit()
     }
 
     override fun onDestroy() {
@@ -141,31 +138,23 @@ class ThreadFragment : MvpAppCompatFragment(),
         super.onDestroy()
     }
 
-    override fun setWebView() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
+    override fun showResponseForm() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
 
-/*        wv_post_captcha.settings.userAgentString =
-            "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
-                    "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 " +
-                    "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
+        if (responseFragment == null)
+            responseFragment = ResponseFragment(boardId, threadNum)
 
-        wv_post_captcha.visibility = View.VISIBLE
+        fab_thread_down.visibility = View.GONE
+        fab_thread_up.visibility = View.GONE
+        fab_thread_respond.visibility = View.GONE
+        fab_close_posting.visibility = View.VISIBLE
 
-        wv_post_captcha.settings.javaScriptEnabled = true
-        wv_post_captcha.settings.javaScriptCanOpenWindowsAutomatically = true
-        wv_post_captcha.settings.builtInZoomControls = true
-        wv_post_captcha.settings.pluginState = WebSettings.PluginState.ON
-        wv_post_captcha.settings.allowContentAccess = true
-        wv_post_captcha.settings.domStorageEnabled = true
+        fl_thread_post.visibility = View.VISIBLE
+        fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
 
-        wv_post_captcha.settings.loadWithOverviewMode = true
-        wv_post_captcha.settings.useWideViewPort = true
-        wv_post_captcha.settings.displayZoomControls = false
-        wv_post_captcha.settings.setSupportZoom(true)
-        wv_post_captcha.settings.defaultTextEncodingName = "utf-8"
-
-        wv_post_captcha.loadDataWithBaseURL("https://2ch.hk", PAGE_HTML, "text/html; charset=UTF-8", null, null)
-        wv_post_captcha.addJavascriptInterface(ThreadFragment(), "Android")*/
-
+        fragmentManager
+            ?.beginTransaction()
+            ?.replace(R.id.fl_thread_post, responseFragment!!, RESPONSE_TAG)
+            ?.commit()
     }
 
     override fun loadThread(thread: BoardThread) {
@@ -200,15 +189,6 @@ class ThreadFragment : MvpAppCompatFragment(),
             threadPresenter.setCaptchaResponse(it)
         })
 
-
-        btn_response_submit.setOnClickListener {
-//            wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
-
-            Toast.makeText(App.applicationContext(),
-                "Постинг отключен пока макака не сделает API", Toast.LENGTH_LONG).show()
-        }
-
-        //        btn_response_submit.setOnClickListener { threadPresenter.post() }
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
@@ -327,21 +307,13 @@ class ThreadFragment : MvpAppCompatFragment(),
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    @JavascriptInterface
-    fun responsePushed(token: String) {
-//        Log.d("M_ThreadFragment", "token = \"$token\"")
-//        threadPresenter.setCaptchaResponse(token)
-//        this.captchaResponse.postValue(token)
-    }
-
     companion object {
         fun getThreadFragment ( boardId: String, threadId: Int): ThreadFragment {
             val thread = ThreadFragment()
             thread.boardId = boardId
-            thread.threadId = threadId
+            thread.threadNum = threadId
 
             return thread
         }
     }
-
 }

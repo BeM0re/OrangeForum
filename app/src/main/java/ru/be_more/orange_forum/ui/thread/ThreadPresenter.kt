@@ -68,7 +68,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         }
     }
 
-    fun post(){
+    /*fun post(){
         isInvisibleRecaptcha = false
         disposables.add(
             repo.getCaptchaTypes()
@@ -76,17 +76,19 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribe (
                     {
-                        if(it.id == "invisible_recaptcha") { //TODO переделать на нативную капчу после API
+                        Log.d("M_ThreadPresenter","captchas = $it")
+//                        if(it.id == "invisible_recaptcha") { //TODO переделать на нативную капчу после API
+                        if(it.id == "recaptcha") {
 
-//                            viewState.setWebView()
+                            viewState.showResponseForm()
 
                             isInvisibleRecaptcha = true
-                            disposables.add(repo.getCaptchaId("invisible_recaptcha")
+                            disposables.add(repo.getCaptchaId("recaptcha")
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(
                                     { response -> //response is Captcha
-                                        Log.d("M_ThreadPresenter", "$response")
-                                        postResponse(response.id, "invisible_recaptcha")
+                                        Log.d("M_ThreadPresenter", "captchaResponse = $response")
+                                        postResponse(response.id, "recaptcha")
                                     },
                                     { throwable ->
                                         Log.d("M_ThreadPresenter", "getCaptchaId error = $throwable")
@@ -108,28 +110,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         )
 
 
-    }
-
-    private fun postResponse(captchaId:String, captchaType:String){
-
-        disposables.add( //TODO после API доделать (убрать зашитые данные, брать из полей вью)
-            repo.postResponse(
-                boardId = boardId,
-                threadNum = threadNum ,
-                comment = "test",
-                captcha_type = captchaType,
-                g_recaptcha_response = "",
-                chaptcha_id = captchaId,
-                files = listOf()
-            )
-                .subscribeOn(Schedulers.io())
-                .subscribe (
-                    { response -> Log.d("M_ThreadPresenter", "post response = $response") },
-                    { throwable ->  Log.d("M_ThreadPresenter", "post error = $throwable") }
-                )
-        )
-
-    }
+    }*/
 
     override fun onDestroy() {
         disposables.forEach {
@@ -139,11 +120,11 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         super.onDestroy()
     }
 
-    fun showFooter() {
+/*    fun showFooter() {
         adapter.setIsFooterShown(true)
-//        viewState.setWebView()
-        viewState.setOnPostButtonClickListener()
-    }
+        viewState.showResponseForm()
+//        viewState.setOnPostButtonClickListener()
+    }*/
 
     fun initAdapter(thread: BoardThread,
                     picListener: PicOnClickListener,
