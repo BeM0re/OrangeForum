@@ -120,11 +120,11 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         super.onDestroy()
     }
 
-    fun showFooter() {
+/*    fun showFooter() {
         adapter.setIsFooterShown(true)
         viewState.showResponseForm()
 //        viewState.setOnPostButtonClickListener()
-    }
+    }*/
 
     fun initAdapter(thread: BoardThread,
                     picListener: PicOnClickListener,
