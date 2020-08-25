@@ -54,8 +54,8 @@ class ThreadFragment : MvpAppCompatFragment(),
     private var threadNum: Int = 0
     private lateinit var recyclerView : RecyclerView
     private var captchaResponse: MutableLiveData<String> = MutableLiveData()
-
     private var disposable: Disposable? = null
+    private var responseFragment: ResponseFragment? = null
 
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -93,9 +93,8 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         setOnScrollListener()
 
-        fab_thread_respond.setOnClickListener { threadPresenter.showFooter() }
-
-//        setOnBackgroundViewClickListener()
+        fab_thread_respond.setOnClickListener { showResponseForm() }
+        fab_close_posting.setOnClickListener { hideResponseForm() }
 
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
@@ -115,13 +114,15 @@ class ThreadFragment : MvpAppCompatFragment(),
                 }
             }
         })*/
-
-        /*fab_to_posting.setOnClickListener {
-            setNewWebView()
-        }*/
     }
 
     private fun hideResponseForm() {
+
+        fab_thread_down.visibility = View.VISIBLE
+        fab_thread_up.visibility = View.VISIBLE
+        fab_thread_respond.visibility = View.VISIBLE
+        fab_close_posting.visibility = View.GONE
+
         fl_thread_post.visibility = View.GONE
         fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
 
@@ -139,17 +140,22 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun showResponseForm() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
 
-        val fragment = ResponseFragment(boardId, threadNum)
+        if (responseFragment == null)
+            responseFragment = ResponseFragment(boardId, threadNum)
+
+        fab_thread_down.visibility = View.GONE
+        fab_thread_up.visibility = View.GONE
+        fab_thread_respond.visibility = View.GONE
+        fab_close_posting.visibility = View.VISIBLE
 
         fl_thread_post.visibility = View.VISIBLE
         fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, fragment, RESPONSE_TAG)
+            ?.replace(R.id.fl_thread_post, responseFragment!!, RESPONSE_TAG)
             ?.commit()
     }
-
 
     override fun loadThread(thread: BoardThread) {
 
@@ -301,13 +307,6 @@ class ThreadFragment : MvpAppCompatFragment(),
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-/*    @JavascriptInterface
-    fun responsePushed(token: String) {
-        Log.d("M_ThreadFragment", "token = \"$token\"")
-        threadPresenter.setCaptchaResponse(token)
-        this.captchaResponse.postValue(token)
-    }*/
-
     companion object {
         fun getThreadFragment ( boardId: String, threadId: Int): ThreadFragment {
             val thread = ThreadFragment()
@@ -317,5 +316,4 @@ class ThreadFragment : MvpAppCompatFragment(),
             return thread
         }
     }
-
 }
