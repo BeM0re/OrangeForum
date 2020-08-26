@@ -53,10 +53,8 @@ class ThreadFragment : MvpAppCompatFragment(),
     private lateinit var boardId: String
     private var threadNum: Int = 0
     private lateinit var recyclerView : RecyclerView
-    private var captchaResponse: MutableLiveData<String> = MutableLiveData()
     private var disposable: Disposable? = null
     private var responseFragment: ResponseFragment? = null
-
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -181,14 +179,6 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun hideResponseFab() {
         fab_thread_respond.visibility = View.GONE
-    }
-
-    override fun setOnPostButtonClickListener() {
-
-        captchaResponse.observe(this, Observer {
-            threadPresenter.setCaptchaResponse(it)
-        })
-
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {

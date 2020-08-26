@@ -15,11 +15,18 @@ class ResponsePresenter: MvpPresenter<ResponseView>() {
 
     private var disposable: Disposable? = null
 
+    override fun onDestroy() {
+        disposable?.dispose()
+        super.onDestroy()
+    }
+
     init {
         App.getComponent().inject(this)
     }
 
     fun postResponse(boardId: String, threadNum: Int, comment: String, token:String){
+
+        disposable?.dispose()
 
         disposable = //TODO после API доделать (убрать зашитые данные, брать из полей вью)
             repo.postResponse(

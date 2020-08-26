@@ -49,7 +49,7 @@ class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFra
     @InjectPresenter(presenterId = "presID", tag = "presTag")
     lateinit var responsePresenter : ResponsePresenter
 
-    val captchaResponse : MutableLiveData<String> = MutableLiveData()
+    private val captchaResponse : MutableLiveData<String> = MutableLiveData()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -78,17 +78,13 @@ class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFra
 
     private fun setWebView(){
 
-        Log.d("M_ThreadFragment", ""+ CookieManager.getInstance().getCookie("google.com"))
-
         wv_post_captcha.settings.userAgentString =
             "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
                     "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 " +
                     "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
 
-//        wv_post_captcha.visibility = View.VISIBLE
-
-        Log.d("M_ThreadFragment",""+ CookieManager.getInstance().acceptCookie())
         Log.d("M_ThreadFragment",""+ CookieManager.getInstance().hasCookies())
+        Log.d("M_ThreadFragment", "google.com = "+CookieManager.getInstance().getCookie(".google.com"))
 
         wv_post_captcha.settings.javaScriptEnabled = true
         wv_post_captcha.settings.javaScriptCanOpenWindowsAutomatically = true
@@ -101,7 +97,10 @@ class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFra
         wv_post_captcha.settings.displayZoomControls = false
         wv_post_captcha.settings.setSupportZoom(false)
         wv_post_captcha.settings.defaultTextEncodingName = "utf-8"
+
         wv_post_captcha.setInitialScale(200)
+
+        CookieManager.getInstance().setAcceptThirdPartyCookies(wv_post_captcha, true)
 
         wv_post_captcha.loadDataWithBaseURL(
             "https://2ch.hk",
@@ -115,14 +114,7 @@ class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFra
 
     private fun posting(){
         CookieManager.getInstance().flush()
-//        Log.d("M_ThreadFragment", "google.com = "+CookieManager.getInstance().getCookie(".google.com"))
-//        Log.d("M_ThreadFragment", "www.google.com = "+CookieManager.getInstance().getCookie("www.google.com"))
-//        Log.d("M_ThreadFragment", "2ch.hk = "+CookieManager.getInstance().getCookie(".2ch.hk"))
-
-
-
         wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
-
     }
 
 

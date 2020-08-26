@@ -35,8 +35,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private lateinit var boardId :String
     private var threadNum: Int = 0
     private var disposables: LinkedList<Disposable?> = LinkedList()
-    private var isInvisibleRecaptcha: Boolean = false
-    private var captchaResponse: MutableLiveData<String> = MutableLiveData()
 
     private val modalStack: Stack<ModalContent> = Stack()
 
@@ -63,11 +61,10 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         )
     //TODO прятать fab при нажатии на ответ
 
-        captchaResponse.observeForever {
-            Log.d("M_ThreadPresenter", "posting. token = $it")
-        }
     }
 
+
+    //динамический выбор капчи, вместо захардкоженной рекапчи.
     /*fun post(){
         isInvisibleRecaptcha = false
         disposables.add(
@@ -77,7 +74,7 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
                 ?.subscribe (
                     {
                         Log.d("M_ThreadPresenter","captchas = $it")
-//                        if(it.id == "invisible_recaptcha") { //TODO переделать на нативную капчу после API
+//                        if(it.id == "invisible_recaptcha") {
                         if(it.id == "recaptcha") {
 
                             viewState.showResponseForm()
@@ -120,12 +117,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         super.onDestroy()
     }
 
-/*    fun showFooter() {
-        adapter.setIsFooterShown(true)
-        viewState.showResponseForm()
-//        viewState.setOnPostButtonClickListener()
-    }*/
-
     fun initAdapter(thread: BoardThread,
                     picListener: PicOnClickListener,
                     linkListener: LinkOnClickListener) {
@@ -135,11 +126,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     fun getAdapter(): ThreadAdapter = this.adapter
 
     fun getBoardId(): String = this.boardId
-
-    fun setCaptchaResponse(captchaResponse: String) {
-        Log.d("M_ThreadPresenter", "presenter token = $captchaResponse")
-        this.captchaResponse.postValue(captchaResponse)
-    }
 
     fun setBoardId(): String = this.boardId
 
