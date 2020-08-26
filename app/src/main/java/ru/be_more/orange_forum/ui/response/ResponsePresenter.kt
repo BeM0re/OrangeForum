@@ -1,10 +1,13 @@
 package ru.be_more.orange_forum.ui.response
 
 import android.util.Log
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.consts.THREAD_TAG
 import ru.be_more.orange_forum.repositories.DvachApiRepository
 import javax.inject.Inject
 
@@ -39,9 +42,19 @@ class ResponsePresenter: MvpPresenter<ResponseView>() {
                 files = listOf()
             )
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe (
-                    { response -> Log.d("M_ResponsePresenter", "post response = $response") },
-                    { throwable ->  Log.d("M_ResponsePresenter", "post error = $throwable") }
+                    { response ->
+                        Log.d("M_ResponsePresenter", "post response = $response")
+                        if(response.Num != 0) //0 - ошибка постинга
+                            viewState.closeResponse()
+                        else
+                            App.showToast(response.Reason)
+
+                    },
+                    { throwable ->
+                        Log.d("M_ResponsePresenter", "post error = $throwable")
+                    }
                 )
     }
 

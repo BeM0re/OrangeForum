@@ -12,7 +12,10 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.android.synthetic.main.item_thread_response_form.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.consts.THREAD_TAG
 
 //TODO вынести в отдельный файл куда-нибудь
 const val PAGE_HTML = "<html>\n" +
@@ -123,6 +126,12 @@ class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFra
         Log.d("M_ThreadFragment", "token = $token")
         captchaResponse.postValue(token.substring(1, token.length-1))
 
+    }
+
+    override fun closeResponse() {
+        Log.d("M_ResponseFragment","close")
+        App.showToast("Отправлено")
+        App.getBus().onNext(Pair(BackPressed, THREAD_TAG))
     }
 
 }
