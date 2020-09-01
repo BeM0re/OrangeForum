@@ -1,26 +1,29 @@
 package ru.be_more.orange_forum.ui.category
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_category.*
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
+import moxy.MvpAppCompatFragment
+import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
-import ru.be_more.orange_forum.domain.model.Category
+import ru.be_more.orange_forum.model.Category
+
 
 class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,
                                                                       boardTitle: String) -> Unit):
-    Fragment(),
+    MvpAppCompatFragment(),
     CategoryView,
     CategoryOnClickListener {
 
-    private val categoryPresenter: CategoryPresenter by inject(parameters = { parametersOf(this) })
+    @InjectPresenter(presenterId = "presID", tag = "presTag")
+    lateinit var categoryPresenter : CategoryPresenter
 
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : CategoryAdapter
@@ -30,17 +33,26 @@ class CategoryFragment private constructor(var onBoardClickListener: (boardId: S
                               savedInstanceState: Bundle?) : View? =
         inflater.inflate(R.layout.fragment_category, container, false)
 
-    override fun onDestroy() {
-        categoryPresenter.onDestroy()
-        super.onDestroy()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = rv_category_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
-        categoryPresenter.initPresenter()
+
+        setSearchListener()
+    }
+
+    private fun setSearchListener(){
+        tiet_board_search.addTextChangedListener(SearchTextWatcher { query ->
+            categoryPresenter.search(query)
+        })
+    }
+
+    override fun expandCategories() {
+        for (i in (adapter.groups.size - 1) downTo 0) {
+            if (! adapter.isGroupExpanded(i))
+                adapter.toggleGroup(i)
+        }
     }
 
     override fun loadCategories(categories: List<Category>) {
@@ -57,5 +69,16 @@ class CategoryFragment private constructor(var onBoardClickListener: (boardId: S
         fun getCategoryFragment (onBoardClickListener: (boardId: String, boardTitle: String) -> Unit): CategoryFragment {
             return CategoryFragment(onBoardClickListener)
         }
+    }
+
+    class SearchTextWatcher(val listener: ((String) -> Unit)): TextWatcher{
+
+        override fun afterTextChanged(query: Editable ) {
+            listener(query.toString())
+        }
+
+        override fun beforeTextChanged(s: CharSequence , start: Int , count: Int , after: Int) {}
+
+        override fun onTextChanged(s: CharSequence , start: Int , count: Int , after: Int){}
     }
 }
