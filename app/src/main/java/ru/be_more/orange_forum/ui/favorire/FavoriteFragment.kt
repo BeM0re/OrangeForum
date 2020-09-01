@@ -48,7 +48,6 @@ class FavoriteFragment private constructor(
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : FavoriteAdapter
 
-//    private var bus = BusProvider.getInstance()
     private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
