@@ -1,13 +1,17 @@
 package ru.be_more.orange_forum.ui.response
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebSettings
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import kotlinx.android.synthetic.main.item_thread_response_form.*
 import moxy.MvpAppCompatFragment
@@ -113,6 +117,22 @@ class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFra
             null
         )
         wv_post_captcha.addJavascriptInterface(this, "Android")
+
+        setHideKeyboardListener()
+    }
+
+    private fun setHideKeyboardListener(){
+        et_response_comment.setOnFocusChangeListener{ view, isFocused ->
+            if(!isFocused)
+                (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(view.windowToken, 0)
+        }
+
+        et_response_option.setOnFocusChangeListener{ view, isFocused ->
+            if(!isFocused)
+                (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 
     private fun posting(){
