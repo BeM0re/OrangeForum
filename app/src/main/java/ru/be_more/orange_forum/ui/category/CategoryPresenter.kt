@@ -31,7 +31,6 @@ class CategoryPresenter : MvpPresenter<CategoryView>() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-//                { viewState.loadCategories(it) },
                 { dataset.postValue(it) },
                 { App.showToast("Can't load categories") }
             )
