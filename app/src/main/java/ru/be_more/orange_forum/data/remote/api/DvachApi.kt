@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.services
+package ru.be_more.orange_forum.data.remote.api
 
 import io.reactivex.Observable
 import okhttp3.MultipartBody
@@ -7,14 +7,15 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 import ru.be_more.orange_forum.data.*
+import ru.be_more.orange_forum.data.remote.models.*
 
 interface DvachApi{
 
     @GET("makaba/mobile.fcgi")
-    fun getDvachCategoriesRx(@Query("task") task : String): Observable<Map<String, List<DvachBoardName>>>
+    fun getDvachCategories(@Query("task") task : String): Observable<Map<String, List<DvachBoardName>>>
 
     @GET("{board}/catalog.json")
-    fun getDvachThreadsRx(@Path("board") board : String): Observable<DvachBoard>
+    fun getDvachThreads(@Path("board") board : String): Observable<DvachBoard>
 
     @GET("{board}/res/{threadNum}.json")
     fun getDvachPostsRx(

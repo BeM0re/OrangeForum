@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.services
+package ru.be_more.orange_forum.data.remote.utils
 
 import android.annotation.SuppressLint
 import java.security.SecureRandom

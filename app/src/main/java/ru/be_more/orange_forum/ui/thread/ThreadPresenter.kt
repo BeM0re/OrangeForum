@@ -1,7 +1,6 @@
 package ru.be_more.orange_forum.ui.thread
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -9,14 +8,12 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interactors.ThreadInteractor
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.BoardThread
 import ru.be_more.orange_forum.model.ModalContent
 import ru.be_more.orange_forum.model.Post
-import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import java.util.*
 import javax.inject.Inject

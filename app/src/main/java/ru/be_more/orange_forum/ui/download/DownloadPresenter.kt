@@ -1,8 +1,6 @@
 package ru.be_more.orange_forum.ui.download
 
-import android.os.Handler
 import android.util.Log
-import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -13,7 +11,6 @@ import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.Board
 import ru.be_more.orange_forum.model.ModalContent
 import ru.be_more.orange_forum.model.Post
-import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.repositories.DvachDbRepository
 import java.util.*
 import javax.inject.Inject
