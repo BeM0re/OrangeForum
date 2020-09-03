@@ -9,7 +9,6 @@ import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.interactors.ThreadInteractor
 import ru.be_more.orange_forum.model.*
-import ru.be_more.orange_forum.repositories.DvachApiRepository
 import java.util.*
 import javax.inject.Inject
 

@@ -1,13 +1,11 @@
 package ru.be_more.orange_forum.ui.category
 
-import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.repositories.DvachApiRepository
 import javax.inject.Inject
 
 @InjectViewState
