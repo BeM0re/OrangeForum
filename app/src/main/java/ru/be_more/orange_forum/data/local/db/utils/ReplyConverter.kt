@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.data
+package ru.be_more.orange_forum.data.local.db.utils
 
 import androidx.room.TypeConverter
 import java.util.*

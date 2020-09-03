@@ -7,7 +7,7 @@ import androidx.room.Room
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import ru.be_more.orange_forum.bus.Event
-import ru.be_more.orange_forum.data.AppDatabase
+import ru.be_more.orange_forum.data.local.db.AppDatabase
 import ru.be_more.orange_forum.di.components.DaggerRepoComponent
 import ru.be_more.orange_forum.di.components.RepoComponent
 

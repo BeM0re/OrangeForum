@@ -1,7 +1,6 @@
 package ru.be_more.orange_forum.ui.main
 
 import android.util.Log
-import androidx.fragment.app.Fragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -10,14 +9,7 @@ import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.interactors.ThreadInteractor
-import ru.be_more.orange_forum.repositories.DvachApiRepository
 import ru.be_more.orange_forum.repositories.DvachDbRepository
-import ru.be_more.orange_forum.ui.TempFragment
-import ru.be_more.orange_forum.ui.board.BoardFragment
-import ru.be_more.orange_forum.ui.category.CategoryFragment
-import ru.be_more.orange_forum.ui.download.DownloadFragment
-import ru.be_more.orange_forum.ui.favorire.FavoriteFragment
-import ru.be_more.orange_forum.ui.thread.ThreadFragment
 import java.util.*
 import javax.inject.Inject
 

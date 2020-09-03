@@ -8,7 +8,6 @@ import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.model.Attachment
 import ru.be_more.orange_forum.model.ModalContent
 import ru.be_more.orange_forum.model.Post
-import ru.be_more.orange_forum.repositories.DvachApiRepository
 import javax.inject.Inject
 
 @InjectViewState
