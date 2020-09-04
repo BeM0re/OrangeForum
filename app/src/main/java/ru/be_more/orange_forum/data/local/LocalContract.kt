@@ -33,16 +33,20 @@ interface LocalContract {
     }
 
     interface PostRepository{
-        fun savePost(post: Post, threadNum: Int, boardId: String)
-        fun getPost(boardId: String, postNum: Int): Observable<Post>
-        fun getPosts(boardId: String, threadNum: Int): Observable<List<Post>>
+        fun savePost(post: Post,
+                     threadNum: Int,
+                     boardId: String,
+                     localPath: String,
+                     localThumbnail: String): Single<Unit>
+        fun getPost(boardId: String, postNum: Int): Single<Post>
+        fun getPosts(boardId: String, threadNum: Int): Single<List<Post>>
     }
 
     interface FavoriteRepository{
-        fun getFavorites(): Observable<List<Board>>
+        fun getFavorites(): Single<List<Board>>
     }
 
     interface DownloadRepository{
-        fun getDownloads(): Observable<List<Board>>
+        fun getDownloads(): Single<List<Board>>
     }
 }
