@@ -17,9 +17,6 @@ import javax.inject.Inject
 class ThreadInteractor @Inject constructor() {
 
     @Inject
-    lateinit var apiRepo : DvachApiRepository
-
-    @Inject
     lateinit var dbRepo : DvachDbRepository
 
     private val disposables = LinkedList<Disposable>() //TODO сделать отдельные диспы, а не массив
