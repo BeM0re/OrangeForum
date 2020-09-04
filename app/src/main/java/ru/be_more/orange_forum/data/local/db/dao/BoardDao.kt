@@ -2,7 +2,7 @@ package ru.be_more.orange_forum.data.local.db.dao
 
 import androidx.room.Insert
 import androidx.room.Query
-import io.reactivex.Observable
+import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 
@@ -11,20 +11,17 @@ interface BoardDao {
     fun insertBoard(board: StoredBoard)
 
     @Query("SELECT COUNT(id) FROM boards WHERE id = :boardId")
-    fun getBoardCount(boardId: String): Observable<Int>
+    fun getBoardCount(boardId: String): Single<Int>
 
     @Query("SELECT * FROM boards WHERE categoryId = :category")
-    fun getBoards(category: String): Observable<List<StoredBoard>>
+    fun getBoards(category: String): Single<List<StoredBoard>>
 
     @Query("SELECT * FROM boards")
-    fun getBoards(): Observable<List<StoredBoard>>
+    fun getBoards(): Single<List<StoredBoard>>
 
     @Query("SELECT * FROM boards WHERE id = :boardId")
-    fun getBoard(boardId: String): Observable<List<StoredBoard>>
+    fun getBoard(boardId: String): Single<List<StoredBoard>>
 //     список для того, чтобы 0 тоже возвращался. Тут либо 0, либо 1
-
-    @Query("SELECT * FROM threads WHERE boardId = :boardId")
-    fun getThreadsOnBoard(boardId: String): Observable<List<StoredThread>>
 
     @Query("UPDATE boards SET isFavorite = 1 WHERE id = :boardId ")
     fun markBoardFavorite(boardId: String)
