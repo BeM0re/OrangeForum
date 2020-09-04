@@ -2,7 +2,7 @@ package ru.be_more.orange_forum.data.local.db.dao
 
 import androidx.room.Insert
 import androidx.room.Query
-import io.reactivex.Observable
+import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 
 interface ThreadDao {
@@ -10,23 +10,26 @@ interface ThreadDao {
     fun insertThread(thread: StoredThread)
 
     @Query("SELECT COUNT(num) FROM threads WHERE boardId = :boardId AND num =:threadNum")
-    fun getThreadCount(boardId: String, threadNum: Int): Observable<Int>
+    fun getThreadCount(boardId: String, threadNum: Int): Single<Int>
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
-    fun getThread(boardId: String, threadNum: Int): Observable<StoredThread>
+    fun getThread(boardId: String, threadNum: Int): Single<StoredThread>
+
+    @Query("SELECT * FROM threads WHERE boardId = :boardId")
+    fun getThreads(boardId: String): Single<List<StoredThread>>
 
     //возвращает список из 1 или 0 элементов
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
-    fun getThreadOrEmpty(boardId: String, threadNum: Int): Observable<List<StoredThread>>
+    fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE isDownloaded = 1")
-    fun getDownloadedThreads(): Observable<List<StoredThread>>
+    fun getDownloadedThreads(): Single<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE isFavorite = 1")
-    fun getFavoriteThreads(): Observable<List<StoredThread>>
+    fun getFavoriteThreads(): Single<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId")
-    fun getThreadOpPosts(boardId: String): Observable<List<StoredThread>>
+    fun getThreadOpPosts(boardId: String): Single<List<StoredThread>>
 
     @Query("UPDATE threads SET isDownloaded = 1 WHERE boardId = :boardId AND num = :threadNum")
     fun markThreadDownload(boardId: String, threadNum: Int)
