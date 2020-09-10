@@ -7,10 +7,10 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.model.Attachment
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.ModalContent
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.ModalContent
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.repositories.DvachDbRepository
 import java.util.*
 import javax.inject.Inject

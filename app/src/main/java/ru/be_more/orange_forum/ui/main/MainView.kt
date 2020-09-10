@@ -1,14 +1,8 @@
 package ru.be_more.orange_forum.ui.main
 
-import androidx.fragment.app.Fragment
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndStrategy
 import moxy.viewstate.strategy.StateStrategyType
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.ui.board.BoardFragment
-import ru.be_more.orange_forum.ui.category.CategoryFragment
-import ru.be_more.orange_forum.ui.thread.ThreadFragment
 
 
 @StateStrategyType(value = AddToEndStrategy::class)

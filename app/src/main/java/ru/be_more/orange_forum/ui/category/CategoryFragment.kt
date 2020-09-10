@@ -11,7 +11,7 @@ import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
-import ru.be_more.orange_forum.model.Category
+import ru.be_more.orange_forum.domain.model.Category
 
 
 class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,

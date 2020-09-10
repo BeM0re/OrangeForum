@@ -6,9 +6,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.repositories.DvachDbRepository
 import java.util.*
 import javax.inject.Inject

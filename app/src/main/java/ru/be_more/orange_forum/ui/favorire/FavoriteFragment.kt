@@ -26,9 +26,8 @@ import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.FavoriteListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.model.Attachment
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 class FavoriteFragment private constructor(

@@ -13,36 +13,7 @@ import kotlinx.android.synthetic.main.item_thread_response_form.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.R
-
-//TODO вынести в отдельный файл куда-нибудь
-const val PAGE_HTML = "<html>\n" +
-        "<head>\n" +
-        "    <script type=\"text/javascript\">\n" +
-        "    var sendParams = function() {\n" +
-        "       var responseEl = document.getElementById(\"g-recaptcha-response\");\n" +
-        "\t   var response = responseEl.value;\n" +
-        "\t   return JSON.stringify(response);\n" +
-        "    };\n" +
-        "  </script>\n" +
-        "    <script type=\"text/javascript\">\n" +
-        "      var onloadCallback = function() {\n" +
-        "         grecaptcha.render('html_element', {\n" +
-        "          'sitekey' : '6LeQYz4UAAAAAL8JCk35wHSv6cuEV5PyLhI6IxsM' \n" +
-        "        });" +
-        "      };\n" +
-        "  </script>\n" +
-        "</head>\n" +
-        "<body style=\"\nbackground: #eeeeee;\">\n" +
-        "<form action=\"?\" method=\"POST\">\n\n" +
-        "      <div id=\"html_element\"></div>" +
-        "      <br/>\n" +
-        "    </form>" +
-        "<script src=\"//www.google.com/recaptcha/api.js?onload=onloadCallback\"\n" + "&render=explicit" +
-        "        async defer>\n" +
-        "</script>\n" +
-        "</body>\n" +
-        "</html>\n" +
-        "\n"
+import ru.be_more.orange_forum.consts.PAGE_HTML
 
 class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFragment(), ResponseView{
 

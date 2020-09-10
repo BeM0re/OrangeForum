@@ -10,10 +10,10 @@ import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.interactors.ThreadInteractor
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
-import ru.be_more.orange_forum.model.Attachment
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.ModalContent
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.domain.model.ModalContent
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import java.util.*
 import javax.inject.Inject

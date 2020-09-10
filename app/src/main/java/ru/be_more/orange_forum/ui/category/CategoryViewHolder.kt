@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.TextView
 import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.model.Category
+import ru.be_more.orange_forum.domain.model.Category
 
 class CategoryViewHolder(itemView: View?) : GroupViewHolder(itemView) {
 

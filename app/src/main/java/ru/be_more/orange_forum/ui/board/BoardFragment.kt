@@ -23,9 +23,9 @@ import ru.be_more.orange_forum.consts.BOARD_TAG
 import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
 import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.*
-import ru.be_more.orange_forum.model.Attachment
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 

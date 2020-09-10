@@ -18,24 +18,19 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.item_post.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.bus.AppToBeClosed
-import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.bus.VideoToBeClosed
-import ru.be_more.orange_forum.consts.BOARD_TAG
-import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
 import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.model.Attachment
-import ru.be_more.orange_forum.model.ModalContent
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.model.ModalContent
+import ru.be_more.orange_forum.domain.model.Post
 
 class PostFragment : MvpAppCompatFragment(), PostView {
 

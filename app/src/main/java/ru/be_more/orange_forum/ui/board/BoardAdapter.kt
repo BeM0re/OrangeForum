@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
-import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 
 

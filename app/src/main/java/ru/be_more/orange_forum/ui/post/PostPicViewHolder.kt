@@ -1,19 +1,16 @@
 package ru.be_more.orange_forum.ui.post
 
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.model.AttachFile
-import java.io.File
+import ru.be_more.orange_forum.domain.model.AttachFile
 
 
 class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView) {
