@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.data.remote.repositories
 
 import android.util.Log
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -10,11 +11,11 @@ import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
 import ru.be_more.orange_forum.data.remote.models.DvachThread
-import ru.be_more.orange_forum.data.remote.models.RemoteConverter.Companion.findResponses
-import ru.be_more.orange_forum.data.remote.models.RemoteConverter.Companion.toPost
-import ru.be_more.orange_forum.data.remote.models.RemoteConverter.Companion.toThread
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.findResponses
+import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toPost
+import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toThread
+import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.data.remote.api.DvachApi
 import java.io.File
 import java.util.*
@@ -26,7 +27,7 @@ class ThreadRepositoryImpl @Inject constructor(
     private val dvachApi : DvachApi
 ) : RemoteContract.ThreadRepository{
 
-    override fun getThread(boardId: String, threadNum: Int): Observable<BoardThread>  =
+    override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
         dvachApi.getDvachPostsRx(boardId, threadNum, COOKIE)
             .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.e("M_DvachApiRepository", "get thread via api error = $throwable") }
@@ -38,7 +39,7 @@ class ThreadRepositoryImpl @Inject constructor(
         boardId: String,
         postNum: Int,
         cookie: String
-    ): Observable<Post> =
+    ): Single<Post> =
         dvachApi.getDvachPostRx("get_post", boardId, postNum, COOKIE)
             .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting post error = $throwable") }
@@ -52,7 +53,7 @@ class ThreadRepositoryImpl @Inject constructor(
         g_recaptcha_response: String,
         chaptcha_id : String,
         files : List<File>
-    ): Observable<DvachPostResponse> {
+    ): Single<DvachPostResponse> {
 
         val requestTask =
             RequestBody.create(MediaType.parse("text/plain"), "post")

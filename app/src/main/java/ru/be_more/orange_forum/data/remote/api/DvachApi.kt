@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.data.remote.api
 
 import io.reactivex.Observable
+import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -12,17 +13,17 @@ import ru.be_more.orange_forum.data.remote.models.*
 interface DvachApi{
 
     @GET("makaba/mobile.fcgi")
-    fun getDvachCategories(@Query("task") task : String): Observable<Map<String, List<DvachBoardName>>>
+    fun getDvachCategories(@Query("task") task : String): Single<Map<String, List<DvachBoardName>>>
 
     @GET("{board}/catalog.json")
-    fun getDvachThreads(@Path("board") board : String): Observable<DvachBoard>
+    fun getDvachThreads(@Path("board") board : String): Single<DvachBoard>
 
     @GET("{board}/res/{threadNum}.json")
     fun getDvachPostsRx(
         @Path("board") board : String,
         @Path("threadNum") threadNum : Int,
         @Header("Cookie") cookie: String
-    ): Observable<DvachThread>
+    ): Single<DvachThread>
 
     @GET("makaba/mobile.fcgi")
     fun getDvachPostRx(
@@ -30,19 +31,19 @@ interface DvachApi{
         @Query("board") board : String,
         @Query("post") post : Int,
         @Header("Cookie") cookie: String
-    ): Observable<List<DvachPost>>
+    ): Single<List<DvachPost>>
 
-    @GET("api/captcha/settings/{board}")
+ /*   @GET("api/captcha/settings/{board}")
     fun getDvachCaptchaTypesRx(
         @Path("board") board : String,
         @Header("Cookie") cookie: String
-    ): Observable<CaptchaTypes>
+    ): Single<CaptchaTypes>
 
     @GET("api/captcha/{captchaType}/id")
     fun getDvachCaptchaIdRx(
         @Path("captchaType") captchaType : String,
         @Header("Cookie") cookie: String
-        ) : Observable<GetCaptchaResponse>
+        ) : Single<GetCaptchaResponse>*/
 
     @Multipart
     @POST("makaba/posting.fcgi?json=1")
@@ -60,8 +61,8 @@ interface DvachApi{
         @Part("g-recaptcha-response") g_recaptcha_response: RequestBody,
         @Part("2chaptcha_id") chaptcha_id: RequestBody,
         @Part files: List<MultipartBody.Part>
-    ): Observable<DvachPostResponse>
+    ): Single<DvachPostResponse>
 
-    @GET("api/captcha/recaptcha/mobile")
-    fun getMobileCaptchaRx() : Observable<ResponseBody>
+ /*   @GET("api/captcha/recaptcha/mobile")
+    fun getMobileCaptchaRx() : Single<ResponseBody>*/
 }

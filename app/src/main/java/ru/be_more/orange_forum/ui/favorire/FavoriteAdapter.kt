@@ -8,8 +8,8 @@ import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.FavoriteListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.BoardThread
 
 
 class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,

@@ -9,11 +9,13 @@ import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.bus.RefreshDownload
 import ru.be_more.orange_forum.consts.DOWNLOAD_TAG
-import ru.be_more.orange_forum.data.*
-import ru.be_more.orange_forum.data.local.db.AppDatabase
-import ru.be_more.orange_forum.model.Board
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.data.db.db.AppDatabase
+import ru.be_more.orange_forum.data.db.db.entities.StoredBoard
+import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toStoredFile
+import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toStoredPost
+import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.domain.model.Post
 import java.util.*
 import javax.inject.Inject
 
