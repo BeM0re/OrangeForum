@@ -8,8 +8,8 @@ import kotlinx.android.synthetic.main.item_board_op.*
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
-import ru.be_more.orange_forum.model.AttachFile
-import ru.be_more.orange_forum.model.BoardThread
+import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.ui.post.PostPicAdapter
 

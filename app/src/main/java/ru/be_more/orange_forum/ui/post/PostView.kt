@@ -3,8 +3,7 @@ package ru.be_more.orange_forum.ui.post
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndStrategy
 import moxy.viewstate.strategy.StateStrategyType
-import ru.be_more.orange_forum.model.ModalContent
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.model.ModalContent
 
 
 @StateStrategyType(value = AddToEndStrategy::class)
