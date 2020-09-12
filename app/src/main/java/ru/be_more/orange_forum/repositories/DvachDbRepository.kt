@@ -111,8 +111,6 @@ class DvachDbRepository @Inject constructor(){
         }
     }
 
-
-
     fun getDownloads(): Observable<List<Board>> =
         Observable.zip(
             dvachDbDao.getBoards(),

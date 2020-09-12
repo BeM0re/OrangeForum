@@ -46,19 +46,17 @@ class DbConverter {
             posts = posts
         )
 
-        fun toModelThreads(threads: List<StoredThread>): List<BoardThread> {
-            val result =  LinkedList<BoardThread>()
-            threads.forEach { thread ->
-                result.add(
-                    BoardThread(
-                        num = thread.num,
-                        title = thread.title,
-                        isHidden = thread.isHidden,
-                        isDownloaded = thread.isDownloaded,
-                        isFavorite = thread.isFavorite)
-                ) }
-            return result
-        }
+        fun toModelThreads(threads: List<StoredThread>): List<BoardThread> =
+            threads.map { thread ->
+                BoardThread(
+                    num = thread.num,
+                    title = thread.title,
+                    isHidden = thread.isHidden,
+                    isDownloaded = thread.isDownloaded,
+                    isFavorite = thread.isFavorite
+                )
+
+            }
 
         fun toStoredPost(post: Post, threadNum: Int, boardId: String): StoredPost = StoredPost(
             boardId = boardId,

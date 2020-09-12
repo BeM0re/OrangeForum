@@ -38,4 +38,15 @@ interface RemoteContract {
             files : List<File>
         ): Single<DvachPostResponse>
     }
+
+    interface ResponseRepository {
+        fun postResponse(
+            boardId: String,
+            threadNum: Int,
+            comment: String,
+            captcha_type: String,
+            g_recaptcha_response: String,
+            chaptcha_id : String,
+            files : List<File>): Single<DvachPostResponse>
+    }
 }

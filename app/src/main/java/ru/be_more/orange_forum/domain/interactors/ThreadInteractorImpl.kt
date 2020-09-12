@@ -1,16 +1,13 @@
 package ru.be_more.orange_forum.domain.interactors
 
-import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
-import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.db.DbContract
 import ru.be_more.orange_forum.data.db.db.entities.StoredThread
 import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelThread
-import ru.be_more.orange_forum.data.db.storage.FileStorage
 import ru.be_more.orange_forum.data.local.LocalContract
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
@@ -38,7 +35,7 @@ class ThreadInteractorImpl @Inject constructor(
                     localThread.isEmpty() -> // в базе вообще нет данных о треде
                         return@Function3 webThread
                     localThread[0].isDownloaded -> // тред полностью скачан
-                        return@Function3 toModelThread(localThread[0], posts) //TODO переделать, чтобы новые посты доставлялись в старый тред
+                        return@Function3 localThread[0].copy(posts = posts) //TODO переделать, чтобы новые посты доставлялись в старый тред
                     else -> // о треде есть заметки (избранное, скрытое)
                         return@Function3 webThread.copy(
                             isHidden = localThread[0].isHidden,
@@ -52,7 +49,7 @@ class ThreadInteractorImpl @Inject constructor(
         Completable.create { emitter ->
             Single.zip(dbBoardRepository.getBoardCount(boardId),
                 dbThreadRepository.getThreadOrEmpty(boardId, thread.num),
-                BiFunction <Int, List<StoredThread>, Unit> { boardCount, probablyThread ->
+                BiFunction <Int, List<BoardThread>, Unit> { boardCount, probablyThread ->
 
                     if(boardCount == 0 )
                         dbBoardRepository.insertBoard(boardId, boardName)
@@ -89,9 +86,8 @@ class ThreadInteractorImpl @Inject constructor(
             .processCompletable()
 
     override fun downloadThread(thread: BoardThread, boardId: String, boardName: String): Completable =
-        Completable.create { emitter ->
             dbThreadRepository.downloadThread(thread.copy(isDownloaded = true), boardId)
-                .map {
+                .doOnComplete {
                     thread.posts.forEach { post ->
                         dbPostRepository.savePost(post, thread.num, boardId)
 
@@ -105,18 +101,11 @@ class ThreadInteractorImpl @Inject constructor(
                         }
                     }
                 }
-                .processSingle()
-                .subscribe({emitter.onComplete()}, emitter::onError)
-        }
             .processCompletable()
 
     override fun deleteThread(boardId: String, threadNum: Int): Completable =
-        Completable.create { emitter ->
-            dbThreadRepository.deleteThread(boardId, threadNum)
-                .processSingle()
-                .subscribe ({emitter.onComplete()}, emitter::onError )
-        }
-            .processCompletable()
+        dbThreadRepository.deleteThread(boardId, threadNum)
+        .processCompletable()
 
     override fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<BoardThread?> {
         App.showToast("Не считаю нужным реализовывать")
@@ -127,7 +116,7 @@ class ThreadInteractorImpl @Inject constructor(
         Completable.create { emitter ->
             Single.zip(dbBoardRepository.getBoardCount(boardId),
                 dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
-                BiFunction <Int, List<StoredThread>, Unit> { boardCount, probablyThread ->
+                BiFunction <Int, List<BoardThread>, Unit> { boardCount, probablyThread ->
 
                     if(boardCount == 0 )//борда еще не сохранена
                         dbBoardRepository.insertBoard(boardId, boardName)
@@ -147,6 +136,4 @@ class ThreadInteractorImpl @Inject constructor(
     override fun unmarkThreadHidden(boardId: String, threadNum: Int): Completable =
         dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
             .processCompletable()
-
-
 }

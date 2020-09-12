@@ -44,4 +44,14 @@ class PostRepositoryImpl @Inject constructor(
                 posts.map { post -> toModelPost(post, files.filter { it.postNum == post.num }) }
             })
             .processSingle()
+
+    override fun getOpPosts(): Single<List<Pair<Post, Int>>> =
+        dao.getOpPosts()
+            .map { posts ->
+                posts.map { post ->
+                    Pair(toModelPost(post, listOf()), post.threadNum)
+                }
+            }
+            .processSingle()
+
 }

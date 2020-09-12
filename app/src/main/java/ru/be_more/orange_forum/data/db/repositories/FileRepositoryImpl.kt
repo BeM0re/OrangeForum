@@ -33,11 +33,11 @@ class FileRepositoryImpl @Inject constructor(
             }
             .processSingle()
 
-    override fun getThreadFiles(boardId: String, threadNum: Int): Single<List<AttachFile>> =
+    override fun getThreadFiles(boardId: String, threadNum: Int): Single<List<Pair<AttachFile, Int>>> =
         dao.getThreadFiles(boardId, threadNum)
             .map { files ->
                 files.map { file ->
-                    toModelFile(file)
+                    Pair(toModelFile(file), file.postNum)
                 }
             }
             .processSingle()
@@ -52,5 +52,12 @@ class FileRepositoryImpl @Inject constructor(
             dao.deletePostFiles(boardId, postNum)
         }
 
-
+    override fun getOpFiles(): Single<List<Pair<AttachFile, Int>>> =
+        dao.getOpFiles()
+            .map { files ->
+                files.map { file ->
+                    Pair(toModelFile(file), file.postNum)
+                }
+            }
+            .processSingle()
 }
