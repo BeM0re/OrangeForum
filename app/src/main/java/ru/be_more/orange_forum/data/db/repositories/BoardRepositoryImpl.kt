@@ -19,6 +19,15 @@ class BoardRepositoryImpl @Inject constructor(
     private val dao: DvachDao
 ) : DbContract.BoardRepository{
 
+    override fun getBoards(): Single<List<Board>> =
+        dao.getBoards()
+            .map { boards ->
+                boards.map { board ->
+                    toModelBoard(board, listOf()) }
+                }
+            .processSingle()
+
+
     override fun getBoard(boardId: String): Single<Board> =
         dao.getBoard(boardId)
             .zipWith(dao.getThreads(boardId),
