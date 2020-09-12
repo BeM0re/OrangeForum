@@ -15,6 +15,7 @@ interface DbContract {
     }
 
     interface BoardRepository: BaseRepository{
+        fun getBoards(): Single<List<Board>>
         fun getBoard(boardId: String): Single<Board>
         fun getBoardCount(boardId: String): Single<Int>
         fun insertBoard(boardId: String, boardName: String)
@@ -24,13 +25,14 @@ interface DbContract {
 
     interface ThreadRepository{
         fun insertThread(thread: BoardThread, boardId: String)
-        fun downloadThread(thread: BoardThread, boardId: String): Single<Unit>
-        fun deleteThread(boardId: String, threadNum: Int): Single<Unit>
-        fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<StoredThread>>
-        fun markThreadFavorite(thread: BoardThread, boardId: String, boardName: String): Single<Unit>
+        fun downloadThread(thread: BoardThread, boardId: String): Completable
+        fun deleteThread(boardId: String, threadNum: Int): Completable
+        fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<BoardThread>>
+        fun getDownloadedThreads(): Single<List<Pair<BoardThread, String>>>
+        fun markThreadFavorite(thread: BoardThread, boardId: String, boardName: String): Completable
         fun unmarkThreadFavorite(boardId: String, threadNum: Int): Completable
-        fun markThreadHidden(boardId: String, threadNum: Int): Single<List<StoredThread>>
-        fun unmarkThreadHidden(boardId: String, threadNum: Int): Single<Unit>
+        fun markThreadHidden(boardId: String, threadNum: Int): Completable
+        fun unmarkThreadHidden(boardId: String, threadNum: Int): Completable
     }
 
     interface PostRepository{
@@ -39,6 +41,7 @@ interface DbContract {
                      boardId: String): Single<Unit>
         fun getPost(boardId: String, postNum: Int): Single<Post>
         fun getPosts(boardId: String, threadNum: Int): Single<List<Post>>
+        fun getOpPosts(): Single<List<Pair<Post, Int>>>
     }
 
     interface FileRepository{
@@ -48,9 +51,10 @@ interface DbContract {
                      boardId: String): Completable
 //        fun getFile(boardId: String, postNum: Int): Single<AttachFile>
         fun getPostFiles(boardId: String, postNum: Int): Single<List<AttachFile>>
-        fun getThreadFiles(boardId: String, threadNum: Int): Single<List<AttachFile>>
+        fun getThreadFiles(boardId: String, threadNum: Int): Single<List<Pair<AttachFile, Int>>>
         fun deleteThreadFiles(boardId: String, threadNum: Int): Completable
         fun deletePostFiles(boardId: String, postNum: Int): Completable
+        fun getOpFiles(): Single<List<Pair<AttachFile, Int>>>
     }
 
 
