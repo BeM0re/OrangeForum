@@ -8,8 +8,6 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.consts.*
-import ru.be_more.orange_forum.interactors.ThreadInteractor
-import ru.be_more.orange_forum.repositories.DvachDbRepository
 import java.util.*
 import javax.inject.Inject
 

@@ -1,13 +1,14 @@
-package ru.be_more.orange_forum.data.db.repositories
+package ru.be_more.orange_forum.data.local.repositories
 
 import io.reactivex.Single
 import io.reactivex.functions.Function4
-import ru.be_more.orange_forum.data.db.DbContract
-import ru.be_more.orange_forum.data.db.db.dao.DvachDao
-import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelBoard
-import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelPost
-import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelThreads
+import ru.be_more.orange_forum.data.local.DbContract
+import ru.be_more.orange_forum.data.local.db.dao.DvachDao
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelBoard
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelPost
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
 import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.extentions.disposables
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -45,4 +46,9 @@ class DownloadRepositoryImpl @Inject constructor(
                 boardResult
             }
         )
+
+    override fun release() {
+        disposables.forEach{ it.dispose() }
+        disposables.clear()
+    }
 }

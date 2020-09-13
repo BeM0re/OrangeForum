@@ -1,23 +1,19 @@
-package ru.be_more.orange_forum.data.db.repositories
+package ru.be_more.orange_forum.data.local.repositories
 
 import io.reactivex.Single
 import io.reactivex.functions.Function4
-import ru.be_more.orange_forum.data.db.DbContract
-import ru.be_more.orange_forum.data.db.db.dao.DvachDao
-import ru.be_more.orange_forum.data.db.db.entities.StoredBoard
-import ru.be_more.orange_forum.data.db.db.entities.StoredFile
-import ru.be_more.orange_forum.data.db.db.entities.StoredPost
-import ru.be_more.orange_forum.data.db.db.entities.StoredThread
-import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelBoard
-import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelFile
-import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelPost
-import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelThreads
-import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.data.local.DbContract
+import ru.be_more.orange_forum.data.local.db.dao.DvachDao
+import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
+import ru.be_more.orange_forum.data.local.db.entities.StoredFile
+import ru.be_more.orange_forum.data.local.db.entities.StoredPost
+import ru.be_more.orange_forum.data.local.db.entities.StoredThread
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelBoard
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelPost
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
 import ru.be_more.orange_forum.extentions.processSingle
 import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.Post
-import java.util.*
+import ru.be_more.orange_forum.extentions.disposables
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,5 +42,10 @@ class FavoriteRepositoryImpl @Inject constructor(
             }
         )
             .processSingle()
+
+    override fun release() {
+        disposables.forEach{ it.dispose() }
+        disposables.clear()
+    }
 
 }

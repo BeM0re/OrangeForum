@@ -8,7 +8,7 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.interactors.ThreadInteractor
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -19,15 +19,12 @@ import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
-class ThreadPresenter : MvpPresenter<ThreadView>() {
+class ThreadPresenter @Inject constructor(
+    private val interactor : InteractorContract.ThreadInteractor
+) : MvpPresenter<ThreadView>() {
 
     private lateinit var adapter : ThreadAdapter
 
-    @Inject
-    lateinit var threadInteractor: ThreadInteractor
-
-    @Inject
-    lateinit var repo : DvachApiRepository
     lateinit var thread: BoardThread
     private lateinit var boardId :String
     private var threadNum: Int = 0
@@ -38,7 +35,6 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
     private val modalStack: Stack<ModalContent> = Stack()
 
     fun init(boardId: String, threadNum: Int){
-        App.getComponent().inject(this)
 
         this.boardId = boardId
         this.threadNum = threadNum

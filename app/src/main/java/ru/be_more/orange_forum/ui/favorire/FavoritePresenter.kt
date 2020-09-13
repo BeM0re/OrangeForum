@@ -7,7 +7,7 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.interactors.ThreadInteractor
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.ModalContent
@@ -16,19 +16,15 @@ import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
-class FavoritePresenter : MvpPresenter<FavoriteView>() {
+class FavoritePresenter @Inject constructor(
+    private val interactor : InteractorContract.FavoriteInteractor
+) : MvpPresenter<FavoriteView>() {
 
-    @Inject
-    lateinit var interactor : ThreadInteractor
     private var disposables : LinkedList<Disposable?> = LinkedList()
 
     private val modalStack: Stack<ModalContent> = Stack()
     private lateinit var boards : List<Board>
     private var timestamp: Long = 0
-
-    init {
-        App.getComponent().inject(this)
-    }
 
     override fun onFirstViewAttach(){
         disposables.add(

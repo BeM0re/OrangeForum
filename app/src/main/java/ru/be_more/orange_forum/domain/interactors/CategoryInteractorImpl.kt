@@ -8,7 +8,8 @@ import ru.be_more.orange_forum.domain.converters.RemoteConverter
 import ru.be_more.orange_forum.domain.model.Category
 import javax.inject.Inject
 
-class CategoryInteractorImpl @Inject constructor(private val repository: RemoteContract.CategoryRepository):
+class CategoryInteractorImpl @Inject constructor(
+    private val repository: RemoteContract.CategoryRepository):
         InteractorContract.CategoryInteractor{
 
     @SuppressLint("CheckResult")
