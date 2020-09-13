@@ -139,6 +139,7 @@ class DbConverter {
             files = files.map { toModelFile(it) }
         )
 
+
         fun toModelFile(file: StoredFile): AttachFile = AttachFile(
             path = file.webPath,
             thumbnail = file.webThumbnail,
