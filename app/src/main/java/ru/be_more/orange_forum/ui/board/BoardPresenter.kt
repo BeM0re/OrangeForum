@@ -7,20 +7,17 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.interactors.ThreadInteractor
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.*
 import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
-class BoardPresenter : MvpPresenter<BoardView>() {
+class BoardPresenter @Inject constructor(
+    private val interactor : InteractorContract.BoardInteractor
+): MvpPresenter<BoardView>() {
 
 
-    @Inject
-    lateinit var interactor : ThreadInteractor
-
-    @Inject
-    lateinit var repo : DvachApiRepository
     private var board :Board = Board("", "", listOf(), false)
     private var disposables: LinkedList<Disposable?> = LinkedList()
     private var disposable: Disposable? = null
@@ -30,8 +27,6 @@ class BoardPresenter : MvpPresenter<BoardView>() {
     private val modalStack: Stack<ModalContent> = Stack()
 
     fun init(boardId: String, listener: ((threadNum: Int, threadTitle: String) -> Unit)?){
-
-        App.getComponent().inject(this)
 
         if (listener!=null)
             this.listener = listener

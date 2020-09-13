@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.data.db.db.entities
+package ru.be_more.orange_forum.data.local.db.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

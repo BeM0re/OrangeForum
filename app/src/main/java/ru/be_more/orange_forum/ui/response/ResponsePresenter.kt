@@ -5,18 +5,15 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.domain.InteractorContract
 import javax.inject.Inject
 
-class ResponsePresenter: MvpPresenter<ResponseView>() {
+class ResponsePresenter @Inject constructor(
+    private val interactor : InteractorContract.ResponseInteractor
+): MvpPresenter<ResponseView>() {
 
-    @Inject
-    lateinit var repo : DvachApiRepository
 
     private var disposable: Disposable? = null
-
-    init {
-        App.getComponent().inject(this)
-    }
 
     fun postResponse(boardId: String, threadNum: Int, comment: String, token:String){
 
