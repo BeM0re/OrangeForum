@@ -1,10 +1,10 @@
-package ru.be_more.orange_forum.data.db.db.entities
+package ru.be_more.orange_forum.data.local.db.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import ru.be_more.orange_forum.data.db.db.utils.ReplyConverter
+import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
 import java.util.*
 
 @Entity(

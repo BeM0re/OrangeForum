@@ -6,18 +6,15 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.domain.InteractorContract
 import javax.inject.Inject
 
 @InjectViewState
-class CategoryPresenter : MvpPresenter<CategoryView>() {
+class CategoryPresenter @Inject constructor(
+    private val interactor : InteractorContract.CategoryInteractor
+) : MvpPresenter<CategoryView>() {
 
-    @Inject
-    lateinit var repo : DvachApiRepository //= App.getComponent().getApiRepo()
     private var disposable : Disposable? = null
-
-    init {
-        App.getComponent().inject(this)
-    }
 
     override fun onFirstViewAttach(){
         disposable?.dispose()

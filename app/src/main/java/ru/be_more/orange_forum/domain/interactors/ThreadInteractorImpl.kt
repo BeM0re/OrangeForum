@@ -5,10 +5,8 @@ import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.data.db.DbContract
-import ru.be_more.orange_forum.data.db.db.entities.StoredThread
-import ru.be_more.orange_forum.data.db.db.utils.DbConverter.Companion.toModelThread
-import ru.be_more.orange_forum.data.local.LocalContract
+import ru.be_more.orange_forum.data.local.DbContract
+import ru.be_more.orange_forum.data.local.storage.StorageContract
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -22,7 +20,7 @@ class ThreadInteractorImpl @Inject constructor(
     private val dbThreadRepository: DbContract.ThreadRepository,
     private val dbPostRepository: DbContract.PostRepository,
     private val dbFileRepository: DbContract.FileRepository,
-    private val fileRepository: LocalContract.FileRepository
+    private val fileRepository: StorageContract.FileRepository
 ): InteractorContract.ThreadInteractor {
 
     override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =

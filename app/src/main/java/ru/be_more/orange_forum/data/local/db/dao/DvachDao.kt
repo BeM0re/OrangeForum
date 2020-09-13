@@ -1,13 +1,15 @@
-package ru.be_more.orange_forum.data.db.db.dao
+package ru.be_more.orange_forum.data.local.db.dao
 
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import io.reactivex.Single
-import ru.be_more.orange_forum.data.db.db.entities.StoredBoard
-import ru.be_more.orange_forum.data.db.db.entities.StoredFile
-import ru.be_more.orange_forum.data.db.db.entities.StoredPost
-import ru.be_more.orange_forum.data.db.db.entities.StoredThread
+import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
+import ru.be_more.orange_forum.data.local.db.entities.StoredFile
+import ru.be_more.orange_forum.data.local.db.entities.StoredPost
+import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 
+@Dao
 interface DvachDao {
     //boards
     @Insert

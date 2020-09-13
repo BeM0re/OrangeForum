@@ -1,14 +1,13 @@
-package ru.be_more.orange_forum.data.db.db.utils
+package ru.be_more.orange_forum.data.local.db.utils
 
-import ru.be_more.orange_forum.data.db.db.entities.StoredBoard
-import ru.be_more.orange_forum.data.db.db.entities.StoredFile
-import ru.be_more.orange_forum.data.db.db.entities.StoredPost
-import ru.be_more.orange_forum.data.db.db.entities.StoredThread
+import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
+import ru.be_more.orange_forum.data.local.db.entities.StoredFile
+import ru.be_more.orange_forum.data.local.db.entities.StoredPost
+import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
-import java.util.*
 
 class DbConverter {
     companion object{

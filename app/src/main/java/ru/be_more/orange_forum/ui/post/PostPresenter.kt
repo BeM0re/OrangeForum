@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.ui.post
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
@@ -11,10 +12,10 @@ import ru.be_more.orange_forum.domain.model.Post
 import javax.inject.Inject
 
 @InjectViewState
-class PostPresenter : MvpPresenter<PostView>() {
+class PostPresenter @Inject constructor(
+    private val interactor : InteractorContract.PostInteractor
+) : MvpPresenter<PostView>() {
 
-    @Inject
-    lateinit var repo: DvachApiRepository
     private lateinit var boardId: String
     private lateinit var post: Post
     private lateinit var adapter: PostPicAdapter

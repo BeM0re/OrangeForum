@@ -1,36 +1,24 @@
 package ru.be_more.orange_forum
 
-import android.app.Application
 import android.content.Context
 import android.widget.Toast
-import androidx.room.Room
+import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import ru.be_more.orange_forum.bus.Event
-import ru.be_more.orange_forum.data.db.db.AppDatabase
-import ru.be_more.orange_forum.di.components.DaggerRepoComponent
-import ru.be_more.orange_forum.di.components.RepoComponent
+import ru.be_more.orange_forum.di.components.DaggerAppComponent
 
 
-open class App : Application() {
+class App : DaggerApplication(){
 
     companion object {
-//        private var database: AppDatabase? = null
         private var instance: App? = null
-        private var database: AppDatabase? = null
-        private var component: RepoComponent = DaggerRepoComponent.create()
         private var bus:Subject<Pair<Event, String>> = PublishSubject.create()
-
 
         fun applicationContext(): Context = instance!!.applicationContext
 
         fun getInstance(): App? = instance
-
-        fun getDatabase(): AppDatabase = database!!
-
-        fun getComponent(): RepoComponent {
-            return component
-        }
 
         fun showToast(message: String) {
             Toast.makeText(this.applicationContext(), message, Toast.LENGTH_LONG).show()
@@ -38,23 +26,11 @@ open class App : Application() {
 
         fun getBus() = this.bus
 
-
-
-//        fun getDatabase(): AppDatabase = database!!
     }
 
     override fun onCreate() {
         super.onCreate()
         instance = this
-        database = Room
-            .databaseBuilder(this, AppDatabase::class.java, "database")
-            .build()
-
-        createComponent()
-
-//        database = Room
-//            .databaseBuilder(this, AppDatabase::class.java, DB_NAME)
-//            .build()
 
 //        AppCenter.start(
 //            getInstance(), APP_SECRET,
@@ -62,10 +38,9 @@ open class App : Application() {
 //        )
     }
 
-    protected open fun createComponent() {
-        component = DaggerRepoComponent.builder()
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
+        DaggerAppComponent.builder()
+            .application(this)
             .build()
-    }
-
 
 }

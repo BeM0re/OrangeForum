@@ -14,6 +14,9 @@ const val POST_IN_FAVORITE_TAG = "POST_IN_FAVORITE_FRAGMENT"
 const val POST_IN_DOWNLOAD_TAG = "POST_IN_DOWNLOAD_FRAGMENT"
 const val POST_TAG = "POST_FRAGMENT"
 
+//Base URL
+const val DVACH_ROOT_URL = "https://2ch.hk/"
+
 //temp cookie for 18+ access
 const val COOKIE = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
 

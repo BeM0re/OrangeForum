@@ -7,30 +7,25 @@ import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.repositories.DvachDbRepository
 import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
-class DownloadPresenter : MvpPresenter<DownloadView>() {
+class DownloadPresenter @Inject constructor(
+    private val interactor : InteractorContract.DownloadInteractor
+) : MvpPresenter<DownloadView>() {
 
-    @Inject
-    lateinit var apiRepo : DvachApiRepository
-    @Inject
-    lateinit var dbRepo : DvachDbRepository
     private var disposables : LinkedList<Disposable?> = LinkedList()
 
     private val modalStack: Stack<ModalContent> = Stack()
     private lateinit var boards : List<Board>
     private var timestamp: Long = 0
 
-    init {
-        App.getComponent().inject(this)
-    }
 
     override fun onFirstViewAttach(){
         disposables.add(

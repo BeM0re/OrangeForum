@@ -2,7 +2,7 @@ package ru.be_more.orange_forum.domain.interactors
 
 import io.reactivex.Single
 import io.reactivex.functions.Function4
-import ru.be_more.orange_forum.data.db.DbContract
+import ru.be_more.orange_forum.data.local.DbContract
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.Board
@@ -11,7 +11,6 @@ import ru.be_more.orange_forum.domain.model.Post
 import javax.inject.Inject
 
 class DownloadInteractorImpl @Inject constructor(
-    private val dbDownloadRepository: DbContract.DownloadRepository,
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository,
     private val dbPostRepository: DbContract.PostRepository,

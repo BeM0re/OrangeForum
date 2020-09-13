@@ -1,8 +1,7 @@
-package ru.be_more.orange_forum.data.db
+package ru.be_more.orange_forum.data.local
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import ru.be_more.orange_forum.data.db.db.entities.StoredThread
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -23,7 +22,7 @@ interface DbContract {
         fun unmarkBoardFavorite(boardId: String): Single<Unit>
     }
 
-    interface ThreadRepository{
+    interface ThreadRepository: BaseRepository{
         fun insertThread(thread: BoardThread, boardId: String)
         fun downloadThread(thread: BoardThread, boardId: String): Completable
         fun deleteThread(boardId: String, threadNum: Int): Completable
@@ -35,7 +34,7 @@ interface DbContract {
         fun unmarkThreadHidden(boardId: String, threadNum: Int): Completable
     }
 
-    interface PostRepository{
+    interface PostRepository: BaseRepository{
         fun savePost(post: Post,
                      threadNum: Int,
                      boardId: String): Single<Unit>
@@ -44,7 +43,7 @@ interface DbContract {
         fun getOpPosts(): Single<List<Pair<Post, Int>>>
     }
 
-    interface FileRepository{
+    interface FileRepository: BaseRepository{
         fun saveFile(file: AttachFile,
                      postNum: Int,
                      threadNum: Int,
@@ -58,11 +57,11 @@ interface DbContract {
     }
 
 
-    interface FavoriteRepository{
+    interface FavoriteRepository: BaseRepository{
         fun getFavorites(): Single<List<Board>>
     }
 
-    interface DownloadRepository{
+    interface DownloadRepository: BaseRepository{
         fun getDownloads(): Single<List<Board>>
     }
 }
