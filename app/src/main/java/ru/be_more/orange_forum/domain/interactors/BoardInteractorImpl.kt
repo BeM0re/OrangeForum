@@ -12,7 +12,7 @@ class BoardInteractorImpl @Inject constructor(
     private val apiRepository: RemoteContract.BoardRepository,
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository
-): InteractorContract.BoardInteractor {
+): InteractorContract.BoardInteractor, BaseInteractorImpl() {
 
     override fun getBoard(boardId: String): Single<Board> =
         Single.zip(

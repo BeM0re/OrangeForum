@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.download
 
+import android.annotation.SuppressLint
 import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -17,32 +18,29 @@ import javax.inject.Inject
 
 @InjectViewState
 class DownloadPresenter @Inject constructor(
-    private val interactor : InteractorContract.DownloadInteractor
+    private val downloadInteractor : InteractorContract.DownloadInteractor,
+    private val postInteractor : InteractorContract.PostInteractor
 ) : MvpPresenter<DownloadView>() {
-
-    private var disposables : LinkedList<Disposable?> = LinkedList()
 
     private val modalStack: Stack<ModalContent> = Stack()
     private lateinit var boards : List<Board>
-    private var timestamp: Long = 0
 
-
+    @SuppressLint("CheckResult")
     override fun onFirstViewAttach(){
-        disposables.add(
-            dbRepo.getDownloads()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ boards ->
-                    this.boards = boards
-                    viewState.loadDownloads()
-                },
-                    { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
-                )
-        )
+        downloadInteractor.getDownloads()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ boards ->
+                this.boards = boards
+                viewState.loadDownloads()
+            },
+                { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
+            )
     }
 
     override fun onDestroy() {
-        disposables.forEach { it?.dispose() }
+        downloadInteractor.release()
+        postInteractor.release()
         super.onDestroy()
     }
 
@@ -50,21 +48,18 @@ class DownloadPresenter @Inject constructor(
         this.modalStack.push(content)
     }
 
-
+    @SuppressLint("CheckResult")
     fun getSinglePost(boardId: String, postNum: Int){
-        disposables.add(
-            dbRepo.getPost(boardId, postNum)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        this.putContentInStack(it)
-                        viewState.showPost(it)
-                    },
-                    {  App.showToast("Пост не найден" ) }
-                )
-
-        )
+        postInteractor.getPost(boardId, postNum)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    this.putContentInStack(it)
+                    viewState.showPost(it)
+                },
+                {  App.showToast("Пост не найден" ) }
+            )
     }
 
     fun clearStack() {
