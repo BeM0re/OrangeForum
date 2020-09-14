@@ -11,7 +11,7 @@ import javax.inject.Inject
 class PostInteractorImpl @Inject constructor(
     private val dbPostRepository: DbContract.PostRepository,
     private val dbFileRepository: DbContract.FileRepository
-): InteractorContract.PostInteractor {
+): InteractorContract.PostInteractor, BaseInteractorImpl() {
 
     override fun getPosts(boardId: String, threadNum: Int): Single<List<Post>> =
         Single.zip(dbPostRepository.getPosts(boardId, threadNum),

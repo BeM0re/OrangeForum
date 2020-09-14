@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.category
 
+import android.annotation.SuppressLint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -14,13 +15,10 @@ class CategoryPresenter @Inject constructor(
     private val interactor : InteractorContract.CategoryInteractor
 ) : MvpPresenter<CategoryView>() {
 
-    private var disposable : Disposable? = null
-
+    //Здесь и в других презентерах Disposable не сохраняется, т.к. он сохраняется в репо
+    @SuppressLint("CheckResult")
     override fun onFirstViewAttach(){
-        disposable?.dispose()
-        disposable = repo.getCategories()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        interactor.getCategories()
             .subscribe(
                 { viewState.loadCategories(it) },
                 { App.showToast("Can't load categories") }
@@ -29,6 +27,6 @@ class CategoryPresenter @Inject constructor(
 
     override fun onDestroy() {
         super.onDestroy()
-        disposable?.dispose()
+        interactor.release()
     }
 }

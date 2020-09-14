@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.favorire
 
+import android.annotation.SuppressLint
 import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -17,45 +18,38 @@ import javax.inject.Inject
 
 @InjectViewState
 class FavoritePresenter @Inject constructor(
-    private val interactor : InteractorContract.FavoriteInteractor
+    private val favoriteInteractor : InteractorContract.FavoriteInteractor,
+    private val postInteractor : InteractorContract.PostInteractor
 ) : MvpPresenter<FavoriteView>() {
-
-    private var disposables : LinkedList<Disposable?> = LinkedList()
 
     private val modalStack: Stack<ModalContent> = Stack()
     private lateinit var boards : List<Board>
-    private var timestamp: Long = 0
 
+    @SuppressLint("CheckResult")
     override fun onFirstViewAttach(){
-        disposables.add(
-            interactor.getFavorites()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ boards ->
-                    this.boards = boards
-                    viewState.loadFavorites()
-                },
-                    { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
-                )
-        )
+        favoriteInteractor.getFavorites()
+            .subscribe({ boards ->
+                this.boards = boards
+                viewState.loadFavorites()
+            },
+                { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
+            )
     }
 
+    @SuppressLint("CheckResult")
     fun refreshData(){
-        disposables.add(
-            interactor.getFavorites()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ boards ->
-                    this.boards = boards
-                    viewState.loadFavorites()
-                },
-                    { Log.d("M_DownloadPresenter", "Presenter on refresh error = $it") }
-                )
-        )
+        favoriteInteractor.getFavorites()
+            .subscribe({ boards ->
+                this.boards = boards
+                viewState.loadFavorites()
+            },
+                { Log.d("M_DownloadPresenter", "Presenter on refresh error = $it") }
+            )
     }
 
     override fun onDestroy() {
-        disposables.forEach { it?.dispose() }
+        favoriteInteractor.release()
+        postInteractor.release()
         super.onDestroy()
     }
 
@@ -63,21 +57,18 @@ class FavoritePresenter @Inject constructor(
         this.modalStack.push(content)
     }
 
-
+    @SuppressLint("CheckResult")
     fun getSinglePost(boardId: String, postNum: Int){
-        disposables.add(
-            interactor.getPost(boardId, postNum)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        this.putContentInStack(it)
-                        viewState.showPost(it)
-                    },
-                    {  App.showToast("Пост не найден" ) }
-                )
-
-        )
+        postInteractor.getPost(boardId, postNum)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    this.putContentInStack(it)
+                    viewState.showPost(it)
+                },
+                {  App.showToast("Пост не найден" ) }
+            )
     }
 
     fun clearStack() {
@@ -88,7 +79,6 @@ class FavoritePresenter @Inject constructor(
         modalStack.pop()
 
         if(!modalStack.empty()) {
-
             when(val content = modalStack.peek()){
                 is Attachment -> viewState.showPic(content)
                 is Post -> viewState.showPost(content)

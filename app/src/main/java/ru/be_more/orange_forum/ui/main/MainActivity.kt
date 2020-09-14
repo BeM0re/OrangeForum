@@ -5,33 +5,75 @@ import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
+import moxy.ktx.moxyPresenter
 import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.consts.*
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 import ru.be_more.orange_forum.ui.download.DownloadFragment
 import ru.be_more.orange_forum.ui.favorire.FavoriteFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
+import javax.inject.Inject
+import javax.inject.Provider
 
 
 class MainActivity : MvpAppCompatActivity(), MainView {
 
-    @InjectPresenter(presenterId = "presID", tag = "presTag")
-    lateinit var mainPresenter: MainPresenter
+//    @InjectPresenter(presenterId = "presID", tag = "presTag")
+//    lateinit var mainPresenter: MainPresenter
+
+//    @Inject
+//    lateinit var mainPresenter: MainPresenter
+
+    @Inject
+    lateinit var presenterProvider: Provider<MainPresenter>
+    private val mainPresenter: MainPresenter by moxyPresenter { presenterProvider.get() }
 
     private var timestamp: Long = 0
     private var disposable: Disposable? = null
 
-    override fun setActionBarTitle(title: String? ){
+//    @ProvidePresenter
+//    fun provideWeatherPresenter(boardInteractor : InteractorContract.BoardInteractor,
+//                                threadInteractor : InteractorContract.ThreadInteractor,
+//                                postInteractor : InteractorContract.PostInteractor): MainPresenter =
+//        MainPresenter(boardInteractor, threadInteractor, postInteractor)
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        setTheme(R.style.AppTheme)
+//        Localization.setLanguage(this)
+
+        super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        toolbar.setOnMenuItemClickListener(mOnToolbarItemSelectedListener)
+
+        bottomNavigationView.selectedItemId = R.id.navigation_category
+
+        subscribe()
+    }
+
+    override fun onDestroy() {
+        disposable?.dispose()
+        super.onDestroy()
+    }
+
+
+    override fun setActionBarTitle(title: String?){
         supportActionBar?.title = title
     }
 
@@ -136,7 +178,10 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         when {
             supportFragmentManager.findFragmentByTag(THREAD_TAG) == null ->
                 with(supportFragmentManager.beginTransaction()){
-                    val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
+                    val fragment = ThreadFragment.getThreadFragment(
+                        mainPresenter.getBoardId(),
+                        mainPresenter.getThreadNum()
+                    )
 
                     if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
                         hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
@@ -147,7 +192,10 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 }
             isNew ->
                 with(supportFragmentManager.beginTransaction()) {
-                    val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
+                    val fragment = ThreadFragment.getThreadFragment(
+                        mainPresenter.getBoardId(),
+                        mainPresenter.getThreadNum()
+                    )
 
                     if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
                         hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
@@ -178,8 +226,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun showFavoriteFragment() {
 
-        val fragment = FavoriteFragment.getFavoriteFragment({
-                boardId, threadNum, title ->
+        val fragment = FavoriteFragment.getFavoriteFragment({ boardId, threadNum, title ->
 //            mainPresenter.setBoard("")
             mainPresenter.setBoardAvailability(false)
             removeThreadMarks()
@@ -188,7 +235,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             setActionBarTitle(title)
             mainPresenter.setThread(threadNum)
         },
-            { boardId, boardName->
+            { boardId, boardName ->
                 removeThreadMarks()
                 mainPresenter.setBoardTitle(boardName)
                 setActionBarTitle(boardName)
@@ -234,8 +281,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             setActionBarTitle(title)
             mainPresenter.setThread(threadNum)
         },
-            {
-                    boardId, threadNum -> mainPresenter.deleteThread(boardId, threadNum, true)
+            { boardId, threadNum ->
+                mainPresenter.deleteThread(boardId, threadNum, true)
             })
 
         if (supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG) != null)
@@ -311,30 +358,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         toolbar.menu.findItem(R.id.navigation_download).isVisible = !isDownloaded
         toolbar.menu.findItem(R.id.navigation_download_done).isVisible = isDownloaded
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-
-        setTheme(R.style.AppTheme)
-//        Localization.setLanguage(this)
-
-        super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        toolbar.setOnMenuItemClickListener(mOnToolbarItemSelectedListener)
-
-        bottomNavigationView.selectedItemId = R.id.navigation_category
-
-        subscribe()
-    }
-
-    override fun onDestroy() {
-        disposable?.dispose()
-        super.onDestroy()
-    }
-
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
 
@@ -377,8 +400,11 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 //                for (fragment in supportFragmentManager.fragments){
 //                    Log.d("M_MainActivity","$fragment")
 //                }
-                Log.d("M_MainActivity","active = ${supportFragmentManager.findFragmentById(R.id.container)}")
-                Log.d("M_MainActivity","saved tag = ${mainPresenter.getCurrentFragmentTag()}")
+                Log.d(
+                    "M_MainActivity",
+                    "active = ${supportFragmentManager.findFragmentById(R.id.container)}"
+                )
+                Log.d("M_MainActivity", "saved tag = ${mainPresenter.getCurrentFragmentTag()}")
 
                 return@OnMenuItemClickListener true
             }
@@ -390,7 +416,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                 mainPresenter.deleteThread(
                     mainPresenter.getBoardId(),
                     mainPresenter.getThreadNum(),
-                    false)
+                    false
+                )
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite -> {
@@ -436,7 +463,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     private fun subscribe(){
 
-           disposable = App.getBus().subscribe (
+           disposable = App.getBus().subscribe(
                {
 //                   Log.d("M_MainActivity","event = ${it}")
                    when (it.first) {
@@ -485,7 +512,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
                    }
                },
                {
-                   Log.e("M_MainActivity","bus error = \n $it")
+                   Log.e("M_MainActivity", "bus error = \n $it")
                }
            )
 

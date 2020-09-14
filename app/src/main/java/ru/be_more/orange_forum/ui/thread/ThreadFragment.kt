@@ -100,17 +100,6 @@ class ThreadFragment : MvpAppCompatFragment(),
             threadPresenter.updateThreadData()
         }*/
 
-        //TODO вернуть после API
-/*        rv_post_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && fab_thread_respond.visibility == View.VISIBLE) {
-                    fab_thread_respond.hide()
-                } else if (dy < 0 && fab_thread_respond.visibility != View.VISIBLE ) {
-                    fab_thread_respond.show()
-                }
-            }
-        })*/
     }
 
     private fun hideResponseForm() {
@@ -178,14 +167,6 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun hideResponseFab() {
         fab_thread_respond.visibility = View.GONE
-    }
-
-    override fun setOnPostButtonClickListener() {
-
-        captchaResponse.observe(this, Observer {
-            threadPresenter.setCaptchaResponse(it)
-        })
-
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
