@@ -1,8 +1,8 @@
 package ru.be_more.orange_forum.ui.board
 
+import android.annotation.SuppressLint
 import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import moxy.InjectViewState
 import moxy.MvpPresenter
@@ -14,18 +14,18 @@ import javax.inject.Inject
 
 @InjectViewState
 class BoardPresenter @Inject constructor(
-    private val interactor : InteractorContract.BoardInteractor
+    private val boardInteractor : InteractorContract.BoardInteractor,
+    private val threadInteractor : InteractorContract.ThreadInteractor,
+    private val postInteractor : InteractorContract.PostInteractor
 ): MvpPresenter<BoardView>() {
 
-
     private var board :Board = Board("", "", listOf(), false)
-    private var disposables: LinkedList<Disposable?> = LinkedList()
-    private var disposable: Disposable? = null
-    private var boardId: String = ""
+    private var boardId: String = "" //FIXME убрать борд айди, раз есть борда (выше)
     var listener: ((threadNum: Int, threadTitle: String) -> Unit)? = null
 
     private val modalStack: Stack<ModalContent> = Stack()
 
+    @SuppressLint("CheckResult")
     fun init(boardId: String, listener: ((threadNum: Int, threadTitle: String) -> Unit)?){
 
         if (listener!=null)
@@ -34,24 +34,22 @@ class BoardPresenter @Inject constructor(
         if (!boardId.isNullOrEmpty())
             this.boardId = boardId
 
-//        disposables.add(
-        disposable =
-            interactor.getBoard(this.boardId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ board ->
+        boardInteractor.getBoard(this.boardId)
+            .subscribe(
+                { board ->
                     viewState.loadBoard(board)
                     viewState.setBoardMarks(board.isFavorite)
                 },
-                    {
-                        Log.e("M_BoardPresenter","Getting board error = $it")
-                })
-//        )
+                {
+                    Log.e("M_BoardPresenter","Getting board error = $it")
+                }
+            )
     }
 
     override fun onDestroy() {
-//        disposables.forEach { it?.dispose() }
-        disposable?.dispose()
+        boardInteractor.release()
+        threadInteractor.release()
+        postInteractor.release()
         super.onDestroy()
     }
 
@@ -79,36 +77,26 @@ class BoardPresenter @Inject constructor(
         getSinglePost(this.boardId, postNum)
     }
 
+    @SuppressLint("CheckResult")
     fun getSinglePost(boardId: String, postNum: Int){
-        disposable?.dispose()
-        disposable =
-//        disposables.add(
-            repo.getPost(boardId, postNum)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        this.putContentInStack(it)
-                        viewState.showPost(it)
-                    },
-                    { App.showToast("Пост не найден") }
-                )
-
-//        )
+        postInteractor.getPost(boardId, postNum)
+            .subscribe(
+                {
+                    this.putContentInStack(it)
+                    viewState.showPost(it)
+                },
+                { App.showToast("Пост не найден") }
+            )
     }
 
+    @SuppressLint("CheckResult")
     fun hideThread(threadNum: Int, isHidden: Boolean) {
         if (!isHidden)
-            interactor.markThreadHidden(boardId, threadNum)
+            threadInteractor.markThreadHidden(boardId, board.name, threadNum)
+                .subscribe()
         else {
-//            disposables.add(
-            disposable?.dispose()
-            disposable =
-                interactor.unmarkThreadHidden(boardId, threadNum)
-                    .subscribeOn(Schedulers.io())
-                    .subscribe({},
-                        { Log.d("M_BoardPresenter", "error = $it") })
-//            )
+            threadInteractor.unmarkThreadHidden(boardId, threadNum)
+                .subscribe()
         }
     }
 
@@ -116,11 +104,4 @@ class BoardPresenter @Inject constructor(
         viewState.setBoardMarks(board.isFavorite)
     }
 
-  /*  fun favoriteThread(threadNum: Int, isFavorite: Boolean) {
-        if (isFavorite)
-            interactor.markThreadFavorite(boardId, threadNum, board.title)
-        else
-            interactor.unmarkThreadFavorite(boardId, threadNum)
-    }
-*/
 }

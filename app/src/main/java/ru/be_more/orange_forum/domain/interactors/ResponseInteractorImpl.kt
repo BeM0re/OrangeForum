@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class ResponseInteractorImpl @Inject constructor(
     private val responseRepository: RemoteContract.ResponseRepository
-): InteractorContract.ResponseInteractor {
+): InteractorContract.ResponseInteractor, BaseInteractorImpl() {
     override fun postResponse(
         boardId: String,
         threadNum: Int,

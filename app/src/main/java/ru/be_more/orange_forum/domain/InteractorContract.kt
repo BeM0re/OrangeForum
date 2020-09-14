@@ -10,19 +10,23 @@ import ru.be_more.orange_forum.domain.model.Post
 
 interface InteractorContract {
 
-    interface CategoryInteractor {
+    interface BaseInteractor {
+        fun release()
+    }
+
+    interface CategoryInteractor: BaseInteractor {
         fun getCategories(): Single<List<Category>>
     }
 
-    interface BoardInteractor {
+    interface BoardInteractor: BaseInteractor {
         fun getBoard(boardId: String): Single<Board>
         fun markBoardFavorite(boardId: String, boardName: String): Single<Int>
         fun unmarkBoardFavorite(boardId: String): Single<Unit>
     }
 
-    interface ThreadInteractor {
+    interface ThreadInteractor: BaseInteractor {
         fun getThread(boardId: String, threadNum: Int): Single<BoardThread>
-        fun markThreadFavorite(thread: BoardThread, boardId: String, boardName: String): Completable
+        fun markThreadFavorite(threadNum: Int, boardId: String, boardName: String): Completable
         fun unmarkThreadFavorite(boardId: String, threadNum: Int):Completable
         fun downloadThread(thread: BoardThread, boardId: String, boardName: String):Completable
         fun deleteThread(boardId: String, threadNum: Int): Completable
@@ -31,23 +35,23 @@ interface InteractorContract {
         fun unmarkThreadHidden(boardId: String, threadNum: Int):Completable
     }
 
-    interface PostInteractor {
+    interface PostInteractor: BaseInteractor {
         fun getPosts(boardId: String, threadNum: Int): Single<List<Post>>
         fun getPost(boardId: String, postNum: Int): Single<Post>
     }
 
-    interface ResponseInteractor {
+    interface ResponseInteractor: BaseInteractor {
         fun postResponse(boardId: String,
                          threadNum: Int,
                          comment: String,
                          token:String): Single<DvachPostResponse>
     }
 
-    interface FavoriteInteractor {
+    interface FavoriteInteractor: BaseInteractor {
         fun getFavorites(): Single<List<Board>>
     }
 
-    interface DownloadInteractor {
+    interface DownloadInteractor: BaseInteractor {
         fun getDownloads(): Single<List<Board>>
     }
 

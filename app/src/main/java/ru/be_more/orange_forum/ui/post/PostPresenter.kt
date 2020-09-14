@@ -12,23 +12,16 @@ import ru.be_more.orange_forum.domain.model.Post
 import javax.inject.Inject
 
 @InjectViewState
-class PostPresenter @Inject constructor(
-    private val interactor : InteractorContract.PostInteractor
-) : MvpPresenter<PostView>() {
+class PostPresenter @Inject constructor() : MvpPresenter<PostView>() {
 
-    private lateinit var boardId: String
     private lateinit var post: Post
-    private lateinit var adapter: PostPicAdapter
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
     private lateinit var pic: Attachment
 
-
     fun init(content: ModalContent,
              picListener: PicOnClickListener,
              linkListener: LinkOnClickListener) {
-
-        App.getComponent().inject(this)
 
         this.picListener = picListener
         this.linkListener = linkListener
@@ -44,9 +37,6 @@ class PostPresenter @Inject constructor(
             }
         }
     }
-
-
-    fun getAdapter(): PostPicAdapter = this.adapter
 
     fun getPicListener(): PicOnClickListener = this.picListener
 

@@ -25,12 +25,12 @@ class App : DaggerApplication(){
         }
 
         fun getBus() = this.bus
-
     }
 
     override fun onCreate() {
         super.onCreate()
         instance = this
+
 
 //        AppCenter.start(
 //            getInstance(), APP_SECRET,
@@ -42,5 +42,4 @@ class App : DaggerApplication(){
         DaggerAppComponent.builder()
             .application(this)
             .build()
-
 }

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class FavoriteInteractorImpl @Inject constructor(
     private val favoriteRepository: DbContract.FavoriteRepository
-): InteractorContract.FavoriteInteractor {
+): InteractorContract.FavoriteInteractor, BaseInteractorImpl() {
 
     override fun getFavorites(): Single<List<Board>> =
         favoriteRepository.getFavorites()

@@ -15,7 +15,7 @@ class DownloadInteractorImpl @Inject constructor(
     private val dbThreadRepository: DbContract.ThreadRepository,
     private val dbPostRepository: DbContract.PostRepository,
     private val dbFileRepository: DbContract.FileRepository
-): InteractorContract.DownloadInteractor {
+): InteractorContract.DownloadInteractor, BaseInteractorImpl() {
     override fun getDownloads(): Single<List<Board>> =
         Single.zip(
             dbBoardRepository.getBoards(),

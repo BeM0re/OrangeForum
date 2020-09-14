@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class CategoryInteractorImpl @Inject constructor(
     private val repository: RemoteContract.CategoryRepository):
-        InteractorContract.CategoryInteractor{
+        InteractorContract.CategoryInteractor, BaseInteractorImpl() {
 
     @SuppressLint("CheckResult")
     override fun getCategories(): Single<List<Category>> =

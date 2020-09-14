@@ -21,7 +21,7 @@ class ThreadInteractorImpl @Inject constructor(
     private val dbPostRepository: DbContract.PostRepository,
     private val dbFileRepository: DbContract.FileRepository,
     private val fileRepository: StorageContract.FileRepository
-): InteractorContract.ThreadInteractor {
+): InteractorContract.ThreadInteractor, BaseInteractorImpl() {
 
     override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
         Single.zip(
@@ -43,35 +43,35 @@ class ThreadInteractorImpl @Inject constructor(
             }
         )
 
-    override fun markThreadFavorite(thread: BoardThread, boardId: String, boardName: String): Completable =
+    override fun markThreadFavorite(threadNum: Int, boardId: String, boardName: String): Completable =
         Completable.create { emitter ->
             Single.zip(dbBoardRepository.getBoardCount(boardId),
-                dbThreadRepository.getThreadOrEmpty(boardId, thread.num),
-                BiFunction <Int, List<BoardThread>, Unit> { boardCount, probablyThread ->
+                dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
+                apiRepository.getThread(boardId, threadNum),
+                Function3 <Int, List<BoardThread>, BoardThread, Unit> { boardCount, probablyThread, webThread ->
 
                     if(boardCount == 0 )
                         dbBoardRepository.insertBoard(boardId, boardName)
 
                     if (probablyThread.isEmpty()){//тред еще не сохранен
-                        dbThreadRepository.insertThread(thread, boardId)
+                        dbThreadRepository.insertThread(webThread, boardId)
 
-                        dbPostRepository.savePost(thread.posts[0], thread.num, boardId)
+                        dbPostRepository.savePost(webThread.posts[0], webThread.num, boardId)
 
                         //Сохраняем файлы в ФС и сохраняем ссылки на файлы в модель
-                        thread.posts[0].files = thread.posts[0].files.map { file ->
+                        webThread.posts[0].files = webThread.posts[0].files.map { file ->
                             return@map file.copy(
                                 localPath = fileRepository.saveFile(file.path).toString(),
                                 localThumbnail = fileRepository.saveFile(file.thumbnail).toString()
                             )
                         }
 
-                        thread.posts[0].files.forEach { file ->
-                            dbFileRepository.saveFile(file, thread.num, thread.num, boardId)
+                        webThread.posts[0].files.forEach { file ->
+                            dbFileRepository.saveFile(file, webThread.num, webThread.num, boardId)
                         }
                     }
                     else
-                        dbThreadRepository.markThreadFavorite(thread, boardId, boardName)
-
+                        dbThreadRepository.markThreadFavorite(webThread, boardId, boardName)
                 }
             )
                 .processSingle()

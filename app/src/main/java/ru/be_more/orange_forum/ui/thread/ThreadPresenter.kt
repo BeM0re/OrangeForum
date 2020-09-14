@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.ui.thread
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -14,110 +15,52 @@ import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
 class ThreadPresenter @Inject constructor(
-    private val interactor : InteractorContract.ThreadInteractor
+    private val threadInteractor : InteractorContract.ThreadInteractor,
+    private val postInteractor : InteractorContract.PostInteractor
 ) : MvpPresenter<ThreadView>() {
 
     private lateinit var adapter : ThreadAdapter
 
     lateinit var thread: BoardThread
     private lateinit var boardId :String
-    private var threadNum: Int = 0
-    private var disposables: LinkedList<Disposable?> = LinkedList()
-    private var isInvisibleRecaptcha: Boolean = false
-    private var captchaResponse: MutableLiveData<String> = MutableLiveData()
+    private var threadNum: Int = 0 //FIXME get rid of threadNum
 
     private val modalStack: Stack<ModalContent> = Stack()
 
+    @SuppressLint("CheckResult")
     fun init(boardId: String, threadNum: Int){
 
         this.boardId = boardId
         this.threadNum = threadNum
 
-        disposables.add(
-            threadInteractor.getThread(boardId, threadNum)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        thread = it
-                        viewState.loadThread(thread)
-                        viewState.setThreadMarks(thread.isDownloaded, thread.isFavorite)
-                    },
-                    {
-                        Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
-                    }
-                )
-        )
-    //TODO прятать fab при нажатии на ответ
+        threadInteractor.getThread(boardId, threadNum)
+            .subscribe(
+                {
+                    thread = it
+                    viewState.loadThread(thread)
+                    viewState.setThreadMarks(thread.isDownloaded, thread.isFavorite)
+                },
+                {
+                    Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
+                }
+            )
 
-        captchaResponse.observeForever {
-            Log.d("M_ThreadPresenter", "posting. token = $it")
-        }
+    //TODO прятать fab при нажатии на ответ
     }
 
-    /*fun post(){
-        isInvisibleRecaptcha = false
-        disposables.add(
-            repo.getCaptchaTypes()
-                ?.subscribeOn(Schedulers.io())
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribe (
-                    {
-                        Log.d("M_ThreadPresenter","captchas = $it")
-//                        if(it.id == "invisible_recaptcha") { //TODO переделать на нативную капчу после API
-                        if(it.id == "recaptcha") {
-
-                            viewState.showResponseForm()
-
-                            isInvisibleRecaptcha = true
-                            disposables.add(repo.getCaptchaId("recaptcha")
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(
-                                    { response -> //response is Captcha
-                                        Log.d("M_ThreadPresenter", "captchaResponse = $response")
-                                        postResponse(response.id, "recaptcha")
-                                    },
-                                    { throwable ->
-                                        Log.d("M_ThreadPresenter", "getCaptchaId error = $throwable")
-                                    }
-                                )
-                            )
-                        }
-                    },
-                    { Log.d("M_ThreadPresenter", "getCaptchaTypes error = $it") },
-                    {
-                        if (!isInvisibleRecaptcha)
-                            Toast.makeText(
-                                App.applicationContext(),
-                                App.applicationContext().getString(
-                                    R.string.no_invisible_recaptcha_error),
-                                Toast.LENGTH_SHORT).show()
-                    }
-                )
-        )
-
-
-    }*/
-
     override fun onDestroy() {
-        disposables.forEach {
-            it?.dispose()
-        }
-        threadInteractor.destroy()
+        threadInteractor.release()
+        postInteractor.release()
         super.onDestroy()
     }
 
-/*    fun showFooter() {
-        adapter.setIsFooterShown(true)
-        viewState.showResponseForm()
-//        viewState.setOnPostButtonClickListener()
-    }*/
 
     fun initAdapter(thread: BoardThread,
                     picListener: PicOnClickListener,
@@ -128,11 +71,6 @@ class ThreadPresenter @Inject constructor(
     fun getAdapter(): ThreadAdapter = this.adapter
 
     fun getBoardId(): String = this.boardId
-
-    fun setCaptchaResponse(captchaResponse: String) {
-        Log.d("M_ThreadPresenter", "presenter token = $captchaResponse")
-        this.captchaResponse.postValue(captchaResponse)
-    }
 
     fun setBoardId(): String = this.boardId
 
@@ -161,20 +99,16 @@ class ThreadPresenter @Inject constructor(
         getSinglePost(this.boardId, postNum)
     }
 
+    @SuppressLint("CheckResult")
     fun getSinglePost(boardId: String, postNum: Int){
-        disposables.add(
-            repo.getPost(boardId, postNum)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        this.putContentInStack(it)
-                        viewState.showPost(it)
-                    },
-                    { App.showToast("Пост не найден") }
-                )
-
-        )
+        postInteractor.getPost(boardId, postNum)
+            .subscribe(
+                {
+                    this.putContentInStack(it)
+                    viewState.showPost(it)
+                },
+                { App.showToast("Пост не найден") }
+            )
     }
 
     fun setThreadMarks(){
