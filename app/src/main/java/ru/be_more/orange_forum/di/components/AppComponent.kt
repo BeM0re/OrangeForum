@@ -1,14 +1,17 @@
 package ru.be_more.orange_forum.di.components
 
 import android.app.Application
-import dagger.BindsInstance
-import dagger.Component
-import dagger.android.AndroidInjectionModule
-import dagger.android.AndroidInjector
+//import dagger.BindsInstance
+//import dagger.Component
+//import dagger.android.AndroidInjectionModule
+//import dagger.android.AndroidInjector
+import org.koin.java.KoinJavaComponent.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.di.modules.*
-import javax.inject.Singleton
+import ru.be_more.orange_forum.ui.main.MainActivity
+//import javax.inject.Singleton
 
+/*
 @Singleton
 @Component(
     modules = [
@@ -19,8 +22,8 @@ import javax.inject.Singleton
         DatabaseModule::class,
         StorageModule::class,
         InteractorModule::class,
-        RepositoryModule::class,
-        PresenterModule::class
+        RepositoryModule::class
+//        PresenterModule::class
     ]
 )
 interface AppComponent : AndroidInjector<App> {
@@ -33,4 +36,6 @@ interface AppComponent : AndroidInjector<App> {
     }
 
     override fun inject(instance: App?)
-}
+//    fun inject(instance: MainActivity)
+}*/
+

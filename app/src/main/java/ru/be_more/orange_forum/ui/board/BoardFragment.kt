@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.fragment_board.*
 //import leakcanary.AppWatcher
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
@@ -26,6 +27,7 @@ import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.ui.category.CategoryPresenter
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 
@@ -37,8 +39,9 @@ class BoardFragment: MvpAppCompatFragment(),
     LinkOnClickListener,
     CloseModalListener {
 
-    @InjectPresenter(presenterId = "presID", tag = "presTag")
-    lateinit var boardPresenter : BoardPresenter
+//    @InjectPresenter(presenterId = "presID", tag = "presTag")
+//    lateinit var boardPresenter : BoardPresenter
+    private val boardPresenter: BoardPresenter by inject()
 
     private var listener: ((Int, String) -> Unit)? = null
     private var id: String = ""
