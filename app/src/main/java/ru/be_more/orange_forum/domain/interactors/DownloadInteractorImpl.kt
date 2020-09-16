@@ -8,9 +8,9 @@ import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
-import javax.inject.Inject
+//import javax.inject.Inject
 
-class DownloadInteractorImpl @Inject constructor(
+class DownloadInteractorImpl /*@Inject constructor*/(
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository,
     private val dbPostRepository: DbContract.PostRepository,

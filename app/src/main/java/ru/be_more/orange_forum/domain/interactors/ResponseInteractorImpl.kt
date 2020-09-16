@@ -4,9 +4,9 @@ import io.reactivex.Single
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
 import ru.be_more.orange_forum.domain.InteractorContract
-import javax.inject.Inject
+//import javax.inject.Inject
 
-class ResponseInteractorImpl @Inject constructor(
+class ResponseInteractorImpl /*@Inject constructor*/(
     private val responseRepository: RemoteContract.ResponseRepository
 ): InteractorContract.ResponseInteractor, BaseInteractorImpl() {
     override fun postResponse(

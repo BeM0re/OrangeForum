@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.util.Log
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.domain.InteractorContract
-import javax.inject.Inject
+//import javax.inject.Inject
 
-class ResponsePresenter @Inject constructor(
+class ResponsePresenter /*@Inject constructor*/(
     private val interactor : InteractorContract.ResponseInteractor
 ): MvpPresenter<ResponseView>() {
 

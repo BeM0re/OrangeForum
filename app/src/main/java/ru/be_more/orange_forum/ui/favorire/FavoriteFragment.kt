@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_favorite.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
@@ -29,6 +30,7 @@ import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.post.PostFragment
+import ru.be_more.orange_forum.ui.post.PostPresenter
 
 class FavoriteFragment private constructor(
     var intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
@@ -41,8 +43,9 @@ class FavoriteFragment private constructor(
     LinkOnClickListener,
     CloseModalListener {
 
-    @InjectPresenter(presenterId = "presID", tag = "presTag")
-    lateinit var favoritePresenter : FavoritePresenter
+//    @InjectPresenter(presenterId = "presID", tag = "presTag")
+//    lateinit var favoritePresenter : FavoritePresenter
+    private val favoritePresenter: FavoritePresenter by inject()
 
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : FavoriteAdapter

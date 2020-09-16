@@ -13,9 +13,9 @@ import ru.be_more.orange_forum.consts.DVACH_ROOT_URL
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import javax.inject.Inject
+//import javax.inject.Inject
 
-class StorageContractImpl @Inject constructor(
+class StorageContractImpl /*@Inject constructor*/(
     private val context: Context
 ) : StorageContract.FileRepository{
 

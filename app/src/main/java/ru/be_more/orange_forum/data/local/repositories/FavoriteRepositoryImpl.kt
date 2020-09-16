@@ -14,11 +14,11 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModel
 import ru.be_more.orange_forum.extentions.processSingle
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.disposables
-import javax.inject.Inject
-import javax.inject.Singleton
+//import javax.inject.Inject
+//import javax.inject.Singleton
 
-@Singleton
-class FavoriteRepositoryImpl @Inject constructor(
+//@Singleton
+class FavoriteRepositoryImpl /*@Inject constructor*/(
     private val dao: DvachDao
 ) : DbContract.FavoriteRepository{
 

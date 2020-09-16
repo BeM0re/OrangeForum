@@ -9,10 +9,10 @@ import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
-import javax.inject.Inject
+//import javax.inject.Inject
 
 @InjectViewState
-class PostPresenter @Inject constructor() : MvpPresenter<PostView>() {
+class PostPresenter /*@Inject constructor()*/ : MvpPresenter<PostView>() {
 
     private lateinit var post: Post
     private lateinit var picListener: PicOnClickListener

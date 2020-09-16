@@ -5,29 +5,37 @@ import android.util.Log
 import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+//import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+//import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
+import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.domain.InteractorContract
+//import ru.be_more.orange_forum.di.components.AppComponent
+//import ru.be_more.orange_forum.di.components.DaggerAppComponent
+//import ru.be_more.orange_forum.di.modules.AppModule
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 import ru.be_more.orange_forum.ui.download.DownloadFragment
 import ru.be_more.orange_forum.ui.favorire.FavoriteFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
-import javax.inject.Inject
-import javax.inject.Provider
+//import javax.inject.Inject
+//import javax.inject.Provider
 
-
+//@AndroidEntryPoint
 class MainActivity : MvpAppCompatActivity(), MainView {
+
+    private val mainPresenter: MainPresenter by inject()
 
 //    @InjectPresenter(presenterId = "presID", tag = "presTag")
 //    lateinit var mainPresenter: MainPresenter
@@ -35,9 +43,9 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 //    @Inject
 //    lateinit var mainPresenter: MainPresenter
 
-    @Inject
-    lateinit var presenterProvider: Provider<MainPresenter>
-    private val mainPresenter: MainPresenter by moxyPresenter { presenterProvider.get() }
+//    @Inject
+//    lateinit var presenterProvider: Provider<MainPresenter>
+//    private val mainPresenter: MainPresenter by moxyPresenter { presenterProvider.get() }
 
     private var timestamp: Long = 0
     private var disposable: Disposable? = null
@@ -53,6 +61,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
         setTheme(R.style.AppTheme)
 //        Localization.setLanguage(this)
+//        App.getComponent().inject(null)
 
         super.onCreate(savedInstanceState)
 

@@ -11,11 +11,11 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStore
 import ru.be_more.orange_forum.extentions.processSingle
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.disposables
-import javax.inject.Inject
-import javax.inject.Singleton
+//import javax.inject.Inject
+//import javax.inject.Singleton
 
-@Singleton
-class PostRepositoryImpl @Inject constructor(
+//@Singleton
+class PostRepositoryImpl /*@Inject constructor*/(
     private val dao: DvachDao
 ) : DbContract.PostRepository{
 
