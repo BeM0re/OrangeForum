@@ -12,13 +12,16 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.android.synthetic.main.item_thread_response_form.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.PAGE_HTML
+import ru.be_more.orange_forum.ui.thread.ThreadPresenter
 
 class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFragment(), ResponseView{
 
-    @InjectPresenter(presenterId = "presID", tag = "presTag")
-    lateinit var responsePresenter : ResponsePresenter
+//    @InjectPresenter(presenterId = "presID", tag = "presTag")
+//    lateinit var responsePresenter : ResponsePresenter
+    private val responsePresenter: ResponsePresenter by inject()
 
     val captchaResponse : MutableLiveData<String> = MutableLiveData()
 

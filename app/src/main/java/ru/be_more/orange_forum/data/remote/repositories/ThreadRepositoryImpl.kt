@@ -19,11 +19,11 @@ import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.data.remote.api.DvachApi
 import java.io.File
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
+//import javax.inject.Inject
+//import javax.inject.Singleton
 
-@Singleton
-class ThreadRepositoryImpl @Inject constructor(
+//@Singleton
+class ThreadRepositoryImpl /*@Inject constructor*/(
     private val dvachApi : DvachApi
 ) : RemoteContract.ThreadRepository{
 

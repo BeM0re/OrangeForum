@@ -12,9 +12,9 @@ import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.extentions.processCompletable
 import ru.be_more.orange_forum.extentions.processSingle
-import javax.inject.Inject
+//import javax.inject.Inject
 
-class ThreadInteractorImpl @Inject constructor(
+class ThreadInteractorImpl /*@Inject constructor*/(
     private val apiRepository: RemoteContract.ThreadRepository,
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository,

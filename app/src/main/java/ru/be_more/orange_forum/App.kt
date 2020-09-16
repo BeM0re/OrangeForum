@@ -1,19 +1,27 @@
 package ru.be_more.orange_forum
 
+import android.app.Application
 import android.content.Context
 import android.widget.Toast
-import dagger.android.AndroidInjector
-import dagger.android.DaggerApplication
+//import dagger.android.AndroidInjector
+//import dagger.android.DaggerApplication
+//import dagger.hilt.android.HiltAndroidApp
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 import ru.be_more.orange_forum.bus.Event
-import ru.be_more.orange_forum.di.components.DaggerAppComponent
+//import ru.be_more.orange_forum.di.components.AppComponent
+//import ru.be_more.orange_forum.di.components.DaggerAppComponent
+import ru.be_more.orange_forum.di.modules.*
 
-
-class App : DaggerApplication(){
+//@HiltAndroidApp
+class App : Application(){
 
     companion object {
         private var instance: App? = null
+//        private lateinit var diComponent: AndroidInjector<out DaggerApplication>
         private var bus:Subject<Pair<Event, String>> = PublishSubject.create()
 
         fun applicationContext(): Context = instance!!.applicationContext
@@ -25,11 +33,36 @@ class App : DaggerApplication(){
         }
 
         fun getBus() = this.bus
+
+//        fun getComponent() = diComponent
+
+//        lateinit var appComponent: AppComponent
+
     }
 
     override fun onCreate() {
+//        appComponent = DaggerAppComponent.builder().
+
+       /* diComponent = DaggerAppComponent.builder()
+            .application(this)
+            .build()*/
         super.onCreate()
         instance = this
+
+        startKoin {
+            androidContext(this@App)
+            androidLogger()
+            modules(listOf(
+                appModule,
+                presenterModule,
+                repositoryModule,
+                storageModule,
+                databaseModule,
+                interactorModule,
+                networkModule)
+            )
+        }
+
 
 
 //        AppCenter.start(
@@ -38,8 +71,5 @@ class App : DaggerApplication(){
 //        )
     }
 
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
-        DaggerAppComponent.builder()
-            .application(this)
-            .build()
+//    override fun applicationInjector(): AndroidInjector<out DaggerApplication> = diComponent
 }

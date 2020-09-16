@@ -14,10 +14,10 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 import java.util.*
-import javax.inject.Inject
+//import javax.inject.Inject
 
 @InjectViewState
-class FavoritePresenter @Inject constructor(
+class FavoritePresenter /*@Inject constructor*/(
     private val favoriteInteractor : InteractorContract.FavoriteInteractor,
     private val postInteractor : InteractorContract.PostInteractor
 ) : MvpPresenter<FavoriteView>() {

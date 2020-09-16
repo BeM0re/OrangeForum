@@ -10,10 +10,10 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.*
 import java.util.*
-import javax.inject.Inject
+//import javax.inject.Inject
 
 @InjectViewState
-class BoardPresenter @Inject constructor(
+class BoardPresenter /*@Inject constructor*/(
     private val boardInteractor : InteractorContract.BoardInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val postInteractor : InteractorContract.PostInteractor

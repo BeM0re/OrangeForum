@@ -8,10 +8,10 @@ import moxy.InjectViewState
 import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
-import javax.inject.Inject
+//import javax.inject.Inject
 
 @InjectViewState
-class CategoryPresenter @Inject constructor(
+class CategoryPresenter /*@Inject constructor*/(
     private val interactor : InteractorContract.CategoryInteractor
 ) : MvpPresenter<CategoryView>() {
 

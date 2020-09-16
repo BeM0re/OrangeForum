@@ -9,11 +9,11 @@ import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toCat
 import ru.be_more.orange_forum.data.remote.api.DvachApi
 import ru.be_more.orange_forum.data.remote.models.DvachBoardName
 import ru.be_more.orange_forum.domain.model.Category
-import javax.inject.Inject
-import javax.inject.Singleton
+//import javax.inject.Inject
+//import javax.inject.Singleton
 
-@Singleton
-class CategoryRepositoryImpl @Inject constructor(
+//@Singleton
+class CategoryRepositoryImpl /*@Inject constructor*/(
     private val dvachApi : DvachApi
 ) : RemoteContract.CategoryRepository{
 

@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_category.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.domain.model.Category
+import ru.be_more.orange_forum.ui.download.DownloadPresenter
 
 
 class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,
@@ -20,8 +22,9 @@ class CategoryFragment private constructor(var onBoardClickListener: (boardId: S
     CategoryView,
     CategoryOnClickListener {
 
-    @InjectPresenter(presenterId = "presID", tag = "presTag")
-    lateinit var categoryPresenter : CategoryPresenter
+//    @InjectPresenter(presenterId = "presID", tag = "presTag")
+//    lateinit var categoryPresenter : CategoryPresenter
+    private val categoryPresenter: CategoryPresenter by inject()
 
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : CategoryAdapter

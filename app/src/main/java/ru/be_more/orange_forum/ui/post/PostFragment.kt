@@ -21,6 +21,7 @@ import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.item_post.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.VideoToBeClosed
@@ -31,11 +32,13 @@ import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.ui.thread.ThreadPresenter
 
 class PostFragment : MvpAppCompatFragment(), PostView {
 
-    @InjectPresenter(presenterId = "presID", tag = "presTag")
-    lateinit var postPresenter : PostPresenter
+//    @InjectPresenter(presenterId = "presID", tag = "presTag")
+//    lateinit var postPresenter : PostPresenter
+    private val postPresenter: PostPresenter by inject()
 
     private var timestamp: Long = 0
 

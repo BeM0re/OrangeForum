@@ -9,11 +9,11 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStore
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.extentions.processSingle
-import javax.inject.Inject
-import javax.inject.Singleton
+//import javax.inject.Inject
+//import javax.inject.Singleton
 
-@Singleton
-class FileRepositoryImpl @Inject constructor(
+//@Singleton
+class FileRepositoryImpl /*@Inject constructor*/(
     private val dao: DvachDao
 ) : DbContract.FileRepository{
 

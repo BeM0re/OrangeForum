@@ -16,11 +16,11 @@ import ru.be_more.orange_forum.extentions.processSingle
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.extentions.processCompletable
-import javax.inject.Inject
-import javax.inject.Singleton
+//import javax.inject.Inject
+//import javax.inject.Singleton
 
-@Singleton
-class ThreadRepositoryImpl @Inject constructor(
+//@Singleton
+class ThreadRepositoryImpl /*@Inject constructor*/(
     private val dao: DvachDao
 ) : DbContract.ThreadRepository {
 

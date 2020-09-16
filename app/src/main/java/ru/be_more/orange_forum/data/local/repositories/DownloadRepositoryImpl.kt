@@ -10,11 +10,11 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModel
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.disposables
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
+//import javax.inject.Inject
+//import javax.inject.Singleton
 
-@Singleton
-class DownloadRepositoryImpl @Inject constructor(
+//@Singleton
+class DownloadRepositoryImpl /*@Inject constructor*/(
     private val dao: DvachDao
 ) : DbContract.DownloadRepository{
     override fun getDownloads(): Single<List<Board>> =

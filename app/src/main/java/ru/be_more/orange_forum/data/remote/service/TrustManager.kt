@@ -1,13 +1,13 @@
-package ru.be_more.orange_forum.data.remote.utils
+package ru.be_more.orange_forum.data.remote.service
 
 import android.annotation.SuppressLint
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
-import javax.inject.Inject
+//import javax.inject.Inject
 import javax.net.ssl.*
 
 
-class SSLTrustManager @Inject constructor() {
+class SSLTrustManager /*@Inject constructor() */{
 
     val trustAllCerts: Array<TrustManager> = arrayOf(
         @SuppressLint("TrustAllX509TrustManager")

@@ -17,6 +17,7 @@ import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_thread.*
 import moxy.MvpAppCompatFragment
 import moxy.presenter.InjectPresenter
+import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
@@ -32,6 +33,7 @@ import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
+import ru.be_more.orange_forum.ui.main.MainPresenter
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.response.ResponseFragment
 
@@ -44,8 +46,9 @@ class ThreadFragment : MvpAppCompatFragment(),
     CustomOnScrollListener,
     CloseModalListener {
 
-    @InjectPresenter(presenterId = "presID", tag = "presTag")
-    lateinit var threadPresenter : ThreadPresenter
+//    @InjectPresenter(presenterId = "presID", tag = "presTag")
+//    lateinit var threadPresenter : ThreadPresenter
+    private val threadPresenter: ThreadPresenter by inject()
 
     private lateinit var boardId: String
     private var threadNum: Int = 0

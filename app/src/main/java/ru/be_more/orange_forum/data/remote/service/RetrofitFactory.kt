@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.data.remote.utils
+package ru.be_more.orange_forum.data.remote.service
 
 import br.com.jeancsanchez.restinterceptor.RestErrorInterceptor
 import com.google.gson.GsonBuilder
@@ -7,10 +7,10 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+//import javax.inject.Inject
 
 
-class RetrofitFactory @Inject constructor(
+class RetrofitFactory /*@Inject constructor*/(
     sslTrustManager : SSLTrustManager
 ){
 

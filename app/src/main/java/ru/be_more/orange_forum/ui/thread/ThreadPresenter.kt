@@ -18,10 +18,10 @@ import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import java.util.*
-import javax.inject.Inject
+//import javax.inject.Inject
 
 @InjectViewState
-class ThreadPresenter @Inject constructor(
+class ThreadPresenter /*@Inject constructor*/(
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val postInteractor : InteractorContract.PostInteractor
 ) : MvpPresenter<ThreadView>() {

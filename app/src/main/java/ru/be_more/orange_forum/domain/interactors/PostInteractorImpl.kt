@@ -5,10 +5,10 @@ import io.reactivex.functions.BiFunction
 import ru.be_more.orange_forum.data.local.DbContract
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Post
-import javax.inject.Inject
+//import javax.inject.Inject
 
 
-class PostInteractorImpl @Inject constructor(
+class PostInteractorImpl /*@Inject constructor*/(
     private val dbPostRepository: DbContract.PostRepository,
     private val dbFileRepository: DbContract.FileRepository
 ): InteractorContract.PostInteractor, BaseInteractorImpl() {
