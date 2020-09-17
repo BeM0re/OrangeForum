@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_thread.*
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -114,6 +115,12 @@ class ThreadFragment : Fragment(),
             ?.beginTransaction()
             ?.remove(fragmentManager?.findFragmentByTag(RESPONSE_TAG)!!)
             ?.commit()
+    }
+
+    override fun onDestroyView() {
+        Log.d("M_ThreadFragment","destroy view")
+        fl_thread_post.clearFindViewByIdCache()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
