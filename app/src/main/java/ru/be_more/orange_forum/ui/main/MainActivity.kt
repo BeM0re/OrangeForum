@@ -6,58 +6,28 @@ import android.view.Menu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-//import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-//import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
-//import moxy.MvpAppCompatActivity
-//import moxy.ktx.moxyPresenter
-//import moxy.presenter.InjectPresenter
-//import moxy.presenter.ProvidePresenter
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.consts.*
-import ru.be_more.orange_forum.domain.InteractorContract
-//import ru.be_more.orange_forum.di.components.AppComponent
-//import ru.be_more.orange_forum.di.components.DaggerAppComponent
-//import ru.be_more.orange_forum.di.modules.AppModule
 import ru.be_more.orange_forum.ui.TempFragment
 import ru.be_more.orange_forum.ui.board.BoardFragment
 import ru.be_more.orange_forum.ui.category.CategoryFragment
 import ru.be_more.orange_forum.ui.download.DownloadFragment
 import ru.be_more.orange_forum.ui.favorire.FavoriteFragment
 import ru.be_more.orange_forum.ui.thread.ThreadFragment
-//import javax.inject.Inject
-//import javax.inject.Provider
 
-//@AndroidEntryPoint
-class MainActivity : /*Mvp*/AppCompatActivity(), MainView {
+class MainActivity : AppCompatActivity(), MainView {
 
     private val mainPresenter: MainPresenter by inject(parameters = {parametersOf(this)})
 
-//    @InjectPresenter(presenterId = "presID", tag = "presTag")
-//    lateinit var mainPresenter: MainPresenter
-
-//    @Inject
-//    lateinit var mainPresenter: MainPresenter
-
-//    @Inject
-//    lateinit var presenterProvider: Provider<MainPresenter>
-//    private val mainPresenter: MainPresenter by moxyPresenter { presenterProvider.get() }
-
     private var timestamp: Long = 0
     private var disposable: Disposable? = null
-
-//    @ProvidePresenter
-//    fun provideWeatherPresenter(boardInteractor : InteractorContract.BoardInteractor,
-//                                threadInteractor : InteractorContract.ThreadInteractor,
-//                                postInteractor : InteractorContract.PostInteractor): MainPresenter =
-//        MainPresenter(boardInteractor, threadInteractor, postInteractor)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -345,7 +315,6 @@ class MainActivity : /*Mvp*/AppCompatActivity(), MainView {
     }
 
     override fun hideBoardMenuItem(){
-        Log.d("M_MainActivity","set board")
         bottomNavigationView.menu.getItem(1).isEnabled = false
     }
 
@@ -406,12 +375,6 @@ class MainActivity : /*Mvp*/AppCompatActivity(), MainView {
         when (menuItem.itemId) {
 
             R.id.navigation_pref -> {
-//                mainPresenter.makePrefFragment()
-                val size = supportFragmentManager.fragments.size
-//                Log.d("M_MainActivity","$size fragments:")
-//                for (fragment in supportFragmentManager.fragments){
-//                    Log.d("M_MainActivity","$fragment")
-//                }
                 Log.d(
                     "M_MainActivity",
                     "active = ${supportFragmentManager.findFragmentById(R.id.container)}"
@@ -477,7 +440,6 @@ class MainActivity : /*Mvp*/AppCompatActivity(), MainView {
 
            disposable = App.getBus().subscribe(
                {
-//                   Log.d("M_MainActivity","event = ${it}")
                    when (it.first) {
                        is AppToBeClosed -> {
                            if (System.currentTimeMillis() - timestamp < 2000)

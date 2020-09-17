@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_favorite.*
-//import moxy.MvpAppCompatFragment
-//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
@@ -45,14 +43,12 @@ class FavoriteFragment private constructor(
     LinkOnClickListener,
     CloseModalListener {
 
-//    @InjectPresenter(presenterId = "presID", tag = "presTag")
-//    lateinit var favoritePresenter : FavoritePresenter
     private val favoritePresenter: FavoritePresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : FavoriteAdapter
+    private var postFragment: PostFragment? = null
 
-//    private var bus = BusProvider.getInstance()
     private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -66,7 +62,7 @@ class FavoriteFragment private constructor(
         recyclerView = rv_favorite_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-//        bus.register(this)
+        favoritePresenter.initPresenter()
 
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == FAVORITE_TAG) {
@@ -85,7 +81,9 @@ class FavoriteFragment private constructor(
     }
 
     override fun onDestroy() {
+        postFragment = null
         disposable?.dispose()
+        disposable = null
         super.onDestroy()
     }
 
@@ -157,12 +155,12 @@ class FavoriteFragment private constructor(
 
         fl_favorite_board_post.visibility = View.VISIBLE
 
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_favorite_board_post, fragment, POST_IN_FAVORITE_TAG)
+            ?.replace(R.id.fl_favorite_board_post, postFragment!!, POST_IN_FAVORITE_TAG)
             ?.commit()
     }
 
@@ -170,16 +168,17 @@ class FavoriteFragment private constructor(
 
         fl_board_post.visibility = View.VISIBLE
 
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             post,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_favorite_board_post, fragment, POST_IN_FAVORITE_TAG)
+            ?.replace(R.id.fl_favorite_board_post, postFragment!!, POST_IN_FAVORITE_TAG)
             ?.commit()
     }
 
     override fun onCloseModalListener() {
+        postFragment = null
         hideModal()
     }
 

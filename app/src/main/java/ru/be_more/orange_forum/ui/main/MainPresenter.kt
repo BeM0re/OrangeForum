@@ -2,21 +2,16 @@ package ru.be_more.orange_forum.ui.main
 
 import android.annotation.SuppressLint
 import android.util.Log
-//import moxy.InjectViewState
-//import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.domain.InteractorContract
 
-//import javax.inject.Inject
-
-//@InjectViewState
-class MainPresenter /*@Inject constructor*/(
+class MainPresenter(
     private val boardInteractor : InteractorContract.BoardInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
     private val myViewState: MainView
-)/*: MvpPresenter<MainView>()*/ {
+){
 
     private var boardId :String = ""
     private lateinit var boardTitle :String
@@ -30,11 +25,10 @@ class MainPresenter /*@Inject constructor*/(
         setThread(0)
     }
 
-    /*override*/ fun onDestroy() {
+    fun onDestroy() {
         boardInteractor.release()
         threadInteractor.release()
         postInteractor.release()
-//        super.onDestroy()
     }
 
     fun getCurrentFragmentTag() = this.currentFragmentTag
@@ -57,7 +51,6 @@ class MainPresenter /*@Inject constructor*/(
 
         when (boardId){
             "" -> {
-                Log.d("M_MainPresenter","set board")
                 myViewState.hideBoardMenuItem()
             }
             this.boardId -> {

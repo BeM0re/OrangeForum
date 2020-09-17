@@ -1,20 +1,13 @@
 package ru.be_more.orange_forum.ui.post
 
-//import moxy.InjectViewState
-//import moxy.MvpPresenter
-import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.ui.download.DownloadView
 
-//import javax.inject.Inject
 
-//@InjectViewState
-class PostPresenter /*@Inject constructor()*/(private val viewState: PostView) {//: MvpPresenter<PostView>() {
+class PostPresenter (private var viewState: PostView?) {
 
     private lateinit var post: Post
     private lateinit var picListener: PicOnClickListener
@@ -31,11 +24,11 @@ class PostPresenter /*@Inject constructor()*/(private val viewState: PostView) {
         when(content) {
             is Post ->{
                 this.post = content
-                viewState.setContent(post)
+                viewState?.setContent(post)
             }
             is Attachment -> {
                 this.pic = content
-                viewState.setContent(pic)
+                viewState?.setContent(pic)
             }
         }
     }
@@ -44,5 +37,9 @@ class PostPresenter /*@Inject constructor()*/(private val viewState: PostView) {
 
     fun getLinkListener(): LinkOnClickListener = this.linkListener
 
-    //TODO onDestroy
+    fun onDestroy(){
+        viewState = null
+    }
+
+
 }

@@ -6,6 +6,9 @@ import ru.be_more.orange_forum.data.local.DbContract
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.extentions.processSingle
+
 //import javax.inject.Inject
 
 class BoardInteractorImpl/* @Inject constructor*/(
@@ -18,7 +21,7 @@ class BoardInteractorImpl/* @Inject constructor*/(
         Single.zip(
             dbBoardRepository.getBoard(boardId),
             apiRepository.getDvachThreads(boardId),
-            BiFunction { localBoard, webThreads ->
+            BiFunction <Board, List<BoardThread>, Board> { localBoard, webThreads ->
 
                 localBoard.threads.forEach { localThread ->
                     val webIndex = webThreads.indexOfFirst { it.num == localThread.num }
@@ -36,11 +39,15 @@ class BoardInteractorImpl/* @Inject constructor*/(
                 return@BiFunction localBoard.copy(threads = webThreads)
             }
         )
+            .processSingle()
+
 
     override fun markBoardFavorite(boardId: String, boardName: String): Single<Int> =
         dbBoardRepository.markBoardFavorite(boardId, boardName)
+            .processSingle()
 
     override fun unmarkBoardFavorite(boardId: String): Single<Unit> =
         dbBoardRepository.unmarkBoardFavorite(boardId)
+            .processSingle()
 
 }

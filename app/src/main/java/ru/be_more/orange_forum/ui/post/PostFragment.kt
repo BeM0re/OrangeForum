@@ -20,8 +20,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.item_post.*
-//import moxy.MvpAppCompatFragment
-//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
@@ -34,12 +32,9 @@ import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.ui.thread.ThreadPresenter
 
 class PostFragment : Fragment(), PostView {
 
-//    @InjectPresenter(presenterId = "presID", tag = "presTag")
-//    lateinit var postPresenter : PostPresenter
     private val postPresenter: PostPresenter by inject(parameters = { parametersOf(this) })
 
     private var timestamp: Long = 0
@@ -58,7 +53,6 @@ class PostFragment : Fragment(), PostView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        postPresenter.init(boardId, postNum, picListener, linkListener)
         postPresenter.init(content, picListener, linkListener)
 
         setClosingViewClickListener()
@@ -78,7 +72,6 @@ class PostFragment : Fragment(), PostView {
     }
 
     private fun showPost(post: Post){
-
 
         v_post1_pic_full_background.visibility = View.VISIBLE
 
@@ -116,7 +109,6 @@ class PostFragment : Fragment(), PostView {
     }
 
     private fun showAttachment(pic: Attachment) {
-//        Log.d("M_PostFragment", "pic = $pic")
 
         v_post1_pic_full_background.visibility = View.VISIBLE
         pb_post1_pic_loading.visibility = View.VISIBLE
@@ -229,11 +221,11 @@ class PostFragment : Fragment(), PostView {
 
         closeModalListener.onCloseModalListener()
 
+        postPresenter.onDestroy()
     }
 
 
     companion object {
-
         fun getPostFragment (content: ModalContent,
                              picListener: PicOnClickListener,
                              linkListener: LinkOnClickListener,

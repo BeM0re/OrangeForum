@@ -11,18 +11,13 @@ import android.webkit.WebSettings
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import kotlinx.android.synthetic.main.item_thread_response_form.*
-//import moxy.MvpAppCompatFragment
-//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.PAGE_HTML
-import ru.be_more.orange_forum.ui.thread.ThreadPresenter
 
 class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), ResponseView{
 
-//    @InjectPresenter(presenterId = "presID", tag = "presTag")
-//    lateinit var responsePresenter : ResponsePresenter
     private val responsePresenter: ResponsePresenter by inject(parameters = { parametersOf(this) })
 
     val captchaResponse : MutableLiveData<String> = MutableLiveData()
@@ -53,8 +48,6 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
     }
 
     private fun setWebView(){
-
-        Log.d("M_ThreadFragment", ""+ CookieManager.getInstance().getCookie("google.com"))
 
         wv_post_captcha.settings.userAgentString =
             "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
@@ -91,22 +84,13 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
 
     private fun posting(){
         CookieManager.getInstance().flush()
-//        Log.d("M_ThreadFragment", "google.com = "+CookieManager.getInstance().getCookie(".google.com"))
-//        Log.d("M_ThreadFragment", "www.google.com = "+CookieManager.getInstance().getCookie("www.google.com"))
-//        Log.d("M_ThreadFragment", "2ch.hk = "+CookieManager.getInstance().getCookie(".2ch.hk"))
-
-
-
         wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
-
     }
 
 
     @JavascriptInterface
     fun responsePushed(token: String) {
-        Log.d("M_ThreadFragment", "token = $token")
         captchaResponse.postValue(token.substring(1, token.length-1))
-
     }
 
 }
