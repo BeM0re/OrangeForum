@@ -5,28 +5,31 @@ import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
-import moxy.MvpPresenter
+//import moxy.InjectViewState
+//import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.ui.download.DownloadView
 import java.util.*
 //import javax.inject.Inject
 
-@InjectViewState
+//@InjectViewState
 class FavoritePresenter /*@Inject constructor*/(
     private val favoriteInteractor : InteractorContract.FavoriteInteractor,
-    private val postInteractor : InteractorContract.PostInteractor
-) : MvpPresenter<FavoriteView>() {
+    private val postInteractor : InteractorContract.PostInteractor,
+    private val viewState: FavoriteView
+) /*: MvpPresenter<FavoriteView>() */{
 
     private val modalStack: Stack<ModalContent> = Stack()
     private lateinit var boards : List<Board>
 
     @SuppressLint("CheckResult")
-    override fun onFirstViewAttach(){
+//    override fun onFirstViewAttach(){
+    fun initPresenter(){
         favoriteInteractor.getFavorites()
             .subscribe({ boards ->
                 this.boards = boards
@@ -47,10 +50,10 @@ class FavoritePresenter /*@Inject constructor*/(
             )
     }
 
-    override fun onDestroy() {
+    /*override*/ fun onDestroy() {
         favoriteInteractor.release()
         postInteractor.release()
-        super.onDestroy()
+//        super.onDestroy()
     }
 
     fun putContentInStack(content: ModalContent) {

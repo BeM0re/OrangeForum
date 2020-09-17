@@ -66,10 +66,10 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
 
     //MVP
-    implementation "com.github.moxy-community:moxy:2.1.2"
-    implementation "com.github.moxy-community:moxy-androidx:2.1.2"
-    implementation "com.github.moxy-community:moxy-ktx:2.1.1"
-    kapt "com.github.moxy-community:moxy-compiler:2.1.2"
+//    implementation "com.github.moxy-community:moxy:2.1.2"
+//    implementation "com.github.moxy-community:moxy-androidx:2.1.2"
+//    implementation "com.github.moxy-community:moxy-ktx:2.1.1"
+//    kapt "com.github.moxy-community:moxy-compiler:2.1.2"
 
 //    implementation 'com.arello-mobile:moxy:1.5.6'
 //    annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.6'

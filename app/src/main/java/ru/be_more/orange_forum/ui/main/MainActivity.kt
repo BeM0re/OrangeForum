@@ -4,17 +4,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 //import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 //import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
-import moxy.MvpAppCompatActivity
-import moxy.ktx.moxyPresenter
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
+//import moxy.MvpAppCompatActivity
+//import moxy.ktx.moxyPresenter
+//import moxy.presenter.InjectPresenter
+//import moxy.presenter.ProvidePresenter
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
@@ -33,9 +35,9 @@ import ru.be_more.orange_forum.ui.thread.ThreadFragment
 //import javax.inject.Provider
 
 //@AndroidEntryPoint
-class MainActivity : MvpAppCompatActivity(), MainView {
+class MainActivity : /*Mvp*/AppCompatActivity(), MainView {
 
-    private val mainPresenter: MainPresenter by inject()
+    private val mainPresenter: MainPresenter by inject(parameters = {parametersOf(this)})
 
 //    @InjectPresenter(presenterId = "presID", tag = "presTag")
 //    lateinit var mainPresenter: MainPresenter
@@ -343,6 +345,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun hideBoardMenuItem(){
+        Log.d("M_MainActivity","set board")
         bottomNavigationView.menu.getItem(1).isEnabled = false
     }
 

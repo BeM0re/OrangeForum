@@ -8,15 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
 //import leakcanary.AppWatcher
-import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
+//import moxy.MvpAppCompatFragment
+//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
@@ -32,7 +35,7 @@ import ru.be_more.orange_forum.ui.post.PostFragment
 
 
 //TODO сделать динамическое количество картинок через ресайклер
-class BoardFragment: MvpAppCompatFragment(),
+class BoardFragment: /*Mvp*/Fragment(),
     BoardView,
     BoardOnClickListener,
     PicOnClickListener,
@@ -41,7 +44,7 @@ class BoardFragment: MvpAppCompatFragment(),
 
 //    @InjectPresenter(presenterId = "presID", tag = "presTag")
 //    lateinit var boardPresenter : BoardPresenter
-    private val boardPresenter: BoardPresenter by inject()
+    private val boardPresenter: BoardPresenter by inject(parameters = { parametersOf(this) })
 
     private var listener: ((Int, String) -> Unit)? = null
     private var id: String = ""
