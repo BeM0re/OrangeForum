@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -15,9 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_thread.*
-import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
+//import moxy.MvpAppCompatFragment
+//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
@@ -39,7 +41,7 @@ import ru.be_more.orange_forum.ui.response.ResponseFragment
 
 
 
-class ThreadFragment : MvpAppCompatFragment(),
+class ThreadFragment : Fragment(),
     PicOnClickListener,
     LinkOnClickListener,
     ThreadView,
@@ -48,7 +50,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
 //    @InjectPresenter(presenterId = "presID", tag = "presTag")
 //    lateinit var threadPresenter : ThreadPresenter
-    private val threadPresenter: ThreadPresenter by inject()
+    private val threadPresenter: ThreadPresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var boardId: String
     private var threadNum: Int = 0

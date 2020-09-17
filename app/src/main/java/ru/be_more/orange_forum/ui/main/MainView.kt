@@ -1,12 +1,12 @@
 package ru.be_more.orange_forum.ui.main
 
-import moxy.MvpView
-import moxy.viewstate.strategy.AddToEndStrategy
-import moxy.viewstate.strategy.StateStrategyType
+//import moxy.MvpView
+//import moxy.viewstate.strategy.AddToEndStrategy
+//import moxy.viewstate.strategy.StateStrategyType
 
 
-@StateStrategyType(value = AddToEndStrategy::class)
-interface MainView  : MvpView {
+//@StateStrategyType(value = AddToEndStrategy::class)
+interface MainView /* : MvpView*/ {
     fun hideBoardMenuItem()
     fun hideThreadMenuItem()
     fun showBoardMenuItem()

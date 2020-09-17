@@ -2,25 +2,21 @@ package ru.be_more.orange_forum.ui.main
 
 import android.annotation.SuppressLint
 import android.util.Log
-import io.reactivex.CompletableObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
-import moxy.MvpPresenter
+//import moxy.InjectViewState
+//import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.domain.InteractorContract
-import ru.be_more.orange_forum.extentions.disposables
-import java.util.*
+
 //import javax.inject.Inject
 
-@InjectViewState
+//@InjectViewState
 class MainPresenter /*@Inject constructor*/(
     private val boardInteractor : InteractorContract.BoardInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
-    private val postInteractor : InteractorContract.PostInteractor
-): MvpPresenter<MainView>() {
+    private val postInteractor : InteractorContract.PostInteractor,
+    private val myViewState: MainView
+)/*: MvpPresenter<MainView>()*/ {
 
     private var boardId :String = ""
     private lateinit var boardTitle :String
@@ -34,11 +30,11 @@ class MainPresenter /*@Inject constructor*/(
         setThread(0)
     }
 
-    override fun onDestroy() {
+    /*override*/ fun onDestroy() {
         boardInteractor.release()
         threadInteractor.release()
         postInteractor.release()
-        super.onDestroy()
+//        super.onDestroy()
     }
 
     fun getCurrentFragmentTag() = this.currentFragmentTag
@@ -55,38 +51,39 @@ class MainPresenter /*@Inject constructor*/(
         if (!isBoardAvailable){
             this.boardId = boardId
             setThread(0)
-            viewState.showBoardMenuItem()
-            viewState.showBoardFragment(true)
+            myViewState.showBoardMenuItem()
+            myViewState.showBoardFragment(true)
         }
 
         when (boardId){
             "" -> {
-                viewState.hideBoardMenuItem()
+                Log.d("M_MainPresenter","set board")
+                myViewState.hideBoardMenuItem()
             }
             this.boardId -> {
-                viewState.showBoardMenuItem()
-                viewState.showBoardFragment(false)
+                myViewState.showBoardMenuItem()
+                myViewState.showBoardFragment(false)
             }
             else -> {
                 this.boardId = boardId
                 setThread(0)
-                viewState.showBoardMenuItem()
-                viewState.showBoardFragment(true)
+                myViewState.showBoardMenuItem()
+                myViewState.showBoardFragment(true)
             }
         }
     }
 
     fun setThread(threadNum: Int){
         when (threadNum){
-            0 -> viewState.hideThreadMenuItem()
+            0 -> myViewState.hideThreadMenuItem()
             this.threadNum -> {
-                viewState.showThreadMenuItem()
-                viewState.showThreadFragment(false)
+                myViewState.showThreadMenuItem()
+                myViewState.showThreadFragment(false)
             }
             else -> {
                 this.threadNum = threadNum
-                viewState.showThreadMenuItem()
-                viewState.showThreadFragment(true)
+                myViewState.showThreadMenuItem()
+                myViewState.showThreadFragment(true)
             }
         }
 
@@ -102,7 +99,7 @@ class MainPresenter /*@Inject constructor*/(
             .subscribe (
                 {
                     threadInteractor.downloadThread(it, boardId, boardTitle)
-                    viewState.turnDownloadedIcon(true)
+                    myViewState.turnDownloadedIcon(true)
                 },
                 { App.showToast("downloading error = $it") }
             )
@@ -113,7 +110,7 @@ class MainPresenter /*@Inject constructor*/(
         threadInteractor.deleteThread(boardId, threadNum)
             .subscribe{
                 if(!isDownloadFragmentFrom)
-                    viewState.turnDownloadedIcon(false)
+                    myViewState.turnDownloadedIcon(false)
             }
     }
 
@@ -123,7 +120,7 @@ class MainPresenter /*@Inject constructor*/(
         else
             threadInteractor.markThreadFavorite(threadNum, boardId, boardTitle)
 
-        viewState.turnFavoriteIcon(true)
+        myViewState.turnFavoriteIcon(true)
     }
 
     fun unmarkFavorite() {
@@ -132,7 +129,7 @@ class MainPresenter /*@Inject constructor*/(
         else
             removeThreadFavoriteMark(boardId, threadNum, false)
 
-        viewState.turnFavoriteIcon(false)
+        myViewState.turnFavoriteIcon(false)
     }
 
     @SuppressLint("CheckResult")
@@ -140,9 +137,9 @@ class MainPresenter /*@Inject constructor*/(
         threadInteractor.unmarkThreadFavorite(boardId, threadNum)
             .subscribe(
                 {
-                    viewState.refreshFavorite()
+                    myViewState.refreshFavorite()
                     if(!isFavoriteFragmentFrom)
-                        viewState.turnFavoriteIcon(false)
+                        myViewState.turnFavoriteIcon(false)
                 },
                 {Log.d("M_MainPresenter", "unmark favorite error = $it")}
             )
@@ -153,9 +150,9 @@ class MainPresenter /*@Inject constructor*/(
         boardInteractor.unmarkBoardFavorite(boardId)
             .subscribe(
                 {
-                    viewState.refreshFavorite()
+                    myViewState.refreshFavorite()
                     if(!isFavoriteFragmentFrom)
-                        viewState.turnFavoriteIcon(false)
+                        myViewState.turnFavoriteIcon(false)
                 },
                 {Log.d("M_MainPresenter", "unmark favorite error = $it")}
             )

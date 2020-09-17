@@ -8,20 +8,22 @@ import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebSettings
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import kotlinx.android.synthetic.main.item_thread_response_form.*
-import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
+//import moxy.MvpAppCompatFragment
+//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.PAGE_HTML
 import ru.be_more.orange_forum.ui.thread.ThreadPresenter
 
-class ResponseFragment(val boardId: String, val threadNum: Int): MvpAppCompatFragment(), ResponseView{
+class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), ResponseView{
 
 //    @InjectPresenter(presenterId = "presID", tag = "presTag")
 //    lateinit var responsePresenter : ResponsePresenter
-    private val responsePresenter: ResponsePresenter by inject()
+    private val responsePresenter: ResponsePresenter by inject(parameters = { parametersOf(this) })
 
     val captchaResponse : MutableLiveData<String> = MutableLiveData()
 

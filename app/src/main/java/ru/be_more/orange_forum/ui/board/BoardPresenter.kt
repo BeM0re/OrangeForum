@@ -4,20 +4,22 @@ import android.annotation.SuppressLint
 import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
-import moxy.MvpPresenter
+//import moxy.InjectViewState
+//import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.*
+import ru.be_more.orange_forum.ui.download.DownloadView
 import java.util.*
 //import javax.inject.Inject
 
-@InjectViewState
+//@InjectViewState
 class BoardPresenter /*@Inject constructor*/(
     private val boardInteractor : InteractorContract.BoardInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
-    private val postInteractor : InteractorContract.PostInteractor
-): MvpPresenter<BoardView>() {
+    private val postInteractor : InteractorContract.PostInteractor,
+    private val viewState: BoardView
+)/*: MvpPresenter<BoardView>() */{
 
     private var board :Board = Board("", "", listOf(), false)
     private var boardId: String = "" //FIXME убрать борд айди, раз есть борда (выше)
@@ -46,11 +48,11 @@ class BoardPresenter /*@Inject constructor*/(
             )
     }
 
-    override fun onDestroy() {
+    /*override*/ fun onDestroy() {
         boardInteractor.release()
         threadInteractor.release()
         postInteractor.release()
-        super.onDestroy()
+//        super.onDestroy()
     }
 
     fun clearStack() {

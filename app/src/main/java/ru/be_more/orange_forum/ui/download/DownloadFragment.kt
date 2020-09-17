@@ -6,13 +6,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_download.*
-import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
+//import moxy.MvpAppCompatFragment
+//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
@@ -29,7 +31,7 @@ import ru.be_more.orange_forum.ui.post.PostFragment
 class DownloadFragment private constructor(
     var intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
     var onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit):
-    MvpAppCompatFragment(),
+    Fragment(),
     DownloadView,
     DownloadListener,
     PicOnClickListener,
@@ -38,7 +40,7 @@ class DownloadFragment private constructor(
 
 //    @InjectPresenter(presenterId = "presID", tag = "presTag")
 //    lateinit var downloadPresenter : DownloadPresenter
-    private val downloadPresenter: DownloadPresenter by inject()
+    private val downloadPresenter: DownloadPresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : DownloadAdapter
