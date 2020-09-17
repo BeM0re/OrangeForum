@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_download.*
-//import moxy.MvpAppCompatFragment
-//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
@@ -25,7 +23,6 @@ import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.ui.favorire.FavoritePresenter
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 class DownloadFragment private constructor(
@@ -38,12 +35,11 @@ class DownloadFragment private constructor(
     LinkOnClickListener,
     CloseModalListener {
 
-//    @InjectPresenter(presenterId = "presID", tag = "presTag")
-//    lateinit var downloadPresenter : DownloadPresenter
     private val downloadPresenter: DownloadPresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var recyclerView : RecyclerView
     lateinit var adapter : DownloadAdapter
+    private var postFragment: PostFragment? = null
 
     private var disposable: Disposable? = null
 
@@ -57,6 +53,8 @@ class DownloadFragment private constructor(
 
         recyclerView = rv_downloaded_list
         recyclerView.layoutManager = LinearLayoutManager(this.context)
+
+        downloadPresenter.initPresenter()
 
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == DOWNLOAD_TAG) {
@@ -74,7 +72,9 @@ class DownloadFragment private constructor(
     }
 
     override fun onDestroy() {
+        postFragment = null
         disposable?.dispose()
+        disposable = null
         super.onDestroy()
     }
 
@@ -132,12 +132,12 @@ class DownloadFragment private constructor(
     }
 
     override fun showPic(attachment: Attachment){
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_downloaded_board_post, fragment, POST_IN_DOWNLOAD_TAG)
+            ?.replace(R.id.fl_downloaded_board_post, postFragment!!, POST_IN_DOWNLOAD_TAG)
             ?.commit()
     }
 
@@ -145,16 +145,17 @@ class DownloadFragment private constructor(
 
         fl_downloaded_board_post.visibility = View.VISIBLE
 
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             post,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_downloaded_board_post, fragment, POST_IN_DOWNLOAD_TAG)
+            ?.replace(R.id.fl_downloaded_board_post, postFragment!!, POST_IN_DOWNLOAD_TAG)
             ?.commit()
     }
 
     override fun onCloseModalListener() {
+        postFragment = null
         hideModal()
     }
 

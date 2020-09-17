@@ -10,14 +10,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_thread.*
-//import moxy.MvpAppCompatFragment
-//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
@@ -35,11 +32,8 @@ import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
-import ru.be_more.orange_forum.ui.main.MainPresenter
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.response.ResponseFragment
-
-
 
 class ThreadFragment : Fragment(),
     PicOnClickListener,
@@ -48,16 +42,14 @@ class ThreadFragment : Fragment(),
     CustomOnScrollListener,
     CloseModalListener {
 
-//    @InjectPresenter(presenterId = "presID", tag = "presTag")
-//    lateinit var threadPresenter : ThreadPresenter
     private val threadPresenter: ThreadPresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var boardId: String
     private var threadNum: Int = 0
-    private lateinit var recyclerView : RecyclerView
-    private var captchaResponse: MutableLiveData<String> = MutableLiveData()
+    private var recyclerView : RecyclerView? = null
     private var disposable: Disposable? = null
     private var responseFragment: ResponseFragment? = null
+    private var postFragment: PostFragment? = null
 
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -70,7 +62,7 @@ class ThreadFragment : Fragment(),
 
         threadPresenter.init(boardId, threadNum)
         recyclerView = rv_post_list
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == THREAD_TAG) {
@@ -125,11 +117,17 @@ class ThreadFragment : Fragment(),
     }
 
     override fun onDestroy() {
+        recyclerView = null
         disposable?.dispose()
+        disposable = null
+        postFragment = null
+        responseFragment = null
+        threadPresenter.onDestroy()
         super.onDestroy()
     }
 
-    override fun showResponseForm() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
+    //TODO переделать на нормальную капчу, когда (если) макака сделает API
+    override fun showResponseForm() {
 
         if (responseFragment == null)
             responseFragment = ResponseFragment(boardId, threadNum)
@@ -152,9 +150,9 @@ class ThreadFragment : Fragment(),
 
         threadPresenter.initAdapter(thread, this, this)
 
-        recyclerView.adapter = threadPresenter.getAdapter()
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(recyclerView.context, HORIZONTAL)
+        recyclerView?.adapter = threadPresenter.getAdapter()
+        recyclerView?.addItemDecoration(
+            DividerItemDecoration(recyclerView?.context, HORIZONTAL)
         )
     }
 
@@ -220,12 +218,12 @@ class ThreadFragment : Fragment(),
     }
 
     override fun showPic(attachment: Attachment){
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, fragment, POST_IN_THREAD_TAG)
+            ?.replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
             ?.commit()
     }
 
@@ -233,12 +231,12 @@ class ThreadFragment : Fragment(),
 
         fl_thread_post.visibility = View.VISIBLE
 
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             post,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, fragment, POST_IN_THREAD_TAG)
+            ?.replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
             ?.commit()
     }
 
@@ -257,17 +255,17 @@ class ThreadFragment : Fragment(),
 
     private fun setUpDownButtonOnCLickListener(){
         fab_thread_up.setOnClickListener {
-            recyclerView.scrollToPosition(0)
+            recyclerView?.scrollToPosition(0)
         }
         fab_thread_down.setOnClickListener {
-            recyclerView.scrollToPosition(threadPresenter.getAdapter().itemCount - 1)
+            recyclerView?.scrollToPosition(threadPresenter.getAdapter()!!.itemCount - 1)
         }
     }
 
     private fun setOnScrollListener(){
         val scrollListener = CustomScrollListener(this)
 
-        recyclerView.setOnScrollChangeListener(scrollListener)
+        recyclerView?.setOnScrollChangeListener(scrollListener)
     }
 
     override fun onScrolling(){
@@ -283,6 +281,7 @@ class ThreadFragment : Fragment(),
     }
 
     override fun onCloseModalListener(){
+        postFragment = null
         hideModal()
     }
 

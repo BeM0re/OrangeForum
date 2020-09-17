@@ -8,16 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
-//import leakcanary.AppWatcher
-//import moxy.MvpAppCompatFragment
-//import moxy.presenter.InjectPresenter
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
@@ -30,26 +26,23 @@ import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.ui.category.CategoryPresenter
 import ru.be_more.orange_forum.ui.post.PostFragment
 
-
 //TODO сделать динамическое количество картинок через ресайклер
-class BoardFragment: /*Mvp*/Fragment(),
+class BoardFragment: Fragment(),
     BoardView,
     BoardOnClickListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
 
-//    @InjectPresenter(presenterId = "presID", tag = "presTag")
-//    lateinit var boardPresenter : BoardPresenter
     private val boardPresenter: BoardPresenter by inject(parameters = { parametersOf(this) })
 
     private var listener: ((Int, String) -> Unit)? = null
     private var id: String = ""
     private lateinit var recyclerView : RecyclerView
     private lateinit var adapter : BoardAdapter
+    private var postFragment: PostFragment? = null
 
     private var disposable: Disposable? = null
 
@@ -83,12 +76,8 @@ class BoardFragment: /*Mvp*/Fragment(),
     override fun onDestroy() {
         disposable?.dispose()
         disposable = null
-
+        postFragment = null
         super.onDestroy()
-//        AppWatcher.objectWatcher.watch(
-//            watchedObject = this,
-//            description = "MyService received Service#onDestroy() callback"
-//        )
     }
 
     override fun loadBoard(board: Board) {
@@ -151,12 +140,12 @@ class BoardFragment: /*Mvp*/Fragment(),
     }
 
     override fun showPic(attachment: Attachment){
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_board_post, fragment, POST_IN_BOARD_TAG)
+            ?.replace(R.id.fl_board_post, postFragment!!, POST_IN_BOARD_TAG)
             ?.commit()
     }
 
@@ -164,12 +153,12 @@ class BoardFragment: /*Mvp*/Fragment(),
 
         fl_board_post.visibility = View.VISIBLE
 
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             post,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_board_post, fragment, POST_IN_BOARD_TAG)
+            ?.replace(R.id.fl_board_post, postFragment!!, POST_IN_BOARD_TAG)
             ?.commit()
     }
 
@@ -187,6 +176,7 @@ class BoardFragment: /*Mvp*/Fragment(),
     }
 
     override fun onCloseModalListener(){
+        postFragment = null
         hideModal()
     }
 
@@ -204,6 +194,5 @@ class BoardFragment: /*Mvp*/Fragment(),
             return board
         }
     }
-
 
 }

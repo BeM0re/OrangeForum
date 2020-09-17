@@ -2,12 +2,6 @@ package ru.be_more.orange_forum.ui.thread
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-//import moxy.InjectViewState
-//import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -15,20 +9,16 @@ import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.ui.download.DownloadView
 import java.util.*
-//import javax.inject.Inject
 
-//@InjectViewState
-class ThreadPresenter /*@Inject constructor*/(
+class ThreadPresenter (
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
-    private val viewState: ThreadView
-)/* : MvpPresenter<ThreadView>() */{
+    private var viewState: ThreadView?
+){
 
-    private lateinit var adapter : ThreadAdapter
+    private var adapter : ThreadAdapter? = null
 
     lateinit var thread: BoardThread
     private lateinit var boardId :String
@@ -46,8 +36,8 @@ class ThreadPresenter /*@Inject constructor*/(
             .subscribe(
                 {
                     thread = it
-                    viewState.loadThread(thread)
-                    viewState.setThreadMarks(thread.isDownloaded, thread.isFavorite)
+                    viewState?.loadThread(thread)
+                    viewState?.setThreadMarks(thread.isDownloaded, thread.isFavorite)
                 },
                 {
                     Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
@@ -57,10 +47,11 @@ class ThreadPresenter /*@Inject constructor*/(
     //TODO прятать fab при нажатии на ответ
     }
 
-    /*override*/ fun onDestroy() {
+    fun onDestroy() {
         threadInteractor.release()
         postInteractor.release()
-//        super.onDestroy()
+        viewState = null
+        adapter = null
     }
 
 
@@ -70,7 +61,7 @@ class ThreadPresenter /*@Inject constructor*/(
         adapter = ThreadAdapter(thread, picListener, linkListener)
     }
 
-    fun getAdapter(): ThreadAdapter = this.adapter
+    fun getAdapter(): ThreadAdapter? = this.adapter
 
     fun getBoardId(): String = this.boardId
 
@@ -90,11 +81,11 @@ class ThreadPresenter /*@Inject constructor*/(
         if(!modalStack.empty()) {
 
             when(val content = modalStack.peek()){
-                is Attachment -> viewState.showPic(content)
-                is Post -> viewState.showPost(content)
+                is Attachment -> viewState?.showPic(content)
+                is Post -> viewState?.showPost(content)
             }
         } else
-            viewState.hideModal()
+            viewState?.hideModal()
     }
 
     fun getSinglePost(postNum: Int) {
@@ -107,13 +98,13 @@ class ThreadPresenter /*@Inject constructor*/(
             .subscribe(
                 {
                     this.putContentInStack(it)
-                    viewState.showPost(it)
+                    viewState?.showPost(it)
                 },
                 { App.showToast("Пост не найден") }
             )
     }
 
     fun setThreadMarks(){
-        viewState.setThreadMarks(thread.isDownloaded, thread.isFavorite)
+        viewState?.setThreadMarks(thread.isDownloaded, thread.isFavorite)
     }
 }
