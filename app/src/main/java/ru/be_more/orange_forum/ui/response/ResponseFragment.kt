@@ -20,7 +20,7 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
 
     private val responsePresenter: ResponsePresenter by inject(parameters = { parametersOf(this) })
 
-    val captchaResponse : MutableLiveData<String> = MutableLiveData()
+    private var captchaResponse : MutableLiveData<String>? = MutableLiveData()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -36,7 +36,7 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
             posting()
         }
 
-        captchaResponse.observeForever {token ->
+        captchaResponse?.observeForever {token ->
             responsePresenter.postResponse(
                 boardId,
                 threadNum,
@@ -47,6 +47,13 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
 
     }
 
+    override fun onDestroy() {
+        Log.d("M_ResponseFragment","destroy")
+        responsePresenter.onDestroy()
+        captchaResponse = null
+        super.onDestroy()
+    }
+
     private fun setWebView(){
 
         wv_post_captcha.settings.userAgentString =
@@ -55,9 +62,6 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
                     "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
 
 //        wv_post_captcha.visibility = View.VISIBLE
-
-        Log.d("M_ThreadFragment",""+ CookieManager.getInstance().acceptCookie())
-        Log.d("M_ThreadFragment",""+ CookieManager.getInstance().hasCookies())
 
         wv_post_captcha.settings.javaScriptEnabled = true
         wv_post_captcha.settings.javaScriptCanOpenWindowsAutomatically = true
@@ -90,7 +94,7 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
 
     @JavascriptInterface
     fun responsePushed(token: String) {
-        captchaResponse.postValue(token.substring(1, token.length-1))
+        captchaResponse?.postValue(token.substring(1, token.length-1))
     }
 
 }
