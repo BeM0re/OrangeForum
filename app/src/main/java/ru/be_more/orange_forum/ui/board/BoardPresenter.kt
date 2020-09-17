@@ -2,24 +2,17 @@ package ru.be_more.orange_forum.ui.board
 
 import android.annotation.SuppressLint
 import android.util.Log
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-//import moxy.InjectViewState
-//import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.*
-import ru.be_more.orange_forum.ui.download.DownloadView
 import java.util.*
-//import javax.inject.Inject
 
-//@InjectViewState
-class BoardPresenter /*@Inject constructor*/(
+class BoardPresenter (
     private val boardInteractor : InteractorContract.BoardInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
-    private val viewState: BoardView
-)/*: MvpPresenter<BoardView>() */{
+    private var viewState: BoardView?)
+{
 
     private var board :Board = Board("", "", listOf(), false)
     private var boardId: String = "" //FIXME убрать борд айди, раз есть борда (выше)
@@ -33,14 +26,14 @@ class BoardPresenter /*@Inject constructor*/(
         if (listener!=null)
             this.listener = listener
 
-        if (!boardId.isNullOrEmpty())
+        if (boardId.isNotEmpty())
             this.boardId = boardId
 
         boardInteractor.getBoard(this.boardId)
             .subscribe(
                 { board ->
-                    viewState.loadBoard(board)
-                    viewState.setBoardMarks(board.isFavorite)
+                    viewState?.loadBoard(board)
+                    viewState?.setBoardMarks(board.isFavorite)
                 },
                 {
                     Log.e("M_BoardPresenter","Getting board error = $it")
@@ -48,11 +41,11 @@ class BoardPresenter /*@Inject constructor*/(
             )
     }
 
-    /*override*/ fun onDestroy() {
+    fun onDestroy() {
         boardInteractor.release()
         threadInteractor.release()
         postInteractor.release()
-//        super.onDestroy()
+        viewState = null
     }
 
     fun clearStack() {
@@ -68,11 +61,11 @@ class BoardPresenter /*@Inject constructor*/(
 
         if(!modalStack.empty()) {
             when(val content = modalStack.peek()){
-                is Attachment -> viewState.showPic(content)
-                is Post -> viewState.showPost(content)
+                is Attachment -> viewState?.showPic(content)
+                is Post -> viewState?.showPost(content)
             }
         } else
-            viewState.hideModal()
+            viewState?.hideModal()
     }
 
     fun getSinglePost(postNum: Int) {
@@ -85,7 +78,7 @@ class BoardPresenter /*@Inject constructor*/(
             .subscribe(
                 {
                     this.putContentInStack(it)
-                    viewState.showPost(it)
+                    viewState?.showPost(it)
                 },
                 { App.showToast("Пост не найден") }
             )
@@ -103,7 +96,7 @@ class BoardPresenter /*@Inject constructor*/(
     }
 
     fun setBoardMarks(){
-        viewState.setBoardMarks(board.isFavorite)
+        viewState?.setBoardMarks(board.isFavorite)
     }
 
 }

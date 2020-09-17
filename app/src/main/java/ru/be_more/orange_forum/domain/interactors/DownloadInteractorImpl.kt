@@ -8,6 +8,8 @@ import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.extentions.processSingle
+
 //import javax.inject.Inject
 
 class DownloadInteractorImpl /*@Inject constructor*/(
@@ -36,6 +38,7 @@ class DownloadInteractorImpl /*@Inject constructor*/(
                 )
             }
         )
+            .processSingle()
 
     //TODO вынести ссылку на родителя в модель? Чтобы избавиться от пар
     //Pair<AttachFile, Int> - Int это номер поста

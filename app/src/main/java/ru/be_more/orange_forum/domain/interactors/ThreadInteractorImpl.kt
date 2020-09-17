@@ -10,6 +10,7 @@ import ru.be_more.orange_forum.data.local.storage.StorageContract
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.processCompletable
 import ru.be_more.orange_forum.extentions.processSingle
 //import javax.inject.Inject
@@ -28,20 +29,22 @@ class ThreadInteractorImpl /*@Inject constructor*/(
             dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
             apiRepository.getThread(boardId, threadNum),
             dbPostRepository.getPosts(boardId, threadNum),
-            Function3 { localThread, webThread, posts ->
+            Function3 <List<BoardThread>, BoardThread, List<Post>, BoardThread>
+            { localThreads, webThread, posts ->
                 when{
-                    localThread.isEmpty() -> // в базе вообще нет данных о треде
+                    localThreads.isEmpty() -> // в базе вообще нет данных о треде
                         return@Function3 webThread
-                    localThread[0].isDownloaded -> // тред полностью скачан
-                        return@Function3 localThread[0].copy(posts = posts) //TODO переделать, чтобы новые посты доставлялись в старый тред
+                    localThreads[0].isDownloaded -> // тред полностью скачан
+                        return@Function3 localThreads[0].copy(posts = posts) //TODO переделать, чтобы новые посты доставлялись в старый тред
                     else -> // о треде есть заметки (избранное, скрытое)
                         return@Function3 webThread.copy(
-                            isHidden = localThread[0].isHidden,
-                            isFavorite = localThread[0].isFavorite
+                            isHidden = localThreads[0].isHidden,
+                            isFavorite = localThreads[0].isFavorite
                         )
                 }
             }
         )
+            .processSingle()
 
     override fun markThreadFavorite(threadNum: Int, boardId: String, boardName: String): Completable =
         Completable.create { emitter ->
