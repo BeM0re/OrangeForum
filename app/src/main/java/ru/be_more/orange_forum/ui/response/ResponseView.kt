@@ -1,8 +1,8 @@
 package ru.be_more.orange_forum.ui.response
 
-import moxy.MvpView
+//import moxy.MvpView
 
-interface ResponseView: MvpView {
+interface ResponseView/*: MvpView*/ {
 
 
 }

@@ -2,13 +2,16 @@ package ru.be_more.orange_forum.ui.response
 
 import android.annotation.SuppressLint
 import android.util.Log
-import moxy.MvpPresenter
+//import moxy.MvpPresenter
 import ru.be_more.orange_forum.domain.InteractorContract
+import ru.be_more.orange_forum.ui.download.DownloadView
+
 //import javax.inject.Inject
 
 class ResponsePresenter /*@Inject constructor*/(
-    private val interactor : InteractorContract.ResponseInteractor
-): MvpPresenter<ResponseView>() {
+    private val interactor : InteractorContract.ResponseInteractor,
+    private val viewState: ResponseView
+)/*: MvpPresenter<ResponseView>()*/ {
 
     @SuppressLint("CheckResult")
     fun postResponse(boardId: String, threadNum: Int, comment: String, token:String){
@@ -25,4 +28,5 @@ class ResponsePresenter /*@Inject constructor*/(
             )
     }
 
+    //TODO onDestroy
 }

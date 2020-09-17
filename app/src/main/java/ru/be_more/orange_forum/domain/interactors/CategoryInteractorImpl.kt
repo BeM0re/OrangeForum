@@ -6,6 +6,8 @@ import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.converters.RemoteConverter
 import ru.be_more.orange_forum.domain.model.Category
+import ru.be_more.orange_forum.extentions.processSingle
+
 //import javax.inject.Inject
 
 class CategoryInteractorImpl /*@Inject constructor*/(
@@ -15,4 +17,5 @@ class CategoryInteractorImpl /*@Inject constructor*/(
     @SuppressLint("CheckResult")
     override fun getCategories(): Single<List<Category>> =
         repository.getDvachCategories().map { RemoteConverter.toCategories(it) }
+            .processSingle()
 }

@@ -5,28 +5,31 @@ import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
-import moxy.MvpPresenter
+//import moxy.InjectViewState
+//import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.ui.main.MainView
 import java.util.*
 //import javax.inject.Inject
 
-@InjectViewState
+//@InjectViewState
 class DownloadPresenter /*@Inject constructor*/(
     private val downloadInteractor : InteractorContract.DownloadInteractor,
-    private val postInteractor : InteractorContract.PostInteractor
-) : MvpPresenter<DownloadView>() {
+    private val postInteractor : InteractorContract.PostInteractor,
+    private val viewState: DownloadView
+)/* : MvpPresenter<DownloadView>()*/ {
 
     private val modalStack: Stack<ModalContent> = Stack()
     private lateinit var boards : List<Board>
 
     @SuppressLint("CheckResult")
-    override fun onFirstViewAttach(){
+//    override fun onFirstViewAttach(){
+    fun initPresenter(){
         downloadInteractor.getDownloads()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -38,10 +41,10 @@ class DownloadPresenter /*@Inject constructor*/(
             )
     }
 
-    override fun onDestroy() {
+    /*override*/ fun onDestroy() {
         downloadInteractor.release()
         postInteractor.release()
-        super.onDestroy()
+//        super.onDestroy()
     }
 
     fun putContentInStack(content: ModalContent) {

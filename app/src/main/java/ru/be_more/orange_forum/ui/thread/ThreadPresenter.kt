@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
-import moxy.MvpPresenter
+//import moxy.InjectViewState
+//import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -17,14 +17,16 @@ import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
+import ru.be_more.orange_forum.ui.download.DownloadView
 import java.util.*
 //import javax.inject.Inject
 
-@InjectViewState
+//@InjectViewState
 class ThreadPresenter /*@Inject constructor*/(
     private val threadInteractor : InteractorContract.ThreadInteractor,
-    private val postInteractor : InteractorContract.PostInteractor
-) : MvpPresenter<ThreadView>() {
+    private val postInteractor : InteractorContract.PostInteractor,
+    private val viewState: ThreadView
+)/* : MvpPresenter<ThreadView>() */{
 
     private lateinit var adapter : ThreadAdapter
 
@@ -55,10 +57,10 @@ class ThreadPresenter /*@Inject constructor*/(
     //TODO прятать fab при нажатии на ответ
     }
 
-    override fun onDestroy() {
+    /*override*/ fun onDestroy() {
         threadInteractor.release()
         postInteractor.release()
-        super.onDestroy()
+//        super.onDestroy()
     }
 
 
