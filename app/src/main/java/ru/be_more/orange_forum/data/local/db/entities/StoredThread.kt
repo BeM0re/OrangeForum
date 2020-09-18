@@ -5,11 +5,11 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "threads",
+    tableName = "threads")/*,
     foreignKeys = [ForeignKey(entity = StoredBoard::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("boardId"),
-        onDelete = ForeignKey.CASCADE)])
+        onDelete = ForeignKey.CASCADE)])*/
 data class StoredThread(
     @PrimaryKey val num: Int,
     val title: String,

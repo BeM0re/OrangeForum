@@ -2,7 +2,9 @@ package ru.be_more.orange_forum.data.local.repositories
 
 import android.annotation.SuppressLint
 import io.reactivex.Completable
+import io.reactivex.CompletableSource
 import io.reactivex.Single
+import io.reactivex.SingleSource
 import io.reactivex.functions.BiFunction
 import ru.be_more.orange_forum.data.local.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.DvachDao
@@ -12,15 +14,13 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.downloa
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.favoriteToStoredThread
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThread
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStoredThread
 import ru.be_more.orange_forum.extentions.processSingle
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.extentions.processCompletable
-//import javax.inject.Inject
-//import javax.inject.Singleton
 
-//@Singleton
-class ThreadRepositoryImpl /*@Inject constructor*/(
+class ThreadRepositoryImpl(
     private val dao: DvachDao
 ) : DbContract.ThreadRepository {
 
@@ -39,11 +39,17 @@ class ThreadRepositoryImpl /*@Inject constructor*/(
             }
             .processSingle()
 
+    override fun insertThread(thread: BoardThread, boardId: String): Single<Boolean> =
+        dao.getThreadOrEmpty(boardId, thread.num)
+            .map { probablyThread ->
+                if (probablyThread.isEmpty()) {
+                    dao.insertThread(toStoredThread(thread, boardId))
+                    return@map true
+                }
+                else
+                    return@map false
+            }
 
-
-    override fun insertThread(thread: BoardThread, boardId: String) {
-        dao.insertThread(downloadedToStoredThread(thread, boardId))
-    }
 
 
     @SuppressLint("CheckResult")
@@ -57,10 +63,10 @@ class ThreadRepositoryImpl /*@Inject constructor*/(
                         dao.insertBoard(StoredBoard(boardId, "", boardId, false))
                     }
                     if (threadCount == 0) {
-                        dao.insertThread(downloadedToStoredThread(thread, boardId))
+                        dao.insertThread(downloadedToStoredThread(thread.copy(isDownloaded = true), boardId))
                     }
                     else{
-                        dao.markThreadDownload(boardId, thread.num)
+                        dao.markThreadDownload(boardId, thread.num) //FIXME докачивать тред
                     }
                 }
             ).processSingle()
@@ -96,6 +102,8 @@ class ThreadRepositoryImpl /*@Inject constructor*/(
             .subscribe({emitter.onComplete()}, emitter::onError)
         }
 
+    override fun markThreadFavorite(boardId: String, threadNum: Int) =
+        dao.markThreadFavorite(boardId, threadNum)
 
     override fun unmarkThreadFavorite(boardId: String, threadNum: Int) =
         Completable.fromCallable { dao.unmarkThreadFavorite(boardId, threadNum) }

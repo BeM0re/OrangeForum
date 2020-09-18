@@ -9,11 +9,8 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStore
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.extentions.processSingle
-//import javax.inject.Inject
-//import javax.inject.Singleton
 
-//@Singleton
-class FileRepositoryImpl /*@Inject constructor*/(
+class FileRepositoryImpl (
     private val dao: DvachDao
 ) : DbContract.FileRepository{
 
@@ -22,8 +19,11 @@ class FileRepositoryImpl /*@Inject constructor*/(
             dao.insertFile(toStoredFile(file, postNum, boardId, threadNum))
         }
 
-/*    override fun getFile(boardId: String, postNum: Int): Single<AttachFile> =
-        dao.getPostFiles(postNum, boardId)*/
+    override fun saveFiles(files: List<AttachFile>, postNum: Int, threadNum: Int, boardId: String) {
+        files.forEach { file ->
+            dao.insertFile(toStoredFile(file, postNum, boardId, threadNum))
+        }
+    }
 
     override fun getPostFiles(boardId: String, postNum: Int): Single<List<AttachFile>> =
         dao.getPostFiles(postNum, boardId)

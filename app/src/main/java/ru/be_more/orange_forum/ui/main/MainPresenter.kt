@@ -99,7 +99,7 @@ class MainPresenter(
     }
 
     @SuppressLint("CheckResult")
-    fun deleteThread(boardId: String, threadNum: Int, isDownloadFragmentFrom: Boolean) {
+    fun deleteThread(isDownloadFragmentFrom: Boolean) {
         threadInteractor.deleteThread(boardId, threadNum)
             .subscribe{
                 if(!isDownloadFragmentFrom)
@@ -110,8 +110,11 @@ class MainPresenter(
     fun markFavorite() {
         if (currentFragmentTag == BOARD_TAG)
             boardInteractor.markBoardFavorite(boardId, boardTitle)
+                .subscribe()
         else
             threadInteractor.markThreadFavorite(threadNum, boardId, boardTitle)
+                .subscribe({},
+                    {Log.e("M_MainPresenter","saving favorite error = $it")})
 
         myViewState.turnFavoriteIcon(true)
     }

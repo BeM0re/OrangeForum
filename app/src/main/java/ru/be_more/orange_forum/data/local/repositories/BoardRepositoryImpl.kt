@@ -1,5 +1,7 @@
 package ru.be_more.orange_forum.data.local.repositories
 
+import io.reactivex.Completable
+import io.reactivex.CompletableSource
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import ru.be_more.orange_forum.data.local.DbContract
@@ -43,8 +45,12 @@ class BoardRepositoryImpl /*@Inject constructor*/(
         dao.getBoardCount(boardId)
             .processSingle()
 
-    override fun insertBoard(boardId: String, boardName: String)  =
-        dao.insertBoard(StoredBoard(boardId, "", boardName, true))
+    override fun insertBoard(boardId: String, boardName: String) =
+        dao.getBoard(boardId)
+            .doOnSuccess { probablyBoard ->
+                if (probablyBoard.isEmpty())
+                    dao.insertBoard(StoredBoard(boardId, "", boardName, true))
+            }
 
     override fun markBoardFavorite(boardId: String, boardName: String): Single<Int> =
         dao.getBoardCount(boardId)

@@ -5,11 +5,11 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "files",
+    tableName = "files"/*,
     foreignKeys = [ForeignKey(entity = StoredPost::class,
         parentColumns = arrayOf("num"),
         childColumns = arrayOf("postNum"),
-        onDelete = ForeignKey.CASCADE)])
+        onDelete = ForeignKey.CASCADE)]*/)
 data class StoredFile(
     val boardId: String,
     val postNum: Int,
