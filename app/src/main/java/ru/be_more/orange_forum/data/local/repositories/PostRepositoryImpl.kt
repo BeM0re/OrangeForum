@@ -11,20 +11,14 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStore
 import ru.be_more.orange_forum.extentions.processSingle
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.disposables
-//import javax.inject.Inject
-//import javax.inject.Singleton
 
-//@Singleton
-class PostRepositoryImpl /*@Inject constructor*/(
+class PostRepositoryImpl(
     private val dao: DvachDao
 ) : DbContract.PostRepository{
 
-    override fun savePost(post: Post, threadNum: Int, boardId: String) =
-        Single.fromCallable {
-            dao.insertPost(toStoredPost(post, threadNum, boardId))
-        }
-            .processSingle()
-
+    override fun savePost(post: Post, threadNum: Int, boardId: String) {
+        dao.insertPost(toStoredPost(post, threadNum, boardId))
+    }
 
     override fun getPost(boardId: String, postNum: Int): Single<Post> =
         Single.zip(

@@ -262,8 +262,8 @@ class MainActivity : AppCompatActivity(), MainView {
             setActionBarTitle(title)
             mainPresenter.setThread(threadNum)
         },
-            { boardId, threadNum ->
-                mainPresenter.deleteThread(boardId, threadNum, true)
+            { _, _ ->
+                mainPresenter.deleteThread(true)
             })
 
         if (supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG) != null)
@@ -388,11 +388,7 @@ class MainActivity : AppCompatActivity(), MainView {
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_download_done -> {
-                mainPresenter.deleteThread(
-                    mainPresenter.getBoardId(),
-                    mainPresenter.getThreadNum(),
-                    false
-                )
+                mainPresenter.deleteThread(false)
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite -> {
