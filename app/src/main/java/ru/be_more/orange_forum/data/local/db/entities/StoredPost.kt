@@ -8,11 +8,11 @@ import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
 import java.util.*
 
 @Entity(
-    tableName = "posts",
+    tableName = "posts"/*,
     foreignKeys = [ForeignKey(entity = StoredThread::class,
         parentColumns = arrayOf("num"),
         childColumns = arrayOf("threadNum"),
-        onDelete = ForeignKey.CASCADE)])
+        onDelete = ForeignKey.CASCADE)]*/)
 data class StoredPost(
     val boardId: String,
 //    @PrimaryKey val num: Int,

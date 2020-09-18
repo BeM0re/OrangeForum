@@ -1,11 +1,15 @@
 package ru.be_more.orange_forum.domain.interactors
 
+import android.util.Log
 import io.reactivex.Completable
+import io.reactivex.CompletableSource
 import io.reactivex.Single
+import io.reactivex.SingleSource
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.local.DbContract
+import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.storage.StorageContract
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
@@ -46,7 +50,32 @@ class ThreadInteractorImpl /*@Inject constructor*/(
         )
             .processSingle()
 
+
     override fun markThreadFavorite(threadNum: Int, boardId: String, boardName: String): Completable =
+        Completable.fromSingle(
+            Single.zip(dbBoardRepository.insertBoard(boardId, boardName),
+                apiRepository.getThread(boardId, threadNum)
+                    .doOnSuccess { thread ->
+                        dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
+                    }
+                    .doOnSuccess { thread ->
+                        dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
+                    }
+                    .flatMap { thread ->
+                        dbThreadRepository.insertThread(thread.copy(isFavorite = true), boardId)
+                            .doOnSuccess { isSaved ->
+                                Log.d("M_ThreadInteractorImpl","saved")
+                                if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
+                    },
+                    BiFunction <List<StoredBoard>, Boolean, Single<Unit>> { _, _ ->
+                        return@BiFunction Single.create { it.onSuccess(Unit) }
+                    }
+            )
+        )
+            .processCompletable()
+
+
+    fun markThreadFavorite1(threadNum: Int, boardId: String, boardName: String): Completable =
         Completable.create { emitter ->
             Single.zip(dbBoardRepository.getBoardCount(boardId),
                 dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
@@ -56,8 +85,10 @@ class ThreadInteractorImpl /*@Inject constructor*/(
                     if(boardCount == 0 )
                         dbBoardRepository.insertBoard(boardId, boardName)
 
+                    Log.d("M_ThreadInteractorImpl","web = ${webThread.isDownloaded}")
+
                     if (probablyThread.isEmpty()){//тред еще не сохранен
-                        dbThreadRepository.insertThread(webThread, boardId)
+                        dbThreadRepository.insertThread(webThread.copy(isFavorite = true), boardId)
 
                         dbPostRepository.savePost(webThread.posts[0], webThread.num, boardId)
 

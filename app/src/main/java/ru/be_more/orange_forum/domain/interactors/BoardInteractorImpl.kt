@@ -9,9 +9,7 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.extentions.processSingle
 
-//import javax.inject.Inject
-
-class BoardInteractorImpl/* @Inject constructor*/(
+class BoardInteractorImpl(
     private val apiRepository: RemoteContract.BoardRepository,
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository
