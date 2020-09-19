@@ -38,7 +38,7 @@ class DownloadFragment private constructor(
     private val downloadPresenter: DownloadPresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var recyclerView : RecyclerView
-    lateinit var adapter : DownloadAdapter
+    var adapter : DownloadAdapter? = null
     private var postFragment: PostFragment? = null
 
     private var disposable: Disposable? = null
@@ -64,7 +64,7 @@ class DownloadFragment private constructor(
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
             if (it.first is RefreshDownload && it.second == DOWNLOAD_TAG)
-                adapter.notifyDataSetChanged()
+                adapter?.notifyDataSetChanged()
         },
         {
             Log.e("M_DownloadFragment","bus error = \n $it")
@@ -73,6 +73,7 @@ class DownloadFragment private constructor(
 
     override fun onDestroy() {
         postFragment = null
+        adapter = null
         disposable?.dispose()
         disposable = null
         super.onDestroy()

@@ -1,129 +1,56 @@
 package ru.be_more.orange_forum.ui.thread
 
+import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
-import moxy.MvpPresenter
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.interactors.ThreadInteractor
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
-import ru.be_more.orange_forum.model.Attachment
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.ModalContent
-import ru.be_more.orange_forum.model.Post
-import ru.be_more.orange_forum.repositories.DvachApiRepository
+import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.domain.model.ModalContent
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import java.util.*
-import javax.inject.Inject
 
-@InjectViewState
-class ThreadPresenter : MvpPresenter<ThreadView>() {
+class ThreadPresenter (
+    private val threadInteractor : InteractorContract.ThreadInteractor,
+    private val postInteractor : InteractorContract.PostInteractor,
+    private var viewState: ThreadView?
+){
 
-    private lateinit var adapter : ThreadAdapter
 
-    @Inject
-    lateinit var threadInteractor: ThreadInteractor
-
-    @Inject
-    lateinit var repo : DvachApiRepository
     lateinit var thread: BoardThread
     private lateinit var boardId :String
-    private var threadNum: Int = 0
-    private var disposables: LinkedList<Disposable?> = LinkedList()
+    private var threadNum: Int = 0 //FIXME get rid of threadNum
 
     private val modalStack: Stack<ModalContent> = Stack()
 
+    @SuppressLint("CheckResult")
     fun init(boardId: String, threadNum: Int){
-        App.getComponent().inject(this)
 
         this.boardId = boardId
         this.threadNum = threadNum
 
-        disposables.add(
-            threadInteractor.getThread(boardId, threadNum)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        thread = it
-                        viewState.loadThread(thread)
-                        viewState.setThreadMarks(thread.isDownloaded, thread.isFavorite)
-                    },
-                    {
-                        Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
-                    }
-                )
-        )
+        threadInteractor.getThread(boardId, threadNum)
+            .subscribe(
+                {
+                    thread = it
+                    viewState?.loadThread(thread)
+                    viewState?.setThreadMarks(thread.isDownloaded, thread.isFavorite)
+                },
+                {
+                    Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
+                }
+            )
+
     //TODO прятать fab при нажатии на ответ
-
     }
 
-
-    //динамический выбор капчи, вместо захардкоженной рекапчи.
-    /*fun post(){
-        isInvisibleRecaptcha = false
-        disposables.add(
-            repo.getCaptchaTypes()
-                ?.subscribeOn(Schedulers.io())
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.subscribe (
-                    {
-                        Log.d("M_ThreadPresenter","captchas = $it")
-//                        if(it.id == "invisible_recaptcha") {
-                        if(it.id == "recaptcha") {
-
-                            viewState.showResponseForm()
-
-                            isInvisibleRecaptcha = true
-                            disposables.add(repo.getCaptchaId("recaptcha")
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(
-                                    { response -> //response is Captcha
-                                        Log.d("M_ThreadPresenter", "captchaResponse = $response")
-                                        postResponse(response.id, "recaptcha")
-                                    },
-                                    { throwable ->
-                                        Log.d("M_ThreadPresenter", "getCaptchaId error = $throwable")
-                                    }
-                                )
-                            )
-                        }
-                    },
-                    { Log.d("M_ThreadPresenter", "getCaptchaTypes error = $it") },
-                    {
-                        if (!isInvisibleRecaptcha)
-                            Toast.makeText(
-                                App.applicationContext(),
-                                App.applicationContext().getString(
-                                    R.string.no_invisible_recaptcha_error),
-                                Toast.LENGTH_SHORT).show()
-                    }
-                )
-        )
-
-
-    }*/
-
-    override fun onDestroy() {
-        disposables.forEach {
-            it?.dispose()
-        }
-        threadInteractor.destroy()
-        super.onDestroy()
+    fun onDestroy() {
+        threadInteractor.release()
+        postInteractor.release()
+        viewState = null
     }
-
-    fun initAdapter(thread: BoardThread,
-                    picListener: PicOnClickListener,
-                    linkListener: LinkOnClickListener) {
-        adapter = ThreadAdapter(thread, picListener, linkListener)
-    }
-
-    fun getAdapter(): ThreadAdapter = this.adapter
 
     fun getBoardId(): String = this.boardId
 
@@ -143,34 +70,30 @@ class ThreadPresenter : MvpPresenter<ThreadView>() {
         if(!modalStack.empty()) {
 
             when(val content = modalStack.peek()){
-                is Attachment -> viewState.showPic(content)
-                is Post -> viewState.showPost(content)
+                is Attachment -> viewState?.showPic(content)
+                is Post -> viewState?.showPost(content)
             }
         } else
-            viewState.hideModal()
+            viewState?.hideModal()
     }
 
     fun getSinglePost(postNum: Int) {
         getSinglePost(this.boardId, postNum)
     }
 
+    @SuppressLint("CheckResult")
     fun getSinglePost(boardId: String, postNum: Int){
-        disposables.add(
-            repo.getPost(boardId, postNum)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        this.putContentInStack(it)
-                        viewState.showPost(it)
-                    },
-                    { App.showToast("Пост не найден") }
-                )
-
-        )
+        postInteractor.getPost(boardId, postNum)
+            .subscribe(
+                {
+                    this.putContentInStack(it)
+                    viewState?.showPost(it)
+                },
+                { App.showToast("Пост не найден") }
+            )
     }
 
     fun setThreadMarks(){
-        viewState.setThreadMarks(thread.isDownloaded, thread.isFavorite)
+        viewState?.setThreadMarks(thread.isDownloaded, thread.isFavorite)
     }
 }

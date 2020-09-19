@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity(), MainView {
         super.onDestroy()
     }
 
-
     override fun setActionBarTitle(title: String?){
         supportActionBar?.title = title
     }

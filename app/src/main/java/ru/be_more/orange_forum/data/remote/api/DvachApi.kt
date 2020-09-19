@@ -1,13 +1,9 @@
 package ru.be_more.orange_forum.data.remote.api
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.http.*
-import ru.be_more.orange_forum.data.*
 import ru.be_more.orange_forum.data.remote.models.*
 
 interface DvachApi{
@@ -33,18 +29,6 @@ interface DvachApi{
         @Header("Cookie") cookie: String
     ): Single<List<DvachPost>>
 
- /*   @GET("api/captcha/settings/{board}")
-    fun getDvachCaptchaTypesRx(
-        @Path("board") board : String,
-        @Header("Cookie") cookie: String
-    ): Single<CaptchaTypes>
-
-    @GET("api/captcha/{captchaType}/id")
-    fun getDvachCaptchaIdRx(
-        @Path("captchaType") captchaType : String,
-        @Header("Cookie") cookie: String
-        ) : Single<GetCaptchaResponse>*/
-
     @Multipart
     @POST("makaba/posting.fcgi?json=1")
     fun postThreadResponseRx(
@@ -63,6 +47,4 @@ interface DvachApi{
         @Part files: List<MultipartBody.Part>
     ): Single<DvachPostResponse>
 
- /*   @GET("api/captcha/recaptcha/mobile")
-    fun getMobileCaptchaRx() : Single<ResponseBody>*/
 }

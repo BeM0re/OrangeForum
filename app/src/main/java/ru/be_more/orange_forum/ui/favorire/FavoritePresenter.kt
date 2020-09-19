@@ -24,10 +24,11 @@ class FavoritePresenter (
     @SuppressLint("CheckResult")
     fun initPresenter(){
         favoriteInteractor.getFavorites()
-            .subscribe({ boards ->
-                this.boards = boards
-                viewState?.loadFavorites()
-            },
+            .subscribe(
+                { boards ->
+                    this.boards = boards
+                    viewState?.loadFavorites()
+                },
                 { Log.d("M_DownloadPresenter", "Presenter on first view attach error = $it") }
             )
     }
@@ -35,10 +36,11 @@ class FavoritePresenter (
     @SuppressLint("CheckResult")
     fun refreshData(){
         favoriteInteractor.getFavorites()
-            .subscribe({ boards ->
-                this.boards = boards
-                viewState?.loadFavorites()
-            },
+            .subscribe(
+                { boards ->
+                    this.boards = boards
+                    viewState?.loadFavorites()
+                },
                 { Log.d("M_DownloadPresenter", "Presenter on refresh error = $it") }
             )
     }
