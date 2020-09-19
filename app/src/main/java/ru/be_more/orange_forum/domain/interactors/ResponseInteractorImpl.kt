@@ -1,14 +1,13 @@
 package ru.be_more.orange_forum.domain.interactors
 
+import android.util.Log
 import io.reactivex.Single
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.extentions.processSingle
 
-//import javax.inject.Inject
-
-class ResponseInteractorImpl /*@Inject constructor*/(
+class ResponseInteractorImpl (
     private val responseRepository: RemoteContract.ResponseRepository
 ): InteractorContract.ResponseInteractor, BaseInteractorImpl() {
     override fun postResponse(
@@ -26,5 +25,7 @@ class ResponseInteractorImpl /*@Inject constructor*/(
             chaptcha_id = "6LeQYz4UAAAAAL8JCk35wHSv6cuEV5PyLhI6IxsM",
             files = listOf()
         )
+            .doOnSubscribe { Log.d("M_ResponseInteractorImpl","pot sub") }
+            .doOnSuccess { Log.d("M_ResponseInteractorImpl","post success") }
             .processSingle()
 }
