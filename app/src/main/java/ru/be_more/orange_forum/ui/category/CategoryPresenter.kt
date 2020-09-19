@@ -1,49 +1,39 @@
 package ru.be_more.orange_forum.ui.category
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
-import moxy.MvpPresenter
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.model.Category
-import ru.be_more.orange_forum.repositories.DvachApiRepository
+import ru.be_more.orange_forum.domain.model.Category
 import java.util.*
-import javax.inject.Inject
 
-@InjectViewState
-class CategoryPresenter : MvpPresenter<CategoryView>() {
+class CategoryPresenter(
+    private val interactor : InteractorContract.CategoryInteractor,
+    private var viewState: CategoryView?
+)  {
 
-    @Inject
-    lateinit var repo : DvachApiRepository //= App.getComponent().getApiRepo()
-    private var disposable : Disposable? = null
     private var dataset: MutableLiveData<List<Category>> = MutableLiveData()
 
-    init {
-        App.getComponent().inject(this)
-        dataset.observeForever { data -> viewState.loadCategories(data) }
-    }
+    //Здесь и в других презентерах Disposable не сохраняется, т.к. он сохраняется в репо
+    @SuppressLint("CheckResult")
+    fun initPresenter(){
+        dataset.observeForever { data -> viewState?.loadCategories(data) }
 
-    override fun onFirstViewAttach(){
-        disposable?.dispose()
-        disposable = repo.getCategories()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        interactor.getCategories()
             .subscribe(
                 { dataset.postValue(it) },
                 { App.showToast("Can't load categories") }
             )
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable?.dispose()
+    fun onDestroy() {
+        viewState = null
+        interactor.release()
     }
 
     fun search(query: String){
         if (query.isEmpty())
-            viewState.loadCategories(dataset.value.orEmpty())
+            viewState?.loadCategories(dataset.value.orEmpty())
         else{
             val filterDataset: LinkedList<Category> = LinkedList()
             for (category in dataset.value!!){
@@ -57,8 +47,8 @@ class CategoryPresenter : MvpPresenter<CategoryView>() {
                     )
                 )
             }
-            viewState.loadCategories(filterDataset.filter { it.items.isNotEmpty() })
-            viewState.expandCategories()
+            viewState?.loadCategories(filterDataset.filter { it.items.isNotEmpty() })
+            viewState?.expandCategories()
         }
     }
 }
