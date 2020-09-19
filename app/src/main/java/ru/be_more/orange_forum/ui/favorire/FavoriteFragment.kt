@@ -46,7 +46,7 @@ class FavoriteFragment private constructor(
     private val favoritePresenter: FavoritePresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var recyclerView : RecyclerView
-    lateinit var adapter : FavoriteAdapter
+    var adapter : FavoriteAdapter? = null
     private var postFragment: PostFragment? = null
 
     private var disposable: Disposable? = null
@@ -84,22 +84,18 @@ class FavoriteFragment private constructor(
         postFragment = null
         disposable?.dispose()
         disposable = null
+        adapter = null
         super.onDestroy()
     }
-
-   /* override fun loadFavorites(boards: List<Board>) {
-        FavoriteAdapter(boards, this, this)
-        recyclerView.adapter = adapter
-    }*/
 
     override fun loadFavorites() {
         adapter = FavoriteAdapter(
             favoritePresenter.getBoards(), this, this)
 
         // Iterate and toggle groups
-        for (i in (adapter.groups.size - 1) downTo 0) {
-            if (! adapter.isGroupExpanded(i))
-                adapter.toggleGroup(i)
+        for (i in (adapter?.groups?.size?:0 - 1) downTo 0) {
+            if (! adapter!!.isGroupExpanded(i))
+                adapter!!.toggleGroup(i)
         }
 
         recyclerView.adapter = adapter

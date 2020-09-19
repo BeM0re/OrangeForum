@@ -7,19 +7,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_thread.*
-import kotlinx.android.synthetic.main.item_thread_response_form.*
-import moxy.MvpAppCompatFragment
-import moxy.presenter.InjectPresenter
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
@@ -31,30 +28,29 @@ import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.model.Attachment
-import ru.be_more.orange_forum.model.BoardThread
-import ru.be_more.orange_forum.model.Post
+import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.response.ResponseFragment
 
-
-
-class ThreadFragment : MvpAppCompatFragment(),
+class ThreadFragment : Fragment(),
     PicOnClickListener,
     LinkOnClickListener,
     ThreadView,
     CustomOnScrollListener,
     CloseModalListener {
 
-    @InjectPresenter(presenterId = "presID", tag = "presTag")
-    lateinit var threadPresenter : ThreadPresenter
+    private val threadPresenter: ThreadPresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var boardId: String
     private var threadNum: Int = 0
-    private lateinit var recyclerView : RecyclerView
+    private var recyclerView : RecyclerView? = null
     private var disposable: Disposable? = null
     private var responseFragment: ResponseFragment? = null
+    private var postFragment: PostFragment? = null
+    private var adapter : ThreadAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -66,7 +62,7 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         threadPresenter.init(boardId, threadNum)
         recyclerView = rv_post_list
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
         disposable = App.getBus().subscribe(
             {
@@ -102,17 +98,6 @@ class ThreadFragment : MvpAppCompatFragment(),
             threadPresenter.updateThreadData()
         }*/
 
-        //TODO вернуть после API
-/*        rv_post_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && fab_thread_respond.visibility == View.VISIBLE) {
-                    fab_thread_respond.hide()
-                } else if (dy < 0 && fab_thread_respond.visibility != View.VISIBLE ) {
-                    fab_thread_respond.show()
-                }
-            }
-        })*/
     }
 
     private fun hideResponseForm() {
@@ -132,12 +117,24 @@ class ThreadFragment : MvpAppCompatFragment(),
             ?.commit()
     }
 
+    override fun onDestroyView() {
+        fl_thread_post.clearFindViewByIdCache()
+        super.onDestroyView()
+    }
+
     override fun onDestroy() {
+        recyclerView = null
         disposable?.dispose()
+        disposable = null
+        postFragment = null
+        responseFragment = null
+        adapter = null
+        threadPresenter.onDestroy()
         super.onDestroy()
     }
 
-    override fun showResponseForm() { //TODO переделать на нормальную капчу, когда (если) макака сделает API
+    //TODO переделать на нормальную капчу, когда (если) макака сделает API
+    override fun showResponseForm() {
 
         if (responseFragment == null)
             responseFragment = ResponseFragment(boardId, threadNum)
@@ -158,11 +155,11 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     override fun loadThread(thread: BoardThread) {
 
-        threadPresenter.initAdapter(thread, this, this)
+        adapter = ThreadAdapter(thread, this, this)
 
-        recyclerView.adapter = threadPresenter.getAdapter()
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(recyclerView.context, HORIZONTAL)
+        recyclerView?.adapter = adapter
+        recyclerView?.addItemDecoration(
+            DividerItemDecoration(recyclerView?.context, HORIZONTAL)
         )
     }
 
@@ -228,12 +225,12 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun showPic(attachment: Attachment){
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, fragment, POST_IN_THREAD_TAG)
+            ?.replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
             ?.commit()
     }
 
@@ -241,12 +238,12 @@ class ThreadFragment : MvpAppCompatFragment(),
 
         fl_thread_post.visibility = View.VISIBLE
 
-        val fragment = PostFragment.getPostFragment(
+        postFragment = PostFragment.getPostFragment(
             post,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, fragment, POST_IN_THREAD_TAG)
+            ?.replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
             ?.commit()
     }
 
@@ -265,17 +262,17 @@ class ThreadFragment : MvpAppCompatFragment(),
 
     private fun setUpDownButtonOnCLickListener(){
         fab_thread_up.setOnClickListener {
-            recyclerView.scrollToPosition(0)
+            recyclerView?.scrollToPosition(0)
         }
         fab_thread_down.setOnClickListener {
-            recyclerView.scrollToPosition(threadPresenter.getAdapter().itemCount - 1)
+            recyclerView?.scrollToPosition(adapter?.itemCount?:1 - 1)
         }
     }
 
     private fun setOnScrollListener(){
         val scrollListener = CustomScrollListener(this)
 
-        recyclerView.setOnScrollChangeListener(scrollListener)
+        recyclerView?.setOnScrollChangeListener(scrollListener)
     }
 
     override fun onScrolling(){
@@ -291,6 +288,7 @@ class ThreadFragment : MvpAppCompatFragment(),
     }
 
     override fun onCloseModalListener(){
+        postFragment = null
         hideModal()
     }
 
