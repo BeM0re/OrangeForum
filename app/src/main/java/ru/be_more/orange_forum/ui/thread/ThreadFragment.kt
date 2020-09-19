@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -118,7 +117,6 @@ class ThreadFragment : Fragment(),
     }
 
     override fun onDestroyView() {
-        Log.d("M_ThreadFragment","destroy view")
         fl_thread_post.clearFindViewByIdCache()
         super.onDestroyView()
     }

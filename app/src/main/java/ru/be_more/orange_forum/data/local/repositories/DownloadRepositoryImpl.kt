@@ -26,7 +26,7 @@ class DownloadRepositoryImpl (
             Function4 <List<StoredBoard>, List<StoredThread>, List<StoredPost>, List<StoredFile>, List<Board>>
             { boards, threads, posts, files ->
                 boards.map { board ->
-                    toModelBoard(board, toModelThreads(threads)
+                    toModelBoard(board, toModelThreads(threads.filter { it.boardId == board.id })
                         .map { thread -> thread.copy(posts = posts
                             .filter { it.threadNum == thread.num && it.boardId == board.id}
                             .map{ post -> toModelPost(post, files
@@ -35,6 +35,7 @@ class DownloadRepositoryImpl (
                         )}
                     )
                 }
+                    .filter { it.threads.isNotEmpty() }
             }
         )
 }

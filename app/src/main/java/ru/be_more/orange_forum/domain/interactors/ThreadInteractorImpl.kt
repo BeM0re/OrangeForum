@@ -3,15 +3,12 @@ package ru.be_more.orange_forum.domain.interactors
 import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.local.DbContract
-import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.storage.StorageContract
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
-import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.processCompletable
@@ -58,16 +55,15 @@ class ThreadInteractorImpl (
                     dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
                 }
                 .flatMap { thread ->
-                    dbThreadRepository.insertThread(thread.copy(isFavorite = true), boardId)
+                    dbThreadRepository.insertThreadSafety(thread.copy(isFavorite = true), boardId)
                         .doOnSuccess { isSaved ->
-                            Log.d("M_ThreadInteractorImpl","saved")
                             if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
                 }
                 .flatMap {
                     dbBoardRepository.getBoardCount(boardId)
                         .doOnSuccess {
                             if (it == 0)
-                                dbBoardRepository.insertBoard(boardId, boardName)
+                                dbBoardRepository.insertBoard(boardId, boardName, false)
                         }
                 }
         )
@@ -91,16 +87,15 @@ class ThreadInteractorImpl (
                     }
                 }
                 .flatMap { thread ->
-                    dbThreadRepository.insertThread(thread.copy(isDownloaded = true), boardId)
+                    dbThreadRepository.insertThreadSafety(thread.copy(isDownloaded = true), boardId)
                         .doOnSuccess { isSaved ->
-                            Log.d("M_ThreadInteractorImpl","saved")
                             if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
                 }
                 .flatMap {
                     dbBoardRepository.getBoardCount(boardId)
                         .doOnSuccess {
                             if (it == 0)
-                                dbBoardRepository.insertBoard(boardId, boardName)
+                                dbBoardRepository.insertBoard(boardId, boardName, false)
                         }
                 }
         )
@@ -118,23 +113,25 @@ class ThreadInteractorImpl (
     }
 
     override fun markThreadHidden(boardId: String, boardName: String, threadNum: Int): Completable =
-        Completable.fromSingle <Single<Unit>> {
+        Completable.fromSingle (
             Single.zip(dbBoardRepository.getBoardCount(boardId),
                 dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
-                BiFunction <Int, List<BoardThread>, Single<Unit>> { boardCount, probablyThread ->
+                apiRepository.getThread(boardId, threadNum),
+                Function3 <Int, List<BoardThread>, BoardThread, Unit> {
+                        boardCount, probablyThread, webThread ->
 
                     if(boardCount == 0 )//борда еще не сохранена
-                        dbBoardRepository.insertBoard(boardId, boardName)
+                        dbBoardRepository.insertBoard(boardId, boardName, false)
 
                     if (probablyThread.isEmpty()){//тред еще не сохранен
-                        dbThreadRepository.insertThread(probablyThread[0].copy(isHidden = true), boardId)
+                        dbThreadRepository.insertThread(webThread.copy(isHidden = true), boardId)
                     }
                     else
                         dbThreadRepository.markThreadHidden(boardId, threadNum)
-                    return@BiFunction Single.create { it.onSuccess(Unit) }
+
                 }
             )
-        }
+        )
             .processCompletable()
 
     override fun unmarkThreadHidden(boardId: String, threadNum: Int) =
