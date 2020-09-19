@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.ui.board
 
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder

@@ -10,12 +10,11 @@ import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.ui.custom.LinkedTextView
-import ru.be_more.orange_forum.ui.thread.ThreadViewHolder
 import java.util.*
 
 
 class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
-    ThreadViewHolder(itemView) {
+    RecyclerView.ViewHolder(itemView){
 
     private var senderNumber: TextView = itemView.findViewById(R.id.tv_item_post_number)
     private var senderName: TextView = itemView.findViewById(R.id.tv_item_post_name)

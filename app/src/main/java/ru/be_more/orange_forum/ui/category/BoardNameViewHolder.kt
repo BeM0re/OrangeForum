@@ -1,15 +1,16 @@
 package ru.be_more.orange_forum.ui.category
 
 import android.view.View
-import android.widget.TextView
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
-import ru.be_more.orange_forum.R
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_board.*
 
-class BoardNameViewHolder(itemView: View?) : ChildViewHolder(itemView) {
-
-    private var boardName: TextView = itemView!!.findViewById(R.id.tv_board_title)
+class BoardNameViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutContainer {
 
     fun setBoardName(name: String) {
-        boardName.text= name
+        tv_board_title.text= name
     }
+
+    override val containerView: View?
+        get() = itemView
 }
