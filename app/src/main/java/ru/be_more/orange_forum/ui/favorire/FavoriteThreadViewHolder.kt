@@ -10,7 +10,6 @@ import kotlinx.android.synthetic.main.item_favorite_op.*
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 
-
 class FavoriteThreadViewHolder(itemView: View?, private var listener: PicOnClickListener) :
     ChildViewHolder(itemView), LayoutContainer {
 
