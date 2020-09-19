@@ -9,4 +9,5 @@ import ru.be_more.orange_forum.domain.model.Category
 //@StateStrategyType(value = AddToEndStrategy::class)
 interface CategoryView {// : MvpView {
     fun loadCategories(categories: List<Category>)
+    fun expandCategories()
 }
