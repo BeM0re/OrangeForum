@@ -51,7 +51,6 @@ class ThreadFragment : Fragment(),
     private var responseFragment: ResponseFragment? = null
     private var postFragment: PostFragment? = null
 
-
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?) : View? =
@@ -64,20 +63,21 @@ class ThreadFragment : Fragment(),
         recyclerView = rv_post_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
-        disposable = App.getBus().subscribe({
-            if(it.first is BackPressed && it.second == THREAD_TAG) {
-                if (fl_thread_post.visibility != View.GONE){
-                    if (fragmentManager?.findFragmentByTag(RESPONSE_TAG) != null)
-                        hideResponseForm()
+        disposable = App.getBus().subscribe(
+            {
+                if(it.first is BackPressed && it.second == THREAD_TAG) {
+                    if (fl_thread_post.visibility != View.GONE){
+                        if (fragmentManager?.findFragmentByTag(RESPONSE_TAG) != null)
+                            hideResponseForm()
+                        else
+                            threadPresenter.onBackPressed()
+                    }
                     else
-                        threadPresenter.onBackPressed()
+                        App.getBus().onNext(Pair(AppToBeClosed, ""))
                 }
-                else
-                    App.getBus().onNext(Pair(AppToBeClosed, ""))
-            }
-            if (it.first is ThreadEntered && it.second == THREAD_TAG)
-                threadPresenter.setThreadMarks()
-        },
+                if (it.first is ThreadEntered && it.second == THREAD_TAG)
+                    threadPresenter.setThreadMarks()
+            },
             {
                 Log.e("M_ThreadFragment","bus error = \n $it")
             }

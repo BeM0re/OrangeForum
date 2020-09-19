@@ -54,7 +54,6 @@ class ThreadPresenter (
         adapter = null
     }
 
-
     fun initAdapter(thread: BoardThread,
                     picListener: PicOnClickListener,
                     linkListener: LinkOnClickListener) {

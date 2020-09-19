@@ -3,7 +3,10 @@ package ru.be_more.orange_forum.ui.response
 import android.annotation.SuppressLint
 import android.util.Log
 import ru.be_more.orange_forum.domain.InteractorContract
-
+import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.bus.BackPressed
+import ru.be_more.orange_forum.consts.THREAD_TAG
+import ru.be_more.orange_forum.repositories.DvachApiRepository
 
 class ResponsePresenter (
     private val interactor : InteractorContract.ResponseInteractor,
@@ -19,8 +22,17 @@ class ResponsePresenter (
             token = token
         )
             .subscribe (
-                { response -> Log.d("M_ResponsePresenter", "post response = $response") },
-                { throwable ->  Log.d("M_ResponsePresenter", "post error = $throwable") }
+				{ response ->
+					Log.d("M_ResponsePresenter", "post response = $response")
+					if(response.Num != 0) //0 - ошибка постинга
+						viewState.closeResponse()
+					else
+						App.showToast(response.Reason)
+
+				},
+				{ throwable ->
+					Log.d("M_ResponsePresenter", "post error = $throwable")
+				}
             )
     }
 
