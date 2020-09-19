@@ -37,26 +37,12 @@ class BoardRepositoryImpl (
     override fun getBoardCount(boardId: String): Single<Int> =
         dao.getBoardCount(boardId)
 
-    /*override fun insertBoard(boardId: String, boardName: String) =
-        dao.getBoard(boardId)
-            .doOnSuccess { probablyBoard ->
-                if (probablyBoard.isEmpty())
-                    dao.insertBoard(StoredBoard(boardId, "", boardName, true))
-            }*/
+    override fun insertBoard(boardId: String, boardName: String, isFavorite: Boolean) =
+        dao.insertBoard(StoredBoard(boardId, "", boardName, isFavorite))
 
-    override fun insertBoard(boardId: String, boardName: String) =
-        dao.insertBoard(StoredBoard(boardId, "", boardName, true))
+    override fun markBoardFavorite(boardId: String, boardName: String) =
+        dao.markBoardFavorite(boardId)
 
-
-    override fun markBoardFavorite(boardId: String, boardName: String): Single<Int> =
-        dao.getBoardCount(boardId)
-            .doOnSuccess { boardCount ->
-                if (boardCount == 0)
-                    dao.insertBoard(StoredBoard(boardId, "", boardName, true))
-                else
-                    dao.markBoardFavorite(boardId)
-            }
-
-    override fun unmarkBoardFavorite(boardId: String): Single<Unit> =
-        Single.fromCallable { dao.unmarkBoardFavorite(boardId) }
+    override fun unmarkBoardFavorite(boardId: String) =
+        dao.unmarkBoardFavorite(boardId)
 }

@@ -6,7 +6,6 @@ import ru.be_more.orange_forum.extentions.disposables
 
 open class BaseInteractorImpl: InteractorContract.BaseInteractor {
     override fun release() {
-        Log.d("M_BaseInteractorImpl","release")
         disposables.forEach { it.dispose() }
         disposables.clear()
     }

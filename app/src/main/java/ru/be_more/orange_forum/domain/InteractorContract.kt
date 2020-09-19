@@ -20,8 +20,8 @@ interface InteractorContract {
 
     interface BoardInteractor: BaseInteractor {
         fun getBoard(boardId: String): Single<Board>
-        fun markBoardFavorite(boardId: String, boardName: String): Single<Int>
-        fun unmarkBoardFavorite(boardId: String): Single<Unit>
+        fun markBoardFavorite(boardId: String, boardName: String): Completable
+        fun unmarkBoardFavorite(boardId: String): Completable
     }
 
     interface ThreadInteractor: BaseInteractor {
@@ -31,7 +31,7 @@ interface InteractorContract {
         fun downloadThread(threadNum: Int, boardId: String, boardName: String):Completable
         fun deleteThread(boardId: String, threadNum: Int): Completable
         fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<BoardThread?>
-        fun markThreadHidden(boardId: String, boardName: String, threadNum: Int):Completable
+        fun markThreadHidden(boardId: String, boardName: String, threadNum: Int): Completable
         fun unmarkThreadHidden(boardId: String, threadNum: Int):Completable
     }
 

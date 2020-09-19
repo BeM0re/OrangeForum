@@ -1,5 +1,7 @@
 package ru.be_more.orange_forum.domain.interactors
 
+import android.util.Log
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import ru.be_more.orange_forum.data.local.DbContract
@@ -7,6 +9,8 @@ import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.extentions.disposables
+import ru.be_more.orange_forum.extentions.processCompletable
 import ru.be_more.orange_forum.extentions.processSingle
 
 class BoardInteractorImpl(
@@ -39,13 +43,28 @@ class BoardInteractorImpl(
         )
             .processSingle()
 
+    override fun markBoardFavorite(boardId: String, boardName: String): Completable =
+        dbBoardRepository.getBoardCount(boardId)
+            .flatMapCompletable {boardCount ->
+                if (boardCount == 0)
+                    dbBoardRepository.insertBoard(boardId, boardName, true)
+                else
+                    dbBoardRepository.markBoardFavorite(boardId, boardName)
+                Completable.complete()
+            }
+            .processCompletable()
 
-    override fun markBoardFavorite(boardId: String, boardName: String): Single<Int> =
-        dbBoardRepository.markBoardFavorite(boardId, boardName)
-            .processSingle()
+    override fun unmarkBoardFavorite(boardId: String): Completable =
+        Completable.fromCallable {
+            dbBoardRepository.unmarkBoardFavorite(boardId)
+        }
+            .processCompletable()
 
-    override fun unmarkBoardFavorite(boardId: String): Single<Unit> =
-        dbBoardRepository.unmarkBoardFavorite(boardId)
-            .processSingle()
+
+    override fun release() {
+        Log.d("M_BaseInteractorImpl","release")
+        disposables.forEach { it.dispose() }
+        disposables.clear()
+    }
 
 }

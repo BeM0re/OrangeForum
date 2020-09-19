@@ -15,20 +15,18 @@ interface DbContract {
         fun getBoards(): Single<List<Board>>
         fun getBoard(boardId: String): Single<Board>
         fun getBoardCount(boardId: String): Single<Int>
-//        fun insertBoard(boardId: String, boardName: String): Single<List<StoredBoard>>
-        fun insertBoard(boardId: String, boardName: String)
-        fun markBoardFavorite(boardId: String, boardName: String): Single<Int>
-        fun unmarkBoardFavorite(boardId: String): Single<Unit>
+        fun insertBoard(boardId: String, boardName: String, isFavorite: Boolean)
+        fun markBoardFavorite(boardId: String, boardName: String)
+        fun unmarkBoardFavorite(boardId: String)
     }
 
     interface ThreadRepository{
+        fun insertThread(thread: BoardThread, boardId: String)
         /**@return true if new thread inserted, false if thread is existed and not inserted*/
-        fun insertThread(thread: BoardThread, boardId: String): Single<Boolean>
-//        fun downloadThread(thread: BoardThread, boardId: String)
+        fun insertThreadSafety(thread: BoardThread, boardId: String): Single<Boolean>
         fun deleteThread(boardId: String, threadNum: Int)
         fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<BoardThread>>
         fun getDownloadedThreads(): Single<List<Pair<BoardThread, String>>>
-//        fun markThreadFavorite(thread: BoardThread, boardId: String, boardName: String)
         fun markThreadFavorite( boardId: String, threadNum: Int)
         fun unmarkThreadFavorite(boardId: String, threadNum: Int)
         fun markThreadHidden(boardId: String, threadNum: Int)

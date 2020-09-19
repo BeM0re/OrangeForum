@@ -11,6 +11,6 @@ val interactorModule = module {
     single<InteractorContract.ThreadInteractor> { ThreadInteractorImpl(get(),get(),get(),get(),get(),get()) }
     single<InteractorContract.PostInteractor> { PostInteractorImpl(get(),get()) }
     single<InteractorContract.ResponseInteractor> { ResponseInteractorImpl(get()) }
-    single<InteractorContract.DownloadInteractor> { DownloadInteractorImpl(get(),get(),get(),get()) }
+    single<InteractorContract.DownloadInteractor> { DownloadInteractorImpl(get()) }
     single<InteractorContract.FavoriteInteractor> { FavoriteInteractorImpl(get()) }
 }
