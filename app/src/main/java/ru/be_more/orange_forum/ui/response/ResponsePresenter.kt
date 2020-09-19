@@ -4,9 +4,6 @@ import android.annotation.SuppressLint
 import android.util.Log
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.bus.BackPressed
-import ru.be_more.orange_forum.consts.THREAD_TAG
-import ru.be_more.orange_forum.repositories.DvachApiRepository
 
 class ResponsePresenter (
     private val interactor : InteractorContract.ResponseInteractor,
@@ -25,7 +22,7 @@ class ResponsePresenter (
 				{ response ->
 					Log.d("M_ResponsePresenter", "post response = $response")
 					if(response.Num != 0) //0 - ошибка постинга
-						viewState.closeResponse()
+						viewState?.closeResponse()
 					else
 						App.showToast(response.Reason)
 
