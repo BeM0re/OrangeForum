@@ -50,6 +50,7 @@ class ThreadFragment : Fragment(),
     private var disposable: Disposable? = null
     private var responseFragment: ResponseFragment? = null
     private var postFragment: PostFragment? = null
+    private var adapter : ThreadAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -127,6 +128,7 @@ class ThreadFragment : Fragment(),
         disposable = null
         postFragment = null
         responseFragment = null
+        adapter = null
         threadPresenter.onDestroy()
         super.onDestroy()
     }
@@ -153,9 +155,9 @@ class ThreadFragment : Fragment(),
 
     override fun loadThread(thread: BoardThread) {
 
-        threadPresenter.initAdapter(thread, this, this)
+        adapter = ThreadAdapter(thread, this, this)
 
-        recyclerView?.adapter = threadPresenter.getAdapter()
+        recyclerView?.adapter = adapter
         recyclerView?.addItemDecoration(
             DividerItemDecoration(recyclerView?.context, HORIZONTAL)
         )
@@ -263,7 +265,7 @@ class ThreadFragment : Fragment(),
             recyclerView?.scrollToPosition(0)
         }
         fab_thread_down.setOnClickListener {
-            recyclerView?.scrollToPosition(threadPresenter.getAdapter()!!.itemCount - 1)
+            recyclerView?.scrollToPosition(adapter?.itemCount?:1 - 1)
         }
     }
 

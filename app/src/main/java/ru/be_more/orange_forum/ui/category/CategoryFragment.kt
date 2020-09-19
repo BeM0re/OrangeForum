@@ -27,7 +27,7 @@ class CategoryFragment private constructor(var onBoardClickListener: (boardId: S
     private val categoryPresenter: CategoryPresenter by inject(parameters = { parametersOf(this) })
 
     private lateinit var recyclerView : RecyclerView
-    lateinit var adapter : CategoryAdapter
+    var adapter : CategoryAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -36,6 +36,7 @@ class CategoryFragment private constructor(var onBoardClickListener: (boardId: S
 
     override fun onDestroy() {
         categoryPresenter.onDestroy()
+        adapter = null
         super.onDestroy()
     }
 
@@ -65,9 +66,9 @@ class CategoryFragment private constructor(var onBoardClickListener: (boardId: S
     }
 
     override fun expandCategories() {
-        for (i in (adapter.groups.size - 1) downTo 0) {
-            if (! adapter.isGroupExpanded(i))
-                adapter.toggleGroup(i)
+        for (i in (adapter?.groups?.size?:0 - 1) downTo 0) {
+            if (! adapter!!.isGroupExpanded(i))
+                adapter!!.toggleGroup(i)
         }
     }
 

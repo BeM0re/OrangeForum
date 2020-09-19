@@ -41,7 +41,7 @@ class BoardFragment: Fragment(),
     private var listener: ((Int, String) -> Unit)? = null
     private var id: String = ""
     private lateinit var recyclerView : RecyclerView
-    private lateinit var adapter : BoardAdapter
+    private var adapter : BoardAdapter? = null
     private var postFragment: PostFragment? = null
 
     private var disposable: Disposable? = null
@@ -77,6 +77,7 @@ class BoardFragment: Fragment(),
         disposable?.dispose()
         disposable = null
         postFragment = null
+        adapter = null
         super.onDestroy()
     }
 
@@ -102,9 +103,9 @@ class BoardFragment: Fragment(),
             boardPresenter.listener!!(threadNum, threadTitle)
     }
 
-    override fun onHideClick(threadNum: Int, isHidden: Boolean) {
-        boardPresenter.hideThread(threadNum, isHidden)
-        adapter.notifyDataSetChanged()
+    override fun onHideClick(threadNum: Int, toHide: Boolean) {
+        boardPresenter.hideThread(threadNum, toHide)
+        adapter?.notifyDataSetChanged()
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {

@@ -2,8 +2,6 @@ package ru.be_more.orange_forum.ui.download
 
 import android.annotation.SuppressLint
 import android.util.Log
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment

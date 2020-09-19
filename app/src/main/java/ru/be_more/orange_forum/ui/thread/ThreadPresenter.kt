@@ -18,7 +18,6 @@ class ThreadPresenter (
     private var viewState: ThreadView?
 ){
 
-    private var adapter : ThreadAdapter? = null
 
     lateinit var thread: BoardThread
     private lateinit var boardId :String
@@ -51,16 +50,7 @@ class ThreadPresenter (
         threadInteractor.release()
         postInteractor.release()
         viewState = null
-        adapter = null
     }
-
-    fun initAdapter(thread: BoardThread,
-                    picListener: PicOnClickListener,
-                    linkListener: LinkOnClickListener) {
-        adapter = ThreadAdapter(thread, picListener, linkListener)
-    }
-
-    fun getAdapter(): ThreadAdapter? = this.adapter
 
     fun getBoardId(): String = this.boardId
 

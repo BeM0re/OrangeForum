@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.ui.response
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -18,7 +17,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.PAGE_HTML
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.Observer
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.consts.THREAD_TAG
@@ -43,20 +42,20 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
             posting()
         }
 
-        captchaResponse?.observeForever {token ->
+        captchaResponse?.observe(this, Observer{token ->
             responsePresenter.postResponse(
                 boardId,
                 threadNum,
                 et_response_comment.text.toString(),
                 token
             )
-        }
+        })
 
     }
 
     override fun onDestroy() {
-        Log.d("M_ResponseFragment","destroy")
         responsePresenter.onDestroy()
+        captchaResponse?.removeObservers(this)
         captchaResponse = null
         super.onDestroy()
     }

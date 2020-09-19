@@ -2,7 +2,6 @@ package ru.be_more.orange_forum.ui.main
 
 import android.annotation.SuppressLint
 import android.util.Log
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.domain.InteractorContract
 
