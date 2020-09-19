@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.data.remote.repositories
 
+import android.util.Log
 import io.reactivex.Single
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -10,11 +11,8 @@ import ru.be_more.orange_forum.data.remote.api.DvachApi
 import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
 import java.io.File
 import java.util.*
-//import javax.inject.Inject
-//import javax.inject.Singleton
 
-//@Singleton
-class ResponseReposirotyImpl  /*@Inject constructor*/(
+class ResponseReposirotyImpl  (
     private val dvachApi : DvachApi
 ) : RemoteContract.ResponseRepository{
     override fun postResponse(
@@ -26,6 +24,8 @@ class ResponseReposirotyImpl  /*@Inject constructor*/(
         chaptcha_id: String,
         files: List<File>
     ): Single<DvachPostResponse> {
+
+        Log.d("M_ResponseReposirotyImpl","post")
 
         val requestTask =
             RequestBody.create(MediaType.parse("text/plain"), "post")
