@@ -26,7 +26,7 @@ class BoardInteractorImpl(
 
                     if (webIndex == -1){ //удаляем инфу об утонувших несохраненных тредах
                         if (!localThread.isDownloaded)
-                            dbThreadRepository.deleteThread(boardId, localThread.num).subscribe()
+                            dbThreadRepository.deleteThread(boardId, localThread.num)
                     }
                     else{ //TODO параметр webThreads иммутабелен, переделать
                         webThreads[webIndex].isFavorite = localThread.isFavorite

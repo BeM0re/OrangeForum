@@ -20,6 +20,10 @@ class PostRepositoryImpl(
         dao.insertPost(toStoredPost(post, threadNum, boardId))
     }
 
+    override fun savePosts(posts: List<Post>, threadNum: Int, boardId: String) {
+        posts.forEach { post -> dao.insertPost(toStoredPost(post, threadNum, boardId)) }
+    }
+
     override fun getPost(boardId: String, postNum: Int): Single<Post> =
         Single.zip(
             dao.getPost(boardId, postNum),
@@ -27,8 +31,6 @@ class PostRepositoryImpl(
             BiFunction <StoredPost, List<StoredFile>, Post> {post, files ->
                 toModelPost(post, files)
             })
-            .processSingle()
-
 
     override fun getPosts(boardId: String, threadNum: Int): Single<List<Post>> =
         Single.zip(
@@ -37,7 +39,6 @@ class PostRepositoryImpl(
             BiFunction <List<StoredPost>, List<StoredFile>, List<Post>> {posts, files ->
                 posts.map { post -> toModelPost(post, files.filter { it.postNum == post.num }) }
             })
-            .processSingle()
 
     override fun getOpPosts(): Single<List<Pair<Post, Int>>> =
         dao.getOpPosts()
@@ -46,11 +47,4 @@ class PostRepositoryImpl(
                     Pair(toModelPost(post, listOf()), post.threadNum)
                 }
             }
-            .processSingle()
-
-    override fun release() {
-        disposables.forEach{ it.dispose() }
-        disposables.clear()
-    }
-
 }
