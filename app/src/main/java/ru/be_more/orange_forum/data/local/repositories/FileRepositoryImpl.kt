@@ -7,15 +7,12 @@ import ru.be_more.orange_forum.data.local.db.dao.DvachDao
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelFile
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStoredFile
 import ru.be_more.orange_forum.domain.model.AttachFile
-import ru.be_more.orange_forum.extentions.disposables
-import ru.be_more.orange_forum.extentions.processSingle
 
 class FileRepositoryImpl (
     private val dao: DvachDao
 ) : DbContract.FileRepository{
 
-    override fun saveFile(file: AttachFile, postNum: Int, threadNum: Int, boardId: String): Completable =
-        Completable.fromCallable {
+    override fun saveFile(file: AttachFile, postNum: Int, threadNum: Int, boardId: String){
             dao.insertFile(toStoredFile(file, postNum, boardId, threadNum))
         }
 
@@ -32,7 +29,6 @@ class FileRepositoryImpl (
                     toModelFile(file)
                 }
             }
-            .processSingle()
 
     override fun getThreadFiles(boardId: String, threadNum: Int): Single<List<Pair<AttachFile, Int>>> =
         dao.getThreadFiles(boardId, threadNum)
@@ -41,15 +37,12 @@ class FileRepositoryImpl (
                     Pair(toModelFile(file), file.postNum)
                 }
             }
-            .processSingle()
 
-    override fun deleteThreadFiles(boardId: String, threadNum: Int): Completable =
-        Completable.fromCallable {
+    override fun deleteThreadFiles(boardId: String, threadNum: Int){
             dao.deleteThreadFiles(boardId, threadNum)
         }
 
-    override fun deletePostFiles(boardId: String, postNum: Int): Completable =
-        Completable.fromCallable {
+    override fun deletePostFiles(boardId: String, postNum: Int){
             dao.deletePostFiles(boardId, postNum)
         }
 
@@ -60,10 +53,4 @@ class FileRepositoryImpl (
                     Pair(toModelFile(file), file.postNum)
                 }
             }
-            .processSingle()
-
-    override fun release() {
-        disposables.forEach{ it.dispose() }
-        disposables.clear()
-    }
 }

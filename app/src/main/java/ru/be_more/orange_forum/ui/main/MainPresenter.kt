@@ -88,13 +88,10 @@ class MainPresenter(
 
     @SuppressLint("CheckResult")
     fun downloadThread() { //TODO add progressbar
-        threadInteractor.getThread(boardId, threadNum)
+        threadInteractor.downloadThread(threadNum, boardId, boardTitle)
             .subscribe (
-                {
-                    threadInteractor.downloadThread(it, boardId, boardTitle)
-                    myViewState.turnDownloadedIcon(true)
-                },
-                { App.showToast("downloading error = $it") }
+                { myViewState.turnDownloadedIcon(true) },
+                { Log.e("M_MainPresenter","download error = $it")}
             )
     }
 
@@ -113,8 +110,10 @@ class MainPresenter(
                 .subscribe()
         else
             threadInteractor.markThreadFavorite(threadNum, boardId, boardTitle)
-                .subscribe({},
-                    {Log.e("M_MainPresenter","saving favorite error = $it")})
+                .subscribe(
+                    {},
+                    {Log.e("M_MainPresenter","saving favorite error = $it")}
+                )
 
         myViewState.turnFavoriteIcon(true)
     }

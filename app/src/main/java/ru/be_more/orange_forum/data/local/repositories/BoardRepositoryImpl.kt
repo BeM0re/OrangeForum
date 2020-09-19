@@ -1,7 +1,5 @@
 package ru.be_more.orange_forum.data.local.repositories
 
-import io.reactivex.Completable
-import io.reactivex.CompletableSource
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import ru.be_more.orange_forum.data.local.DbContract
@@ -13,11 +11,8 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModel
 import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.extentions.processSingle
 import ru.be_more.orange_forum.domain.model.Board
-//import javax.inject.Inject
-//import javax.inject.Singleton
 
-//@Singleton
-class BoardRepositoryImpl /*@Inject constructor*/(
+class BoardRepositoryImpl (
     private val dao: DvachDao
 ) : DbContract.BoardRepository{
 
@@ -27,7 +22,6 @@ class BoardRepositoryImpl /*@Inject constructor*/(
                 boards.map { board ->
                     toModelBoard(board, listOf()) }
                 }
-            .processSingle()
 
 
     override fun getBoard(boardId: String): Single<Board> =
@@ -39,18 +33,20 @@ class BoardRepositoryImpl /*@Inject constructor*/(
                     else
                         Board("", boardId, toModelThreads(threads), false)
             })
-            .processSingle()
 
     override fun getBoardCount(boardId: String): Single<Int> =
         dao.getBoardCount(boardId)
-            .processSingle()
 
-    override fun insertBoard(boardId: String, boardName: String) =
+    /*override fun insertBoard(boardId: String, boardName: String) =
         dao.getBoard(boardId)
             .doOnSuccess { probablyBoard ->
                 if (probablyBoard.isEmpty())
                     dao.insertBoard(StoredBoard(boardId, "", boardName, true))
-            }
+            }*/
+
+    override fun insertBoard(boardId: String, boardName: String) =
+        dao.insertBoard(StoredBoard(boardId, "", boardName, true))
+
 
     override fun markBoardFavorite(boardId: String, boardName: String): Single<Int> =
         dao.getBoardCount(boardId)
@@ -60,14 +56,7 @@ class BoardRepositoryImpl /*@Inject constructor*/(
                 else
                     dao.markBoardFavorite(boardId)
             }
-            .processSingle()
 
     override fun unmarkBoardFavorite(boardId: String): Single<Unit> =
         Single.fromCallable { dao.unmarkBoardFavorite(boardId) }
-            .processSingle()
-
-    override fun release() {
-        disposables.forEach{ it.dispose() }
-        disposables.clear()
-    }
 }

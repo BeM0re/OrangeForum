@@ -11,14 +11,9 @@ import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelBoard
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelPost
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
-import ru.be_more.orange_forum.extentions.processSingle
 import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.extentions.disposables
-//import javax.inject.Inject
-//import javax.inject.Singleton
 
-//@Singleton
-class FavoriteRepositoryImpl /*@Inject constructor*/(
+class FavoriteRepositoryImpl (
     private val dao: DvachDao
 ) : DbContract.FavoriteRepository{
 
@@ -33,19 +28,13 @@ class FavoriteRepositoryImpl /*@Inject constructor*/(
                 boards.map { board ->
                     toModelBoard(board, toModelThreads(threads)
                         .map { thread -> thread.copy(posts = posts
+                            .filter { it.threadNum == thread.num && it.boardId == board.id}
                             .map{ post -> toModelPost(post, files
-                                .filter { it.postNum == post.num }
+                                .filter { it.postNum == post.num && it.boardId == board.id }
                             )}
                         )}
                     )
                 }
             }
         )
-            .processSingle()
-
-    override fun release() {
-        disposables.forEach{ it.dispose() }
-        disposables.clear()
-    }
-
 }
