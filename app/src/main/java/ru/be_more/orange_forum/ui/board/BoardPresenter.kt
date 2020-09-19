@@ -85,10 +85,14 @@ class BoardPresenter (
     }
 
     @SuppressLint("CheckResult")
-    fun hideThread(threadNum: Int, isHidden: Boolean) {
-        if (!isHidden)
+    fun hideThread(threadNum: Int, toHide: Boolean) {
+        if (toHide) {
             threadInteractor.markThreadHidden(boardId, board.name, threadNum)
-                .subscribe()
+                .subscribe(
+                    {},
+                    { Log.e("M_BoardPresenter","hidding error = $it") }
+                )
+        }
         else {
             threadInteractor.unmarkThreadHidden(boardId, threadNum)
                 .subscribe()

@@ -37,7 +37,10 @@ class ThreadRepositoryImpl(
                 }
             }
 
-    override fun insertThread(thread: BoardThread, boardId: String): Single<Boolean> =
+    override fun insertThread(thread: BoardThread, boardId: String) =
+        dao.insertThread(toStoredThread(thread, boardId))
+
+    override fun insertThreadSafety(thread: BoardThread, boardId: String): Single<Boolean> =
         dao.getThreadOrEmpty(boardId, thread.num)
             .map { probablyThread ->
                 if (probablyThread.isEmpty()) {

@@ -24,8 +24,6 @@ class DownloadPresenter (
     @SuppressLint("CheckResult")
     fun initPresenter(){
         downloadInteractor.getDownloads()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ boards ->
                 this.boards = boards
                 viewState?.loadDownloads()
@@ -47,8 +45,6 @@ class DownloadPresenter (
     @SuppressLint("CheckResult")
     fun getSinglePost(boardId: String, postNum: Int){
         postInteractor.getPost(boardId, postNum)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
                     this.putContentInStack(it)
