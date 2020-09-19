@@ -28,7 +28,7 @@ interface InteractorContract {
         fun getThread(boardId: String, threadNum: Int): Single<BoardThread>
         fun markThreadFavorite(threadNum: Int, boardId: String, boardName: String): Completable
         fun unmarkThreadFavorite(boardId: String, threadNum: Int):Completable
-        fun downloadThread(thread: BoardThread, boardId: String, boardName: String):Completable
+        fun downloadThread(threadNum: Int, boardId: String, boardName: String):Completable
         fun deleteThread(boardId: String, threadNum: Int): Completable
         fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<BoardThread?>
         fun markThreadHidden(boardId: String, boardName: String, threadNum: Int):Completable

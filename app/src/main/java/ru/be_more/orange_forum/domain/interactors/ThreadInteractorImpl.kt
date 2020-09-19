@@ -2,9 +2,7 @@ package ru.be_more.orange_forum.domain.interactors
 
 import android.util.Log
 import io.reactivex.Completable
-import io.reactivex.CompletableSource
 import io.reactivex.Single
-import io.reactivex.SingleSource
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import ru.be_more.orange_forum.App
@@ -13,13 +11,13 @@ import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.storage.StorageContract
 import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
+import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.processCompletable
 import ru.be_more.orange_forum.extentions.processSingle
-//import javax.inject.Inject
 
-class ThreadInteractorImpl /*@Inject constructor*/(
+class ThreadInteractorImpl (
     private val apiRepository: RemoteContract.ThreadRepository,
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository,
@@ -50,94 +48,69 @@ class ThreadInteractorImpl /*@Inject constructor*/(
         )
             .processSingle()
 
-
     override fun markThreadFavorite(threadNum: Int, boardId: String, boardName: String): Completable =
         Completable.fromSingle(
-            Single.zip(dbBoardRepository.insertBoard(boardId, boardName),
-                apiRepository.getThread(boardId, threadNum)
-                    .doOnSuccess { thread ->
-                        dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
-                    }
-                    .doOnSuccess { thread ->
-                        dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
-                    }
-                    .flatMap { thread ->
-                        dbThreadRepository.insertThread(thread.copy(isFavorite = true), boardId)
-                            .doOnSuccess { isSaved ->
-                                Log.d("M_ThreadInteractorImpl","saved")
-                                if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
-                    },
-                    BiFunction <List<StoredBoard>, Boolean, Single<Unit>> { _, _ ->
-                        return@BiFunction Single.create { it.onSuccess(Unit) }
-                    }
-            )
+            apiRepository.getThread(boardId, threadNum)
+                .doOnSuccess { thread ->
+                    dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
+                }
+                .doOnSuccess { thread ->
+                    dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
+                }
+                .flatMap { thread ->
+                    dbThreadRepository.insertThread(thread.copy(isFavorite = true), boardId)
+                        .doOnSuccess { isSaved ->
+                            Log.d("M_ThreadInteractorImpl","saved")
+                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
+                }
+                .flatMap {
+                    dbBoardRepository.getBoardCount(boardId)
+                        .doOnSuccess {
+                            if (it == 0)
+                                dbBoardRepository.insertBoard(boardId, boardName)
+                        }
+                }
         )
             .processCompletable()
 
-
-    fun markThreadFavorite1(threadNum: Int, boardId: String, boardName: String): Completable =
-        Completable.create { emitter ->
-            Single.zip(dbBoardRepository.getBoardCount(boardId),
-                dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
-                apiRepository.getThread(boardId, threadNum),
-                Function3 <Int, List<BoardThread>, BoardThread, Unit> { boardCount, probablyThread, webThread ->
-
-                    if(boardCount == 0 )
-                        dbBoardRepository.insertBoard(boardId, boardName)
-
-                    Log.d("M_ThreadInteractorImpl","web = ${webThread.isDownloaded}")
-
-                    if (probablyThread.isEmpty()){//тред еще не сохранен
-                        dbThreadRepository.insertThread(webThread.copy(isFavorite = true), boardId)
-
-                        dbPostRepository.savePost(webThread.posts[0], webThread.num, boardId)
-
-                        //Сохраняем файлы в ФС и сохраняем ссылки на файлы в модель
-                        webThread.posts[0].files = webThread.posts[0].files.map { file ->
-                            return@map file.copy(
-                                localPath = fileRepository.saveFile(file.path).toString(),
-                                localThumbnail = fileRepository.saveFile(file.thumbnail).toString()
-                            )
-                        }
-
-                        webThread.posts[0].files.forEach { file ->
-                            dbFileRepository.saveFile(file, webThread.num, webThread.num, boardId)
-                        }
-                    }
-                    else
-                        dbThreadRepository.markThreadFavorite(webThread, boardId, boardName)
-                }
-            )
-                .processSingle()
-                .subscribe({emitter.onComplete()}, emitter::onError)
+    override fun unmarkThreadFavorite(boardId: String, threadNum: Int): Completable =
+        Completable.fromCallable {
+            dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
         }
             .processCompletable()
 
-    override fun unmarkThreadFavorite(boardId: String, threadNum: Int): Completable =
-        dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
-            .processCompletable()
-
-    override fun downloadThread(thread: BoardThread, boardId: String, boardName: String): Completable =
-            dbThreadRepository.downloadThread(thread.copy(isDownloaded = true), boardId)
-                .doOnComplete {
+    override fun downloadThread(threadNum: Int, boardId: String, boardName: String): Completable =
+        Completable.fromSingle(
+            apiRepository.getThread(boardId, threadNum)
+                .doOnSuccess { thread ->
+                    dbPostRepository.savePosts(thread.posts, threadNum, boardId)
+                }
+                .doOnSuccess { thread ->
                     thread.posts.forEach { post ->
-                        dbPostRepository.savePost(post, thread.num, boardId)
-
-                        post.files.map { file ->
-                            file.copy( //сохраняем файл в ФС, ссылку сохраняем в модель
-                                localPath = fileRepository.saveFile(file.path).toString(),
-                                localThumbnail = fileRepository.saveFile(file.thumbnail).toString()
-                            )
-                        }.forEach { file -> //файл с ссылкой на файл в ФС кладем в БД
-                            dbFileRepository.saveFile(file, thread.num, thread.num, boardId)
-                        }
+                        dbFileRepository.saveFiles(post.files, post.num, thread.num, boardId)
                     }
                 }
+                .flatMap { thread ->
+                    dbThreadRepository.insertThread(thread.copy(isDownloaded = true), boardId)
+                        .doOnSuccess { isSaved ->
+                            Log.d("M_ThreadInteractorImpl","saved")
+                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
+                }
+                .flatMap {
+                    dbBoardRepository.getBoardCount(boardId)
+                        .doOnSuccess {
+                            if (it == 0)
+                                dbBoardRepository.insertBoard(boardId, boardName)
+                        }
+                }
+        )
             .processCompletable()
 
-    override fun deleteThread(boardId: String, threadNum: Int): Completable =
-        dbThreadRepository.deleteThread(boardId, threadNum)
-        .processCompletable()
+    override fun deleteThread(boardId: String, threadNum: Int) =
+        Completable.fromCallable {
+            dbThreadRepository.deleteThread(boardId, threadNum)
+        }
+            .processCompletable()
 
     override fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<BoardThread?> {
         App.showToast("Не считаю нужным реализовывать")
@@ -145,27 +118,28 @@ class ThreadInteractorImpl /*@Inject constructor*/(
     }
 
     override fun markThreadHidden(boardId: String, boardName: String, threadNum: Int): Completable =
-        Completable.create { emitter ->
+        Completable.fromSingle <Single<Unit>> {
             Single.zip(dbBoardRepository.getBoardCount(boardId),
                 dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
-                BiFunction <Int, List<BoardThread>, Unit> { boardCount, probablyThread ->
+                BiFunction <Int, List<BoardThread>, Single<Unit>> { boardCount, probablyThread ->
 
                     if(boardCount == 0 )//борда еще не сохранена
                         dbBoardRepository.insertBoard(boardId, boardName)
 
                     if (probablyThread.isEmpty()){//тред еще не сохранен
-                        dbThreadRepository.insertThread(BoardThread(threadNum, isHidden = true), boardId)
+                        dbThreadRepository.insertThread(probablyThread[0].copy(isHidden = true), boardId)
                     }
                     else
                         dbThreadRepository.markThreadHidden(boardId, threadNum)
+                    return@BiFunction Single.create { it.onSuccess(Unit) }
                 }
             )
-                .processSingle()
-                .subscribe({emitter.onComplete()}, emitter::onError)
         }
             .processCompletable()
 
-    override fun unmarkThreadHidden(boardId: String, threadNum: Int): Completable =
-        dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
+    override fun unmarkThreadHidden(boardId: String, threadNum: Int) =
+        Completable.fromCallable {
+            dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
+        }
             .processCompletable()
 }
