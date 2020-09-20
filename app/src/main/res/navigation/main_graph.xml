@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_graph"
+    app:startDestination="@id/categoryFragment">
+
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="ru.be_more.orange_forum.ui.category.CategoryFragment"
+        android:label="CategoryFragment" >
+        <action
+            android:id="@+id/action_categoryFragment_to_boardFragment"
+            app:destination="@id/boardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/boardFragment"
+        android:name="ru.be_more.orange_forum.ui.board.BoardFragment"
+        android:label="BoardFragment" >
+        <action
+            android:id="@+id/action_boardFragment_to_threadFragment"
+            app:destination="@id/threadFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="ru.be_more.orange_forum.ui.favorire.FavoriteFragment"
+        android:label="FavoriteFragment" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_boardFragment"
+            app:destination="@id/boardFragment" />
+        <action
+            android:id="@+id/action_favoriteFragment_to_threadFragment3"
+            app:destination="@id/threadFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/downloadFragment"
+        android:name="ru.be_more.orange_forum.ui.download.DownloadFragment"
+        android:label="DownloadFragment" >
+        <action
+            android:id="@+id/action_downloadFragment_to_threadFragment"
+            app:destination="@id/threadFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/threadFragment"
+        android:name="ru.be_more.orange_forum.ui.thread.ThreadFragment"
+        android:label="ThreadFragment" >
+        <action
+            android:id="@+id/action_threadFragment_to_responseFragment"
+            app:destination="@id/responseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/responseFragment"
+        android:name="ru.be_more.orange_forum.ui.response.ResponseFragment"
+        android:label="ResponseFragment" />
+</navigation>

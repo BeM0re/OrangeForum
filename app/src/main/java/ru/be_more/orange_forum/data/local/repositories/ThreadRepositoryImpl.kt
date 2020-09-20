@@ -51,8 +51,11 @@ class ThreadRepositoryImpl(
                     return@map false
             }
 
-    override fun deleteThread(boardId: String, threadNum: Int) =
+    override fun deleteThread(boardId: String, threadNum: Int) {
         dao.deleteThread(boardId, threadNum)
+        dao.deletePosts(boardId, threadNum)
+        dao.deleteThreadFiles(boardId, threadNum)
+    }
 
     override fun markThreadFavorite(boardId: String, threadNum: Int) =
         dao.markThreadFavorite(boardId, threadNum)

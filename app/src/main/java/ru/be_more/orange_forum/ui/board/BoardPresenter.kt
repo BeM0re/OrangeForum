@@ -15,30 +15,31 @@ class BoardPresenter (
 {
 
     private var board :Board = Board("", "", listOf(), false)
-    private var boardId: String = "" //FIXME убрать борд айди, раз есть борда (выше)
-    var listener: ((threadNum: Int, threadTitle: String) -> Unit)? = null
+//    private var boardId: String = "" //FIXME убрать борд айди, раз есть борда (выше)
+//    var listener: ((threadNum: Int, threadTitle: String) -> Unit)? = null
 
     private val modalStack: Stack<ModalContent> = Stack()
 
     @SuppressLint("CheckResult")
-    fun init(boardId: String, listener: ((threadNum: Int, threadTitle: String) -> Unit)?){
+    fun init(boardId: String?){
 
-        if (listener!=null)
-            this.listener = listener
+//        if (listener!=null)
+//            this.listener = listener
 
-        if (boardId.isNotEmpty())
-            this.boardId = boardId
-
-        boardInteractor.getBoard(this.boardId)
-            .subscribe(
-                { board ->
-                    viewState?.loadBoard(board)
-                    viewState?.setBoardMarks(board.isFavorite)
-                },
-                {
-                    Log.e("M_BoardPresenter","Getting board error = $it")
-                }
-            )
+        if (!boardId.isNullOrEmpty()) {
+            this.board.id = boardId
+            boardInteractor.getBoard(this.board.id)
+                .subscribe(
+                    { board ->
+                        this.board = board
+                        viewState?.loadBoard(this.board)
+                        viewState?.setBoardMarks(this.board.isFavorite)
+                    },
+                    {
+                        Log.e("M_BoardPresenter", "Getting board error = $it")
+                    }
+                )
+        }
     }
 
     fun onDestroy() {
@@ -69,7 +70,7 @@ class BoardPresenter (
     }
 
     fun getSinglePost(postNum: Int) {
-        getSinglePost(this.boardId, postNum)
+        getSinglePost(this.board.id, postNum)
     }
 
     @SuppressLint("CheckResult")
@@ -87,14 +88,14 @@ class BoardPresenter (
     @SuppressLint("CheckResult")
     fun hideThread(threadNum: Int, toHide: Boolean) {
         if (toHide) {
-            threadInteractor.markThreadHidden(boardId, board.name, threadNum)
+            threadInteractor.markThreadHidden(board.id, board.name, threadNum)
                 .subscribe(
                     {},
                     { Log.e("M_BoardPresenter","hidding error = $it") }
                 )
         }
         else {
-            threadInteractor.unmarkThreadHidden(boardId, threadNum)
+            threadInteractor.unmarkThreadHidden(board.id, threadNum)
                 .subscribe()
         }
     }
@@ -102,5 +103,8 @@ class BoardPresenter (
     fun setBoardMarks(){
         viewState?.setBoardMarks(board.isFavorite)
     }
+
+    fun getBoardId() =
+        board.id
 
 }
