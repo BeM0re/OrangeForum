@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.ui.NavigationUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
@@ -45,10 +46,16 @@ class MainActivity : AppCompatActivity(), MainView {
         setSupportActionBar(toolbar)
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+//        bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        NavigationUI.setupWithNavController(bottomNavigationView, navController)
+        NavigationUI.setupActionBarWithNavController(this, navController)
+
+        bottomNavigationView.menu.getItem(1).isEnabled = false
+        bottomNavigationView.menu.getItem(2).isEnabled = false
+
         toolbar.setOnMenuItemClickListener(mOnToolbarItemSelectedListener)
 
-        bottomNavigationView.selectedItemId = R.id.navigation_category
+//        bottomNavigationView.selectedItemId = R.id.categoryFragment
 
         subscribe()
     }
@@ -343,10 +350,11 @@ class MainActivity : AppCompatActivity(), MainView {
         toolbar.menu.findItem(R.id.navigation_download).isVisible = !isDownloaded
         toolbar.menu.findItem(R.id.navigation_download_done).isVisible = isDownloaded
     }
+
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
 
-            //не делать при первом запуске приложения, когда ни одного фрагмента не создано и кнопки == null
+           /* //не делать при первом запуске приложения, когда ни одного фрагмента не создано и кнопки == null
             if (mainPresenter.getCurrentFragmentTag() != "")
                 removeThreadMarks()
 
@@ -373,7 +381,7 @@ class MainActivity : AppCompatActivity(), MainView {
                     navController.navigate(R.id.downloadFragment)
                     return@OnNavigationItemSelectedListener true
                 }
-            }
+            }*/
             false
         }
 
@@ -413,10 +421,10 @@ class MainActivity : AppCompatActivity(), MainView {
         false
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.actionbar, menu)
-        return true
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        menuInflater.inflate(R.menu.actionbar, menu)
+//        return true
+//    }
 
     override fun onBackPressed() {
         App.getBus().onNext(Pair(BackPressed, mainPresenter.getCurrentFragmentTag()))

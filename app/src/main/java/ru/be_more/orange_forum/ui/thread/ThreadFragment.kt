@@ -66,8 +66,6 @@ class ThreadFragment : Fragment(),
 
         val boardId = requireArguments().getString("boardId")
         val threadNum = requireArguments().getInt("threadNum")
-        val threadTitle = requireArguments().getString("threadTitle")
-        navController.currentDestination?.label = threadTitle
 
         threadPresenter.init(boardId, threadNum)
         recyclerView = rv_post_list

@@ -8,9 +8,7 @@ import ru.be_more.orange_forum.domain.converters.RemoteConverter
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.extentions.processSingle
 
-//import javax.inject.Inject
-
-class CategoryInteractorImpl /*@Inject constructor*/(
+class CategoryInteractorImpl (
     private val repository: RemoteContract.CategoryRepository):
         InteractorContract.CategoryInteractor, BaseInteractorImpl() {
 
