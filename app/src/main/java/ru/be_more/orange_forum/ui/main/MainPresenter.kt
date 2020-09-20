@@ -15,14 +15,7 @@ class MainPresenter(
     private var boardId :String = ""
     private lateinit var boardTitle :String
     private var threadNum :Int = 0
-    private lateinit var threadTitle :String
     private var currentFragmentTag: String = ""
-    private var isBoardAvailable = true
-
-    init {
-        setBoard("")
-        setThread(0)
-    }
 
     fun onDestroy() {
         boardInteractor.release()
@@ -35,55 +28,6 @@ class MainPresenter(
     fun setCurrentFragmentTag(tag: String){
         this.currentFragmentTag = tag
     }
-
-    fun getBoardId() = this.boardId
-
-    fun getThreadNum() = this.threadNum
-
-    fun setBoard(boardId: String){
-        if (!isBoardAvailable){
-            this.boardId = boardId
-            setThread(0)
-            myViewState.showBoardMenuItem()
-            myViewState.showBoardFragment(true)
-        }
-
-        when (boardId){
-            "" -> {
-                myViewState.hideBoardMenuItem()
-            }
-            this.boardId -> {
-                myViewState.showBoardMenuItem()
-                myViewState.showBoardFragment(false)
-            }
-            else -> {
-                this.boardId = boardId
-                setThread(0)
-                myViewState.showBoardMenuItem()
-                myViewState.showBoardFragment(true)
-            }
-        }
-    }
-
-    fun setThread(threadNum: Int){
-        when (threadNum){
-            0 -> myViewState.hideThreadMenuItem()
-            this.threadNum -> {
-                myViewState.showThreadMenuItem()
-                myViewState.showThreadFragment(false)
-            }
-            else -> {
-                this.threadNum = threadNum
-                myViewState.showThreadMenuItem()
-                myViewState.showThreadFragment(true)
-            }
-        }
-
-    }
-
-    fun getBoardTitle(): String? = this.boardTitle
-
-    fun getThreadTitle(): String? = this.threadTitle
 
     @SuppressLint("CheckResult")
     fun downloadThread() { //TODO add progressbar
@@ -150,22 +94,6 @@ class MainPresenter(
                 },
                 {Log.d("M_MainPresenter", "unmark favorite error = $it")}
             )
-    }
-
-    fun setThreadTitle(title: String) {
-        this.threadTitle = title
-    }
-
-    fun setBoardTitle(title: String) {
-        this.boardTitle = title
-    }
-
-    fun setBoardId(boardId: String) {
-        this.boardId = boardId
-    }
-
-    fun setBoardAvailability(isAvailable: Boolean) {
-        this.isBoardAvailable = isAvailable
     }
 
 }

@@ -61,27 +61,9 @@ class BoardFragment: Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
 
-        val boardId = requireArguments().getString("boardId")
-
-        boardPresenter.init(boardId)
-        recyclerView = rv_thread_list
-        recyclerView?.layoutManager = LinearLayoutManager(this.context)
-
-        disposable = App.getBus().subscribe({
-            if (it.first is BackPressed && it.second == BOARD_TAG) {
-                if (fl_board_post.visibility != View.GONE)
-                    boardPresenter.onBackPressed()
-                else
-                    App.getBus().onNext(Pair(AppToBeClosed, ""))
-            }
-            if (it.first is BoardEntered && it.second == BOARD_TAG)
-                boardPresenter.setBoardMarks()
-        },
-            {
-                Log.e("M_BoardFragment", "bus error = \n $it")
-            })
+        initNav(view)
+        subscribe()
     }
 
     override fun onDestroy() {
@@ -117,6 +99,7 @@ class BoardFragment: Fragment(),
         bundle.putInt("threadNum", threadNum)
         bundle.putString("title", threadTitle)
         navController.navigate(R.id.action_boardFragment_to_threadFragment, bundle)
+
 //        if (boardPresenter.listener != null)
 //            boardPresenter.listener!!(threadNum, threadTitle)
     }
@@ -203,6 +186,35 @@ class BoardFragment: Fragment(),
 
     override fun showToast(message: String) {
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun subscribe(){
+        disposable = App.getBus().subscribe({
+            if (it.first is BackPressed && it.second == BOARD_TAG) {
+                if (fl_board_post.visibility != View.GONE)
+                    boardPresenter.onBackPressed()
+                else
+                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+            }
+            if (it.first is BoardEntered && it.second == BOARD_TAG)
+                boardPresenter.setBoardMarks()
+        },
+            {
+                Log.e("M_BoardFragment", "bus error = \n $it")
+            })
+    }
+
+    private fun initNav(view: View){
+        navController = Navigation.findNavController(view)
+
+        val boardId = requireArguments().getString("boardId")
+
+        boardPresenter.init(boardId)
+        recyclerView = rv_thread_list
+        recyclerView?.layoutManager = LinearLayoutManager(this.context)
+
+        App.getBus().onNext(Pair(BoardToBeOpened, ""))
+        App.getBus().onNext(Pair(ThreadToBeClosed, ""))
     }
 
 //    companion object {
