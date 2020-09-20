@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
@@ -32,10 +34,10 @@ import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.post.PostPresenter
 
-class FavoriteFragment private constructor(
+class FavoriteFragment /*private constructor(
     var intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
     var intoBoardClickListener: (boardId: String, boardName: String) -> Unit,
-    var onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit):
+    var onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit)*/:
     Fragment(),
     FavoriteView,
     FavoriteListener,
@@ -45,9 +47,10 @@ class FavoriteFragment private constructor(
 
     private val favoritePresenter: FavoritePresenter by inject(parameters = { parametersOf(this) })
 
-    private lateinit var recyclerView : RecyclerView
+    private var recyclerView : RecyclerView? = null
     var adapter : FavoriteAdapter? = null
     private var postFragment: PostFragment? = null
+    private lateinit var navController: NavController
 
     private var disposable: Disposable? = null
 
@@ -58,9 +61,12 @@ class FavoriteFragment private constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
+
+        navController.currentDestination?.label = "Favorite"
 
         recyclerView = rv_favorite_list
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
         favoritePresenter.initPresenter()
 
@@ -85,6 +91,7 @@ class FavoriteFragment private constructor(
         disposable?.dispose()
         disposable = null
         adapter = null
+        recyclerView = null
         super.onDestroy()
     }
 
@@ -98,21 +105,31 @@ class FavoriteFragment private constructor(
                 adapter!!.toggleGroup(i)
         }
 
-        recyclerView.adapter = adapter
+        recyclerView?.adapter = adapter
 
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
-        intoThreadClickListener(boardId, threadNum, threadTitle)
+//        intoThreadClickListener(boardId, threadNum, threadTitle)
+        val bundle = Bundle()
+        bundle.putString("boardId", boardId)
+        bundle.putInt("threadNum", threadNum)
+        bundle.putString("threadTitle", threadTitle)
+        navController.navigate(R.id.action_favoriteFragment_to_threadFragment3, bundle)
     }
 
     override fun intoBoardClick(boardId: String, boardName: String) {
-        intoBoardClickListener(boardId, boardName)
+//        intoBoardClickListener(boardId, boardName)
+        val bundle = Bundle()
+        bundle.putString("boardId", boardId)
+        bundle.putString("boardTitle", boardName)
+        navController.navigate(R.id.action_favoriteFragment_to_boardFragment, bundle)
     }
 
-    override fun onRemoveClick(boardId: String, threadNum: Int) {
-        onRemoveClickListener(boardId, threadNum)
-    }
+//    override fun onRemoveClick(boardId: String, threadNum: Int) {
+////        onRemoveClickListener(boardId, threadNum)
+//        favoritePresenter.removeThread
+//    }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
         if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
@@ -195,12 +212,12 @@ class FavoriteFragment private constructor(
         App.showToast(message )
     }
 
-    companion object {
-        fun getFavoriteFragment (
-            intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
-            intoBoardClickListener: (boardId: String, boardName: String) -> Unit,
-            onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit
-        ): FavoriteFragment = FavoriteFragment(intoThreadClickListener, intoBoardClickListener, onRemoveClickListener)
-
-    }
+//    companion object {
+//        fun getFavoriteFragment (
+//            intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
+//            intoBoardClickListener: (boardId: String, boardName: String) -> Unit,
+//            onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit
+//        ): FavoriteFragment = FavoriteFragment(intoThreadClickListener, intoBoardClickListener, onRemoveClickListener)
+//
+//    }
 }

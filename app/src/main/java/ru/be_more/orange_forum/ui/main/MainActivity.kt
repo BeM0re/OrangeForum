@@ -3,9 +3,12 @@ package ru.be_more.orange_forum.ui.main
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.widget.MediaController
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
     private var timestamp: Long = 0
     private var disposable: Disposable? = null
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -39,6 +43,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment)
 
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         toolbar.setOnMenuItemClickListener(mOnToolbarItemSelectedListener)
@@ -58,7 +63,7 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     override fun showCategoryFragment() {
-        val fragment = CategoryFragment.getCategoryFragment { boardId, title ->
+    /*    val fragment = CategoryFragment.getCategoryFragment { boardId, title ->
                 mainPresenter.setBoardTitle(title)
                 mainPresenter.setBoard(boardId)
             }
@@ -90,13 +95,13 @@ class MainActivity : AppCompatActivity(), MainView {
 
         mainPresenter.setCurrentFragmentTag(CAT_TAG)
 
-        setActionBarTitle()
+        setActionBarTitle()*/
     }
 
     override fun showBoardFragment(isNew: Boolean) {
 //        removeThreadMarks()
 
-        when{
+      /*  when{
             supportFragmentManager.findFragmentByTag(BOARD_TAG) == null ->
                 with(supportFragmentManager.beginTransaction()){
                     val fragment =
@@ -146,7 +151,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
         App.getBus().onNext(Pair(BoardEntered, BOARD_TAG))
 
-        bottomNavigationView!!.menu.getItem(1).isChecked = true
+        bottomNavigationView!!.menu.getItem(1).isChecked = true*/
     }
 
     override fun showThreadFragment(isNew: Boolean) {
@@ -155,7 +160,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
 //        val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
 
-        when {
+   /*     when {
             supportFragmentManager.findFragmentByTag(THREAD_TAG) == null ->
                 with(supportFragmentManager.beginTransaction()){
                     val fragment = ThreadFragment.getThreadFragment(
@@ -201,12 +206,12 @@ class MainActivity : AppCompatActivity(), MainView {
 
         App.getBus().onNext(Pair(ThreadEntered, THREAD_TAG))
 
-        bottomNavigationView!!.menu.getItem(2).isChecked = true
+        bottomNavigationView!!.menu.getItem(2).isChecked = true*/
     }
 
     override fun showFavoriteFragment() {
 
-        val fragment = FavoriteFragment.getFavoriteFragment({ boardId, threadNum, title ->
+ /*       val fragment = FavoriteFragment.getFavoriteFragment({ boardId, threadNum, title ->
 //            mainPresenter.setBoard("")
             mainPresenter.setBoardAvailability(false)
             removeThreadMarks()
@@ -248,14 +253,14 @@ class MainActivity : AppCompatActivity(), MainView {
 
         setActionBarTitle("Favorites")
 
-        refreshFavorite()
+        refreshFavorite()*/
 
 //        App.getBus().onNext(Pair(ThreadEntered, FAVORITE_TAG))
     }
 
     override fun showDownloadedFragment() {
 
-        val fragment = DownloadFragment.getDownloadFragment({ boardId, threadNum, title ->
+/*        val fragment = DownloadFragment.getDownloadFragment({ boardId, threadNum, title ->
             mainPresenter.setBoardId(boardId)
             mainPresenter.setThreadTitle(title)
             setActionBarTitle(title)
@@ -287,7 +292,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
         setActionBarTitle("Downloaded")
 
-        refreshDownload()
+        refreshDownload()*/
     }
 
     override fun showPrefFragment() {
@@ -359,11 +364,13 @@ class MainActivity : AppCompatActivity(), MainView {
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_favorites -> {
-                    showFavoriteFragment()
+//                    showFavoriteFragment()
+                    navController.navigate(R.id.favoriteFragment)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_downloaded -> {
-                    showDownloadedFragment()
+//                    showDownloadedFragment()
+                    navController.navigate(R.id.downloadFragment)
                     return@OnNavigationItemSelectedListener true
                 }
             }

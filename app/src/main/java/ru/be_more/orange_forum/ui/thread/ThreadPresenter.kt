@@ -26,24 +26,27 @@ class ThreadPresenter (
     private val modalStack: Stack<ModalContent> = Stack()
 
     @SuppressLint("CheckResult")
-    fun init(boardId: String, threadNum: Int){
+    fun init(boardId: String?, threadNum: Int){
 
-        this.boardId = boardId
-        this.threadNum = threadNum
+        if (!boardId.isNullOrEmpty()){
+            this.boardId = boardId
+            this.threadNum = threadNum
 
-        threadInteractor.getThread(boardId, threadNum)
-            .subscribe(
-                {
-                    thread = it
-                    viewState?.loadThread(thread)
-                    viewState?.setThreadMarks(thread.isDownloaded, thread.isFavorite)
-                },
-                {
-                    Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
-                }
-            )
+            threadInteractor.getThread(boardId, threadNum)
+                .subscribe(
+                    {
+                        thread = it
+                        viewState?.loadThread(thread)
+                        viewState?.setThreadMarks(thread.isDownloaded, thread.isFavorite)
+                    },
+                    {
+                        Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
+                    }
+                )
 
-    //TODO прятать fab при нажатии на ответ
+            //TODO прятать fab при нажатии на ответ
+
+        }
     }
 
     fun onDestroy() {

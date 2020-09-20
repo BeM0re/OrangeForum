@@ -57,13 +57,15 @@ class PostFragment : Fragment(), PostView {
 
         setClosingViewClickListener()
 
-        disposable = App.getBus().subscribe({
-            if(it.first is VideoToBeClosed && it.second == POST_TAG)
-                hideModal()
-        },
+        disposable = App.getBus().subscribe(
+            {
+                if(it.first is VideoToBeClosed && it.second == POST_TAG)
+                    hideModal()
+            },
             {
                 Log.e("M_PostFragment","bus error = \n $it")
-            })
+            }
+        )
     }
 
     override fun onDestroy() {

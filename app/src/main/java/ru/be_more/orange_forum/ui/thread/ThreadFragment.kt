@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -51,6 +53,7 @@ class ThreadFragment : Fragment(),
     private var responseFragment: ResponseFragment? = null
     private var postFragment: PostFragment? = null
     private var adapter : ThreadAdapter? = null
+    private lateinit var navController: NavController
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -59,6 +62,12 @@ class ThreadFragment : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
+
+        val boardId = requireArguments().getString("boardId")
+        val threadNum = requireArguments().getInt("threadNum")
+        val threadTitle = requireArguments().getString("threadTitle")
+        navController.currentDestination?.label = threadTitle
 
         threadPresenter.init(boardId, threadNum)
         recyclerView = rv_post_list
@@ -154,6 +163,8 @@ class ThreadFragment : Fragment(),
     }
 
     override fun loadThread(thread: BoardThread) {
+
+//        navController.currentDestination?.label = thread.title
 
         adapter = ThreadAdapter(thread, this, this)
 
@@ -296,13 +307,13 @@ class ThreadFragment : Fragment(),
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    companion object {
-        fun getThreadFragment ( boardId: String, threadId: Int): ThreadFragment {
-            val thread = ThreadFragment()
-            thread.boardId = boardId
-            thread.threadNum = threadId
-
-            return thread
-        }
-    }
+//    companion object {
+//        fun getThreadFragment ( boardId: String, threadId: Int): ThreadFragment {
+//            val thread = ThreadFragment()
+//            thread.boardId = boardId
+//            thread.threadNum = threadId
+//
+//            return thread
+//        }
+//    }
 }
