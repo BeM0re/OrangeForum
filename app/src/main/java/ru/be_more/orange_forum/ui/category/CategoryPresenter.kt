@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.ui.category
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.App
@@ -24,11 +25,12 @@ class CategoryPresenter(
                 { dataset.postValue(it) },
                 { App.showToast("Can't load categories") }
             )
+
     }
 
     fun onDestroy() {
         viewState = null
-        interactor.release()
+//        interactor.release()
     }
 
     fun search(query: String){

@@ -110,19 +110,17 @@ class FavoriteFragment /*private constructor(
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
-//        intoThreadClickListener(boardId, threadNum, threadTitle)
         val bundle = Bundle()
         bundle.putString("boardId", boardId)
         bundle.putInt("threadNum", threadNum)
-        bundle.putString("threadTitle", threadTitle)
+        bundle.putString("title", threadTitle)
         navController.navigate(R.id.action_favoriteFragment_to_threadFragment3, bundle)
     }
 
     override fun intoBoardClick(boardId: String, boardName: String) {
-//        intoBoardClickListener(boardId, boardName)
         val bundle = Bundle()
         bundle.putString("boardId", boardId)
-        bundle.putString("boardTitle", boardName)
+        bundle.putString("title", boardName)
         navController.navigate(R.id.action_favoriteFragment_to_boardFragment, bundle)
     }
 

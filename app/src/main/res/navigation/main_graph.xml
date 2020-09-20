@@ -6,7 +6,7 @@
     <fragment
         android:id="@+id/categoryFragment"
         android:name="ru.be_more.orange_forum.ui.category.CategoryFragment"
-        android:label="CategoryFragment" >
+        android:label="Categories" >
         <action
             android:id="@+id/action_categoryFragment_to_boardFragment"
             app:destination="@id/boardFragment" />
@@ -14,7 +14,10 @@
     <fragment
         android:id="@+id/boardFragment"
         android:name="ru.be_more.orange_forum.ui.board.BoardFragment"
-        android:label="BoardFragment" >
+        android:label="{title}" >
+        <argument
+            android:name="title"
+            app:argType="string" />
         <action
             android:id="@+id/action_boardFragment_to_threadFragment"
             app:destination="@id/threadFragment" />
@@ -22,7 +25,7 @@
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="ru.be_more.orange_forum.ui.favorire.FavoriteFragment"
-        android:label="FavoriteFragment" >
+        android:label="Favorite" >
         <action
             android:id="@+id/action_favoriteFragment_to_boardFragment"
             app:destination="@id/boardFragment" />
@@ -33,7 +36,7 @@
     <fragment
         android:id="@+id/downloadFragment"
         android:name="ru.be_more.orange_forum.ui.download.DownloadFragment"
-        android:label="DownloadFragment" >
+        android:label="Download" >
         <action
             android:id="@+id/action_downloadFragment_to_threadFragment"
             app:destination="@id/threadFragment" />
@@ -41,7 +44,10 @@
     <fragment
         android:id="@+id/threadFragment"
         android:name="ru.be_more.orange_forum.ui.thread.ThreadFragment"
-        android:label="ThreadFragment" >
+        android:label="{title}" >
+        <argument
+            android:name="title"
+            app:argType="string" />
         <action
             android:id="@+id/action_threadFragment_to_responseFragment"
             app:destination="@id/responseFragment" />
@@ -49,5 +55,5 @@
     <fragment
         android:id="@+id/responseFragment"
         android:name="ru.be_more.orange_forum.ui.response.ResponseFragment"
-        android:label="ResponseFragment" />
+        android:label="Reply" />
 </navigation>

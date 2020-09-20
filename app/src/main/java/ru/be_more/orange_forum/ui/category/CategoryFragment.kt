@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -91,7 +92,7 @@ class CategoryFragment:
     override fun onBoardClick(boardId: String, boardTitle: String) {
         val bundle = Bundle()
         bundle.putString("boardId", boardId)
-        bundle.putString("boardTitle", boardTitle)
+        bundle.putString("title", boardTitle)
         navController.navigate(R.id.action_categoryFragment_to_boardFragment, bundle)
 //        onBoardClickListener(boardId, boardTitle)
     }
