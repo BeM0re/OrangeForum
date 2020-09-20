@@ -20,5 +20,5 @@ val presenterModule = module {
     factory { params -> PostPresenter(params[0]) }
     factory { params -> ResponsePresenter(get(), params[0]) }
     factory { params -> FavoritePresenter(get(), get(), params[0]) }
-    factory { params -> DownloadPresenter(get(), get(), params[0]) }
+    factory { params -> DownloadPresenter(get(), get(), get(), params[0]) }
  }

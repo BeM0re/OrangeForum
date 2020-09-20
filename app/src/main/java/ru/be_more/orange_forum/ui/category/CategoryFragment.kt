@@ -7,44 +7,54 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_category.*
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.domain.model.Category
+import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
 
-class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,
-                                                                      boardTitle: String) -> Unit):
+/*class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,
+                                                                      boardTitle: String) -> Unit):*/
+class CategoryFragment:
     Fragment(),
     CategoryView,
     CategoryOnClickListener {
 
     private val categoryPresenter: CategoryPresenter by inject(parameters = { parametersOf(this) })
 
-    private lateinit var recyclerView : RecyclerView
+    private var recyclerView : RecyclerView? = null
     var adapter : CategoryAdapter? = null
+    private lateinit var navController: NavController
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?) : View? =
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) : View? =
         inflater.inflate(R.layout.fragment_category, container, false)
 
     override fun onDestroy() {
         categoryPresenter.onDestroy()
         adapter = null
+        recyclerView = null
         super.onDestroy()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = Navigation.findNavController(view)
+
         recyclerView = rv_category_list
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
         categoryPresenter.initPresenter()
 
@@ -75,27 +85,31 @@ class CategoryFragment private constructor(var onBoardClickListener: (boardId: S
     override fun loadCategories(categories: List<Category>) {
         adapter = CategoryAdapter(categories, this)
 
-        recyclerView.adapter = adapter
+        recyclerView?.adapter = adapter
     }
 
     override fun onBoardClick(boardId: String, boardTitle: String) {
-        onBoardClickListener(boardId, boardTitle)
+        val bundle = Bundle()
+        bundle.putString("boardId", boardId)
+        bundle.putString("boardTitle", boardTitle)
+        navController.navigate(R.id.action_categoryFragment_to_boardFragment, bundle)
+//        onBoardClickListener(boardId, boardTitle)
     }
 
-    companion object {
-        fun getCategoryFragment (onBoardClickListener: (boardId: String, boardTitle: String) -> Unit): CategoryFragment {
-            return CategoryFragment(onBoardClickListener)
-        }
-    }
+//    companion object {
+//        fun getCategoryFragment (onBoardClickListener: (boardId: String, boardTitle: String) -> Unit): CategoryFragment {
+//            return CategoryFragment(onBoardClickListener)
+//        }
+//    }
 
     class SearchTextWatcher(val listener: ((String) -> Unit)): TextWatcher{
 
-        override fun afterTextChanged(query: Editable ) {
+        override fun afterTextChanged(query: Editable) {
             listener(query.toString())
         }
 
-        override fun beforeTextChanged(s: CharSequence , start: Int , count: Int , after: Int) {}
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-        override fun onTextChanged(s: CharSequence , start: Int , count: Int , after: Int){}
+        override fun onTextChanged(s: CharSequence, start: Int, count: Int, after: Int){}
     }
 }

@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
@@ -25,9 +27,9 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.post.PostFragment
 
-class DownloadFragment private constructor(
+class DownloadFragment /*private constructor(
     var intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
-    var onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit):
+    var onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit)*/:
     Fragment(),
     DownloadView,
     DownloadListener,
@@ -37,9 +39,10 @@ class DownloadFragment private constructor(
 
     private val downloadPresenter: DownloadPresenter by inject(parameters = { parametersOf(this) })
 
-    private lateinit var recyclerView : RecyclerView
+    private var recyclerView : RecyclerView? = null
     var adapter : DownloadAdapter? = null
     private var postFragment: PostFragment? = null
+    private lateinit var navController: NavController
 
     private var disposable: Disposable? = null
 
@@ -50,9 +53,12 @@ class DownloadFragment private constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
+
+        navController.currentDestination?.label = "Download"
 
         recyclerView = rv_downloaded_list
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
         downloadPresenter.initPresenter()
 
@@ -76,27 +82,34 @@ class DownloadFragment private constructor(
         adapter = null
         disposable?.dispose()
         disposable = null
+        recyclerView = null
         super.onDestroy()
     }
 
     override fun loadDownloads(boards: List<Board>) {
         adapter = DownloadAdapter(boards, this, this, this)
-        recyclerView.adapter = adapter
+        recyclerView?.adapter = adapter
     }
 
     override fun loadDownloads() {
         adapter = DownloadAdapter(
             downloadPresenter.getBoards(), this, this, this)
-        recyclerView.adapter = adapter
+        recyclerView?.adapter = adapter
 
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
-        intoThreadClickListener(boardId, threadNum, threadTitle)
+//        intoThreadClickListener(boardId, threadNum, threadTitle)
+        val bundle = Bundle()
+        bundle.putString("boardId", boardId)
+        bundle.putInt("threadNum", threadNum)
+        bundle.putString("threadTitle", threadTitle)
+        navController.navigate(R.id.action_downloadFragment_to_threadFragment, bundle)
     }
 
     override fun onRemoveClick(boardId: String, threadNum: Int) {
-        onRemoveClickListener(boardId, threadNum)
+//        onRemoveClickListener(boardId, threadNum)
+        downloadPresenter.removeThread(boardId, threadNum)
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
@@ -177,11 +190,11 @@ class DownloadFragment private constructor(
         App.showToast(message )
     }
 
-    companion object {
-        fun getDownloadFragment (
-            intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
-            onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit
-        ): DownloadFragment = DownloadFragment(intoThreadClickListener, onRemoveClickListener)
-
-    }
+//    companion object {
+//        fun getDownloadFragment (
+//            intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
+//            onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit
+//        ): DownloadFragment = DownloadFragment(intoThreadClickListener, onRemoveClickListener)
+//
+//    }
 }

@@ -13,6 +13,7 @@ import java.util.*
 class DownloadPresenter (
     private val downloadInteractor : InteractorContract.DownloadInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
+    private val threadInteractor : InteractorContract.ThreadInteractor,
     private var viewState: DownloadView?
 ) {
 
@@ -70,4 +71,8 @@ class DownloadPresenter (
     }
 
     fun getBoards(): List<Board> = this.boards
+
+    fun removeThread(boardId: String, threadNum: Int) {
+        threadInteractor.deleteThread(boardId, threadNum)
+    }
 }
