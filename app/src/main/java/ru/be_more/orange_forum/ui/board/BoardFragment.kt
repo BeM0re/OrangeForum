@@ -27,6 +27,7 @@ import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -35,16 +36,13 @@ import ru.be_more.orange_forum.ui.post.PostFragment
 
 //TODO сделать динамическое количество картинок через ресайклер
 class BoardFragment: Fragment(),
-    BoardView,
     BoardOnClickListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
 
-    private val boardPresenter: BoardPresenter by inject(parameters = { parametersOf(this) })
-
-//    private var listener: ((Int, String) -> Unit)? = null
-    private var id: String = ""
+//    private val boardPresenter: BoardPresenter by inject(parameters = { parametersOf(this) })
+    private val viewModel: BoardViewModel by inject()
     private var recyclerView : RecyclerView? = null
     private var adapter : BoardAdapter? = null
     private var postFragment: PostFragment? = null
@@ -56,14 +54,18 @@ class BoardFragment: Fragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) : View? =
-        inflater.inflate(R.layout.fragment_board, container, false)
+    ) : View? = inflater.inflate(R.layout.fragment_board, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initNav(view)
         subscribe()
+    }
+
+    override fun onDestroyView() {
+        saveState()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
@@ -75,7 +77,7 @@ class BoardFragment: Fragment(),
         super.onDestroy()
     }
 
-    override fun loadBoard(board: Board) {
+    private fun loadBoard(board: Board) {
         adapter = BoardAdapter(
             board.threads, this, this, this
         )
@@ -86,62 +88,14 @@ class BoardFragment: Fragment(),
         )
     }
 
-    override fun setBoardMarks(isFavorite: Boolean) {
+    private fun setBoardMarks(isFavorite: Boolean) {
         if (isFavorite)
             App.getBus().onNext(Pair(FavoriteBoardEntered, ""))
         else
             App.getBus().onNext(Pair(UnfavoriteBoardEntered, ""))
     }
 
-    override fun onIntoThreadClick(threadNum: Int, threadTitle: String) {
-        val bundle = Bundle()
-        bundle.putString("boardId", boardPresenter.getBoardId())
-        bundle.putInt("threadNum", threadNum)
-        bundle.putString("title", threadTitle)
-        navController.navigate(R.id.action_boardFragment_to_threadFragment, bundle)
-
-//        if (boardPresenter.listener != null)
-//            boardPresenter.listener!!(threadNum, threadTitle)
-    }
-
-    override fun onHideClick(threadNum: Int, toHide: Boolean) {
-        boardPresenter.hideThread(threadNum, toHide)
-        adapter?.notifyDataSetChanged()
-    }
-
-    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
-
-        var attachment: Attachment? = null
-
-        if (fullPicUri != null)
-            attachment = Attachment("", duration, fullPicUri)
-        else if (!fullPicUrl.isNullOrEmpty())
-            attachment = Attachment(fullPicUrl, duration)
-
-        if (attachment != null) {
-            boardPresenter.putContentInStack(attachment)
-            showPic(attachment)
-            fl_board_post.visibility = View.VISIBLE
-        }
-
-    }
-
-    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-        if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
-            showToast("Пост не найден")
-        else
-            boardPresenter.getSinglePost(chanLink.first, chanLink.third)
-    }
-
-    override fun onLinkClick(postNum: Int) {
-        boardPresenter.getSinglePost(postNum)
-    }
-
-    override fun onLinkClick(externalLink: String?) {
-        Log.d("M_ThreadPresenter", "outer link = $externalLink")
-    }
-
-    override fun showPic(attachment: Attachment){
+    fun showPic(attachment: Attachment){
         postFragment = PostFragment.getPostFragment(
             attachment, this, this, this
         )
@@ -152,7 +106,7 @@ class BoardFragment: Fragment(),
             ?.commit()
     }
 
-    override fun showPost(post: Post){
+    fun showPost(post: Post){
 
         fl_board_post.visibility = View.VISIBLE
 
@@ -166,7 +120,7 @@ class BoardFragment: Fragment(),
             ?.commit()
     }
 
-    override fun hideModal() {
+    fun hideModal() {
         fl_board_post.visibility = View.GONE
 
         App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
@@ -176,28 +130,34 @@ class BoardFragment: Fragment(),
                 ?.beginTransaction()
                 ?.remove(fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG)!!)
 
-        boardPresenter.clearStack()
+        viewModel.clearStack()
     }
 
-    override fun onCloseModalListener(){
-        postFragment = null
-        hideModal()
-    }
-
-    override fun showToast(message: String) {
+    fun showToast(message: String) {
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun subscribe(){
+        //subscribe to viewModel
+        with(viewModel){
+            observe(board, ::loadBoard)
+            observe(isFavorite) { setBoardMarks(it) }
+            observe(post, ::showPost)
+            observe(attachment, ::showPic)
+            observe(emptyStack) { hideModal() }
+            observe(savedPosition) { recyclerView?.scrollToPosition(it) }
+        }
+
+        //Subscribe to event bus
         disposable = App.getBus().subscribe({
             if (it.first is BackPressed && it.second == BOARD_TAG) {
                 if (fl_board_post.visibility != View.GONE)
-                    boardPresenter.onBackPressed()
+                    viewModel.onBackPressed()
                 else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
             if (it.first is BoardEntered && it.second == BOARD_TAG)
-                boardPresenter.setBoardMarks()
+                viewModel.setBoardMarks()
         },
             {
                 Log.e("M_BoardFragment", "bus error = \n $it")
@@ -209,7 +169,7 @@ class BoardFragment: Fragment(),
 
         val boardId = requireArguments().getString("boardId")
 
-        boardPresenter.init(boardId)
+        viewModel.init(boardId)
         recyclerView = rv_thread_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
@@ -217,17 +177,63 @@ class BoardFragment: Fragment(),
         App.getBus().onNext(Pair(ThreadToBeClosed, ""))
     }
 
-//    companion object {
-//        fun getBoardFragment(
-//            listener: (threadNum: Int, threadTitle: String) -> Unit,
-//            id: String
-//        ): BoardFragment {
-//            val board = BoardFragment()
-//            board.listener = listener
-//            board.id = id
-//
-//            return board
-//        }
-//    }
+    private fun saveState(){
+        viewModel.savePosition(
+            (recyclerView?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+        )
+    }
+
+    override fun onCloseModalListener(){
+        postFragment = null
+        hideModal()
+    }
+
+    override fun onIntoThreadClick(threadNum: Int, threadTitle: String) {
+        val bundle = Bundle()
+        bundle.putString("boardId", viewModel.getBoardId())
+        bundle.putInt("threadNum", threadNum)
+        bundle.putString("title", threadTitle)
+        navController.navigate(R.id.action_boardFragment_to_threadFragment, bundle)
+
+//        if (boardPresenter.listener != null)
+//            boardPresenter.listener!!(threadNum, threadTitle)
+    }
+
+    override fun onHideClick(threadNum: Int, toHide: Boolean) {
+        viewModel.hideThread(threadNum, toHide)
+        adapter?.notifyDataSetChanged()
+    }
+
+    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
+
+        var attachment: Attachment? = null
+
+        if (fullPicUri != null)
+            attachment = Attachment("", duration, fullPicUri)
+        else if (!fullPicUrl.isNullOrEmpty())
+            attachment = Attachment(fullPicUrl, duration)
+
+        if (attachment != null) {
+            viewModel.putContentInStack(attachment)
+            showPic(attachment)
+            fl_board_post.visibility = View.VISIBLE
+        }
+
+    }
+
+    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
+        if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
+            showToast("Пост не найден")
+        else
+            viewModel.getSinglePost(chanLink.first, chanLink.third)
+    }
+
+    override fun onLinkClick(postNum: Int) {
+        viewModel.getSinglePost(postNum)
+    }
+
+    override fun onLinkClick(externalLink: String?) {
+        Log.d("M_ThreadPresenter", "outer link = $externalLink")
+    }
 
 }

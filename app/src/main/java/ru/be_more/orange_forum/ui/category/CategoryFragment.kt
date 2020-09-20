@@ -82,7 +82,7 @@ class CategoryFragment:
         }
 
     private fun saveState() {
-        val list = LinkedList<Int>()
+//        val list = LinkedList<Int>()
 //        for (i in 0 until (adapter?.groups?.size?:0)){
 //            if (adapter?.isGroupExpanded(i) == true){
 //                list.add(i)
