@@ -62,6 +62,28 @@ class ThreadFragment : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        initNav(view)
+        subscribe()
+
+        setUpDownButtonOnCLickListener()
+
+        setOnScrollListener()
+
+        fab_thread_respond.setOnClickListener { showResponseForm() }
+        fab_close_posting.setOnClickListener { hideResponseForm() }
+
+        //Swipe to refresh. maybe return later
+        /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
+        srl_thread.setOnRefreshListener {
+            srl_thread.isRefreshing = false
+            threadPresenter.updateThreadData()
+        }*/
+
+    }
+
+    private fun initNav(view: View) {
+        App.getBus().onNext(Pair(ThreadToBeOpened, ""))
         navController = Navigation.findNavController(view)
 
         val boardId = requireArguments().getString("boardId")
@@ -70,7 +92,9 @@ class ThreadFragment : Fragment(),
         threadPresenter.init(boardId, threadNum)
         recyclerView = rv_post_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
+    }
 
+    private fun subscribe() {
         disposable = App.getBus().subscribe(
             {
                 if(it.first is BackPressed && it.second == THREAD_TAG) {
@@ -90,21 +114,6 @@ class ThreadFragment : Fragment(),
                 Log.e("M_ThreadFragment","bus error = \n $it")
             }
         )
-
-        setUpDownButtonOnCLickListener()
-
-        setOnScrollListener()
-
-        fab_thread_respond.setOnClickListener { showResponseForm() }
-        fab_close_posting.setOnClickListener { hideResponseForm() }
-
-        //Swipe to refresh. maybe return later
-        /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
-        srl_thread.setOnRefreshListener {
-            srl_thread.isRefreshing = false
-            threadPresenter.updateThreadData()
-        }*/
-
     }
 
     private fun hideResponseForm() {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,19 +15,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_category.*
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.Category
+import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
+import java.util.*
 
 /*class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,
                                                                       boardTitle: String) -> Unit):*/
 class CategoryFragment:
     Fragment(),
-    CategoryView,
     CategoryOnClickListener {
 
-    private val categoryPresenter: CategoryPresenter by inject(parameters = { parametersOf(this) })
+//    private val categoryPresenter: CategoryPresenter by inject(parameters = { parametersOf(this) })
+    private val viewModel: CategoryViewModel by inject()
 
     private var recyclerView : RecyclerView? = null
     var adapter : CategoryAdapter? = null
@@ -42,8 +42,12 @@ class CategoryFragment:
     ) : View? =
         inflater.inflate(R.layout.fragment_category, container, false)
 
+    override fun onDestroyView() {
+        saveState()
+        super.onDestroyView()
+    }
+
     override fun onDestroy() {
-        categoryPresenter.onDestroy()
         adapter = null
         recyclerView = null
         super.onDestroy()
@@ -57,14 +61,40 @@ class CategoryFragment:
         recyclerView = rv_category_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
-        categoryPresenter.initPresenter()
-
+//        categoryPresenter.initPresenter(this)
+        subscribe()
+        viewModel.initViewModel()
         setSearchListener()
+    }
+
+    private fun subscribe() =
+        with(viewModel){
+            observe(dataset, ::loadCategories)
+            observe(expand) {
+                if (it)
+                    expandCategories()
+                else
+                    collapseCategories()
+            }
+            observe(savedQuery) {
+                tiet_board_search.setText(it)
+            }
+        }
+
+    private fun saveState() {
+        val list = LinkedList<Int>()
+//        for (i in 0 until (adapter?.groups?.size?:0)){
+//            if (adapter?.isGroupExpanded(i) == true){
+//                list.add(i)
+//            }
+//        }
+//        viewModel.saveExpanded(list)
+        viewModel.saveQuery(tiet_board_search.text.toString())
     }
 
     private fun setSearchListener(){
         tiet_board_search.addTextChangedListener(SearchTextWatcher { query ->
-            categoryPresenter.search(query)
+            viewModel.search(query)
         })
 
         ib_board_search_clear.setOnClickListener {
@@ -73,20 +103,34 @@ class CategoryFragment:
             (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 .hideSoftInputFromWindow(view?.windowToken, 0)
         }
-
     }
 
-    override fun expandCategories() {
-        for (i in (adapter?.groups?.size?:0 - 1) downTo 0) {
+    private fun expandCategories() {
+        for (i in ((adapter?.groups?.size?:0) - 1) downTo 0) {
             if (! adapter!!.isGroupExpanded(i))
                 adapter!!.toggleGroup(i)
         }
     }
 
-    override fun loadCategories(categories: List<Category>) {
+    private fun collapseCategories() {
+        for (i in ((adapter?.groups?.size?:0) - 1) downTo 0) {
+            if (adapter!!.isGroupExpanded(i))
+                adapter!!.toggleGroup(i)
+        }
+    }
+
+    fun restoreState(expandedItems: List<Int>, savedQuery: String) {
+        for (i in expandedItems) {
+            adapter!!.toggleGroup(i)
+        }
+        tiet_board_search.setText(savedQuery)
+    }
+
+    private fun loadCategories(categories: List<Category>) {
         adapter = CategoryAdapter(categories, this)
 
         recyclerView?.adapter = adapter
+
     }
 
     override fun onBoardClick(boardId: String, boardTitle: String) {
@@ -94,14 +138,7 @@ class CategoryFragment:
         bundle.putString("boardId", boardId)
         bundle.putString("title", boardTitle)
         navController.navigate(R.id.action_categoryFragment_to_boardFragment, bundle)
-//        onBoardClickListener(boardId, boardTitle)
     }
-
-//    companion object {
-//        fun getCategoryFragment (onBoardClickListener: (boardId: String, boardTitle: String) -> Unit): CategoryFragment {
-//            return CategoryFragment(onBoardClickListener)
-//        }
-//    }
 
     class SearchTextWatcher(val listener: ((String) -> Unit)): TextWatcher{
 

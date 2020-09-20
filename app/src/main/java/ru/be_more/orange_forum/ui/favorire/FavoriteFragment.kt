@@ -32,12 +32,8 @@ import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.post.PostFragment
-import ru.be_more.orange_forum.ui.post.PostPresenter
 
-class FavoriteFragment /*private constructor(
-    var intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
-    var intoBoardClickListener: (boardId: String, boardName: String) -> Unit,
-    var onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit)*/:
+class FavoriteFragment :
     Fragment(),
     FavoriteView,
     FavoriteListener,
@@ -123,11 +119,6 @@ class FavoriteFragment /*private constructor(
         bundle.putString("title", boardName)
         navController.navigate(R.id.action_favoriteFragment_to_boardFragment, bundle)
     }
-
-//    override fun onRemoveClick(boardId: String, threadNum: Int) {
-////        onRemoveClickListener(boardId, threadNum)
-//        favoritePresenter.removeThread
-//    }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
         if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
