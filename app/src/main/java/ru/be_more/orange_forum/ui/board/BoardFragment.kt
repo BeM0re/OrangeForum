@@ -64,8 +64,6 @@ class BoardFragment: Fragment(),
         navController = Navigation.findNavController(view)
 
         val boardId = requireArguments().getString("boardId")
-        val boardTitle = requireArguments().getString("boardTitle")
-        navController.currentDestination?.label = boardTitle
 
         boardPresenter.init(boardId)
         recyclerView = rv_thread_list
@@ -117,7 +115,7 @@ class BoardFragment: Fragment(),
         val bundle = Bundle()
         bundle.putString("boardId", boardPresenter.getBoardId())
         bundle.putInt("threadNum", threadNum)
-        bundle.putString("threadTitle", threadTitle)
+        bundle.putString("title", threadTitle)
         navController.navigate(R.id.action_boardFragment_to_threadFragment, bundle)
 //        if (boardPresenter.listener != null)
 //            boardPresenter.listener!!(threadNum, threadTitle)

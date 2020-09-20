@@ -103,7 +103,7 @@ class DownloadFragment /*private constructor(
         val bundle = Bundle()
         bundle.putString("boardId", boardId)
         bundle.putInt("threadNum", threadNum)
-        bundle.putString("threadTitle", threadTitle)
+        bundle.putString("title", threadTitle)
         navController.navigate(R.id.action_downloadFragment_to_threadFragment, bundle)
     }
 
