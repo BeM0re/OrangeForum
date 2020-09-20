@@ -1,55 +1,49 @@
 package ru.be_more.orange_forum.ui.category
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import ru.be_more.orange_forum.domain.InteractorContract
+import androidx.lifecycle.ViewModel
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Category
 import java.util.*
 
-class CategoryPresenter(
-    private val interactor : InteractorContract.CategoryInteractor,
-    private var viewState: CategoryView?
-)  {
+class CategoryViewModel(
+    private val interactor : InteractorContract.CategoryInteractor
+): ViewModel() {
 
-    private var dataset: MutableLiveData<List<Category>> = MutableLiveData()
+    private var fullDataset: List<Category>? = null
+    val dataset = MutableLiveData<List<Category>>()
+    var expand = MutableLiveData<Boolean>()
+    var savedQuery = MutableLiveData<String>()
     private var firstLaunch = true
     private var expandedItems: List<Int> = listOf()
-    private var savedQuery = ""
+    private var savedQ = ""
 
     //Здесь и в других презентерах Disposable не сохраняется, т.к. он сохраняется в репо
     @SuppressLint("CheckResult")
-    fun initPresenter(view: CategoryView){
+    fun initViewModel(){
         if(firstLaunch){
-            dataset.observeForever { data -> viewState?.loadCategories(data) }
-
             interactor.getCategories()
                 .subscribe(
                     {
-                        dataset.postValue(it)
+                        fullDataset = it
+                        dataset.postValue(fullDataset)
+                        expand.postValue(false)
                         firstLaunch = false
                     },
                     { App.showToast("Can't load categories") }
                 )
         }
         else{
-            this.viewState = view
-            viewState?.loadCategories(dataset.value!!)
-            viewState?.restoreState(expandedItems, savedQuery)
+            dataset.postValue(fullDataset)
+            expand.postValue(false)
+            savedQuery.postValue(savedQ)
         }
     }
 
-    fun getView() =
-        viewState
-
-    fun onDestroy() {
-        viewState = null
-//        interactor.release()
-    }
-
     fun saveQuery(query: String){
-        savedQuery = query
+        this.savedQ = query
     }
 
     fun saveExpanded(list: List<Int>){
@@ -57,9 +51,10 @@ class CategoryPresenter(
     }
 
     fun search(query: String){
-        App.showToast(query)
-        if (query.isEmpty())
-            viewState?.loadCategories(dataset.value.orEmpty())
+        if (query.isEmpty()) {
+            dataset.postValue(fullDataset)
+            expand.postValue(false)
+        }
         else{
             val filterDataset: LinkedList<Category> = LinkedList()
             for (category in dataset.value!!){
@@ -73,8 +68,9 @@ class CategoryPresenter(
                     )
                 )
             }
-            viewState?.loadCategories(filterDataset.filter { it.items.isNotEmpty() })
-            viewState?.expandCategories()
+            dataset.postValue(filterDataset.filter { it.items.isNotEmpty() })
+            expand.postValue(true)
         }
     }
+
 }

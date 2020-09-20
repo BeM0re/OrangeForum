@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity(), MainView {
         setSupportActionBar(toolbar)
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
 
-//        bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
         NavigationUI.setupActionBarWithNavController(this, navController)
 
@@ -55,251 +54,12 @@ class MainActivity : AppCompatActivity(), MainView {
 
         toolbar.setOnMenuItemClickListener(mOnToolbarItemSelectedListener)
 
-//        bottomNavigationView.selectedItemId = R.id.categoryFragment
-
         subscribe()
     }
 
     override fun onDestroy() {
         disposable?.dispose()
         super.onDestroy()
-    }
-
-    override fun setActionBarTitle(title: String?){
-        supportActionBar?.title = title
-    }
-
-    override fun showCategoryFragment() {
-    /*    val fragment = CategoryFragment.getCategoryFragment { boardId, title ->
-                mainPresenter.setBoardTitle(title)
-                mainPresenter.setBoard(boardId)
-            }
-
-        when {
-            supportFragmentManager.findFragmentByTag(CAT_TAG) != null ->
-                with(supportFragmentManager.beginTransaction()){
-                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                    show(supportFragmentManager.findFragmentByTag(CAT_TAG)!!)
-                    commit()
-                }
-            supportFragmentManager.findFragmentById(R.id.container) == null -> supportFragmentManager
-                .beginTransaction()
-                .add(R.id.container, fragment, CAT_TAG)
-                .show(fragment)
-                .commit()
-            else ->
-                with(supportFragmentManager.beginTransaction()) {
-                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                    add(R.id.container, fragment, CAT_TAG)
-                    show(fragment)
-                    commit()
-                }
-        }
-
-        mainPresenter.setCurrentFragmentTag(CAT_TAG)
-
-        setActionBarTitle()*/
-    }
-
-    override fun showBoardFragment(isNew: Boolean) {
-//        removeThreadMarks()
-
-      /*  when{
-            supportFragmentManager.findFragmentByTag(BOARD_TAG) == null ->
-                with(supportFragmentManager.beginTransaction()){
-                    val fragment =
-                        BoardFragment.getBoardFragment({ threadNum, title ->
-                            mainPresenter.setThreadTitle(title)
-                            mainPresenter.setThread(threadNum)
-                        }, mainPresenter.getBoardId())
-
-                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                    add(R.id.container, fragment, BOARD_TAG)
-                    show(fragment)
-                    commit()
-                }
-
-            isNew ->
-                with(supportFragmentManager.beginTransaction()){
-
-                    val fragment =
-                        BoardFragment.getBoardFragment({ threadNum, title ->
-                            mainPresenter.setThreadTitle(title)
-                            mainPresenter.setThread(threadNum)
-                        }, mainPresenter.getBoardId())
-
-                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                    remove(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
-                    add(R.id.container, fragment, BOARD_TAG)
-                    show(fragment)
-                    commit()
-                }
-            else ->
-                with(supportFragmentManager.beginTransaction()){
-                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                    show(supportFragmentManager.findFragmentByTag(BOARD_TAG)!!)
-                    commit()
-                }
-
-        }
-
-        mainPresenter.setCurrentFragmentTag(BOARD_TAG)
-
-        setActionBarTitle(mainPresenter.getBoardTitle())
-
-        App.getBus().onNext(Pair(BoardEntered, BOARD_TAG))
-
-        bottomNavigationView!!.menu.getItem(1).isChecked = true*/
-    }
-
-    override fun showThreadFragment(isNew: Boolean) {
-
-//        removeThreadMarks()
-
-//        val fragment = ThreadFragment.getThreadFragment(mainPresenter.getBoardId(), mainPresenter.getThreadNum())
-
-   /*     when {
-            supportFragmentManager.findFragmentByTag(THREAD_TAG) == null ->
-                with(supportFragmentManager.beginTransaction()){
-                    val fragment = ThreadFragment.getThreadFragment(
-                        mainPresenter.getBoardId(),
-                        mainPresenter.getThreadNum()
-                    )
-
-                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                    add(R.id.container, fragment, THREAD_TAG)
-                    show(fragment)
-                    commit()
-                }
-            isNew ->
-                with(supportFragmentManager.beginTransaction()) {
-                    val fragment = ThreadFragment.getThreadFragment(
-                        mainPresenter.getBoardId(),
-                        mainPresenter.getThreadNum()
-                    )
-
-                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-                    remove(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
-                    add(R.id.container, fragment, THREAD_TAG)
-                    show(fragment)
-                    commit()
-                }
-            else ->
-                with(supportFragmentManager.beginTransaction()) {
-
-                    if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                        hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                    show(supportFragmentManager.findFragmentByTag(THREAD_TAG)!!)
-                    commit()
-                }
-        }
-
-        mainPresenter.setCurrentFragmentTag(THREAD_TAG)
-
-        setActionBarTitle(mainPresenter.getThreadTitle())
-
-        App.getBus().onNext(Pair(ThreadEntered, THREAD_TAG))
-
-        bottomNavigationView!!.menu.getItem(2).isChecked = true*/
-    }
-
-    override fun showFavoriteFragment() {
-
- /*       val fragment = FavoriteFragment.getFavoriteFragment({ boardId, threadNum, title ->
-//            mainPresenter.setBoard("")
-            mainPresenter.setBoardAvailability(false)
-            removeThreadMarks()
-            mainPresenter.setBoardId(boardId)
-            mainPresenter.setThreadTitle(title)
-            setActionBarTitle(title)
-            mainPresenter.setThread(threadNum)
-        },
-            { boardId, boardName ->
-                removeThreadMarks()
-                mainPresenter.setBoardTitle(boardName)
-                setActionBarTitle(boardName)
-                mainPresenter.setBoard(boardId)
-            },
-            { boardId, threadNum ->
-                mainPresenter.removeThreadFavoriteMark(boardId, threadNum, true)
-            })
-
-        if (supportFragmentManager.findFragmentByTag(FAVORITE_TAG) != null)
-            with(supportFragmentManager.beginTransaction()){
-                if(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                    hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                show(supportFragmentManager.findFragmentByTag(FAVORITE_TAG)!!)
-                commit()
-            }
-
-        else
-            with(supportFragmentManager.beginTransaction()) {
-                if(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                    hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                add(R.id.container, fragment, FAVORITE_TAG)
-                show(fragment)
-                commit()
-            }
-
-        mainPresenter.setCurrentFragmentTag(FAVORITE_TAG)
-
-        setActionBarTitle("Favorites")
-
-        refreshFavorite()*/
-
-//        App.getBus().onNext(Pair(ThreadEntered, FAVORITE_TAG))
-    }
-
-    override fun showDownloadedFragment() {
-
-/*        val fragment = DownloadFragment.getDownloadFragment({ boardId, threadNum, title ->
-            mainPresenter.setBoardId(boardId)
-            mainPresenter.setThreadTitle(title)
-            setActionBarTitle(title)
-            mainPresenter.setThread(threadNum)
-        },
-            { _, _ ->
-                mainPresenter.deleteThread(true)
-            })
-
-        if (supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG) != null)
-            with(supportFragmentManager.beginTransaction()) {
-                if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                    hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                show(supportFragmentManager.findFragmentByTag(DOWNLOAD_TAG)!!)
-                commit()
-            }
-        else
-            with(supportFragmentManager.beginTransaction()) {
-                if (supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag()) != null)
-                    hide(supportFragmentManager.findFragmentByTag(mainPresenter.getCurrentFragmentTag())!!)
-
-                add(R.id.container, fragment, DOWNLOAD_TAG)
-                show(fragment)
-                commit()
-            }
-
-        mainPresenter.setCurrentFragmentTag(DOWNLOAD_TAG)
-
-        setActionBarTitle("Downloaded")
-
-        refreshDownload()*/
     }
 
     override fun showPrefFragment() {
@@ -320,7 +80,7 @@ class MainActivity : AppCompatActivity(), MainView {
                 .show(fragment)
                 .commit()
 
-        setActionBarTitle("Preferences")
+//        setActionBarTitle("Preferences")
 
         mainPresenter.setCurrentFragmentTag(PREF_TAG)
     }
@@ -351,40 +111,6 @@ class MainActivity : AppCompatActivity(), MainView {
         toolbar.menu.findItem(R.id.navigation_download_done).isVisible = isDownloaded
     }
 
-    private val mOnNavigationItemSelectedListener =
-        BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
-
-           /* //не делать при первом запуске приложения, когда ни одного фрагмента не создано и кнопки == null
-            if (mainPresenter.getCurrentFragmentTag() != "")
-                removeThreadMarks()
-
-            when (menuItem.itemId) {
-                R.id.navigation_category -> {
-                    showCategoryFragment()
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.navigation_board -> {
-                    showBoardFragment(false)
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.navigation_thread -> {
-                    showThreadFragment(false)
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.navigation_favorites -> {
-//                    showFavoriteFragment()
-                    navController.navigate(R.id.favoriteFragment)
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.navigation_downloaded -> {
-//                    showDownloadedFragment()
-                    navController.navigate(R.id.downloadFragment)
-                    return@OnNavigationItemSelectedListener true
-                }
-            }*/
-            false
-        }
-
     private val mOnToolbarItemSelectedListener = Toolbar.OnMenuItemClickListener { menuItem ->
         when (menuItem.itemId) {
 
@@ -398,23 +124,23 @@ class MainActivity : AppCompatActivity(), MainView {
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_download -> {
-                mainPresenter.downloadThread()
+//                mainPresenter.downloadThread()
+                App.getBus().onNext(Pair(AddToDownload, ""))
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_download_done -> {
-                mainPresenter.deleteThread(false)
+//                mainPresenter.deleteThread(false)
+                App.getBus().onNext(Pair(RemoveFromDownload, ""))
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite -> {
-                mainPresenter.markFavorite()
+//                mainPresenter.markFavorite()
+                App.getBus().onNext(Pair(AddToFavorite, ""))
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite_added -> {
-                mainPresenter.unmarkFavorite()
-                /*mainPresenter.removeThreadFavoriteMark(
-                    mainPresenter.getBoardId(),
-                    mainPresenter.getThreadNum(),
-                    false)*/
+//                mainPresenter.unmarkFavorite()
+                App.getBus().onNext(Pair(RemoveFromFavorite, ""))
                 return@OnMenuItemClickListener true
             }
         }
@@ -448,57 +174,74 @@ class MainActivity : AppCompatActivity(), MainView {
 
     private fun subscribe(){
 
-           disposable = App.getBus().subscribe(
-               {
-                   when (it.first) {
-                       is AppToBeClosed -> {
-                           if (System.currentTimeMillis() - timestamp < 2000)
-                               super.onBackPressed()
-                           else {
-                               timestamp = System.currentTimeMillis()
-                               Toast.makeText(
-                                   applicationContext,
-                                   "Нажмите назад еще раз, чтобы закрыть приложение",
-                                   Toast.LENGTH_SHORT
-                               ).show()
-                           }
-                       }
-
-                       is UndownloadedThreadEntered -> {
-                           toolbar.menu.findItem(R.id.navigation_download).isVisible = true
-                           toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
-                       }
-
-                       is DownloadedThreadEntered -> {
-                           toolbar.menu.findItem(R.id.navigation_download_done).isVisible = true
-                           toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
-                       }
-
-                       is FavoriteThreadEntered -> {
-                           toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
-                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
-                       }
-
-                       is UnfavoriteThreadEntered -> {
-                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
-                           toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
-                       }
-
-                       is FavoriteBoardEntered -> {
-                           toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
-                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
-                       }
-
-                       is UnfavoriteBoardEntered -> {
-                           toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
-                           toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
+       disposable = App.getBus().subscribe(
+           {
+               when (it.first) {
+                   is AppToBeClosed -> {
+                       if (System.currentTimeMillis() - timestamp < 2000)
+                           super.onBackPressed()
+                       else {
+                           timestamp = System.currentTimeMillis()
+                           Toast.makeText(
+                               applicationContext,
+                               "Нажмите назад еще раз, чтобы закрыть приложение",
+                               Toast.LENGTH_SHORT
+                           ).show()
                        }
                    }
-               },
-               {
-                   Log.e("M_MainActivity", "bus error = \n $it")
+
+                   /*is UndownloadedThreadEntered -> {
+                       toolbar.menu.findItem(R.id.navigation_download).isVisible = true
+                       toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
+                   }
+
+                   is DownloadedThreadEntered -> {
+                       toolbar.menu.findItem(R.id.navigation_download_done).isVisible = true
+                       toolbar.menu.findItem(R.id.navigation_pref).isVisible = false
+                   }
+
+                   is FavoriteThreadEntered -> {
+                       toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
+                       toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
+                   }
+
+                   is UnfavoriteThreadEntered -> {
+                       toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
+                       toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
+                   }
+
+                   is FavoriteBoardEntered -> {
+                       toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = true
+                       toolbar.menu.findItem(R.id.navigation_favorite).isVisible = false
+                   }
+
+                   is UnfavoriteBoardEntered -> {
+                       toolbar.menu.findItem(R.id.navigation_favorite).isVisible = true
+                       toolbar.menu.findItem(R.id.navigation_favorite_added).isVisible = false
+                   }*/
+
+                   is BoardToBeOpened -> {
+                       bottomNavigationView.menu.getItem(1).isEnabled = true
+                   }
+
+                   is BoardToBeClosed -> {
+                       bottomNavigationView.menu.getItem(1).isEnabled = false
+                   }
+
+                   is ThreadToBeOpened -> {
+                       bottomNavigationView.menu.getItem(2).isEnabled = true
+                   }
+
+                   is ThreadToBeClosed -> {
+                       bottomNavigationView.menu.getItem(2).isEnabled = false
+                   }
+
                }
-           )
+           },
+           {
+               Log.e("M_MainActivity", "bus error = \n $it")
+           }
+       )
 
 
     }
