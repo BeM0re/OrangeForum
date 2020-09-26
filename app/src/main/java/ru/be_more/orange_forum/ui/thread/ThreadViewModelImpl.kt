@@ -24,7 +24,7 @@ class ThreadViewModelImpl (
     override val thread = MutableLiveData<BoardThread>()
     override val savedPosition = MutableLiveData<Int>()
 
-    private lateinit var boardId: String
+    private var boardId: String = ""
     private var threadNum: Int = 0
     private val modalStack: Stack<ModalContent> = Stack()
 

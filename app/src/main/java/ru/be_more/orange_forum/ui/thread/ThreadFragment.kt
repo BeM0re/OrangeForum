@@ -32,6 +32,7 @@ import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
+import ru.be_more.orange_forum.ui.PresentationContract
 import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.response.ResponseFragment
@@ -43,7 +44,7 @@ class ThreadFragment : Fragment(),
     CustomOnScrollListener,
     CloseModalListener {
 
-    private val viewModel: ThreadViewModelImpl by inject()
+    private val viewModel: PresentationContract.ThreadViewModel by inject()
 
     private lateinit var boardId: String
     private var threadNum: Int = 0
