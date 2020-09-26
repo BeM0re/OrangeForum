@@ -2,27 +2,28 @@ package ru.be_more.orange_forum.ui.category
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.model.Category
+import ru.be_more.orange_forum.ui.PresentationContract
 import java.util.*
 
-class CategoryViewModel(
+class CategoryViewModelImpl(
     private val interactor : InteractorContract.CategoryInteractor
-): ViewModel() {
+): PresentationContract.CategoryViewModel {
 
     private var fullDataset: List<Category>? = null
-    val dataset = MutableLiveData<List<Category>>()
-    var expand = MutableLiveData<Boolean>()
-    var savedQuery = MutableLiveData<String>()
     private var firstLaunch = true
     private var expandedItems: List<Int> = listOf()
     private var savedQ = ""
 
+    override val dataset = MutableLiveData<List<Category>>()
+    override var expand = MutableLiveData<Boolean>()
+    override var savedQuery = MutableLiveData<String>()
+
     //Здесь и в других презентерах Disposable не сохраняется, т.к. он сохраняется в репо
     @SuppressLint("CheckResult")
-    fun initViewModel(){
+    override fun initViewModel(){
         if(firstLaunch){
             interactor.getCategories()
                 .subscribe(
@@ -42,15 +43,15 @@ class CategoryViewModel(
         }
     }
 
-    fun saveQuery(query: String){
+    override fun saveQuery(query: String){
         this.savedQ = query
     }
 
-    fun saveExpanded(list: List<Int>){
+    override fun saveExpanded(list: List<Int>){
         expandedItems = list
     }
 
-    fun search(query: String){
+    override fun search(query: String){
         if (query.isEmpty()) {
             dataset.postValue(fullDataset)
             expand.postValue(false)
@@ -71,6 +72,10 @@ class CategoryViewModel(
             dataset.postValue(filterDataset.filter { it.items.isNotEmpty() })
             expand.postValue(true)
         }
+    }
+
+    override fun onDestroy() {
+        interactor.release()
     }
 
 }

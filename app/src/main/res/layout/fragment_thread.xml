@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    android:id="@+id/srl_thread"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">-->
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -17,7 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="483dp" />
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_post_list"
@@ -93,6 +87,4 @@
         app:tint="@android:color/white"
         android:visibility="gone"/>
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>
-<!--</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->

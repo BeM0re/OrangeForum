@@ -25,19 +25,18 @@ import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
+import ru.be_more.orange_forum.ui.PresentationContract
 import ru.be_more.orange_forum.ui.post.PostFragment
 
-class DownloadFragment /*private constructor(
-    var intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
-    var onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit)*/:
+class DownloadFragment:
     Fragment(),
-    DownloadView,
     DownloadListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
 
-    private val downloadPresenter: DownloadPresenter by inject(parameters = { parametersOf(this) })
+    private val viewModel: PresentationContract.DownloadViewModel by inject()
 
     private var recyclerView : RecyclerView? = null
     var adapter : DownloadAdapter? = null
@@ -53,49 +52,52 @@ class DownloadFragment /*private constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
 
+        init(view)
+        subscribe()
+        viewModel.init()
+    }
+
+    private fun init(view: View){
+        navController = Navigation.findNavController(view)
         navController.currentDestination?.label = "Download"
 
         recyclerView = rv_downloaded_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
-
-        downloadPresenter.initPresenter()
-
-        disposable = App.getBus().subscribe({
-            if(it.first is BackPressed && it.second == DOWNLOAD_TAG) {
-                if (fl_downloaded_board_post.visibility != View.GONE)
-                    downloadPresenter.onBackPressed()
-                else
-                    App.getBus().onNext(Pair(AppToBeClosed, ""))
-            }
-            if (it.first is RefreshDownload && it.second == DOWNLOAD_TAG)
-                adapter?.notifyDataSetChanged()
-        },
-        {
-            Log.e("M_DownloadFragment","bus error = \n $it")
-        })
     }
 
-    override fun onDestroy() {
+    private fun subscribe(){
+        with(viewModel){
+            observe(boards, ::loadDownloads)
+        }
+
+        disposable = App.getBus().subscribe(
+            {
+                if(it.first is BackPressed && it.second == DOWNLOAD_TAG) {
+                    if (fl_downloaded_board_post.visibility != View.GONE)
+//                        viewModel.onBackPressed()
+                    else
+                        App.getBus().onNext(Pair(AppToBeClosed, ""))
+                }
+                if (it.first is RefreshDownload && it.second == DOWNLOAD_TAG)
+                    adapter?.notifyDataSetChanged()
+            },
+            { Log.e("M_DownloadFragment","bus error = \n $it") })
+    }
+
+    override fun onDestroyView() {
         postFragment = null
         adapter = null
         disposable?.dispose()
         disposable = null
         recyclerView = null
-        super.onDestroy()
+        recyclerView?.adapter = null
+        super.onDestroyView()
     }
 
-    override fun loadDownloads(boards: List<Board>) {
+    fun loadDownloads(boards: List<Board>) {
         adapter = DownloadAdapter(boards, this, this, this)
         recyclerView?.adapter = adapter
-    }
-
-    override fun loadDownloads() {
-        adapter = DownloadAdapter(
-            downloadPresenter.getBoards(), this, this, this)
-        recyclerView?.adapter = adapter
-
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
@@ -109,14 +111,14 @@ class DownloadFragment /*private constructor(
 
     override fun onRemoveClick(boardId: String, threadNum: Int) {
 //        onRemoveClickListener(boardId, threadNum)
-        downloadPresenter.removeThread(boardId, threadNum)
+        viewModel.removeThread(boardId, threadNum)
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
         if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
             App.showToast("Пост не найден")
-        else
-            downloadPresenter.getSinglePost(chanLink.first, chanLink.third)
+//        else
+//            downloadPresenter.getSinglePost(chanLink.first, chanLink.third)
     }
 
     override fun onLinkClick(postNum: Int) {
@@ -130,7 +132,7 @@ class DownloadFragment /*private constructor(
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
 
-        var attachment: Attachment? = null
+     /*   var attachment: Attachment? = null
 
         if (fullPicUri != null)
             attachment = Attachment("", duration, fullPicUri)
@@ -141,23 +143,22 @@ class DownloadFragment /*private constructor(
             downloadPresenter.putContentInStack(attachment)
             showPic(attachment)
             fl_downloaded_board_post.visibility = View.VISIBLE
-        }
+        }*/
 
     }
 
-    override fun showPic(attachment: Attachment){
-        postFragment = PostFragment.getPostFragment(
+    fun showPic(attachment: Attachment){
+       /* postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
         fragmentManager
             ?.beginTransaction()
             ?.replace(R.id.fl_downloaded_board_post, postFragment!!, POST_IN_DOWNLOAD_TAG)
-            ?.commit()
+            ?.commit()*/
     }
 
-    override fun showPost(post: Post){
-
-        fl_downloaded_board_post.visibility = View.VISIBLE
+    fun showPost(post: Post){
+       /* fl_downloaded_board_post.visibility = View.VISIBLE
 
         postFragment = PostFragment.getPostFragment(
             post,this,this, this)
@@ -165,16 +166,16 @@ class DownloadFragment /*private constructor(
         fragmentManager
             ?.beginTransaction()
             ?.replace(R.id.fl_downloaded_board_post, postFragment!!, POST_IN_DOWNLOAD_TAG)
-            ?.commit()
+            ?.commit()*/
     }
 
     override fun onCloseModalListener() {
-        postFragment = null
-        hideModal()
+     /*   postFragment = null
+        hideModal()*/
     }
 
-    override fun hideModal() {
-        fl_downloaded_board_post.visibility = View.GONE
+    fun hideModal() {
+       /* fl_downloaded_board_post.visibility = View.GONE
 
         App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
 
@@ -183,10 +184,10 @@ class DownloadFragment /*private constructor(
                 ?.beginTransaction()
                 ?.remove(fragmentManager?.findFragmentByTag(POST_IN_DOWNLOAD_TAG)!!)
 
-        downloadPresenter.clearStack()
+        downloadPresenter.clearStack()*/
     }
 
-    override fun showToast(message: String) {
+    fun showToast(message: String) {
         App.showToast(message )
     }
 

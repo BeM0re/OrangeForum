@@ -16,6 +16,8 @@ import java.util.*
 class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
     RecyclerView.ViewHolder(itemView){
 
+
+    //FIXME убрать
     private var senderNumber: TextView = itemView.findViewById(R.id.tv_item_post_number)
     private var senderName: TextView = itemView.findViewById(R.id.tv_item_post_name)
     private var isOp: TextView = itemView.findViewById(R.id.tv_item_post_op_check)

@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_board.*
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
@@ -32,6 +31,7 @@ import ru.be_more.orange_forum.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
+import ru.be_more.orange_forum.ui.PresentationContract
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 //TODO сделать динамическое количество картинок через ресайклер
@@ -41,8 +41,7 @@ class BoardFragment: Fragment(),
     LinkOnClickListener,
     CloseModalListener {
 
-//    private val boardPresenter: BoardPresenter by inject(parameters = { parametersOf(this) })
-    private val viewModel: BoardViewModel by inject()
+    private val viewModel: PresentationContract.BoardViewModel by inject()
     private var recyclerView : RecyclerView? = null
     private var adapter : BoardAdapter? = null
     private var postFragment: PostFragment? = null
@@ -59,7 +58,7 @@ class BoardFragment: Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initNav(view)
+        init(view)
         subscribe()
     }
 
@@ -164,7 +163,7 @@ class BoardFragment: Fragment(),
             })
     }
 
-    private fun initNav(view: View){
+    private fun init(view: View){
         navController = Navigation.findNavController(view)
 
         val boardId = requireArguments().getString("boardId")
