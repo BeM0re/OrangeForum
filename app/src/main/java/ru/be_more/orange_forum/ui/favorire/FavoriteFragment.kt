@@ -56,9 +56,8 @@ class FavoriteFragment :
         super.onViewCreated(view, savedInstanceState)
 
         init(view)
+        subscribe()
         viewModel.init()
-
-
     }
 
     override fun onDestroyView() {
