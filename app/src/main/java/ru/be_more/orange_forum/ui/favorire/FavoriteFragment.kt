@@ -12,36 +12,33 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_favorite.*
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.bus.RefreshFavorite
-import ru.be_more.orange_forum.bus.VideoToBeClosed
 import ru.be_more.orange_forum.consts.FAVORITE_TAG
-import ru.be_more.orange_forum.consts.POST_IN_FAVORITE_TAG
-import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.FavoriteListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
+import ru.be_more.orange_forum.ui.PresentationContract
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 class FavoriteFragment :
     Fragment(),
-    FavoriteView,
     FavoriteListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
 
-    private val favoritePresenter: FavoritePresenter by inject(parameters = { parametersOf(this) })
+    private val viewModel: PresentationContract.FavoriteViewModel by inject()
 
     private var recyclerView : RecyclerView? = null
     var adapter : FavoriteAdapter? = null
@@ -57,24 +54,45 @@ class FavoriteFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
 
+        init(view)
+        viewModel.init()
+
+
+    }
+
+    override fun onDestroyView() {
+        disposable?.dispose()
+        disposable = null
+        postFragment = null
+        adapter = null
+        recyclerView?.adapter = null
+        recyclerView = null
+        super.onDestroyView()
+    }
+
+    fun init(view: View){
+        navController = Navigation.findNavController(view)
         navController.currentDestination?.label = "Favorite"
 
         recyclerView = rv_favorite_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
+    }
 
-        favoritePresenter.initPresenter()
+    fun subscribe(){
+        with(viewModel){
+            observe(boards, ::loadFavorites)
+        }
 
         disposable = App.getBus().subscribe({
             if(it.first is BackPressed && it.second == FAVORITE_TAG) {
                 if (fl_favorite_board_post.visibility != View.GONE)
-                    favoritePresenter.onBackPressed()
+//                    viewModel.onBackPressed()
                 else
                     App.getBus().onNext(Pair(AppToBeClosed, ""))
             }
             if (it.first is RefreshFavorite && it.second == FAVORITE_TAG)
-                favoritePresenter.refreshData()
+                viewModel.refreshData()
         },
             {
                 Log.e("M_FavoriteFragment","bus error = \n $it")
@@ -82,18 +100,9 @@ class FavoriteFragment :
         )
     }
 
-    override fun onDestroy() {
-        postFragment = null
-        disposable?.dispose()
-        disposable = null
-        adapter = null
-        recyclerView = null
-        super.onDestroy()
-    }
 
-    override fun loadFavorites() {
-        adapter = FavoriteAdapter(
-            favoritePresenter.getBoards(), this, this)
+    fun loadFavorites(boards: List<Board>) {
+        adapter = FavoriteAdapter(boards, this, this)
 
         // Iterate and toggle groups
         for (i in (adapter!!.groups.size - 1) downTo 0) {
@@ -124,7 +133,8 @@ class FavoriteFragment :
         if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
             App.showToast("Пост не найден")
         else
-            favoritePresenter.getSinglePost(chanLink.first, chanLink.third)
+            ""
+//            viewModel.getSinglePost(chanLink.first, chanLink.third)
     }
 
     override fun onLinkClick(postNum: Int) {
@@ -138,7 +148,7 @@ class FavoriteFragment :
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
 
-        var attachment: Attachment? = null
+       /* var attachment: Attachment? = null
 
         if (fullPicUri != null)
             attachment = Attachment("", duration, fullPicUri)
@@ -149,13 +159,13 @@ class FavoriteFragment :
             favoritePresenter.putContentInStack(attachment)
             showPic(attachment)
 //            .visibility = View.VISIBLE
-        }
+        }*/
 
     }
 
-    override fun showPic(attachment: Attachment){
+    fun showPic(attachment: Attachment){
 
-        fl_favorite_board_post.visibility = View.VISIBLE
+       /* fl_favorite_board_post.visibility = View.VISIBLE
 
         postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
@@ -163,12 +173,12 @@ class FavoriteFragment :
         fragmentManager
             ?.beginTransaction()
             ?.replace(R.id.fl_favorite_board_post, postFragment!!, POST_IN_FAVORITE_TAG)
-            ?.commit()
+            ?.commit()*/
     }
 
-    override fun showPost(post: Post){
+    fun showPost(post: Post){
 
-        fl_board_post.visibility = View.VISIBLE
+     /*   fl_board_post.visibility = View.VISIBLE
 
         postFragment = PostFragment.getPostFragment(
             post,this,this, this)
@@ -176,16 +186,16 @@ class FavoriteFragment :
         fragmentManager
             ?.beginTransaction()
             ?.replace(R.id.fl_favorite_board_post, postFragment!!, POST_IN_FAVORITE_TAG)
-            ?.commit()
+            ?.commit()*/
     }
 
     override fun onCloseModalListener() {
-        postFragment = null
-        hideModal()
+       /* postFragment = null
+        hideModal()*/
     }
 
-    override fun hideModal() {
-        fl_favorite_board_post.visibility = View.GONE
+    fun hideModal() {
+       /* fl_favorite_board_post.visibility = View.GONE
 
         App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
 
@@ -194,10 +204,10 @@ class FavoriteFragment :
                 ?.beginTransaction()
                 ?.remove(fragmentManager?.findFragmentByTag(POST_IN_FAVORITE_TAG)!!)
 
-        favoritePresenter.clearStack()
+        favoritePresenter.clearStack()*/
     }
 
-    override fun showToast(message: String) {
+    fun showToast(message: String) {
         App.showToast(message )
     }
 

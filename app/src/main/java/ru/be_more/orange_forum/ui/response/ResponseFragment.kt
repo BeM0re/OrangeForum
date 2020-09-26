@@ -2,7 +2,6 @@ package ru.be_more.orange_forum.ui.response
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,17 +13,18 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import kotlinx.android.synthetic.main.item_thread_response_form.*
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.PAGE_HTML
 import androidx.lifecycle.Observer
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.consts.THREAD_TAG
+import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
+import ru.be_more.orange_forum.ui.PresentationContract
 
-class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), ResponseView{
+class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(){
 
-    private val responsePresenter: ResponsePresenter by inject(parameters = { parametersOf(this) })
+    private val viewModel: PresentationContract.ResponseViewModel by inject()
 
     private var captchaResponse : MutableLiveData<String>? = MutableLiveData()
 
@@ -36,25 +36,31 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        subscribe()
         setWebView()
 
         btn_response_submit.setOnClickListener {
             posting()
         }
+    }
 
-        captchaResponse?.observe(this, Observer{token ->
-            responsePresenter.postResponse(
+    private fun subscribe(){
+        with(viewModel){
+            observe(result, ::handleResult)
+        }
+
+        captchaResponse?.observe(viewLifecycleOwner, Observer{token ->
+            viewModel.postResponse(
                 boardId,
                 threadNum,
                 et_response_comment.text.toString(),
                 token
             )
         })
-
     }
 
     override fun onDestroy() {
-        responsePresenter.onDestroy()
+        viewModel.onDestroy()
         captchaResponse?.removeObservers(this)
         captchaResponse = null
         super.onDestroy()
@@ -114,16 +120,19 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(), Res
         wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
     }
 
+    private fun handleResult(result: String) {
+        if (result.isNullOrEmpty()){
+            App.showToast("Отправлено")
+            App.getBus().onNext(Pair(BackPressed, THREAD_TAG))
+        }
+        else
+            App.showToast(result)
+    }
 
     @JavascriptInterface
     fun responsePushed(token: String) {
         captchaResponse?.postValue(token.substring(1, token.length-1))
     }
 
-    override fun closeResponse() {
-        Log.d("M_ResponseFragment","close")
-        App.showToast("Отправлено")
-        App.getBus().onNext(Pair(BackPressed, THREAD_TAG))
-    }
 
 }

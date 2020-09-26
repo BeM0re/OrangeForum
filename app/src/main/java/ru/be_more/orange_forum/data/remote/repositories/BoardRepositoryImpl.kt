@@ -8,11 +8,8 @@ import ru.be_more.orange_forum.data.remote.RemoteContract
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toBoard
 import ru.be_more.orange_forum.data.remote.api.DvachApi
 import ru.be_more.orange_forum.domain.model.BoardThread
-//import javax.inject.Inject
-//import javax.inject.Singleton
 
-//@Singleton
-class BoardRepositoryImpl  /*@Inject constructor*/(
+class BoardRepositoryImpl(
     private val dvachApi : DvachApi
 ) : RemoteContract.BoardRepository{
 
