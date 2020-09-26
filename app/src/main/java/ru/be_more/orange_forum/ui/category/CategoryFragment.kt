@@ -19,6 +19,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
+import ru.be_more.orange_forum.ui.PresentationContract
 import java.util.*
 
 /*class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,
@@ -28,7 +29,7 @@ class CategoryFragment:
     CategoryOnClickListener {
 
 //    private val categoryPresenter: CategoryPresenter by inject(parameters = { parametersOf(this) })
-    private val viewModel: CategoryViewModel by inject()
+    private val viewModel: PresentationContract.CategoryViewModel by inject()
 
     private var recyclerView : RecyclerView? = null
     var adapter : CategoryAdapter? = null
@@ -56,15 +57,18 @@ class CategoryFragment:
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+//        categoryPresenter.initPresenter(this)
+        init(view)
+        subscribe()
+        viewModel.initViewModel()
+        setSearchListener()
+    }
+
+    private fun init(view: View){
         navController = Navigation.findNavController(view)
 
         recyclerView = rv_category_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
-
-//        categoryPresenter.initPresenter(this)
-        subscribe()
-        viewModel.initViewModel()
-        setSearchListener()
     }
 
     private fun subscribe() =
