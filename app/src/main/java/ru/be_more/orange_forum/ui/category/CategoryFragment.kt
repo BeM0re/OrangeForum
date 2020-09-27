@@ -45,14 +45,12 @@ class CategoryFragment:
 
     override fun onDestroyView() {
         saveState()
+        adapter = null
+        recyclerView?.adapter = null
+        recyclerView = null
         super.onDestroyView()
     }
 
-    override fun onDestroy() {
-        adapter = null
-        recyclerView = null
-        super.onDestroy()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

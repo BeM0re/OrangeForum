@@ -125,22 +125,22 @@ class MainActivity : AppCompatActivity(), MainView {
             }
             R.id.navigation_download -> {
 //                mainPresenter.downloadThread()
-                App.getBus().onNext(Pair(AddToDownload, ""))
+                App.getBus().onNext(AddToDownload)
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_download_done -> {
 //                mainPresenter.deleteThread(false)
-                App.getBus().onNext(Pair(RemoveFromDownload, ""))
+                App.getBus().onNext(RemoveFromDownload)
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite -> {
 //                mainPresenter.markFavorite()
-                App.getBus().onNext(Pair(AddToFavorite, ""))
+                App.getBus().onNext(AddToFavorite)
                 return@OnMenuItemClickListener true
             }
             R.id.navigation_favorite_added -> {
 //                mainPresenter.unmarkFavorite()
-                App.getBus().onNext(Pair(RemoveFromFavorite, ""))
+                App.getBus().onNext(RemoveFromFavorite)
                 return@OnMenuItemClickListener true
             }
         }
@@ -153,15 +153,15 @@ class MainActivity : AppCompatActivity(), MainView {
 //    }
 
     override fun onBackPressed() {
-        App.getBus().onNext(Pair(BackPressed, mainPresenter.getCurrentFragmentTag()))
+        App.getBus().onNext(BackPressed)
     }
 
     override fun refreshFavorite() {
-        App.getBus().onNext(Pair(RefreshFavorite, FAVORITE_TAG))
+        App.getBus().onNext(RefreshFavorite)
     }
 
     override fun refreshDownload() {
-        App.getBus().onNext(Pair(RefreshDownload, DOWNLOAD_TAG))
+        App.getBus().onNext(RefreshDownload)
     }
 
     private fun removeThreadMarks(){
@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity(), MainView {
 
        disposable = App.getBus().subscribe(
            {
-               when (it.first) {
+               when (it) {
                    is AppToBeClosed -> {
                        if (System.currentTimeMillis() - timestamp < 2000)
                            super.onBackPressed()
