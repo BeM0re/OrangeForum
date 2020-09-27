@@ -18,9 +18,7 @@ import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
-import ru.be_more.orange_forum.consts.BOARD_TAG
 import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
-import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
@@ -65,7 +63,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         super.onPrepareOptionsMenu(menu)
         favButton = menu.findItem(R.id.navigation_favorite)
         favButtonAdded = menu.findItem(R.id.navigation_favorite_added)
-        setFavoriteListeners()
+        setToolbarListeners()
     }
 
     override fun onDestroyView() {
@@ -79,7 +77,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         super.onDestroyView()
     }
 
-    private fun setFavoriteListeners() {
+    private fun setToolbarListeners() {
         favButton?.setOnMenuItemClickListener {
             viewModel.setFavorite(true)
             true
@@ -201,6 +199,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         val bundle = Bundle()
         bundle.putString("boardId", viewModel.getBoardId())
         bundle.putInt("threadNum", threadNum)
+        bundle.putString("boardName", viewModel.getBoardName())
         bundle.putString("title", threadTitle)
         navController.navigate(R.id.action_boardFragment_to_threadFragment, bundle)
     }
