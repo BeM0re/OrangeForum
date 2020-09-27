@@ -4,10 +4,7 @@ import android.graphics.drawable.ClipDrawable.HORIZONTAL
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -21,9 +18,6 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
 import ru.be_more.orange_forum.consts.POST_IN_THREAD_TAG
-import ru.be_more.orange_forum.consts.POST_TAG
-import ru.be_more.orange_forum.consts.RESPONSE_TAG
-import ru.be_more.orange_forum.consts.THREAD_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -37,7 +31,7 @@ import ru.be_more.orange_forum.ui.custom.CustomScrollListener
 import ru.be_more.orange_forum.ui.post.PostFragment
 import ru.be_more.orange_forum.ui.response.ResponseFragment
 
-class ThreadFragment : Fragment(),
+class ThreadFragment : Fragment(R.layout.fragment_thread),
     PicOnClickListener,
     LinkOnClickListener,
     CustomOnScrollListener,
@@ -46,6 +40,7 @@ class ThreadFragment : Fragment(),
     private val viewModel: PresentationContract.ThreadViewModel by inject()
 
     private var boardId: String = ""
+    private var boardName: String = ""
     private var threadNum: Int = 0
     private var recyclerView : RecyclerView? = null
     private var disposable: Disposable? = null
@@ -53,13 +48,13 @@ class ThreadFragment : Fragment(),
     private var postFragment: PostFragment? = null
     private var adapter : ThreadAdapter? = null
     private lateinit var navController: NavController
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?) : View? =
-        inflater.inflate(R.layout.fragment_thread, container, false)
+    private var favButton: MenuItem? = null
+    private var favButtonAdded: MenuItem? = null
+    private var downButton: MenuItem? = null
+    private var downButtonAdded: MenuItem? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
         super.onViewCreated(view, savedInstanceState)
 
         init(view)
@@ -70,7 +65,6 @@ class ThreadFragment : Fragment(),
 //        setOnScrollListener()
 
         fab_thread_respond.setOnClickListener { showResponseForm() }
-        fab_close_posting.setOnClickListener { hideResponseForm() }
 
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
@@ -79,6 +73,39 @@ class ThreadFragment : Fragment(),
             threadPresenter.updateThreadData()
         }*/
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.actionbar, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        favButton = menu.findItem(R.id.navigation_favorite)
+        favButtonAdded = menu.findItem(R.id.navigation_favorite_added)
+        downButton = menu.findItem(R.id.navigation_download)
+        downButtonAdded = menu.findItem(R.id.navigation_download_done)
+        setToolbarListeners()
+    }
+
+    private fun setToolbarListeners() {
+        favButton?.setOnMenuItemClickListener {
+            viewModel.setFavorite(true)
+            true
+        }
+        favButtonAdded?.setOnMenuItemClickListener {
+            viewModel.setFavorite(false)
+            true
+        }
+        downButton?.setOnMenuItemClickListener {
+            viewModel.download(true)
+            true
+        }
+        downButtonAdded?.setOnMenuItemClickListener {
+            viewModel.download(false)
+            true
+        }
     }
 
     override fun onDestroyView() {
@@ -97,9 +124,10 @@ class ThreadFragment : Fragment(),
         navController = Navigation.findNavController(view)
 
         boardId = requireArguments().getString("boardId")?:""
+        boardName = requireArguments().getString("boardName")?:""
         threadNum = requireArguments().getInt("threadNum")
 
-        viewModel.init(boardId, threadNum)
+        viewModel.init(boardId, threadNum, boardName)
         recyclerView = rv_post_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
     }
@@ -111,44 +139,22 @@ class ThreadFragment : Fragment(),
             observe(attachment, ::showPic)
             observe(emptyStack) { hideModal() }
             observe(savedPosition, ::setPosition)
+            observe(isFavorite, ::setFavoriteMark)
+            observe(isDownload, ::setDownloadMark)
         }
 
         disposable = App.getBus().subscribe(
             {
                 if(it is BackPressed ) {
-                    if (fl_thread_post.visibility != View.GONE){
-                        if (fragmentManager?.findFragmentByTag(RESPONSE_TAG) != null)
-                            hideResponseForm()
-                        else
+                    if (fl_thread_post.visibility != View.GONE)
                             viewModel.onBackPressed()
-                    }
                     else
                         App.getBus().onNext(AppToBeClosed)
                 }
             },
-            {
-                Log.e("M_ThreadFragment","bus error = \n $it")
-            }
+            { Log.e("M_ThreadFragment","bus error = \n $it") }
         )
     }
-
-    private fun hideResponseForm() {
-
-        fab_thread_down.visibility = View.VISIBLE
-        fab_thread_up.visibility = View.VISIBLE
-        fab_thread_respond.visibility = View.VISIBLE
-        fab_close_posting.visibility = View.GONE
-
-        fl_thread_post.visibility = View.GONE
-        fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-
-        //will be called only when fragmentManager?.findFragmentByTag(RESPONSE_TAG) not null
-        fragmentManager
-            ?.beginTransaction()
-            ?.remove(fragmentManager?.findFragmentByTag(RESPONSE_TAG)!!)
-            ?.commit()
-    }
-
 
     //TODO переделать на нормальную капчу, когда (если) макака сделает API
     //TODO переделать на норм навигацию
@@ -170,17 +176,14 @@ class ThreadFragment : Fragment(),
         )
     }
 
-    //TODO переделать на самостоятельный вызов тулбара
-    fun setThreadMarks(isDownloaded: Boolean, isFavorite: Boolean){
-        if (isDownloaded)
-            App.getBus().onNext(DownloadedThreadEntered)
-        else
-            App.getBus().onNext(UndownloadedThreadEntered)
+    private fun setDownloadMark(isDownloaded: Boolean){
+        downButton?.isVisible = !isDownloaded
+        downButtonAdded?.isVisible = isDownloaded
+    }
 
-        if (isFavorite)
-            App.getBus().onNext(FavoriteThreadEntered)
-        else
-            App.getBus().onNext(UnfavoriteThreadEntered)
+    private fun setFavoriteMark(isFavorite: Boolean){
+        favButton?.isVisible = !isFavorite
+        favButtonAdded?.isVisible = isFavorite
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
@@ -213,7 +216,7 @@ class ThreadFragment : Fragment(),
         Log.d("M_ThreadPresenter", "outer link = $externalLink")
     }
 
-    fun showPic(attachment: Attachment){
+    private fun showPic(attachment: Attachment){
         postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
@@ -224,7 +227,7 @@ class ThreadFragment : Fragment(),
     }
 
     //TODO переделать как-нибудь нормально
-    fun showPost(post: Post){
+    private fun showPost(post: Post){
         fl_thread_post.visibility = View.VISIBLE
 
         postFragment = PostFragment.getPostFragment(
@@ -236,7 +239,7 @@ class ThreadFragment : Fragment(),
             ?.commit()
     }
 
-    fun hideModal() {
+    private fun hideModal() {
         fl_thread_post.visibility = View.GONE
 
         App.getBus().onNext(VideoToBeClosed)

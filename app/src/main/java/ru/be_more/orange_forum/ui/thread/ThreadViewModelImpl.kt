@@ -23,28 +23,32 @@ class ThreadViewModelImpl (
     override val emptyStack = MutableLiveData<Boolean>()
     override val thread = MutableLiveData<BoardThread>()
     override val savedPosition = MutableLiveData<Int>()
+    override val isFavorite = MutableLiveData<Boolean>()
+    override val isDownload = MutableLiveData<Boolean>()
 
     private var boardId: String = ""
+    private var boardName: String = ""
     private var threadNum: Int = 0
     private val modalStack: Stack<ModalContent> = Stack()
 
     @SuppressLint("CheckResult")
-    override fun init(boardId: String?, threadNum: Int){
+    override fun init(boardId: String?, threadNum: Int, boardName: String){
 
         //если борда и тред не изменились, то данные не перезагружаем
         if (this.boardId != boardId || this.threadNum != threadNum) {
             if (!boardId.isNullOrEmpty()) {
                 this.boardId = boardId
                 this.threadNum = threadNum
+                this.boardName = boardName
 
                 threadInteractor.getThread(boardId, threadNum)
                     .subscribe(
                         {
                             thread.postValue(it)
+                            isDownload.postValue(it.isDownloaded)
+                            isFavorite.postValue(it.isFavorite)
                         },
-                        {
-                            Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it")
-                        }
+                        { Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it") }
                     )
             }
         }
@@ -115,6 +119,30 @@ class ThreadViewModelImpl (
         }
         else
             getSinglePost(postNum)
+    }
+
+    override fun setFavorite(isFavorite: Boolean) {
+        if (thread.value != null)
+            if (isFavorite)
+                threadInteractor
+                    .markThreadFavorite(threadNum, boardId, boardName)
+                    .subscribe()
+            else
+                threadInteractor
+                    .unmarkThreadFavorite(boardId, threadNum)
+                    .subscribe()
+    }
+
+    override fun download(isDownload: Boolean) {
+        if (thread.value != null)
+            if (isDownload)
+                threadInteractor
+                    .downloadThread(threadNum, boardId, boardName)
+                    .subscribe()
+            else
+                threadInteractor
+                    .deleteThread(boardId, threadNum)
+                    .subscribe()
     }
 
 }

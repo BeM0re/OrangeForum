@@ -128,4 +128,7 @@ class BoardViewModelImpl (
                     .unmarkBoardFavorite(board.value!!.id)
                     .subscribe()
     }
+
+    override fun getBoardName(): String =
+        board.value?.name?:""
 }
