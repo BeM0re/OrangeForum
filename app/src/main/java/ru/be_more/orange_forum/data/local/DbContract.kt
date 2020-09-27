@@ -13,7 +13,7 @@ interface DbContract {
 
     interface BoardRepository{
         fun getBoards(): Single<List<Board>>
-        fun getBoard(boardId: String): Single<Board>
+        fun getBoard(boardId: String, boardName: String): Single<Board>
         fun getBoardCount(boardId: String): Single<Int>
         fun insertBoard(boardId: String, boardName: String, isFavorite: Boolean)
         fun markBoardFavorite(boardId: String, boardName: String)

@@ -19,9 +19,9 @@ class BoardInteractorImpl(
     private val dbThreadRepository: DbContract.ThreadRepository
 ): InteractorContract.BoardInteractor, BaseInteractorImpl() {
 
-    override fun getBoard(boardId: String): Single<Board> =
+    override fun getBoard(boardId: String, boardName: String): Single<Board> =
         Single.zip(
-            dbBoardRepository.getBoard(boardId),
+            dbBoardRepository.getBoard(boardId, boardName),
             apiRepository.getDvachThreads(boardId),
             BiFunction <Board, List<BoardThread>, Board> { localBoard, webThreads ->
 

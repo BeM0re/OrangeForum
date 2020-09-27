@@ -4,9 +4,7 @@ import android.graphics.drawable.ClipDrawable.HORIZONTAL
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -35,7 +33,7 @@ import ru.be_more.orange_forum.ui.PresentationContract
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 //TODO сделать динамическое количество картинок через ресайклер
-class BoardFragment: Fragment(),
+class BoardFragment: Fragment(R.layout.fragment_board),
     BoardOnClickListener,
     PicOnClickListener,
     LinkOnClickListener,
@@ -46,20 +44,28 @@ class BoardFragment: Fragment(),
     private var adapter : BoardAdapter? = null
     private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
-
+    private var favButton: MenuItem? = null
+    private var favButtonAdded: MenuItem? = null
     private var disposable: Disposable? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) : View? = inflater.inflate(R.layout.fragment_board, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
         super.onViewCreated(view, savedInstanceState)
 
         init(view)
         subscribe()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.actionbar, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        favButton = menu.findItem(R.id.navigation_favorite)
+        favButtonAdded = menu.findItem(R.id.navigation_favorite_added)
+        setFavoriteListeners()
     }
 
     override fun onDestroyView() {
@@ -71,6 +77,17 @@ class BoardFragment: Fragment(),
         recyclerView?.adapter = null
         recyclerView = null
         super.onDestroyView()
+    }
+
+    private fun setFavoriteListeners() {
+        favButton?.setOnMenuItemClickListener {
+            viewModel.setFavorite(true)
+            true
+        }
+        favButtonAdded?.setOnMenuItemClickListener {
+            viewModel.setFavorite(false)
+            true
+        }
     }
 
     private fun loadBoard(board: Board) {
@@ -85,13 +102,11 @@ class BoardFragment: Fragment(),
     }
 
     private fun setBoardMarks(isFavorite: Boolean) {
-        if (isFavorite)
-            App.getBus().onNext(FavoriteBoardEntered)
-        else
-            App.getBus().onNext(UnfavoriteBoardEntered)
+        favButton?.isVisible = !isFavorite
+        favButtonAdded?.isVisible = isFavorite
     }
 
-    fun showPic(attachment: Attachment){
+    private fun showPic(attachment: Attachment){
         postFragment = PostFragment.getPostFragment(
             attachment, this, this, this
         )
@@ -102,7 +117,7 @@ class BoardFragment: Fragment(),
             ?.commit()
     }
 
-    fun showPost(post: Post){
+    private fun showPost(post: Post){
 
         fl_board_post.visibility = View.VISIBLE
 
@@ -116,7 +131,7 @@ class BoardFragment: Fragment(),
             ?.commit()
     }
 
-    fun hideModal() {
+    private fun hideModal() {
         fl_board_post.visibility = View.GONE
 
         App.getBus().onNext(VideoToBeClosed)
@@ -129,7 +144,7 @@ class BoardFragment: Fragment(),
         viewModel.clearStack()
     }
 
-    fun showToast(message: String) {
+    private fun showToast(message: String) {
         Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
     }
 
@@ -145,27 +160,25 @@ class BoardFragment: Fragment(),
         }
 
         //Subscribe to event bus
-        disposable = App.getBus().subscribe({
-            if (it is BackPressed ) {
-                if (fl_board_post.visibility != View.GONE)
-                    viewModel.onBackPressed()
-                else
-                    App.getBus().onNext(AppToBeClosed)
-            }
-//            if (it.first is BoardEntered && it.second == BOARD_TAG)
-//                viewModel.setBoardMarks()
-        },
+        disposable = App.getBus().subscribe(
             {
-                Log.e("M_BoardFragment", "bus error = \n $it")
-            })
+                if (it is BackPressed ) {
+                    if (fl_board_post.visibility != View.GONE)
+                        viewModel.onBackPressed()
+                    else
+                        App.getBus().onNext(AppToBeClosed)
+                }
+            },
+            { Log.e("M_BoardFragment", "bus error = \n $it") })
     }
 
     private fun init(view: View){
         navController = Navigation.findNavController(view)
 
         val boardId = requireArguments().getString("boardId")
+        val boardName = requireArguments().getString("title")
 
-        viewModel.init(boardId)
+        viewModel.init(boardId, boardName)
         recyclerView = rv_thread_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
@@ -190,9 +203,6 @@ class BoardFragment: Fragment(),
         bundle.putInt("threadNum", threadNum)
         bundle.putString("title", threadTitle)
         navController.navigate(R.id.action_boardFragment_to_threadFragment, bundle)
-
-//        if (boardPresenter.listener != null)
-//            boardPresenter.listener!!(threadNum, threadTitle)
     }
 
     override fun onHideClick(threadNum: Int, toHide: Boolean) {
