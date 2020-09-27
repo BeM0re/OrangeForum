@@ -40,7 +40,6 @@ import ru.be_more.orange_forum.ui.response.ResponseFragment
 class ThreadFragment : Fragment(),
     PicOnClickListener,
     LinkOnClickListener,
-    ThreadView,
     CustomOnScrollListener,
     CloseModalListener {
 
@@ -153,32 +152,16 @@ class ThreadFragment : Fragment(),
 
     //TODO переделать на нормальную капчу, когда (если) макака сделает API
     //TODO переделать на норм навигацию
-    override fun showResponseForm() {
+    private fun showResponseForm() {
 
         val bundle = Bundle()
         bundle.putString("boardId", boardId)
         bundle.putInt("threadNum", threadNum)
         bundle.putString("title", "Reply")
         navController.navigate(R.id.action_threadFragment_to_responseFragment, bundle)
-
-//        if (responseFragment == null)
-//            responseFragment = ResponseFragment(boardId, threadNum)
-//
-//        fab_thread_down.visibility = View.GONE
-//        fab_thread_up.visibility = View.GONE
-//        fab_thread_respond.visibility = View.GONE
-//        fab_close_posting.visibility = View.VISIBLE
-//
-//        fl_thread_post.visibility = View.VISIBLE
-//        fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-//
-//        fragmentManager
-//            ?.beginTransaction()
-//            ?.replace(R.id.fl_thread_post, responseFragment!!, RESPONSE_TAG)
-//            ?.commit()
     }
 
-    override fun loadThread(thread: BoardThread) {
+    private fun loadThread(thread: BoardThread) {
         adapter = ThreadAdapter(thread, this, this)
 
         recyclerView?.adapter = adapter
@@ -188,7 +171,7 @@ class ThreadFragment : Fragment(),
     }
 
     //TODO переделать на самостоятельный вызов тулбара
-    override fun setThreadMarks(isDownloaded: Boolean, isFavorite: Boolean){
+    fun setThreadMarks(isDownloaded: Boolean, isFavorite: Boolean){
         if (isDownloaded)
             App.getBus().onNext(DownloadedThreadEntered)
         else
@@ -198,10 +181,6 @@ class ThreadFragment : Fragment(),
             App.getBus().onNext(FavoriteThreadEntered)
         else
             App.getBus().onNext(UnfavoriteThreadEntered)
-    }
-
-    override fun hideResponseFab() {
-        fab_thread_respond.visibility = View.GONE
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
@@ -234,7 +213,7 @@ class ThreadFragment : Fragment(),
         Log.d("M_ThreadPresenter", "outer link = $externalLink")
     }
 
-    override fun showPic(attachment: Attachment){
+    fun showPic(attachment: Attachment){
         postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
@@ -245,7 +224,7 @@ class ThreadFragment : Fragment(),
     }
 
     //TODO переделать как-нибудь нормально
-    override fun showPost(post: Post){
+    fun showPost(post: Post){
         fl_thread_post.visibility = View.VISIBLE
 
         postFragment = PostFragment.getPostFragment(
@@ -257,7 +236,7 @@ class ThreadFragment : Fragment(),
             ?.commit()
     }
 
-    override fun hideModal() {
+    fun hideModal() {
         fl_thread_post.visibility = View.GONE
 
         App.getBus().onNext(VideoToBeClosed)
@@ -305,9 +284,4 @@ class ThreadFragment : Fragment(),
         postFragment = null
         hideModal()
     }
-
-    override fun showToast(message: String) {
-        Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
 }
