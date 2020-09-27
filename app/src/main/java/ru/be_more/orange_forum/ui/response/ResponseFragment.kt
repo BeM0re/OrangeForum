@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.ui.response
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,17 +17,22 @@ import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.PAGE_HTML
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import io.reactivex.disposables.Disposable
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.bus.BackPressed
-import ru.be_more.orange_forum.consts.THREAD_TAG
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.ui.PresentationContract
 
-class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(){
+class ResponseFragment(): Fragment(){
 
     private val viewModel: PresentationContract.ResponseViewModel by inject()
-
+    private lateinit var navController: NavController
     private var captchaResponse : MutableLiveData<String>? = MutableLiveData()
+    private lateinit var boardId: String
+    private var threadNum: Int = 0
+    private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -36,12 +42,20 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        init(view)
         subscribe()
         setWebView()
 
         btn_response_submit.setOnClickListener {
             posting()
         }
+    }
+
+    private fun init(view: View) {
+        navController = Navigation.findNavController(view)
+
+        boardId = requireArguments().getString("boardId")?:""
+        threadNum = requireArguments().getInt("threadNum")
     }
 
     private fun subscribe(){
@@ -57,13 +71,27 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(){
                 token
             )
         })
+
+        disposable = App.getBus().subscribe(
+            {
+                if(it is BackPressed ) {
+                    navController.navigateUp()
+                }
+            },
+            {
+                Log.e("M_ThreadFragment","bus error = \n $it")
+            }
+        )
     }
 
-    override fun onDestroy() {
+    //TODO save state
+    override fun onDestroyView() {
         viewModel.onDestroy()
         captchaResponse?.removeObservers(this)
         captchaResponse = null
-        super.onDestroy()
+        disposable?.dispose()
+        disposable = null
+        super.onDestroyView()
     }
 
     private fun setWebView(){
@@ -121,7 +149,7 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(){
     }
 
     private fun handleResult(result: String) {
-        if (result.isNullOrEmpty()){
+        if (result.isEmpty()){
             App.showToast("Отправлено")
             App.getBus().onNext(BackPressed)
         }

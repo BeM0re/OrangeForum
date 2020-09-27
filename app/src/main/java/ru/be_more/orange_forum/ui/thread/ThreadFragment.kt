@@ -46,7 +46,7 @@ class ThreadFragment : Fragment(),
 
     private val viewModel: PresentationContract.ThreadViewModel by inject()
 
-    private lateinit var boardId: String
+    private var boardId: String = ""
     private var threadNum: Int = 0
     private var recyclerView : RecyclerView? = null
     private var disposable: Disposable? = null
@@ -97,8 +97,8 @@ class ThreadFragment : Fragment(),
         App.getBus().onNext(ThreadToBeOpened)
         navController = Navigation.findNavController(view)
 
-        val boardId = requireArguments().getString("boardId")
-        val threadNum = requireArguments().getInt("threadNum")
+        boardId = requireArguments().getString("boardId")?:""
+        threadNum = requireArguments().getInt("threadNum")
 
         viewModel.init(boardId, threadNum)
         recyclerView = rv_post_list
@@ -155,21 +155,27 @@ class ThreadFragment : Fragment(),
     //TODO переделать на норм навигацию
     override fun showResponseForm() {
 
-        if (responseFragment == null)
-            responseFragment = ResponseFragment(boardId, threadNum)
+        val bundle = Bundle()
+        bundle.putString("boardId", boardId)
+        bundle.putInt("threadNum", threadNum)
+        bundle.putString("title", "Reply")
+        navController.navigate(R.id.action_threadFragment_to_responseFragment, bundle)
 
-        fab_thread_down.visibility = View.GONE
-        fab_thread_up.visibility = View.GONE
-        fab_thread_respond.visibility = View.GONE
-        fab_close_posting.visibility = View.VISIBLE
-
-        fl_thread_post.visibility = View.VISIBLE
-        fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-
-        fragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, responseFragment!!, RESPONSE_TAG)
-            ?.commit()
+//        if (responseFragment == null)
+//            responseFragment = ResponseFragment(boardId, threadNum)
+//
+//        fab_thread_down.visibility = View.GONE
+//        fab_thread_up.visibility = View.GONE
+//        fab_thread_respond.visibility = View.GONE
+//        fab_close_posting.visibility = View.VISIBLE
+//
+//        fl_thread_post.visibility = View.VISIBLE
+//        fl_thread_post.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+//
+//        fragmentManager
+//            ?.beginTransaction()
+//            ?.replace(R.id.fl_thread_post, responseFragment!!, RESPONSE_TAG)
+//            ?.commit()
     }
 
     override fun loadThread(thread: BoardThread) {
