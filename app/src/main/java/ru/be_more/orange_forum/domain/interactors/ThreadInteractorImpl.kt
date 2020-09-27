@@ -69,6 +69,23 @@ class ThreadInteractorImpl (
         )
             .processCompletable()
 
+   /* override fun markThreadFavorite(threadNum: Int, boardId: String): Completable =
+        Completable.fromSingle(
+            apiRepository.getThread(boardId, threadNum)
+                .doOnSuccess { thread ->
+                    dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
+                }
+                .doOnSuccess { thread ->
+                    dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
+                }
+                .flatMap { thread ->
+                    dbThreadRepository.insertThreadSafety(thread.copy(isFavorite = true), boardId)
+                        .doOnSuccess { isSaved ->
+                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
+                }
+        )
+            .processCompletable()*/
+
     override fun unmarkThreadFavorite(boardId: String, threadNum: Int): Completable =
         Completable.fromCallable {
             dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
@@ -100,6 +117,25 @@ class ThreadInteractorImpl (
                 }
         )
             .processCompletable()
+
+/*    override fun downloadThread(threadNum: Int, boardId: String): Completable =
+        Completable.fromSingle(
+            apiRepository.getThread(boardId, threadNum)
+                .doOnSuccess { thread ->
+                    dbPostRepository.savePosts(thread.posts, threadNum, boardId)
+                }
+                .doOnSuccess { thread ->
+                    thread.posts.forEach { post ->
+                        dbFileRepository.saveFiles(post.files, post.num, thread.num, boardId)
+                    }
+                }
+                .flatMap { thread ->
+                    dbThreadRepository.insertThreadSafety(thread.copy(isDownloaded = true), boardId)
+                        .doOnSuccess { isSaved ->
+                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
+                }
+        )
+            .processCompletable()*/
 
     override fun deleteThread(boardId: String, threadNum: Int) =
         Completable.fromCallable {

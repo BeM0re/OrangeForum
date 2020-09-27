@@ -41,14 +41,19 @@ interface PresentationContract {
         fun getBoardId(): String?
         fun savePosition(pos: Int)
         fun setFavorite(isFavorite: Boolean)
+        fun getBoardName(): String
     }
 
     interface ThreadViewModel: BaseViewModel, ViewModelWithPosts{
         val thread: LiveData<BoardThread>
         val savedPosition: LiveData<Int>
-        fun init(boardId: String?, threadNum: Int)
+        val isFavorite: LiveData<Boolean>
+        val isDownload: LiveData<Boolean>
+        fun init(boardId: String?, threadNum: Int, boardName: String)
         fun getPost(chanLink: Triple<String, Int, Int>)
         fun getPost(postNum: Int)
+        fun setFavorite(isFavorite: Boolean)
+        fun download(isDownload: Boolean)
     }
 
     interface ResponseViewModel: BaseViewModel{
