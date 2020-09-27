@@ -82,8 +82,19 @@ class ThreadFragment : Fragment(),
 
     }
 
+    override fun onDestroyView() {
+        //TODO save state
+        disposable?.dispose()
+        disposable = null
+        adapter = null
+        recyclerView?.adapter = null
+        postFragment = null
+        responseFragment = null
+        super.onDestroyView()
+    }
+
     private fun init(view: View) {
-        App.getBus().onNext(Pair(ThreadToBeOpened, ""))
+        App.getBus().onNext(ThreadToBeOpened)
         navController = Navigation.findNavController(view)
 
         val boardId = requireArguments().getString("boardId")
@@ -105,7 +116,7 @@ class ThreadFragment : Fragment(),
 
         disposable = App.getBus().subscribe(
             {
-                if(it.first is BackPressed && it.second == THREAD_TAG) {
+                if(it is BackPressed ) {
                     if (fl_thread_post.visibility != View.GONE){
                         if (fragmentManager?.findFragmentByTag(RESPONSE_TAG) != null)
                             hideResponseForm()
@@ -113,7 +124,7 @@ class ThreadFragment : Fragment(),
                             viewModel.onBackPressed()
                     }
                     else
-                        App.getBus().onNext(Pair(AppToBeClosed, ""))
+                        App.getBus().onNext(AppToBeClosed)
                 }
             },
             {
@@ -139,22 +150,6 @@ class ThreadFragment : Fragment(),
             ?.commit()
     }
 
-    override fun onDestroyView() {
-        //TODO save state
-        rv_post_list.adapter = null
-        adapter = null
-        recyclerView = null
-        postFragment = null
-        responseFragment = null
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        disposable?.dispose()
-        disposable = null
-//        viewModel.onDestroy()
-        super.onDestroy()
-    }
 
     //TODO переделать на нормальную капчу, когда (если) макака сделает API
     //TODO переделать на норм навигацию
@@ -189,14 +184,14 @@ class ThreadFragment : Fragment(),
     //TODO переделать на самостоятельный вызов тулбара
     override fun setThreadMarks(isDownloaded: Boolean, isFavorite: Boolean){
         if (isDownloaded)
-            App.getBus().onNext(Pair(DownloadedThreadEntered, ""))
+            App.getBus().onNext(DownloadedThreadEntered)
         else
-            App.getBus().onNext(Pair(UndownloadedThreadEntered, ""))
+            App.getBus().onNext(UndownloadedThreadEntered)
 
         if (isFavorite)
-            App.getBus().onNext(Pair(FavoriteThreadEntered, ""))
+            App.getBus().onNext(FavoriteThreadEntered)
         else
-            App.getBus().onNext(Pair(UnfavoriteThreadEntered, ""))
+            App.getBus().onNext(UnfavoriteThreadEntered)
     }
 
     override fun hideResponseFab() {
@@ -259,7 +254,7 @@ class ThreadFragment : Fragment(),
     override fun hideModal() {
         fl_thread_post.visibility = View.GONE
 
-        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
+        App.getBus().onNext(VideoToBeClosed)
 
         if (fragmentManager?.findFragmentByTag(POST_IN_THREAD_TAG) != null)
             fragmentManager

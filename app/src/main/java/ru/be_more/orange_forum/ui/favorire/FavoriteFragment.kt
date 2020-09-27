@@ -84,14 +84,14 @@ class FavoriteFragment :
         }
 
         disposable = App.getBus().subscribe({
-            if(it.first is BackPressed && it.second == FAVORITE_TAG) {
+            if(it is BackPressed) {
                 if (fl_favorite_board_post.visibility != View.GONE)
 //                    viewModel.onBackPressed()
                 else
-                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+                    App.getBus().onNext(AppToBeClosed)
             }
-            if (it.first is RefreshFavorite && it.second == FAVORITE_TAG)
-                viewModel.refreshData()
+//            if (it.first is RefreshFavorite && it.second == FAVORITE_TAG)
+//                viewModel.refreshData()
         },
             {
                 Log.e("M_FavoriteFragment","bus error = \n $it")

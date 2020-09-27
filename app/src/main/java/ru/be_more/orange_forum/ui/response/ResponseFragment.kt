@@ -123,7 +123,7 @@ class ResponseFragment(val boardId: String, val threadNum: Int): Fragment(){
     private fun handleResult(result: String) {
         if (result.isNullOrEmpty()){
             App.showToast("Отправлено")
-            App.getBus().onNext(Pair(BackPressed, THREAD_TAG))
+            App.getBus().onNext(BackPressed)
         }
         else
             App.showToast(result)
