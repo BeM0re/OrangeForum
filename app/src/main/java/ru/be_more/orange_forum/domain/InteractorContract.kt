@@ -19,7 +19,7 @@ interface InteractorContract {
     }
 
     interface BoardInteractor: BaseInteractor {
-        fun getBoard(boardId: String): Single<Board>
+        fun getBoard(boardId: String, boardName: String): Single<Board>
         fun markBoardFavorite(boardId: String, boardName: String): Completable
         fun unmarkBoardFavorite(boardId: String): Completable
     }
