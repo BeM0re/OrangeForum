@@ -15,7 +15,7 @@ class App : Application(){
 
     companion object {
         private var instance: App? = null
-        private var bus:Subject<Pair<Event, String>> = PublishSubject.create()
+        private var bus:Subject<Event> = PublishSubject.create()
 
         fun applicationContext(): Context = instance!!.applicationContext
 

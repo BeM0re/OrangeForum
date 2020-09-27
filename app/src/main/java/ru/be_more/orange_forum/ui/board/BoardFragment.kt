@@ -64,16 +64,13 @@ class BoardFragment: Fragment(),
 
     override fun onDestroyView() {
         saveState()
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
         disposable?.dispose()
         disposable = null
         postFragment = null
         adapter = null
+        recyclerView?.adapter = null
         recyclerView = null
-        super.onDestroy()
+        super.onDestroyView()
     }
 
     private fun loadBoard(board: Board) {
@@ -89,9 +86,9 @@ class BoardFragment: Fragment(),
 
     private fun setBoardMarks(isFavorite: Boolean) {
         if (isFavorite)
-            App.getBus().onNext(Pair(FavoriteBoardEntered, ""))
+            App.getBus().onNext(FavoriteBoardEntered)
         else
-            App.getBus().onNext(Pair(UnfavoriteBoardEntered, ""))
+            App.getBus().onNext(UnfavoriteBoardEntered)
     }
 
     fun showPic(attachment: Attachment){
@@ -122,7 +119,7 @@ class BoardFragment: Fragment(),
     fun hideModal() {
         fl_board_post.visibility = View.GONE
 
-        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
+        App.getBus().onNext(VideoToBeClosed)
 
         if (fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG) != null)
             fragmentManager
@@ -149,14 +146,14 @@ class BoardFragment: Fragment(),
 
         //Subscribe to event bus
         disposable = App.getBus().subscribe({
-            if (it.first is BackPressed && it.second == BOARD_TAG) {
+            if (it is BackPressed ) {
                 if (fl_board_post.visibility != View.GONE)
                     viewModel.onBackPressed()
                 else
-                    App.getBus().onNext(Pair(AppToBeClosed, ""))
+                    App.getBus().onNext(AppToBeClosed)
             }
-            if (it.first is BoardEntered && it.second == BOARD_TAG)
-                viewModel.setBoardMarks()
+//            if (it.first is BoardEntered && it.second == BOARD_TAG)
+//                viewModel.setBoardMarks()
         },
             {
                 Log.e("M_BoardFragment", "bus error = \n $it")
@@ -172,8 +169,8 @@ class BoardFragment: Fragment(),
         recyclerView = rv_thread_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
-        App.getBus().onNext(Pair(BoardToBeOpened, ""))
-        App.getBus().onNext(Pair(ThreadToBeClosed, ""))
+        App.getBus().onNext(BoardToBeOpened)
+        App.getBus().onNext(ThreadToBeClosed)
     }
 
     private fun saveState(){

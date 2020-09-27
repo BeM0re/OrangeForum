@@ -73,14 +73,14 @@ class DownloadFragment:
 
         disposable = App.getBus().subscribe(
             {
-                if(it.first is BackPressed && it.second == DOWNLOAD_TAG) {
+                if(it is BackPressed ) {
                     if (fl_downloaded_board_post.visibility != View.GONE)
 //                        viewModel.onBackPressed()
                     else
-                        App.getBus().onNext(Pair(AppToBeClosed, ""))
+                        App.getBus().onNext(AppToBeClosed)
                 }
-                if (it.first is RefreshDownload && it.second == DOWNLOAD_TAG)
-                    adapter?.notifyDataSetChanged()
+//                if (it.first is RefreshDownload && it.second == DOWNLOAD_TAG)
+//                    adapter?.notifyDataSetChanged()
             },
             { Log.e("M_DownloadFragment","bus error = \n $it") })
     }

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.MediaController
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -33,9 +34,7 @@ import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 
-class PostFragment : Fragment(), PostView {
-
-    private val postPresenter: PostPresenter by inject(parameters = { parametersOf(this) })
+class PostFragment : Fragment() {
 
     private var timestamp: Long = 0
 
@@ -45,6 +44,7 @@ class PostFragment : Fragment(), PostView {
     private lateinit var linkListener: LinkOnClickListener
     private lateinit var closeModalListener: CloseModalListener
     private var disposable: Disposable? = null
+    private var recyclerView: RecyclerView? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -53,13 +53,16 @@ class PostFragment : Fragment(), PostView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        postPresenter.init(content, picListener, linkListener)
 
         setClosingViewClickListener()
+        subscribe()
+        setContent(content)
+    }
 
+    private fun subscribe(){
         disposable = App.getBus().subscribe(
             {
-                if(it.first is VideoToBeClosed && it.second == POST_TAG)
+                if(it is VideoToBeClosed)
                     hideModal()
             },
             {
@@ -68,9 +71,12 @@ class PostFragment : Fragment(), PostView {
         )
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
         disposable?.dispose()
-        super.onDestroy()
+        disposable = null
+        recyclerView?.adapter = null
+
+        super.onDestroyView()
     }
 
     private fun showPost(post: Post){
@@ -80,7 +86,7 @@ class PostFragment : Fragment(), PostView {
         ll_post_layout.setBackgroundColor(resources.getColor(R.color.color_background))
 
         tv_item_post_comment.text = post.comment
-        tv_item_post_comment.setListener(postPresenter.getLinkListener())
+        tv_item_post_comment.setListener(linkListener)
 
         cl_post_header.visibility = View.GONE
 
@@ -89,10 +95,10 @@ class PostFragment : Fragment(), PostView {
         else
             tv_item_post_subject.text = post.subject
 
-        val recyclerView = rv_item_post_pics
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView = rv_item_post_pics
+        recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
-        recyclerView.adapter = PostPicAdapter(post.files, postPresenter.getPicListener())
+        recyclerView?.adapter = PostPicAdapter(post.files, picListener)
 
         tv_item_post_replies.text = ""
         var replyResult = ""
@@ -106,7 +112,7 @@ class PostFragment : Fragment(), PostView {
 
             tv_item_post_replies.text = replyResult
 
-            tv_item_post_replies.setListener(postPresenter.getLinkListener())
+            tv_item_post_replies.setListener(linkListener)
         }
     }
 
@@ -179,7 +185,7 @@ class PostFragment : Fragment(), PostView {
         }
     }
 
-    override fun setContent(content: ModalContent) {
+    fun setContent(content: ModalContent) {
         when (content){
             is Post -> showPost(content)
             is Attachment -> showAttachment(content)
@@ -222,8 +228,6 @@ class PostFragment : Fragment(), PostView {
         disposable?.dispose()
 
         closeModalListener.onCloseModalListener()
-
-        postPresenter.onDestroy()
     }
 
 
