@@ -24,15 +24,26 @@ class BoardRepositoryImpl (
                 }
 
 
-    override fun getBoard(boardId: String): Single<Board> =
+    override fun getBoard(boardId: String, boardName: String): Single<Board> =
         dao.getBoard(boardId)
             .zipWith(dao.getThreads(boardId),
                 BiFunction<List<StoredBoard>, List<StoredThread>, Board> { probablyBoard, threads ->
                     return@BiFunction if (probablyBoard.isNotEmpty())
                         toModelBoard(probablyBoard[0], toModelThreads(threads))
                     else
-                        Board("", boardId, toModelThreads(threads), false)
+                        Board(boardName, boardId, toModelThreads(threads), false)
             })
+
+/*    override fun getBoard(boardId: String): Single<List<Board>> =
+        dao.getBoard(boardId)
+            .zipWith(dao.getThreads(boardId),
+                BiFunction<List<StoredBoard>, List<StoredThread>, List<Board>> { probablyBoard, threads ->
+                    return@BiFunction if (probablyBoard.isNotEmpty())
+                        listOf(toModelBoard(probablyBoard[0], toModelThreads(threads)))
+                    else
+                        listOf()
+                })*/
+
 
     override fun getBoardCount(boardId: String): Single<Int> =
         dao.getBoardCount(boardId)

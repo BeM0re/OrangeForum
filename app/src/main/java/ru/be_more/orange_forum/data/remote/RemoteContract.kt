@@ -1,10 +1,8 @@
 package ru.be_more.orange_forum.data.remote
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.data.remote.models.*
 import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.domain.model.Post
 import java.io.File
 
@@ -27,16 +25,6 @@ interface RemoteContract {
             postNum: Int,
             cookie: String
         ): Single<Post>
-
-        fun postThreadResponse(
-            boardId: String,
-            threadNum: Int,
-            comment: String,
-            captcha_type: String,
-            g_recaptcha_response: String,
-            chaptcha_id : String,
-            files : List<File>
-        ): Single<DvachPostResponse>
     }
 
     interface ResponseRepository {

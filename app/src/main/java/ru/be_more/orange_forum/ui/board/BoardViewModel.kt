@@ -28,18 +28,16 @@ class BoardViewModelImpl (
     private val modalStack: Stack<ModalContent> = Stack()
 
     @SuppressLint("CheckResult")
-    override fun init(boardId: String?){
-        if (board.value == null){
-            if (!boardId.isNullOrEmpty()) {
-                boardInteractor.getBoard(boardId)
+    override fun init(boardId: String?, boardName: String?){
+        if (board.value == null || board.value?.id != boardId){
+            if (!boardId.isNullOrEmpty() && !boardName.isNullOrEmpty()) {
+                boardInteractor.getBoard(boardId, boardName)
                     .subscribe(
                         { board ->
                             this.board.postValue(board)
                             isFavorite.postValue(board.isFavorite)
                         },
-                        {
-                            Log.e("M_BoardPresenter", "Getting board error = $it")
-                        }
+                        { Log.e("M_BoardPresenter", "Getting board error = $it") }
                     )
             }
         }
@@ -117,5 +115,17 @@ class BoardViewModelImpl (
 
     override fun savePosition(pos: Int){
         savedPosition.postValue(pos)
+    }
+
+    override fun setFavorite(isFavorite: Boolean) {
+        if (board.value != null)
+            if (isFavorite)
+                boardInteractor
+                    .markBoardFavorite(board.value!!.id, board.value!!.name)
+                    .subscribe()
+            else
+                boardInteractor
+                    .unmarkBoardFavorite(board.value!!.id)
+                    .subscribe()
     }
 }
