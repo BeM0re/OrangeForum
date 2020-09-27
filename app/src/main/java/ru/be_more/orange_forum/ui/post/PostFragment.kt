@@ -21,12 +21,9 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.item_post.*
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.VideoToBeClosed
-import ru.be_more.orange_forum.consts.POST_TAG
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.interfaces.PicOnClickListener
@@ -90,7 +87,7 @@ class PostFragment : Fragment() {
 
         cl_post_header.visibility = View.GONE
 
-        if (post.subject.isNullOrEmpty())
+        if (post.subject.isEmpty())
             tv_item_post_subject.visibility = View.GONE
         else
             tv_item_post_subject.text = post.subject
@@ -185,7 +182,7 @@ class PostFragment : Fragment() {
         }
     }
 
-    fun setContent(content: ModalContent) {
+    private fun setContent(content: ModalContent) {
         when (content){
             is Post -> showPost(content)
             is Attachment -> showAttachment(content)

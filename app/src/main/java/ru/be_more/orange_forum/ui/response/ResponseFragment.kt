@@ -25,7 +25,7 @@ import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.ui.PresentationContract
 
-class ResponseFragment(): Fragment(){
+class ResponseFragment: Fragment(){
 
     private val viewModel: PresentationContract.ResponseViewModel by inject()
     private lateinit var navController: NavController
