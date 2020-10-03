@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_category.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_ID
+import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_NAME
+import ru.be_more.orange_forum.consts.NAVIGATION_TITLE
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
@@ -122,8 +125,10 @@ class CategoryFragment:
 
     override fun onBoardClick(boardId: String, boardTitle: String) {
         val bundle = Bundle()
-        bundle.putString("boardId", boardId)
-        bundle.putString("title", boardTitle)
+        bundle.putString(NAVIGATION_BOARD_ID, boardId)
+        bundle.putString(NAVIGATION_BOARD_NAME, boardTitle)
+        bundle.putString(NAVIGATION_TITLE, boardTitle)
+
         navController.navigate(R.id.action_categoryFragment_to_boardFragment, bundle)
     }
 

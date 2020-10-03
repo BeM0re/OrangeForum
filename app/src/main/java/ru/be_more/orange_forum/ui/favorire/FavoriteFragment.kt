@@ -3,9 +3,7 @@ package ru.be_more.orange_forum.ui.favorire
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -18,8 +16,10 @@ import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.AppToBeClosed
 import ru.be_more.orange_forum.bus.BackPressed
-import ru.be_more.orange_forum.bus.RefreshFavorite
-import ru.be_more.orange_forum.consts.FAVORITE_TAG
+import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_ID
+import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_NAME
+import ru.be_more.orange_forum.consts.NAVIGATION_THREAD_TITLE
+import ru.be_more.orange_forum.consts.NAVIGATION_TITLE
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.FavoriteListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -93,7 +93,7 @@ class FavoriteFragment :
     }
 
 
-    fun loadFavorites(boards: List<Board>) {
+    private fun loadFavorites(boards: List<Board>) {
         adapter = FavoriteAdapter(boards, this, this)
 
         // Iterate and toggle groups
@@ -108,16 +108,16 @@ class FavoriteFragment :
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
         val bundle = Bundle()
-        bundle.putString("boardId", boardId)
-        bundle.putInt("threadNum", threadNum)
-        bundle.putString("title", threadTitle)
+        bundle.putString(NAVIGATION_BOARD_ID, boardId)
+        bundle.putInt(NAVIGATION_THREAD_TITLE, threadNum)
+        bundle.putString(NAVIGATION_TITLE, threadTitle)
         navController.navigate(R.id.action_favoriteFragment_to_threadFragment3, bundle)
     }
 
     override fun intoBoardClick(boardId: String, boardName: String) {
         val bundle = Bundle()
-        bundle.putString("boardId", boardId)
-        bundle.putString("title", boardName)
+        bundle.putString(NAVIGATION_BOARD_ID, boardId)
+        bundle.putString(NAVIGATION_TITLE, boardName)
         navController.navigate(R.id.action_favoriteFragment_to_boardFragment, bundle)
     }
 
