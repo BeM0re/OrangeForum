@@ -17,7 +17,7 @@ import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
-import ru.be_more.orange_forum.consts.POST_IN_THREAD_TAG
+import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.interfaces.CloseModalListener
 import ru.be_more.orange_forum.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.interfaces.LinkOnClickListener
@@ -123,9 +123,9 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         App.getBus().onNext(ThreadToBeOpened)
         navController = Navigation.findNavController(view)
 
-        boardId = requireArguments().getString("boardId")?:""
-        boardName = requireArguments().getString("boardName")?:""
-        threadNum = requireArguments().getInt("threadNum")
+        boardId = requireArguments().getString(NAVIGATION_BOARD_ID)?:""
+        boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)?:""
+        threadNum = requireArguments().getInt(NAVIGATION_THREAD_NUM)
 
         viewModel.init(boardId, threadNum, boardName)
         recyclerView = rv_post_list
@@ -157,13 +157,12 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
     }
 
     //TODO переделать на нормальную капчу, когда (если) макака сделает API
-    //TODO переделать на норм навигацию
     private fun showResponseForm() {
 
         val bundle = Bundle()
-        bundle.putString("boardId", boardId)
-        bundle.putInt("threadNum", threadNum)
-        bundle.putString("title", "Reply")
+        bundle.putString(NAVIGATION_BOARD_ID, boardId)
+        bundle.putInt(NAVIGATION_THREAD_NUM, threadNum)
+        bundle.putString(NAVIGATION_TITLE, "Reply")
         navController.navigate(R.id.action_threadFragment_to_responseFragment, bundle)
     }
 

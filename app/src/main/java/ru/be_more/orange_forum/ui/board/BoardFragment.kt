@@ -18,7 +18,7 @@ import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
-import ru.be_more.orange_forum.consts.POST_IN_BOARD_TAG
+import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
@@ -173,8 +173,8 @@ class BoardFragment: Fragment(R.layout.fragment_board),
     private fun init(view: View){
         navController = Navigation.findNavController(view)
 
-        val boardId = requireArguments().getString("boardId")
-        val boardName = requireArguments().getString("title")
+        val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)
+        val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)
 
         viewModel.init(boardId, boardName)
         recyclerView = rv_thread_list
@@ -197,10 +197,10 @@ class BoardFragment: Fragment(R.layout.fragment_board),
 
     override fun onIntoThreadClick(threadNum: Int, threadTitle: String) {
         val bundle = Bundle()
-        bundle.putString("boardId", viewModel.getBoardId())
-        bundle.putInt("threadNum", threadNum)
-        bundle.putString("boardName", viewModel.getBoardName())
-        bundle.putString("title", threadTitle)
+        bundle.putString(NAVIGATION_BOARD_ID, viewModel.getBoardId())
+        bundle.putString(NAVIGATION_BOARD_NAME, viewModel.getBoardName())
+        bundle.putInt(NAVIGATION_THREAD_NUM, threadNum)
+        bundle.putString(NAVIGATION_TITLE, threadTitle)
         navController.navigate(R.id.action_boardFragment_to_threadFragment, bundle)
     }
 
