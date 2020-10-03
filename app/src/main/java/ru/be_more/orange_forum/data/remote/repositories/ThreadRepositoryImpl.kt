@@ -4,7 +4,7 @@ import android.util.Log
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.consts.COOKIE
-import ru.be_more.orange_forum.domain.RemoteContract
+import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.models.DvachThread
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.findResponses
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toPost

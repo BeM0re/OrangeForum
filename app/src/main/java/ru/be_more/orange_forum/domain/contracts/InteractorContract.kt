@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.domain
+package ru.be_more.orange_forum.domain.contracts
 
 import io.reactivex.Completable
 import io.reactivex.Single

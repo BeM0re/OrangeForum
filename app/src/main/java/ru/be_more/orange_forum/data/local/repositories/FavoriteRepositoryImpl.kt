@@ -2,7 +2,7 @@ package ru.be_more.orange_forum.data.local.repositories
 
 import io.reactivex.Single
 import io.reactivex.functions.Function4
-import ru.be_more.orange_forum.domain.DbContract
+import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.DvachDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.db.entities.StoredFile

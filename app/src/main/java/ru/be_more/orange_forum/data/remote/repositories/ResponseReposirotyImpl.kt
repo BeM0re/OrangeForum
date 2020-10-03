@@ -6,9 +6,8 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import ru.be_more.orange_forum.consts.COOKIE
-import ru.be_more.orange_forum.domain.RemoteContract
+import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.api.DvachApi
-import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
 import ru.be_more.orange_forum.domain.model.PostResponse
 import java.io.File
 import java.util.*

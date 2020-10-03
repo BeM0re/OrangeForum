@@ -3,7 +3,7 @@ package ru.be_more.orange_forum.ui.category
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.domain.InteractorContract
+import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.ui.PresentationContract
 import java.util.*
