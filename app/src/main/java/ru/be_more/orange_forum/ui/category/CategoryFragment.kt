@@ -25,12 +25,10 @@ class CategoryFragment:
     Fragment(R.layout.fragment_category),
     CategoryOnClickListener {
 
-//    private val categoryPresenter: CategoryPresenter by inject(parameters = { parametersOf(this) })
     private val viewModel: PresentationContract.CategoryViewModel by inject()
-
     private var recyclerView : RecyclerView? = null
-    var adapter : CategoryAdapter? = null
     private lateinit var navController: NavController
+    var adapter : CategoryAdapter? = null
 
     override fun onDestroyView() {
         saveState()

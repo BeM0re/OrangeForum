@@ -37,7 +37,7 @@ class CategoryAdapter(groups: List<ExpandableGroup<*>?>?, var listener: Category
         val board: Board? = (group as Category).items[childIndex]
         holder.setBoardName(board?.name.orEmpty())
         if(board != null)
-            holder.itemView.setOnClickListener {listener.onBoardClick(board.id, board.name)}
+            holder.itemView.setOnClickListener { listener.onBoardClick(board.id, board.name) }
     }
 
     override fun onBindGroupViewHolder(
