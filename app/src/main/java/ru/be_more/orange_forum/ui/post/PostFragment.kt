@@ -31,22 +31,15 @@ import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 
-class PostFragment : Fragment() {
+class PostFragment : Fragment(R.layout.item_post) {
 
     private var timestamp: Long = 0
-
     private lateinit var content: ModalContent
-
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
     private lateinit var closeModalListener: CloseModalListener
     private var disposable: Disposable? = null
     private var recyclerView: RecyclerView? = null
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?) : View? =
-        inflater.inflate(R.layout.item_post, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

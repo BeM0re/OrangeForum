@@ -32,25 +32,18 @@ import ru.be_more.orange_forum.ui.PresentationContract
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 class FavoriteFragment :
-    Fragment(),
+    Fragment(R.layout.fragment_favorite),
     FavoriteListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
 
     private val viewModel: PresentationContract.FavoriteViewModel by inject()
-
     private var recyclerView : RecyclerView? = null
-    var adapter : FavoriteAdapter? = null
     private var postFragment: PostFragment? = null
-    private lateinit var navController: NavController
-
     private var disposable: Disposable? = null
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?) : View? =
-        inflater.inflate(R.layout.fragment_favorite, container, false)
+    private lateinit var navController: NavController
+    var adapter : FavoriteAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
