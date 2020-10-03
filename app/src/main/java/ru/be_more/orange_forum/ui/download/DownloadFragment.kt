@@ -18,9 +18,7 @@ import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.bus.*
-import ru.be_more.orange_forum.consts.DOWNLOAD_TAG
-import ru.be_more.orange_forum.consts.POST_IN_DOWNLOAD_TAG
-import ru.be_more.orange_forum.consts.POST_TAG
+import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.interfaces.*
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
@@ -30,25 +28,18 @@ import ru.be_more.orange_forum.ui.PresentationContract
 import ru.be_more.orange_forum.ui.post.PostFragment
 
 class DownloadFragment:
-    Fragment(),
+    Fragment(R.layout.fragment_download),
     DownloadListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
 
     private val viewModel: PresentationContract.DownloadViewModel by inject()
-
     private var recyclerView : RecyclerView? = null
-    var adapter : DownloadAdapter? = null
     private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
-
     private var disposable: Disposable? = null
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?) : View? =
-        inflater.inflate(R.layout.fragment_download, container, false)
+    var adapter : DownloadAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -103,9 +94,9 @@ class DownloadFragment:
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
 //        intoThreadClickListener(boardId, threadNum, threadTitle)
         val bundle = Bundle()
-        bundle.putString("boardId", boardId)
-        bundle.putInt("threadNum", threadNum)
-        bundle.putString("title", threadTitle)
+        bundle.putString(NAVIGATION_BOARD_ID, boardId)
+        bundle.putInt(NAVIGATION_THREAD_NUM, threadNum)
+        bundle.putString(NAVIGATION_TITLE, threadTitle)
         navController.navigate(R.id.action_downloadFragment_to_threadFragment, bundle)
     }
 
