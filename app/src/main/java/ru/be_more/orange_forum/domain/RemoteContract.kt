@@ -1,9 +1,10 @@
-package ru.be_more.orange_forum.data.remote
+package ru.be_more.orange_forum.domain
 
 import io.reactivex.Single
 import ru.be_more.orange_forum.data.remote.models.*
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.domain.model.PostResponse
 import java.io.File
 
 interface RemoteContract {
@@ -35,6 +36,6 @@ interface RemoteContract {
             captcha_type: String,
             g_recaptcha_response: String,
             chaptcha_id : String,
-            files : List<File>): Single<DvachPostResponse>
+            files : List<File>): Single<PostResponse>
     }
 }

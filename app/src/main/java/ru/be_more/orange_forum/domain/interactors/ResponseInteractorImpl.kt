@@ -2,9 +2,9 @@ package ru.be_more.orange_forum.domain.interactors
 
 import android.util.Log
 import io.reactivex.Single
-import ru.be_more.orange_forum.data.remote.RemoteContract
-import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
+import ru.be_more.orange_forum.domain.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
+import ru.be_more.orange_forum.domain.model.PostResponse
 import ru.be_more.orange_forum.extentions.processSingle
 
 class ResponseInteractorImpl (
@@ -15,7 +15,7 @@ class ResponseInteractorImpl (
         threadNum: Int,
         comment: String,
         token: String
-    ): Single<DvachPostResponse> =
+    ): Single<PostResponse> =
         responseRepository.postResponse(
             boardId = boardId,
             threadNum = threadNum,

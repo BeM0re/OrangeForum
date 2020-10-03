@@ -1,8 +1,8 @@
 package ru.be_more.orange_forum.di.modules
 
 import org.koin.dsl.module
-import ru.be_more.orange_forum.data.local.DbContract
-import ru.be_more.orange_forum.data.remote.RemoteContract
+import ru.be_more.orange_forum.domain.DbContract
+import ru.be_more.orange_forum.domain.RemoteContract
 import ru.be_more.orange_forum.data.remote.repositories.BoardRepositoryImpl
 import ru.be_more.orange_forum.data.remote.repositories.CategoryRepositoryImpl
 import ru.be_more.orange_forum.data.remote.repositories.ResponseReposirotyImpl

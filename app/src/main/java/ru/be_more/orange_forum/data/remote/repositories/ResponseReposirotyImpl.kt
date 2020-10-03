@@ -6,9 +6,10 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import ru.be_more.orange_forum.consts.COOKIE
-import ru.be_more.orange_forum.data.remote.RemoteContract
+import ru.be_more.orange_forum.domain.RemoteContract
 import ru.be_more.orange_forum.data.remote.api.DvachApi
 import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
+import ru.be_more.orange_forum.domain.model.PostResponse
 import java.io.File
 import java.util.*
 
@@ -23,7 +24,7 @@ class ResponseReposirotyImpl  (
         g_recaptcha_response: String,
         chaptcha_id: String,
         files: List<File>
-    ): Single<DvachPostResponse> {
+    ): Single<PostResponse> {
 
         Log.d("M_ResponseReposirotyImpl","post")
 
@@ -70,5 +71,6 @@ class ResponseReposirotyImpl  (
             chaptcha_id = requestChaptchaId,
             files = requestFiles
         )
+            .map { it.toModel() }
     }
 }

@@ -1,15 +1,10 @@
 package ru.be_more.orange_forum.data.remote.repositories
 
 import android.util.Log
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import ru.be_more.orange_forum.consts.COOKIE
-import ru.be_more.orange_forum.data.remote.RemoteContract
-import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
+import ru.be_more.orange_forum.domain.RemoteContract
 import ru.be_more.orange_forum.data.remote.models.DvachThread
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.findResponses
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toPost
@@ -17,8 +12,6 @@ import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toThr
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.data.remote.api.DvachApi
-import java.io.File
-import java.util.*
 
 class ThreadRepositoryImpl (
     private val dvachApi : DvachApi

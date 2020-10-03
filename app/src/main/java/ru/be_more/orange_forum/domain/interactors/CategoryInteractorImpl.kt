@@ -2,7 +2,7 @@ package ru.be_more.orange_forum.domain.interactors
 
 import android.annotation.SuppressLint
 import io.reactivex.Single
-import ru.be_more.orange_forum.data.remote.RemoteContract
+import ru.be_more.orange_forum.domain.RemoteContract
 import ru.be_more.orange_forum.domain.InteractorContract
 import ru.be_more.orange_forum.domain.converters.RemoteConverter
 import ru.be_more.orange_forum.domain.model.Category
