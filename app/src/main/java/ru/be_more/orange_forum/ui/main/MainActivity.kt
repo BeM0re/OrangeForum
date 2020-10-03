@@ -49,6 +49,11 @@ class MainActivity : AppCompatActivity() {
         App.getBus().onNext(BackPressed)
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
     fun refreshFavorite() {
         App.getBus().onNext(RefreshFavorite)
     }
@@ -62,7 +67,8 @@ class MainActivity : AppCompatActivity() {
            {
                when (it) {
                    is AppToBeClosed -> {
-                       if (System.currentTimeMillis() - timestamp < 2000)
+                       navController.navigateUp()
+                      /* if (System.currentTimeMillis() - timestamp < 2000)
                            super.onBackPressed()
                        else {
                            timestamp = System.currentTimeMillis()
@@ -71,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                                "Нажмите назад еще раз, чтобы закрыть приложение",
                                Toast.LENGTH_SHORT
                            ).show()
-                       }
+                       }*/
                    }
 
                    is BoardToBeOpened -> {
