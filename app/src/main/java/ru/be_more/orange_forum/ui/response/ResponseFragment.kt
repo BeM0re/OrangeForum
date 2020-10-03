@@ -25,7 +25,7 @@ import ru.be_more.orange_forum.bus.BackPressed
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.ui.PresentationContract
 
-class ResponseFragment: Fragment(){
+class ResponseFragment: Fragment(R.layout.item_thread_response_form){
 
     private val viewModel: PresentationContract.ResponseViewModel by inject()
     private lateinit var navController: NavController
@@ -33,11 +33,6 @@ class ResponseFragment: Fragment(){
     private lateinit var boardId: String
     private var threadNum: Int = 0
     private var disposable: Disposable? = null
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?) : View? =
-        inflater.inflate(R.layout.item_thread_response_form, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
