@@ -2,11 +2,7 @@ package ru.be_more.orange_forum.domain
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import ru.be_more.orange_forum.data.remote.models.DvachPostResponse
-import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.Category
-import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.domain.model.*
 
 interface InteractorContract {
 
@@ -46,7 +42,7 @@ interface InteractorContract {
         fun postResponse(boardId: String,
                          threadNum: Int,
                          comment: String,
-                         token:String): Single<DvachPostResponse>
+                         token:String): Single<PostResponse>
     }
 
     interface FavoriteInteractor: BaseInteractor {
