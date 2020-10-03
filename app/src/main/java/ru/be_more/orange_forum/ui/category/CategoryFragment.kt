@@ -20,12 +20,9 @@ import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.ui.PresentationContract
-import java.util.*
 
-/*class CategoryFragment private constructor(var onBoardClickListener: (boardId: String,
-                                                                      boardTitle: String) -> Unit):*/
 class CategoryFragment:
-    Fragment(),
+    Fragment(R.layout.fragment_category),
     CategoryOnClickListener {
 
 //    private val categoryPresenter: CategoryPresenter by inject(parameters = { parametersOf(this) })
@@ -35,14 +32,6 @@ class CategoryFragment:
     var adapter : CategoryAdapter? = null
     private lateinit var navController: NavController
 
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) : View? =
-        inflater.inflate(R.layout.fragment_category, container, false)
-
     override fun onDestroyView() {
         saveState()
         adapter = null
@@ -51,11 +40,9 @@ class CategoryFragment:
         super.onDestroyView()
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        categoryPresenter.initPresenter(this)
         init(view)
         subscribe()
         viewModel.initViewModel()
