@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.domain
+package ru.be_more.orange_forum.domain.contracts
 
 import io.reactivex.Single
 import ru.be_more.orange_forum.data.remote.models.*

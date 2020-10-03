@@ -3,14 +3,9 @@ package ru.be_more.orange_forum.ui.download
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.domain.InteractorContract
-import ru.be_more.orange_forum.domain.model.Attachment
+import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.ModalContent
-import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.ui.PresentationContract
-import java.util.*
 
 class DownloadViewModelImpl (
     private val downloadInteractor : InteractorContract.DownloadInteractor,

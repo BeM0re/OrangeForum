@@ -3,7 +3,7 @@ package ru.be_more.orange_forum.ui.favorire
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import ru.be_more.orange_forum.domain.InteractorContract
+import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.ui.PresentationContract
 
