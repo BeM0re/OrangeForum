@@ -3,7 +3,7 @@ package ru.be_more.orange_forum.data.remote.repositories
 import android.util.Log
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import ru.be_more.orange_forum.domain.RemoteContract
+import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toBoard
 import ru.be_more.orange_forum.data.remote.api.DvachApi
 import ru.be_more.orange_forum.domain.model.BoardThread

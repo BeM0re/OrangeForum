@@ -4,9 +4,9 @@ import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
-import ru.be_more.orange_forum.domain.DbContract
-import ru.be_more.orange_forum.domain.RemoteContract
-import ru.be_more.orange_forum.domain.InteractorContract
+import ru.be_more.orange_forum.domain.contracts.DbContract
+import ru.be_more.orange_forum.domain.contracts.RemoteContract
+import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.extentions.disposables
