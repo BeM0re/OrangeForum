@@ -5,9 +5,9 @@ import io.reactivex.Completable
 import io.reactivex.Single
 
 interface StorageContract {
-    interface FileRepository {
-        fun saveFile(url: String): Single<Uri?>
-        fun removeFile(path: String): Completable
+    interface LocalStorage {
+        fun saveFile(url: String): Uri?
+        fun removeFile(path: String)
     }
 
 }

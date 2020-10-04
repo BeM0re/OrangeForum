@@ -3,7 +3,6 @@ package ru.be_more.orange_forum.domain.interactors
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.Function3
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
@@ -19,7 +18,7 @@ class ThreadInteractorImpl (
     private val dbThreadRepository: DbContract.ThreadRepository,
     private val dbPostRepository: DbContract.PostRepository,
     private val dbFileRepository: DbContract.FileRepository,
-    private val fileRepository: StorageContract.FileRepository
+    private val localStorage: StorageContract.LocalStorage
 ): InteractorContract.ThreadInteractor, BaseInteractorImpl() {
 
     override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
@@ -68,23 +67,6 @@ class ThreadInteractorImpl (
         )
             .processCompletable()
 
-   /* override fun markThreadFavorite(threadNum: Int, boardId: String): Completable =
-        Completable.fromSingle(
-            apiRepository.getThread(boardId, threadNum)
-                .doOnSuccess { thread ->
-                    dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
-                }
-                .doOnSuccess { thread ->
-                    dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
-                }
-                .flatMap { thread ->
-                    dbThreadRepository.insertThreadSafety(thread.copy(isFavorite = true), boardId)
-                        .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
-                }
-        )
-            .processCompletable()*/
-
     override fun unmarkThreadFavorite(boardId: String, threadNum: Int): Completable =
         Completable.fromCallable {
             dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
@@ -105,7 +87,8 @@ class ThreadInteractorImpl (
                 .flatMap { thread ->
                     dbThreadRepository.insertThreadSafety(thread.copy(isDownloaded = true), boardId)
                         .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
+                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum)
+                        }
                 }
                 .flatMap {
                     dbBoardRepository.getBoardCount(boardId)
@@ -117,35 +100,11 @@ class ThreadInteractorImpl (
         )
             .processCompletable()
 
-/*    override fun downloadThread(threadNum: Int, boardId: String): Completable =
-        Completable.fromSingle(
-            apiRepository.getThread(boardId, threadNum)
-                .doOnSuccess { thread ->
-                    dbPostRepository.savePosts(thread.posts, threadNum, boardId)
-                }
-                .doOnSuccess { thread ->
-                    thread.posts.forEach { post ->
-                        dbFileRepository.saveFiles(post.files, post.num, thread.num, boardId)
-                    }
-                }
-                .flatMap { thread ->
-                    dbThreadRepository.insertThreadSafety(thread.copy(isDownloaded = true), boardId)
-                        .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
-                }
-        )
-            .processCompletable()*/
-
     override fun deleteThread(boardId: String, threadNum: Int) =
         Completable.fromCallable {
             dbThreadRepository.deleteThread(boardId, threadNum)
         }
             .processCompletable()
-
-    override fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<BoardThread?> {
-        App.showToast("Не считаю нужным реализовывать")
-        return Single.fromCallable { return@fromCallable BoardThread(1 ) }.processSingle()
-    }
 
     override fun markThreadHidden(boardId: String, boardName: String, threadNum: Int): Completable =
         Completable.fromSingle (
