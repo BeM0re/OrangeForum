@@ -17,8 +17,7 @@ class ThreadInteractorImpl (
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository,
     private val dbPostRepository: DbContract.PostRepository,
-    private val dbFileRepository: DbContract.FileRepository,
-    private val localStorage: StorageContract.LocalStorage
+    private val dbFileRepository: DbContract.FileRepository
 ): InteractorContract.ThreadInteractor, BaseInteractorImpl() {
 
     override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
@@ -101,9 +100,7 @@ class ThreadInteractorImpl (
             .processCompletable()
 
     override fun deleteThread(boardId: String, threadNum: Int) =
-        Completable.fromCallable {
-            dbThreadRepository.deleteThread(boardId, threadNum)
-        }
+        dbThreadRepository.deleteThread(boardId, threadNum)
             .processCompletable()
 
     override fun markThreadHidden(boardId: String, boardName: String, threadNum: Int): Completable =
