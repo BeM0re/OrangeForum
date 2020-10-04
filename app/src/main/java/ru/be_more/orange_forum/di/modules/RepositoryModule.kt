@@ -1,12 +1,14 @@
 package ru.be_more.orange_forum.di.modules
 
 import org.koin.dsl.module
+import ru.be_more.orange_forum.data.local.storage.LocalStorageImpl
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.repositories.BoardRepositoryImpl
 import ru.be_more.orange_forum.data.remote.repositories.CategoryRepositoryImpl
 import ru.be_more.orange_forum.data.remote.repositories.ResponseReposirotyImpl
 import ru.be_more.orange_forum.data.remote.repositories.ThreadRepositoryImpl
+import ru.be_more.orange_forum.domain.contracts.StorageContract
 
 @JvmField
 val repositoryModule = module {
@@ -25,7 +27,7 @@ val repositoryModule = module {
         ru.be_more.orange_forum.data.local.repositories.PostRepositoryImpl(get())
     }
     single<DbContract.FileRepository> {
-        ru.be_more.orange_forum.data.local.repositories.FileRepositoryImpl(get())
+        ru.be_more.orange_forum.data.local.repositories.FileRepositoryImpl(get(), get())
     }
     single<DbContract.DownloadRepository> {
         ru.be_more.orange_forum.data.local.repositories.DownloadRepositoryImpl(get())
