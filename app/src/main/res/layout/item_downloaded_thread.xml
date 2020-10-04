@@ -80,7 +80,7 @@
         tools:listitem="@layout/item_post_pics"
         tools:itemCount="1"/>
 
-    <ru.be_more.orange_forum.ui.custom.ExpandableTextView
+    <ru.be_more.orange_forum.presentation.custom.ExpandableTextView
         android:id="@+id/tv_downloaded_board_op_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

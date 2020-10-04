@@ -120,7 +120,7 @@
                 tools:itemCount="1"
                 tools:listitem="@layout/item_post_pics" />
 
-            <ru.be_more.orange_forum.ui.custom.LinkedTextView
+            <ru.be_more.orange_forum.presentation.custom.LinkedTextView
                 android:id="@+id/tv_item_post_comment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                 android:paddingEnd="@dimen/font_normal_16"
                 tools:text="@string/lorem" />
 
-            <ru.be_more.orange_forum.ui.custom.LinkedTextView
+            <ru.be_more.orange_forum.presentation.custom.LinkedTextView
                 android:id="@+id/tv_item_post_replies"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

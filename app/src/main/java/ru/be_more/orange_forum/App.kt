@@ -8,8 +8,8 @@ import io.reactivex.subjects.Subject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import ru.be_more.orange_forum.bus.Event
-import ru.be_more.orange_forum.di.modules.*
+import ru.be_more.orange_forum.presentation.bus.Event
+import ru.be_more.orange_forum.di.*
 
 class App : Application(){
 
@@ -42,7 +42,8 @@ class App : Application(){
                 storageModule,
                 databaseModule,
                 interactorModule,
-                networkModule)
+                networkModule
+            )
             )
         }
 
