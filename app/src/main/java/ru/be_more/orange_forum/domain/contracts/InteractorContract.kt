@@ -31,7 +31,6 @@ interface InteractorContract {
     }
 
     interface PostInteractor: BaseInteractor {
-        fun getPosts(boardId: String, threadNum: Int): Single<List<Post>>
         fun getPost(boardId: String, postNum: Int): Single<Post>
     }
 

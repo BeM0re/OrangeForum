@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.ui.download
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.ui.PresentationContract
@@ -31,5 +32,6 @@ class DownloadViewModelImpl (
 
     override fun removeThread(boardId: String, threadNum: Int) {
         threadInteractor.deleteThread(boardId, threadNum)
+            .subscribe()
     }
 }

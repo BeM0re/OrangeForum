@@ -1,30 +1,25 @@
 package ru.be_more.orange_forum.data.local.repositories
 
 import android.annotation.SuppressLint
+import io.reactivex.Completable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.DvachDao
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThread
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStoredThread
+import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.orange_forum.domain.model.BoardThread
 
 class ThreadRepositoryImpl(
-    private val dao: DvachDao
+    private val dao: DvachDao,
+    private val storage: StorageContract.LocalStorage
 ) : DbContract.ThreadRepository {
 
     @SuppressLint("CheckResult")
     override fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<BoardThread>> =
         dao.getThreadOrEmpty(boardId, threadNum)
             .map { toModelThreads(it) }
-
-    override fun getDownloadedThreads(): Single<List<Pair<BoardThread, String>>> =
-        dao.getDownloadedThreads()
-            .map { threads ->
-                threads.map {
-                    Pair(toModelThread(it, listOf()), it.boardId)
-                }
-            }
 
     override fun insertThread(thread: BoardThread, boardId: String) =
         dao.insertThread(toStoredThread(thread, boardId))
@@ -40,11 +35,21 @@ class ThreadRepositoryImpl(
                     return@map false
             }
 
-    override fun deleteThread(boardId: String, threadNum: Int) {
-        dao.deleteThread(boardId, threadNum)
-        dao.deletePosts(boardId, threadNum)
-        dao.deleteThreadFiles(boardId, threadNum)
-    }
+    override fun deleteThread(boardId: String, threadNum: Int): Completable =
+        Completable.fromSingle(
+            dao.getNonOpFilesFromThread(threadNum, boardId)
+                .doOnSuccess { files ->
+                    files.forEach { file ->
+                        storage.removeFile(file.localPath)
+                        storage.removeFile(file.localThumbnail)
+                    }
+                    dao.deleteThreadFiles(boardId, threadNum)
+                    dao.deletePosts(boardId, threadNum)
+                    dao.deleteThread(boardId, threadNum)
+                }
+        )
+
+
 
     override fun markThreadFavorite(boardId: String, threadNum: Int) =
         dao.markThreadFavorite(boardId, threadNum)
