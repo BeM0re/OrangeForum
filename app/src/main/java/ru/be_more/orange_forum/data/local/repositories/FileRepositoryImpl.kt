@@ -34,27 +34,4 @@ class FileRepositoryImpl (
                 files.map { file -> toModelFile(file) }
             }
 
-    override fun getThreadFiles(boardId: String, threadNum: Int): Single<List<Pair<AttachFile, Int>>> =
-        dao.getThreadFiles(boardId, threadNum)
-            .map { files ->
-                files.map { file ->
-                    Pair(toModelFile(file), file.postNum)
-                }
-            }
-
-    override fun deleteThreadFiles(boardId: String, threadNum: Int){
-            dao.deleteThreadFiles(boardId, threadNum)
-        }
-
-    override fun deletePostFiles(boardId: String, postNum: Int){
-            dao.deletePostFiles(boardId, postNum)
-        }
-
-    override fun getOpFiles(): Single<List<Pair<AttachFile, Int>>> =
-        dao.getOpFiles()
-            .map { files ->
-                files.map { file ->
-                    Pair(toModelFile(file), file.postNum)
-                }
-            }
 }

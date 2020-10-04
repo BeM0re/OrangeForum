@@ -37,12 +37,4 @@ class PostRepositoryImpl(
             BiFunction <List<StoredPost>, List<StoredFile>, List<Post>> {posts, files ->
                 posts.map { post -> toModelPost(post, files.filter { it.postNum == post.num }) }
             })
-
-    override fun getOpPosts(): Single<List<Pair<Post, Int>>> =
-        dao.getOpPosts()
-            .map { posts ->
-                posts.map { post ->
-                    Pair(toModelPost(post, listOf()), post.threadNum)
-                }
-            }
 }

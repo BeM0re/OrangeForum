@@ -113,8 +113,11 @@ interface DvachDao {
     @Query("SELECT * FROM files WHERE boardId = :boardId AND threadNum = :threadNum")
     fun getThreadFiles(boardId: String, threadNum: Int): Single<List<StoredFile>>
 
-    @Query("SELECT * FROM files WHERE threadNum = :postNum")
-    fun getAllFilesFromThread(postNum: Int): Single<List<StoredFile>>
+    @Query("SELECT * FROM files WHERE threadNum = :postNum AND boardId = :boardId")
+    fun getAllFilesFromThread(postNum: Int, boardId: String): Single<List<StoredFile>>
+
+    @Query("SELECT * FROM files WHERE threadNum = :postNum AND boardId = :boardId AND postNum != threadNum")
+    fun getNonOpFilesFromThread(postNum: Int, boardId: String): Single<List<StoredFile>>
 
     @Query("SELECT * FROM files WHERE boardId = :boardId")
     fun getFiles(boardId: String): Single<List<StoredFile>>

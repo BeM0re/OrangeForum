@@ -14,14 +14,6 @@ class BoardRepositoryImpl (
     private val dao: DvachDao
 ) : DbContract.BoardRepository{
 
-    override fun getBoards(): Single<List<Board>> =
-        dao.getBoards()
-            .map { boards ->
-                boards.map { board ->
-                    toModelBoard(board, listOf()) }
-                }
-
-
     override fun getBoard(boardId: String, boardName: String): Single<Board> =
         dao.getBoard(boardId)
             .zipWith(dao.getThreads(boardId),
@@ -31,17 +23,6 @@ class BoardRepositoryImpl (
                     else
                         Board(boardName, boardId, toModelThreads(threads), false)
             })
-
-/*    override fun getBoard(boardId: String): Single<List<Board>> =
-        dao.getBoard(boardId)
-            .zipWith(dao.getThreads(boardId),
-                BiFunction<List<StoredBoard>, List<StoredThread>, List<Board>> { probablyBoard, threads ->
-                    return@BiFunction if (probablyBoard.isNotEmpty())
-                        listOf(toModelBoard(probablyBoard[0], toModelThreads(threads)))
-                    else
-                        listOf()
-                })*/
-
 
     override fun getBoardCount(boardId: String): Single<Int> =
         dao.getBoardCount(boardId)
