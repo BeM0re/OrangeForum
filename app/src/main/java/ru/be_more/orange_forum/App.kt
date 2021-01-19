@@ -43,8 +43,7 @@ class App : Application(){
                 databaseModule,
                 interactorModule,
                 networkModule
-            )
-            )
+            ))
         }
 
 

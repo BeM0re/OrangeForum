@@ -109,8 +109,8 @@ dependencies {
     implementation 'com.github.thijsk:TouchImageView:1.3.1'
 
     //Koin
-    implementation "org.koin:koin-android:2.1.6"
-    implementation "org.koin:koin-android-scope:2.1.6"
+    implementation "org.koin:koin-android:2.2.0-alpha-1"
+    implementation "org.koin:koin-android-scope:2.2.0-alpha-1"
 
     //Handler for textView links
     implementation 'me.saket:better-link-movement-method:2.2.0'
@@ -124,5 +124,6 @@ dependencies {
     //leak tracer
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
 
-
+    //HTTP request traction
+    debugImplementation "com.github.chuckerteam.chucker:library:3.4.0"
 }
