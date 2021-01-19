@@ -1,12 +1,12 @@
 package ru.be_more.orange_forum.data.remote.models
 
-data class DvachPost(
+data class PostDto(
     val num: Int,
     val name: String,
     val comment: String,
     val date: String,
     val email: String,
-    val files: List<DvachFile>,
+    val fileDtos: List<FileDto>,
     val files_count: Int,
     val op: Int,
     val posts_count: Int,

@@ -42,7 +42,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
     private var boardId: String = ""
     private var boardName: String = ""
     private var threadNum: Int = 0
-    private var recyclerView : RecyclerView? = null
+    private var recyclerView : RecyclerView? = null //TODO Убрать, пихать адаптер сразу в верстку
     private var disposable: Disposable? = null
     private var responseFragment: ResponseFragment? = null
     private var postFragment: PostFragment? = null
