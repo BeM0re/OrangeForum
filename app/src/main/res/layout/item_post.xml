@@ -112,12 +112,12 @@
                 android:textStyle="bold"
                 tools:text="@string/lorem" />
 
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_item_post_pics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:itemCount="1"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                tools:itemCount="4"
                 tools:listitem="@layout/item_post_pics" />
 
             <ru.be_more.orange_forum.presentation.custom.LinkedTextView
