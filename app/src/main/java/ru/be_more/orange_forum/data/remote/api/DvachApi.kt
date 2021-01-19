@@ -9,17 +9,17 @@ import ru.be_more.orange_forum.data.remote.models.*
 interface DvachApi{
 
     @GET("makaba/mobile.fcgi")
-    fun getDvachCategories(@Query("task") task : String): Single<Map<String, List<DvachBoardName>>>
+    fun getDvachCategories(@Query("task") task : String): Single<Map<String, List<BoardNameDto>>>
 
     @GET("{board}/catalog.json")
-    fun getDvachThreads(@Path("board") board : String): Single<DvachBoard>
+    fun getDvachThreads(@Path("board") board : String): Single<BoardDto>
 
     @GET("{board}/res/{threadNum}.json")
     fun getDvachPostsRx(
         @Path("board") board : String,
         @Path("threadNum") threadNum : Int,
         @Header("Cookie") cookie: String
-    ): Single<DvachThread>
+    ): Single<ThreadDto>
 
     @GET("makaba/mobile.fcgi")
     fun getDvachPostRx(
@@ -27,7 +27,7 @@ interface DvachApi{
         @Query("board") board : String,
         @Query("post") post : Int,
         @Header("Cookie") cookie: String
-    ): Single<List<DvachPost>>
+    ): Single<List<PostDto>>
 
     @Multipart
     @POST("makaba/posting.fcgi?json=1")
@@ -45,6 +45,6 @@ interface DvachApi{
         @Part("g-recaptcha-response") g_recaptcha_response: RequestBody,
         @Part("2chaptcha_id") chaptcha_id: RequestBody,
         @Part files: List<MultipartBody.Part>
-    ): Single<DvachPostResponse>
+    ): Single<PostResponseDto>
 
 }

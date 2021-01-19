@@ -1,7 +1,7 @@
 package ru.be_more.orange_forum.data.remote.models
 
-data class DvachThread(
+data class ThreadDto(
     val posts_count: Int = 0,
     val title: String = "",
-    val threads: List<DvachPosts> = listOf(DvachPosts())
+    val threads: List<PostsDto> = listOf(PostsDto())
 )
