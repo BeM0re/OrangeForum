@@ -37,7 +37,7 @@ class BoardViewModelImpl (
                             this.board.postValue(board)
                             isFavorite.postValue(board.isFavorite)
                         },
-                        { Log.e("M_BoardPresenter", "Getting board error = $it") }
+                        { Log.e("M_BoardViewModel", "Getting board error = $it") }
                     )
             }
         }
@@ -97,7 +97,7 @@ class BoardViewModelImpl (
                 .markThreadHidden(board.value?.id?:"", board.value?.name?:"", threadNum)
                 .subscribe(
                     {},
-                    { Log.e("M_BoardPresenter","hidding error = $it") }
+                    { Log.e("M_BoardViewModel","hidding error = $it") }
                 )
         }
         else {

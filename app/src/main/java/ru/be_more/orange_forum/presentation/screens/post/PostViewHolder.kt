@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.presentation.screens.post
 
 import android.view.View
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.App
@@ -61,7 +62,7 @@ class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
         if(urls.isNotEmpty()){
             val adapter = PostPicAdapter(urls, listener = listener)
 
-            pics.layoutManager = LinearLayoutManager(App.getInstance())
+            pics.layoutManager = GridLayoutManager(itemView.context, 2)
             pics.adapter = adapter
             pics.visibility = View.VISIBLE
         }

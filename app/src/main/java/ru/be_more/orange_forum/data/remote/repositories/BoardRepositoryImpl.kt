@@ -15,6 +15,6 @@ class BoardRepositoryImpl(
     override fun getDvachThreads(boardId: String): Single<List<BoardThread>> =
         dvachApi.getDvachThreads(boardId)
             .subscribeOn(Schedulers.io())
-            .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting thread error = $throwable") }
             .map { entity -> toBoard(entity) }
+            .doOnError { Log.e("M_BoardRepositoryImpl","error = $it") }
 }

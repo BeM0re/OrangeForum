@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.data.local.repositories
 
+import android.util.Log
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import ru.be_more.orange_forum.domain.contracts.DbContract
@@ -23,6 +24,7 @@ class BoardRepositoryImpl (
                     else
                         Board(boardName, boardId, toModelThreads(threads), false)
             })
+            .doOnError { Log.e("M_BoardRepositoryImpl","error = $it") }
 
     override fun getBoardCount(boardId: String): Single<Int> =
         dao.getBoardCount(boardId)
