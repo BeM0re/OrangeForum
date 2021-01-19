@@ -21,10 +21,12 @@ class BoardInteractorImpl(
 
     override fun getBoard(boardId: String, boardName: String): Single<Board> =
         Single.zip(
-            dbBoardRepository.getBoard(boardId, boardName),
-            apiRepository.getDvachThreads(boardId),
+            dbBoardRepository.getBoard(boardId, boardName)
+                .doOnError { Log.e("M_BoardInteractorImpl","get local board error = $it") },
+            apiRepository.getDvachThreads(boardId)
+                .doOnError { Log.e("M_BoardInteractorImpl","get web board error = $it") },
             BiFunction <Board, List<BoardThread>, Board> { localBoard, webThreads ->
-
+                Log.d("M_BoardInteractorImpl","")
                 localBoard.threads.forEach { localThread ->
                     val webIndex = webThreads.indexOfFirst { it.num == localThread.num }
 

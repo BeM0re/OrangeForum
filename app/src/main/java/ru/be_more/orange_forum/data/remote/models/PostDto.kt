@@ -6,7 +6,7 @@ data class PostDto(
     val comment: String,
     val date: String,
     val email: String,
-    val fileDtos: List<FileDto>,
+    val files: List<FileDto>,
     val files_count: Int,
     val op: Int,
     val posts_count: Int,

@@ -40,10 +40,10 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutConta
 
             Glide.with(itemView)
                 .load(thumbnailGlideUrl)
-                .into(iv_op_post_pic1)
+                .into(iv_op_post_pic)
 
-            iv_op_post_pic1.visibility = View.VISIBLE
-            iv_op_post_pic1.setOnClickListener {
+            iv_op_post_pic.visibility = View.VISIBLE
+            iv_op_post_pic.setOnClickListener {
                 listener.onThumbnailListener(fullPicUrl, file1.duration, null)
             }
 
@@ -60,10 +60,10 @@ class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutConta
         else{
             Glide.with(itemView)
                 .load(Uri.parse(file1.localThumbnail))
-                .into(iv_op_post_pic1)
+                .into(iv_op_post_pic)
 
-            iv_op_post_pic1.visibility = View.VISIBLE
-            iv_op_post_pic1.setOnClickListener {
+            iv_op_post_pic.visibility = View.VISIBLE
+            iv_op_post_pic.setOnClickListener {
                 listener.onThumbnailListener(null , file1.duration, Uri.parse(file1.localPath))
             }
             //нужно именно .isNullOrEmpty
