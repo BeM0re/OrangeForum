@@ -23,26 +23,14 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PicO
 
     override fun onBindViewHolder(holder: PosPicViewHolder, position: Int) {
 
-        when {
-            //Один вью холдер содержит 2 картинки, поэтому приходится извращаться
-            //и передавать по 2 или по 1 файлу за раз
-            //TODO отрефакторить: изменить модель, чтобы картинки хранились парами
-            files.size > position * 2 + 1 -> {
-                holder.setPics(files[position * 2], files[position * 2 + 1], listener)
-                holder.itemView.visibility = View.VISIBLE
-            }
-            files.size == position * 2 + 1 -> {
-                holder.setPics(files[position * 2], listener = listener)
-                holder.itemView.visibility = View.VISIBLE
-            }
-            else -> {
-                holder.itemView.visibility = View.GONE
-                holder.setParentContainerGone()
-            }
+        if(files.isNotEmpty()) {
+            holder.setPic(files[position], listener)
+            holder.itemView.visibility = View.VISIBLE
         }
-
-        //хз что это, может потом вспомню зачем это начал делать
-//        holder.itemView.setOnClickListener { Log.d("M_PostPicAdapter", "Click on ${holder.itemView}")}
+        else {
+            holder.itemView.visibility = View.GONE
+            holder.setParentContainerGone()
+        }
     }
 
     fun updateData(data:List<AttachFile>){
