@@ -10,7 +10,7 @@ import java.io.File
 interface RemoteContract {
 
     interface CategoryRepository {
-        fun getDvachCategories(): Single<Map<String, List<DvachBoardName>>>
+        fun getDvachCategories(): Single<Map<String, List<BoardNameDto>>>
     }
 
     interface BoardRepository {

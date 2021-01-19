@@ -1,6 +1,6 @@
 package ru.be_more.orange_forum.data.remote.models
 
-data class DvachFile(
+data class FileDto(
     val displayname: String,
     val height: Int,
     val width: Int,

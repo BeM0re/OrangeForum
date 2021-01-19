@@ -2,7 +2,7 @@ package ru.be_more.orange_forum.data.remote.models
 
 import ru.be_more.orange_forum.domain.model.PostResponse
 
-data class DvachPostResponse(
+data class PostResponseDto(
     val error : String,
     val Status :String,
     val Num: Int,

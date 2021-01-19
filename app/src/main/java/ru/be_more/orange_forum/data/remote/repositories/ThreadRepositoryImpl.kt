@@ -5,7 +5,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
-import ru.be_more.orange_forum.data.remote.models.DvachThread
+import ru.be_more.orange_forum.data.remote.models.ThreadDto
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.findResponses
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toPost
 import ru.be_more.orange_forum.domain.converters.RemoteConverter.Companion.toThread
@@ -21,7 +21,7 @@ class ThreadRepositoryImpl (
         dvachApi.getDvachPostsRx(boardId, threadNum, COOKIE)
             .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.e("M_DvachApiRepository", "get thread via api error = $throwable") }
-            .onErrorReturn { DvachThread() }
+            .onErrorReturn { ThreadDto() }
             .map { entity -> toThread(entity, threadNum)}
             .map { entity -> findResponses(entity)}
 

@@ -7,40 +7,40 @@ import ru.be_more.orange_forum.utils.ParseHtml
 class RemoteConverter {
     companion object{
 
-        fun toCategories (allCategories: Map<String, List<DvachBoardName>>) : List<Category> =
+        fun toCategories (allCategories: Map<String, List<BoardNameDto>>) : List<Category> =
             allCategories.map {
                 Category(it.key, getBoardNames(it.value))
             }
 
-        private fun getBoardNames(dvachBoards : List<DvachBoardName>) =
-            dvachBoards.map { toBoard(it) }
+        private fun getBoardNames(boardDtos : List<BoardNameDto>) =
+            boardDtos.map { toBoard(it) }
 
-        fun toBoard(dvachBoard: DvachBoardName) = Board(
-            name = dvachBoard.name,
-            id = dvachBoard.id
+        fun toBoard(boardDto: BoardNameDto) = Board(
+            name = boardDto.name,
+            id = boardDto.id
         )
 
-        fun toBoard(dvachBoard: DvachBoard)
-                = dvachBoard.threads.map { toThread(it) }
+        fun toBoard(boardDto: BoardDto)
+                = boardDto.threads.map { toThread(it) }
 
-        fun toThread(dvachOpPost: DvachPost) = BoardThread(
-            num = dvachOpPost.num,
-            posts = listOf(toPost(dvachOpPost)),
-            title = dvachOpPost.subject
+        fun toThread(opPostDto: PostDto) = BoardThread(
+            num = opPostDto.num,
+            posts = listOf(toPost(opPostDto)),
+            title = opPostDto.subject
         )
-        fun toThread(dvachThread: DvachThread, threadNum: Int) = BoardThread(
+        fun toThread(threadDto: ThreadDto, threadNum: Int) = BoardThread(
             num = threadNum,
-            posts = dvachThread.threads[0].posts.map { toPost(it) },
-            title = dvachThread.title
+            posts = threadDto.threads[0].posts.map { toPost(it) },
+            title = threadDto.title
         )
 
-        fun toPost(post: DvachPost) = Post(
+        fun toPost(post: PostDto) = Post(
             num = post.num,
             name = post.name,
             comment = post.comment,
             date = post.date,
             email = post.email,
-            files = post.files.map { toFiles(it) },
+            files = post.fileDtos.map { toFiles(it) },
             files_count = post.files_count,
             op = post.op,
             posts_count = post.posts_count,
@@ -49,10 +49,10 @@ class RemoteConverter {
             number = post.number
         )
 
-        fun toFiles (file: DvachFile) = AttachFile(
-            path = file.path,
-            thumbnail = file.thumbnail,
-            duration = if(file.duration.isNullOrEmpty()) "" else file.duration
+        fun toFiles (fileDto: FileDto) = AttachFile(
+            path = fileDto.path,
+            thumbnail = fileDto.thumbnail,
+            duration = if(fileDto.duration.isNullOrEmpty()) "" else fileDto.duration
         )
 
         fun findResponses(board: BoardThread): BoardThread {
