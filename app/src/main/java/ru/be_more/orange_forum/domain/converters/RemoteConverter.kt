@@ -40,7 +40,7 @@ class RemoteConverter {
             comment = post.comment,
             date = post.date,
             email = post.email,
-            files = post.fileDtos.map { toFiles(it) },
+            files = post.files.map { toFiles(it) },
             files_count = post.files_count,
             op = post.op,
             posts_count = post.posts_count,

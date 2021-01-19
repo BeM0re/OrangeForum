@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.presentation.screens.board
 
 import android.view.View
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import kotlinx.android.extensions.LayoutContainer
@@ -42,7 +43,7 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
         if (urls.isNotEmpty() && !isHidden){
             val adapter = PostPicAdapter(urls, listener = listener)
 
-            rv_op_post_pics.layoutManager = LinearLayoutManager(App.getInstance())
+            rv_op_post_pics.layoutManager = GridLayoutManager(itemView.context, 2)
             rv_op_post_pics.adapter = adapter
             rv_op_post_pics.visibility = View.VISIBLE
         }
