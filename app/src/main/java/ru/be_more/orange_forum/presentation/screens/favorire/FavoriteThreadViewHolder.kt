@@ -6,7 +6,7 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_favorite_op.*
+import kotlinx.android.synthetic.main.item_op_post_short.*
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 

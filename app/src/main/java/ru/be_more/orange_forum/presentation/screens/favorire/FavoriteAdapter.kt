@@ -31,7 +31,7 @@ class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
         viewType: Int
     ): FavoriteThreadViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_favorite_op, parent, false)
+        val view: View = inflater.inflate(R.layout.item_op_post_short, parent, false)
         return FavoriteThreadViewHolder(view, picListener)
     }
 

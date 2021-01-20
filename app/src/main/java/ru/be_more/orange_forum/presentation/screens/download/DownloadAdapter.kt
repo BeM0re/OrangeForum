@@ -33,7 +33,7 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
         viewType: Int
     ): DownloadedThreadViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_board_op, parent, false)
+        val view: View = inflater.inflate(R.layout.item_op_post_short, parent, false)
         return DownloadedThreadViewHolder(view, picListener)
     }
 
@@ -45,26 +45,19 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
 
         if(thread.posts.isNotEmpty()) {
             holder.setSenderName(thread.posts[0].name)
-            holder.setIsOp(thread.posts[0].op > 0)
             holder.setDate(thread.posts[0].date)
             holder.setThreadNum(thread.posts[0].num)
             holder.setTitle(thread.posts[0].subject)
-            holder.setComment(thread.posts[0].comment)
-            holder.setTotalPosts(thread.posts[0].posts_count)
-            holder.setPostsWithPic(thread.posts[0].files_count)
-            if (thread.posts[0].files.isNotEmpty()) {
-                holder.setPics(thread.posts[0].files)
-            }
-            holder.setCommentListener(linkListener)
-            holder.setRemoveButton(group.id, thread, downloadListener)
-            holder.setDivider()
-            holder.setIntoThreadButton(View.OnClickListener {
+            holder.setPics(thread.posts[0].files.getOrNull(0))
+            holder.setCommentListener(View.OnClickListener {
                 downloadListener.intoThreadClick(
                     group.id,
                     thread.num,
                     thread.title
                 )
             })
+            holder.setRemoveButton(group.id, thread, downloadListener)
+            holder.setDivider()
         }
     }
 
