@@ -61,14 +61,9 @@ class DownloadFragment:
 
         disposable = App.getBus().subscribe(
             {
-                if(it is BackPressed ) {
-                    if (fl_downloaded_board_post.visibility != View.GONE)
-//                        viewModel.onBackPressed()
-                    else
-                        App.getBus().onNext(AppToBeClosed)
+                if(it is BackPressed && fl_downloaded_board_post.visibility != View.GONE) {
+                    App.getBus().onNext(AppToBeClosed)
                 }
-//                if (it.first is RefreshDownload && it.second == DOWNLOAD_TAG)
-//                    adapter?.notifyDataSetChanged()
             },
             { Log.e("M_DownloadFragment","bus error = \n $it") })
     }
@@ -161,29 +156,4 @@ class DownloadFragment:
      /*   postFragment = null
         hideModal()*/
     }
-
-    fun hideModal() {
-       /* fl_downloaded_board_post.visibility = View.GONE
-
-        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
-
-        if (fragmentManager?.findFragmentByTag(POST_IN_DOWNLOAD_TAG) != null)
-            fragmentManager
-                ?.beginTransaction()
-                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_DOWNLOAD_TAG)!!)
-
-        downloadPresenter.clearStack()*/
-    }
-
-    fun showToast(message: String) {
-        App.showToast(message )
-    }
-
-//    companion object {
-//        fun getDownloadFragment (
-//            intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
-//            onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit
-//        ): DownloadFragment = DownloadFragment(intoThreadClickListener, onRemoveClickListener)
-//
-//    }
 }

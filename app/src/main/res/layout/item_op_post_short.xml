@@ -5,9 +5,7 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-
     android:paddingBottom="@dimen/spacing_small_8">
-
 
     <View
         android:id="@+id/v_favorite_post1_pic_divider"
@@ -65,11 +63,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="@id/tv_favorite_op_datetime"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_favorite_close_button"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@id/tv_favorite_op_datetime"
             app:layout_constraintTop_toTopOf="@id/tv_favorite_op_datetime"
             tools:text="#31231232" />
+
+        <ImageView
+            android:id="@+id/iv_favorite_close_button"
+            app:layout_constraintTop_toTopOf="@id/tv_favorite_op_num"
+            app:layout_constraintBottom_toBottomOf="@id/tv_favorite_op_num"
+            app:layout_constraintStart_toEndOf="@id/tv_favorite_op_num"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            android:src="@drawable/ic_baseline_clear_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -127,6 +136,7 @@
             app:layout_constraintStart_toEndOf="@+id/iv_favorite_op_pic"
             app:layout_constraintTop_toTopOf="@+id/iv_favorite_op_pic"
             tools:text="@string/lorem" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
