@@ -66,16 +66,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                when (it) {
                    is AppToBeClosed -> {
                        navController.navigateUp()
-                      /* if (System.currentTimeMillis() - timestamp < 2000)
-                           super.onBackPressed()
-                       else {
-                           timestamp = System.currentTimeMillis()
-                           Toast.makeText(
-                               applicationContext,
-                               "Нажмите назад еще раз, чтобы закрыть приложение",
-                               Toast.LENGTH_SHORT
-                           ).show()
-                       }*/
                    }
 
                    is BoardToBeOpened -> {

@@ -1,25 +1,18 @@
 package ru.be_more.orange_forum.presentation.screens.download
 
 import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_board_op.*
-import kotlinx.android.synthetic.main.item_thread_post.rv_op_post_pics
-import kotlinx.android.synthetic.main.item_thread_post.tv_board_op_check
-import kotlinx.android.synthetic.main.item_thread_post.tv_board_op_comment
-import kotlinx.android.synthetic.main.item_thread_post.tv_board_op_datetime
-import kotlinx.android.synthetic.main.item_thread_post.tv_board_op_name
-import kotlinx.android.synthetic.main.item_thread_post.tv_board_op_num
-import kotlinx.android.synthetic.main.item_thread_post.tv_board_op_subject
-import ru.be_more.orange_forum.App
+import kotlinx.android.synthetic.main.item_op_post_short.*
 import ru.be_more.orange_forum.presentation.interfaces.DownloadListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.presentation.custom.ExpandableTextView
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.presentation.screens.post.PostPicAdapter
 
 class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnClickListener) :
     ChildViewHolder(itemView), LayoutContainer {
@@ -28,76 +21,72 @@ class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnCli
         get() = itemView
 
     fun setSenderName (param: String){
-        tv_board_op_name.text = param
-    }
-    fun setIsOp (isOp: Boolean){
-        if(isOp)
-            this.tv_board_op_check.visibility=View.VISIBLE
-        else
-            this.tv_board_op_check.visibility=View.GONE
+        tv_favorite_op_name.text = param
     }
     fun setDate (param: String){
-        tv_board_op_datetime.text = param
+        tv_favorite_op_datetime.text = param
     }
     fun setThreadNum (param: Int){
-        tv_board_op_num.text = param.toString()
+        tv_favorite_op_num.text = param.toString()
     }
     fun setTitle (param: String){
-        tv_board_op_subject.text = param
+        tv_favorite_op_subject.text = param
     }
 
-    fun setPics (urls: List<AttachFile>){
-        if (urls.isNotEmpty()){
-            val adapter = PostPicAdapter(urls, listener = listener)
+    fun setPics (url: AttachFile?){
+        if (url != null){
 
-            rv_op_post_pics.layoutManager = LinearLayoutManager(App.getInstance())
-            rv_op_post_pics.adapter = adapter
-            rv_op_post_pics.visibility = View.VISIBLE
+            //TODO перенести в константы
+            val thumbnailUrl = "https://2ch.hk${url.thumbnail}"
+            val fullPicUrl = "https://2ch.hk${url.path}"
+
+            val thumbnailGlideUrl = GlideUrl(
+                thumbnailUrl, LazyHeaders.Builder()
+                    .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
+                            "_ga=GA1.2.57010468.1498700728; " +
+                            "ageallow=1; " +
+                            "_gid=GA1.2.1910512907.1585793763; " +
+                            "_gat=1")
+                    .build()
+            )
+
+            Glide.with(itemView)
+                .load(thumbnailGlideUrl)
+                .into(iv_favorite_op_pic)
+
+            iv_favorite_op_pic.visibility = View.VISIBLE
+            iv_favorite_op_pic.setOnClickListener {
+                listener.onThumbnailListener(fullPicUrl, url.duration, null) }
+
+            //нужно именно .isNullOrEmpty
+            if (!url.duration.isNullOrEmpty()){
+                iv_favorite_play_background.visibility = View.VISIBLE
+                iv_favorite_play.visibility = View.VISIBLE
+            }
+            else {
+                iv_favorite_play_background.visibility = View.GONE
+                iv_favorite_play.visibility = View.GONE
+            }
+
+            iv_favorite_op_pic.visibility = View.VISIBLE
         }
         else{
-            rv_op_post_pics.visibility = View.GONE
-            rv_op_post_pics.adapter = null
+            iv_favorite_op_pic.visibility = View.GONE
         }
     }
 
-    fun setComment (param: String){
-        if (param != "" ) {
-            tv_board_op_comment.text = param
-            tv_board_op_comment.visibility = View.VISIBLE
-        }
-        else {
-            tv_board_op_comment.visibility = View.GONE
-            tv_board_op_comment.text = ""
-        }
-    }
-
-    fun setTotalPosts (param: Int){
-        tv_board_op_total.visibility = View.GONE
-    }
-
-    fun setPostsWithPic (param: Int){
-        tv_board_op_with_pic.visibility = View.GONE
-    }
-
-    fun setIntoThreadButton(listener: View.OnClickListener) {
-        btn_board_op_into.setOnClickListener(listener)
-        btn_board_op_into.visibility = View.VISIBLE
-    }
-
-    fun setCommentListener(listener: LinkOnClickListener){
-        (tv_board_op_comment as ExpandableTextView).setListener(listener)
+    fun setCommentListener(listener: View.OnClickListener){
+        tv_favorite_op_subject.setOnClickListener(listener)
     }
 
     fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownloadListener) {
-//        removeButton.visibility = View.GONE
-        btn_board_op_hide.text = "Удалить"
-        btn_board_op_hide.setOnClickListener {
+        iv_favorite_close_button.setOnClickListener {
             listener.onRemoveClick(boardId, thread.num)
         }
     }
 
     fun setDivider(){
-        v_post1_pic_divider.visibility = View.VISIBLE
+        v_favorite_post1_pic_divider.visibility = View.VISIBLE
     }
 
 }
