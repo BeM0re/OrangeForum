@@ -6,9 +6,9 @@ import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.processSingle
 
-class DownloadInteractorImpl(
+class DownFavInteractorImpl(
     private val dbDownFavRepository: DbContract.DownFavRepository
-): InteractorContract.DownloadInteractor, BaseInteractorImpl() {
+): InteractorContract.DownFavInteractor, BaseInteractorImpl() {
     override fun getDownloads(): Single<List<Board>> =
         dbDownFavRepository.getDownloadsAndFavorites()
             .processSingle()

@@ -24,6 +24,7 @@ class ThreadViewModelImpl (
     override val thread = MutableLiveData<BoardThread>()
     override val savedPosition = MutableLiveData<Int>()
     override val isFavorite = MutableLiveData<Boolean>()
+    override val isQueued = MutableLiveData<Boolean>()
     override val isDownload = MutableLiveData<Boolean>()
 
     private var boardId: String = ""
@@ -47,6 +48,7 @@ class ThreadViewModelImpl (
                             thread.postValue(it)
                             isDownload.postValue(it.isDownloaded)
                             isFavorite.postValue(it.isFavorite)
+                            isQueued.postValue(it.isQueued)
                         },
                         { Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it") }
                     )
@@ -121,15 +123,28 @@ class ThreadViewModelImpl (
             getSinglePost(postNum)
     }
 
+    override fun setQueue(isQueued: Boolean) {
+        if (thread.value != null)
+            if (isQueued)
+                threadInteractor
+                    .addThreadToQueue(threadNum, boardId, boardName)
+                    .subscribe()
+            else
+                threadInteractor
+                    .removeThreadFromQueue(boardId, threadNum)
+                    .subscribe()
+    }
+
+
     override fun setFavorite(isFavorite: Boolean) {
         if (thread.value != null)
             if (isFavorite)
                 threadInteractor
-                    .markThreadFavorite(threadNum, boardId, boardName)
+                    .addThreadToFavorite(threadNum, boardId, boardName)
                     .subscribe()
             else
                 threadInteractor
-                    .unmarkThreadFavorite(boardId, threadNum)
+                    .removeThreadFromFavorite(boardId, threadNum)
                     .subscribe()
     }
 

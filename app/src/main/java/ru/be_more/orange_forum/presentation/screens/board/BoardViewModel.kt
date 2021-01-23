@@ -94,14 +94,14 @@ class BoardViewModelImpl (
     override fun hideThread(threadNum: Int, toHide: Boolean) {
         if (toHide) {
             threadInteractor
-                .markThreadHidden(board.value?.id?:"", board.value?.name?:"", threadNum)
+                .hideThread(board.value?.id?:"", board.value?.name?:"", threadNum)
                 .subscribe(
                     {},
                     { Log.e("M_BoardViewModel","hidding error = $it") }
                 )
         }
         else {
-            threadInteractor.unmarkThreadHidden(board.value?.id?:"", threadNum)
+            threadInteractor.unhideThread(board.value?.id?:"", threadNum)
                 .subscribe()
         }
     }

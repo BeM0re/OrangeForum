@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.download
+package ru.be_more.orange_forum.presentation.screens.download_favorite
 
 import android.net.Uri
 import android.os.Bundle
@@ -48,7 +48,7 @@ class DownFavFragment:
 
     private fun init(view: View){
         navController = Navigation.findNavController(view)
-        navController.currentDestination?.label = "Download"
+        navController.currentDestination?.label = "Favorites"
 
         recyclerView = rv_downloaded_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)

@@ -22,12 +22,14 @@ interface InteractorContract {
 
     interface ThreadInteractor: BaseInteractor {
         fun getThread(boardId: String, threadNum: Int): Single<BoardThread>
-        fun markThreadFavorite(threadNum: Int, boardId: String, boardName: String): Completable
-        fun unmarkThreadFavorite(boardId: String, threadNum: Int):Completable
+        fun addThreadToFavorite(threadNum: Int, boardId: String, boardName: String): Completable
+        fun addThreadToQueue(threadNum: Int, boardId: String, boardName: String): Completable
+        fun removeThreadFromFavorite(boardId: String, threadNum: Int):Completable
+        fun removeThreadFromQueue(boardId: String, threadNum: Int):Completable
         fun downloadThread(threadNum: Int, boardId: String, boardName: String):Completable
         fun deleteThread(boardId: String, threadNum: Int): Completable
-        fun markThreadHidden(boardId: String, boardName: String, threadNum: Int): Completable
-        fun unmarkThreadHidden(boardId: String, threadNum: Int):Completable
+        fun hideThread(boardId: String, boardName: String, threadNum: Int): Completable
+        fun unhideThread(boardId: String, threadNum: Int):Completable
     }
 
     interface PostInteractor: BaseInteractor {
@@ -41,11 +43,11 @@ interface InteractorContract {
                          token:String): Single<PostResponse>
     }
 
-    interface FavoriteInteractor: BaseInteractor {
-        fun getFavorites(): Single<List<Board>>
+    interface QueueInteractor: BaseInteractor {
+        fun getQueue(): Single<List<Board>>
     }
 
-    interface DownloadInteractor: BaseInteractor {
+    interface DownFavInteractor: BaseInteractor {
         fun getDownloads(): Single<List<Board>>
     }
 

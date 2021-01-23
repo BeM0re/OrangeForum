@@ -30,6 +30,20 @@
         android:visible="false">
     </item>
     <item
+        android:id="@+id/navigation_queue"
+        app:showAsAction="always"
+        android:title=""
+        android:icon="@drawable/ic_queue_add_accent_24"
+        android:visible="false">
+    </item>
+    <item
+        android:id="@+id/navigation_queue_added"
+        app:showAsAction="always"
+        android:title=""
+        android:icon="@drawable/ic_queue_added_accent_24"
+        android:visible="false">
+    </item>
+    <item
         android:id="@+id/navigation_pref"
         app:showAsAction="always"
         android:title=""
