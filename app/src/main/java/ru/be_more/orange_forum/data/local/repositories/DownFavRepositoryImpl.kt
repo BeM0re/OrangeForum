@@ -13,14 +13,14 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModel
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
 import ru.be_more.orange_forum.domain.model.Board
 
-class DownloadRepositoryImpl (
+class DownFavRepositoryImpl (
     private val dao: DvachDao
-) : DbContract.DownloadRepository{
+) : DbContract.DownFavRepository{
 
-    override fun getDownloads(): Single<List<Board>> =
+    override fun getDownloadsAndFavorites(): Single<List<Board>> =
         Single.zip(
             dao.getBoards(),
-            dao.getDownloadedThreads(),
+            dao.getDownloadedAndFavoritesThreads(),
             dao.getOpPosts(),
             dao.getOpFiles(),
             Function4 <List<StoredBoard>, List<StoredThread>, List<StoredPost>, List<StoredFile>, List<Board>>
@@ -35,7 +35,7 @@ class DownloadRepositoryImpl (
                         )}
                     )
                 }
-                    .filter { it.threads.isNotEmpty() }
+                    .filter { it.threads.isNotEmpty() || it.isFavorite }
             }
         )
 }

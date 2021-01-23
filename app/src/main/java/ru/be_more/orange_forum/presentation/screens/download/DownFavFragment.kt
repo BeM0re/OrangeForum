@@ -24,7 +24,7 @@ import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
-class DownloadFragment:
+class DownFavFragment:
     Fragment(R.layout.fragment_download),
     DownloadListener,
     PicOnClickListener,
@@ -36,7 +36,7 @@ class DownloadFragment:
     private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
     private var disposable: Disposable? = null
-    var adapter : DownloadAdapter? = null
+    var adapter : DownFavAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,7 +79,7 @@ class DownloadFragment:
     }
 
     fun loadDownloads(boards: List<Board>) {
-        adapter = DownloadAdapter(boards, this, this, this)
+        adapter = DownFavAdapter(boards, this, this, this)
         recyclerView?.adapter = adapter
     }
 

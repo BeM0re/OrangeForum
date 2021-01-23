@@ -30,7 +30,7 @@ import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
-class FavoriteFragment :
+class QueueFragment :
     Fragment(R.layout.fragment_favorite),
     FavoriteListener,
     PicOnClickListener,
@@ -42,7 +42,7 @@ class FavoriteFragment :
     private var postFragment: PostFragment? = null
     private var disposable: Disposable? = null
     private lateinit var navController: NavController
-    var adapter : FavoriteAdapter? = null
+    var adapter : QueueAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -93,7 +93,7 @@ class FavoriteFragment :
 
 
     private fun loadFavorites(boards: List<Board>) {
-        adapter = FavoriteAdapter(boards, this, this)
+        adapter = QueueAdapter(boards, this, this)
 
         // Iterate and toggle groups
         for (i in (adapter!!.groups.size - 1) downTo 0) {

@@ -52,7 +52,7 @@ interface DbContract {
         fun getFavorites(): Single<List<Board>>
     }
 
-    interface DownloadRepository{
-        fun getDownloads(): Single<List<Board>>
+    interface DownFavRepository{
+        fun getDownloadsAndFavorites(): Single<List<Board>>
     }
 }
