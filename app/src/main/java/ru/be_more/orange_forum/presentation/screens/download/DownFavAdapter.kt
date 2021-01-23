@@ -13,32 +13,32 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 
 
-class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
-                      var downloadListener: DownloadListener,
-                      var linkListener: LinkOnClickListener,
-                      var picListener: PicOnClickListener) :
-    ExpandableRecyclerViewAdapter<DownloadedBoardViewHolder, DownloadedThreadViewHolder>(groups){
+class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
+                     var downloadListener: DownloadListener,
+                     var linkListener: LinkOnClickListener,
+                     var picListener: PicOnClickListener) :
+    ExpandableRecyclerViewAdapter<DownFavBoardViewHolder, DownFavThreadViewHolder>(groups){
 
     override fun onCreateGroupViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DownloadedBoardViewHolder {
+    ): DownFavBoardViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view: View = inflater.inflate(R.layout.item_downloaded_board, parent, false)
-        return DownloadedBoardViewHolder(view)
+        return DownFavBoardViewHolder(view)
     }
 
     override fun onCreateChildViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DownloadedThreadViewHolder {
+    ): DownFavThreadViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view: View = inflater.inflate(R.layout.item_op_post_short, parent, false)
-        return DownloadedThreadViewHolder(view, picListener)
+        return DownFavThreadViewHolder(view, picListener)
     }
 
     override fun onBindChildViewHolder(
-        holder: DownloadedThreadViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
+        holder: DownFavThreadViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
         childIndex: Int
     ) {
         val thread: BoardThread = (group as Board).items[childIndex]
@@ -58,11 +58,12 @@ class DownloadAdapter(groups: List<ExpandableGroup<*>?>?,
             })
             holder.setRemoveButton(group.id, thread, downloadListener)
             holder.setDivider()
+            holder.setIcon(thread.isFavorite, thread.isDownloaded)
         }
     }
 
     override fun onBindGroupViewHolder(
-        holder: DownloadedBoardViewHolder, flatPosition: Int,
+        holder: DownFavBoardViewHolder, flatPosition: Int,
         group: ExpandableGroup<*>?
     ) {
         holder.setBoardTitle((group as Board).name)
