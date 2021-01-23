@@ -5,7 +5,7 @@ import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_downloaded_board.*
 
-class DownloadedBoardViewHolder(itemView: View?) : GroupViewHolder(itemView), LayoutContainer {
+class DownFavBoardViewHolder(itemView: View?) : GroupViewHolder(itemView), LayoutContainer {
 
     override val containerView: View?
         get() = itemView

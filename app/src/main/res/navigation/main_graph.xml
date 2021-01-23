@@ -24,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
-        android:name="ru.be_more.orange_forum.presentation.screens.favorire.FavoriteFragment"
+        android:name="ru.be_more.orange_forum.presentation.screens.favorire.QueueFragment"
         android:label="Favorite" >
         <action
             android:id="@+id/action_favoriteFragment_to_boardFragment"
@@ -35,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/downloadFragment"
-        android:name="ru.be_more.orange_forum.presentation.screens.download.DownloadFragment"
+        android:name="ru.be_more.orange_forum.presentation.screens.download.DownFavFragment"
         android:label="Download" >
         <action
             android:id="@+id/action_downloadFragment_to_threadFragment"

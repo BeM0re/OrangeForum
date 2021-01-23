@@ -51,8 +51,8 @@ interface DvachDao {
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<StoredThread>>
 
-    @Query("SELECT * FROM threads WHERE isDownloaded = 1")
-    fun getDownloadedThreads(): Single<List<StoredThread>>
+    @Query("SELECT * FROM threads WHERE isDownloaded = 1 OR isFavorite = 1")
+    fun getDownloadedAndFavoritesThreads(): Single<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE isFavorite = 1")
     fun getFavoriteThreads(): Single<List<StoredThread>>

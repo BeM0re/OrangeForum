@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.download
+package ru.be_more.orange_forum.presentation.screens.favorire
 
 import android.view.View
 import com.bumptech.glide.Glide
@@ -7,14 +7,10 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_op_post_short.*
-import ru.be_more.orange_forum.presentation.interfaces.DownloadListener
-import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.domain.model.AttachFile
-import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.presentation.custom.ExpandableTextView
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 
-class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnClickListener) :
+class QueueThreadViewHolder(itemView: View?, private var listener: PicOnClickListener) :
     ChildViewHolder(itemView), LayoutContainer {
 
     override val containerView: View?
@@ -22,6 +18,12 @@ class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnCli
 
     fun setSenderName (param: String){
         tv_favorite_op_name.text = param
+    }
+    fun setIsOp (isOp: Boolean){
+        if(isOp)
+            tv_favorite_op_check.visibility=View.VISIBLE
+        else
+            tv_favorite_op_check.visibility=View.GONE
     }
     fun setDate (param: String){
         tv_favorite_op_datetime.text = param
@@ -75,15 +77,16 @@ class DownloadedThreadViewHolder(itemView: View?, private var listener: PicOnCli
         }
     }
 
-    fun setCommentListener(listener: View.OnClickListener){
+    fun setIntoThreadButton(listener: View.OnClickListener) {
         tv_favorite_op_subject.setOnClickListener(listener)
     }
 
-    fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownloadListener) {
-        iv_favorite_close_button.setOnClickListener {
+/*    fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownloadListener) {
+        removeButton.text = "Удалить"
+        removeButton.setOnClickListener {
             listener.onRemoveClick(boardId, thread.num)
         }
-    }
+    }*/
 
     fun setDivider(){
         v_favorite_post1_pic_divider.visibility = View.VISIBLE

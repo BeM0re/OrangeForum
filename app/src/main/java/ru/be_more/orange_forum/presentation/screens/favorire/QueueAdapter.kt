@@ -12,31 +12,31 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 
 
-class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
-                      var favoriteListener: FavoriteListener,
-                      var picListener: PicOnClickListener) :
-    ExpandableRecyclerViewAdapter<FavoriteBoardViewHolder, FavoriteThreadViewHolder>(groups){
+class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
+                   var favoriteListener: FavoriteListener,
+                   var picListener: PicOnClickListener) :
+    ExpandableRecyclerViewAdapter<QueueBoardViewHolder, QueueThreadViewHolder>(groups){
 
     override fun onCreateGroupViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): FavoriteBoardViewHolder {
+    ): QueueBoardViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view: View = inflater.inflate(R.layout.item_downloaded_board, parent, false)
-        return FavoriteBoardViewHolder(view)
+        return QueueBoardViewHolder(view)
     }
 
     override fun onCreateChildViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): FavoriteThreadViewHolder {
+    ): QueueThreadViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view: View = inflater.inflate(R.layout.item_op_post_short, parent, false)
-        return FavoriteThreadViewHolder(view, picListener)
+        return QueueThreadViewHolder(view, picListener)
     }
 
     override fun onBindChildViewHolder(
-        holder: FavoriteThreadViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
+        holder: QueueThreadViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
         childIndex: Int
     ) {
         val thread: BoardThread = (group as Board).items[childIndex]
@@ -63,7 +63,7 @@ class FavoriteAdapter(groups: List<ExpandableGroup<*>?>?,
     }
 
     override fun onBindGroupViewHolder(
-        holder: FavoriteBoardViewHolder, flatPosition: Int,
+        holder: QueueBoardViewHolder, flatPosition: Int,
         group: ExpandableGroup<*>?
     ) {
         val board = group as Board
