@@ -1,14 +1,14 @@
 package ru.be_more.orange_forum.domain.model
 
 data class AttachFile(
-    var displayName: String = "",
-    var height: Int = 0,
-    var width: Int = 0,
-    var tn_height: Int = 0,
-    var tn_width: Int = 0,
-    var path: String = "",
-    var thumbnail: String = "",
-    var duration : String = "",
-    var localPath: String = "",
-    var localThumbnail: String = ""
+    val displayName: String = "",
+    val height: Int = 0,
+    val width: Int = 0,
+    val tn_height: Int = 0,
+    val tn_width: Int = 0,
+    val path: String = "",
+    val thumbnail: String = "",
+    val duration : String = "",
+    val localPath: String = "",
+    val localThumbnail: String = ""
 )

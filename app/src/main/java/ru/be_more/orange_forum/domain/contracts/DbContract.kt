@@ -23,10 +23,12 @@ interface DbContract {
         fun insertThreadSafety(thread: BoardThread, boardId: String): Single<Boolean>
         fun deleteThread(boardId: String, threadNum: Int): Completable
         fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<BoardThread>>
-        fun markThreadFavorite( boardId: String, threadNum: Int)
-        fun unmarkThreadFavorite(boardId: String, threadNum: Int)
-        fun markThreadHidden(boardId: String, threadNum: Int)
-        fun unmarkThreadHidden(boardId: String, threadNum: Int)
+        fun addThreadToQueue( boardId: String, threadNum: Int)
+        fun addThreadToFavorite(boardId: String, threadNum: Int)
+        fun removeThreadFromFavorite(boardId: String, threadNum: Int)
+        fun removeThreadFromQueue(boardId: String, threadNum: Int)
+        fun hideThread(boardId: String, threadNum: Int)
+        fun unhideThread(boardId: String, threadNum: Int)
     }
 
     interface PostRepository{
@@ -48,8 +50,8 @@ interface DbContract {
         fun getPostFiles(boardId: String, postNum: Int): Single<List<AttachFile>>
     }
 
-    interface FavoriteRepository{
-        fun getFavorites(): Single<List<Board>>
+    interface QueueRepository{
+        fun getQueue(): Single<List<Board>>
     }
 
     interface DownFavRepository{

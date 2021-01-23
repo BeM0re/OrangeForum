@@ -50,6 +50,8 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
     private lateinit var navController: NavController
     private var favButton: MenuItem? = null
     private var favButtonAdded: MenuItem? = null
+    private var queueButton: MenuItem? = null
+    private var queueButtonAdded: MenuItem? = null
     private var downButton: MenuItem? = null
     private var downButtonAdded: MenuItem? = null
 
@@ -84,6 +86,8 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         super.onPrepareOptionsMenu(menu)
         favButton = menu.findItem(R.id.navigation_favorite)
         favButtonAdded = menu.findItem(R.id.navigation_favorite_added)
+        queueButton = menu.findItem(R.id.navigation_queue)
+        queueButtonAdded = menu.findItem(R.id.navigation_queue_added)
         downButton = menu.findItem(R.id.navigation_download)
         downButtonAdded = menu.findItem(R.id.navigation_download_done)
         setToolbarListeners()
@@ -104,6 +108,14 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         }
         downButtonAdded?.setOnMenuItemClickListener {
             viewModel.download(false)
+            true
+        }
+        downButton?.setOnMenuItemClickListener {
+            viewModel.setQueue(true)
+            true
+        }
+        downButtonAdded?.setOnMenuItemClickListener {
+            viewModel.setQueue(false)
             true
         }
     }
@@ -140,6 +152,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
             observe(emptyStack) { hideModal() }
             observe(savedPosition, ::setPosition)
             observe(isFavorite, ::setFavoriteMark)
+            observe(isQueued, ::setQueueMark)
             observe(isDownload, ::setDownloadMark)
         }
 
@@ -184,34 +197,9 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         favButtonAdded?.isVisible = isFavorite
     }
 
-    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
-        var attachment: Attachment? = null
-
-        if (fullPicUri != null)
-            attachment = Attachment("", duration, fullPicUri)
-        else if (!fullPicUrl.isNullOrEmpty())
-            attachment = Attachment(fullPicUrl, duration)
-
-        if (attachment != null) {
-            viewModel.putContentInStack(attachment)
-            showPic(attachment)
-            fl_thread_post.visibility = View.VISIBLE
-        }
-
-    }
-
-    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-        if (chanLink != null) {
-            viewModel.getPost(chanLink)
-        }
-    }
-
-    override fun onLinkClick(postNum: Int) {
-        viewModel.getPost(postNum)
-    }
-
-    override fun onLinkClick(externalLink: String?) {
-        Log.d("M_ThreadPresenter", "outer link = $externalLink")
+    private fun setQueueMark(isQueued: Boolean){
+        queueButton?.isVisible = !isQueued
+        queueButtonAdded?.isVisible = isQueued
     }
 
     private fun showPic(attachment: Attachment){
@@ -267,6 +255,36 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         val scrollListener = CustomScrollListener(this)
 
         recyclerView?.setOnScrollChangeListener(scrollListener)
+    }
+
+    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
+        var attachment: Attachment? = null
+
+        if (fullPicUri != null)
+            attachment = Attachment("", duration, fullPicUri)
+        else if (!fullPicUrl.isNullOrEmpty())
+            attachment = Attachment(fullPicUrl, duration)
+
+        if (attachment != null) {
+            viewModel.putContentInStack(attachment)
+            showPic(attachment)
+            fl_thread_post.visibility = View.VISIBLE
+        }
+
+    }
+
+    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
+        if (chanLink != null) {
+            viewModel.getPost(chanLink)
+        }
+    }
+
+    override fun onLinkClick(postNum: Int) {
+        viewModel.getPost(postNum)
+    }
+
+    override fun onLinkClick(externalLink: String?) {
+        Log.d("M_ThreadPresenter", "outer link = $externalLink")
     }
 
     override fun onScrolling(){

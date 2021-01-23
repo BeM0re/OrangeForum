@@ -4,17 +4,19 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class BoardThread(
-    var num : Int,
-    var posts: List<Post> = listOf(),
-    var title: String = "",
+    val num : Int,
+    val posts: List<Post> = listOf(),
+    val title: String = "",
     var isHidden: Boolean = false,
     var isDownloaded: Boolean = false,
-    var isFavorite: Boolean = false
+    var isFavorite: Boolean = false,
+    var isQueued: Boolean = false
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         listOf(),
         parcel.readString().orEmpty(),
+        parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte()
@@ -27,6 +29,7 @@ data class BoardThread(
         parcel.writeByte(if (isHidden) 1 else 0)
         parcel.writeByte(if (isDownloaded) 1 else 0)
         parcel.writeByte(if (isFavorite) 1 else 0)
+        parcel.writeByte(if (isQueued) 1 else 0)
     }
 
     override fun describeContents(): Int {

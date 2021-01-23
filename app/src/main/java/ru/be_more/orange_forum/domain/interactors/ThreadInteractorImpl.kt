@@ -4,7 +4,6 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.Function3
 import ru.be_more.orange_forum.domain.contracts.DbContract
-import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -42,7 +41,7 @@ class ThreadInteractorImpl (
         )
             .processSingle()
 
-    override fun markThreadFavorite(threadNum: Int, boardId: String, boardName: String): Completable =
+    override fun addThreadToFavorite(threadNum: Int, boardId: String, boardName: String): Completable =
         Completable.fromSingle(
             apiRepository.getThread(boardId, threadNum)
                 .doOnSuccess { thread ->
@@ -54,7 +53,7 @@ class ThreadInteractorImpl (
                 .flatMap { thread ->
                     dbThreadRepository.insertThreadSafety(thread.copy(isFavorite = true), boardId)
                         .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum) }
+                            if (!isSaved) dbThreadRepository.addThreadToFavorite(boardId, threadNum) }
                 }
                 .flatMap {
                     dbBoardRepository.getBoardCount(boardId)
@@ -66,9 +65,9 @@ class ThreadInteractorImpl (
         )
             .processCompletable()
 
-    override fun unmarkThreadFavorite(boardId: String, threadNum: Int): Completable =
+    override fun removeThreadFromFavorite(boardId: String, threadNum: Int): Completable =
         Completable.fromCallable {
-            dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
+            dbThreadRepository.removeThreadFromFavorite(boardId, threadNum)
         }
             .processCompletable()
 
@@ -86,7 +85,7 @@ class ThreadInteractorImpl (
                 .flatMap { thread ->
                     dbThreadRepository.insertThreadSafety(thread.copy(isDownloaded = true), boardId)
                         .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.markThreadFavorite(boardId, threadNum)
+                            if (!isSaved) dbThreadRepository.addThreadToFavorite(boardId, threadNum)
                         }
                 }
                 .flatMap {
@@ -103,7 +102,37 @@ class ThreadInteractorImpl (
         dbThreadRepository.deleteThread(boardId, threadNum)
             .processCompletable()
 
-    override fun markThreadHidden(boardId: String, boardName: String, threadNum: Int): Completable =
+    override fun addThreadToQueue(threadNum: Int, boardId: String, boardName: String): Completable =
+        Completable.fromSingle(
+            apiRepository.getThread(boardId, threadNum)
+                .doOnSuccess { thread ->
+                    dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
+                }
+                .doOnSuccess { thread ->
+                    dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
+                }
+                .flatMap { thread ->
+                    dbThreadRepository.insertThreadSafety(thread.copy(isQueued = true), boardId)
+                        .doOnSuccess { isSaved ->
+                            if (!isSaved) dbThreadRepository.addThreadToFavorite(boardId, threadNum) }
+                }
+                .flatMap {
+                    dbBoardRepository.getBoardCount(boardId)
+                        .doOnSuccess {
+                            if (it == 0)
+                                dbBoardRepository.insertBoard(boardId, boardName, false)
+                        }
+                }
+        )
+            .processCompletable()
+
+    override fun removeThreadFromQueue(boardId: String, threadNum: Int): Completable =
+        Completable.fromCallable {
+            dbThreadRepository.removeThreadFromQueue(boardId, threadNum)
+        }
+            .processCompletable()
+
+    override fun hideThread(boardId: String, boardName: String, threadNum: Int): Completable =
         Completable.fromSingle (
             Single.zip(dbBoardRepository.getBoardCount(boardId),
                 dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
@@ -118,16 +147,16 @@ class ThreadInteractorImpl (
                         dbThreadRepository.insertThread(webThread.copy(isHidden = true), boardId)
                     }
                     else
-                        dbThreadRepository.markThreadHidden(boardId, threadNum)
+                        dbThreadRepository.hideThread(boardId, threadNum)
 
                 }
             )
         )
             .processCompletable()
 
-    override fun unmarkThreadHidden(boardId: String, threadNum: Int) =
+    override fun unhideThread(boardId: String, threadNum: Int) =
         Completable.fromCallable {
-            dbThreadRepository.unmarkThreadFavorite(boardId, threadNum)
+            dbThreadRepository.removeThreadFromFavorite(boardId, threadNum)
         }
             .processCompletable()
 }

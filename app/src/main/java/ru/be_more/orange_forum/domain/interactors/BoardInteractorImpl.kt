@@ -38,6 +38,7 @@ class BoardInteractorImpl(
                         webThreads[webIndex].isFavorite = localThread.isFavorite
                         webThreads[webIndex].isHidden = localThread.isHidden
                         webThreads[webIndex].isDownloaded = localThread.isDownloaded
+                        webThreads[webIndex].isQueued = localThread.isQueued
                     }
                 }
                 return@BiFunction localBoard.copy(threads = webThreads)

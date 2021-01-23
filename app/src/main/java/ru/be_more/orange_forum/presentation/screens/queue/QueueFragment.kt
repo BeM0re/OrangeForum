@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.favorire
+package ru.be_more.orange_forum.presentation.screens.queue
 
 import android.net.Uri
 import android.os.Bundle
@@ -64,7 +64,7 @@ class QueueFragment :
 
     fun init(view: View){
         navController = Navigation.findNavController(view)
-        navController.currentDestination?.label = "Favorite"
+        navController.currentDestination?.label = "Queue"
 
         recyclerView = rv_favorite_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)

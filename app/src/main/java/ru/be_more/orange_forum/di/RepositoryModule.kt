@@ -30,8 +30,8 @@ val repositoryModule = module {
     single<DbContract.DownFavRepository> {
         ru.be_more.orange_forum.data.local.repositories.DownFavRepositoryImpl(get())
     }
-    single<DbContract.FavoriteRepository> {
-        ru.be_more.orange_forum.data.local.repositories.FavoriteRepositoryImpl(get())
+    single<DbContract.QueueRepository> {
+        ru.be_more.orange_forum.data.local.repositories.QueueRepositoryImpl(get())
     }
 
 }

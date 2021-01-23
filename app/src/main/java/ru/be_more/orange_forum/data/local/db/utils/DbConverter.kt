@@ -51,6 +51,7 @@ class DbConverter {
             isHidden = thread.isHidden,
             isDownloaded = thread.isDownloaded,
             isFavorite = thread.isFavorite,
+            isQueued = thread.isQueued,
             posts = posts
         )
 
@@ -61,7 +62,8 @@ class DbConverter {
                     title = thread.title,
                     isHidden = thread.isHidden,
                     isDownloaded = thread.isDownloaded,
-                    isFavorite = thread.isFavorite
+                    isFavorite = thread.isFavorite,
+                    isQueued = thread.isQueued
                 )
 
             }
