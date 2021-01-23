@@ -5,7 +5,6 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.DvachDao
-import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThread
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStoredThread
 import ru.be_more.orange_forum.domain.contracts.StorageContract
@@ -49,19 +48,21 @@ class ThreadRepositoryImpl(
                 }
         )
 
+    override fun addThreadToQueue(boardId: String, threadNum: Int) =
+        dao.addThreadToFavorite(boardId, threadNum)
 
+    override fun addThreadToFavorite(boardId: String, threadNum: Int) =
+        dao.addThreadToQueue(boardId, threadNum)
 
-    override fun markThreadFavorite(boardId: String, threadNum: Int) =
-        dao.markThreadFavorite(boardId, threadNum)
+    override fun removeThreadFromFavorite(boardId: String, threadNum: Int) =
+        dao.removeThreadFromFavorite(boardId, threadNum)
 
-    override fun unmarkThreadFavorite(boardId: String, threadNum: Int) =
-        dao.unmarkThreadFavorite(boardId, threadNum)
+    override fun removeThreadFromQueue(boardId: String, threadNum: Int) =
+        dao.removeThreadFromQueue(boardId, threadNum)
 
-
-    override fun markThreadHidden(boardId: String, threadNum: Int) =
+    override fun hideThread(boardId: String, threadNum: Int) =
          dao.markThreadHidden(boardId, threadNum)
 
-
-    override fun unmarkThreadHidden(boardId: String, threadNum: Int) =
+    override fun unhideThread(boardId: String, threadNum: Int) =
         dao.unmarkThreadHidden(boardId, threadNum)
 }

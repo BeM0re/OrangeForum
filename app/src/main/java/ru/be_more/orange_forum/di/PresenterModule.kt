@@ -4,8 +4,8 @@ import org.koin.dsl.module
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.board.BoardViewModelImpl
 import ru.be_more.orange_forum.presentation.screens.category.CategoryViewModelImpl
-import ru.be_more.orange_forum.presentation.screens.download.DownloadViewModelImpl
-import ru.be_more.orange_forum.presentation.screens.favorire.FavoriteViewModelImpl
+import ru.be_more.orange_forum.presentation.screens.download_favorite.DownloadViewModelImpl
+import ru.be_more.orange_forum.presentation.screens.queue.FavoriteViewModelImpl
 import ru.be_more.orange_forum.presentation.screens.response.ResponseViewModelImpl
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModelImpl
 

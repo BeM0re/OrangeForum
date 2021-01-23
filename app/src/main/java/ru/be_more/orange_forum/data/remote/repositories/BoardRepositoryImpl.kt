@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.data.remote.repositories
 
-import android.util.Log
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
@@ -16,5 +15,4 @@ class BoardRepositoryImpl(
         dvachApi.getDvachThreads(boardId)
             .subscribeOn(Schedulers.io())
             .map { entity -> toBoard(entity) }
-            .doOnError { Log.e("M_BoardRepositoryImpl","error = $it") }
 }

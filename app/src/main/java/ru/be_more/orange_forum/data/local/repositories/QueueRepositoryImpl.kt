@@ -13,14 +13,14 @@ import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModel
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
 import ru.be_more.orange_forum.domain.model.Board
 
-class FavoriteRepositoryImpl (
+class QueueRepositoryImpl (
     private val dao: DvachDao
-) : DbContract.FavoriteRepository{
+) : DbContract.QueueRepository{
 
-    override fun getFavorites(): Single<List<Board>> =
+    override fun getQueue(): Single<List<Board>> =
         Single.zip(
             dao.getBoards(),
-            dao.getFavoriteThreads(),
+            dao.getQueuedThreads(),
             dao.getOpPosts(),
             dao.getOpFiles(),
             Function4 <List<StoredBoard>, List<StoredThread>, List<StoredPost>, List<StoredFile>, List<Board>>

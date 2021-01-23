@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.favorire
+package ru.be_more.orange_forum.presentation.screens.queue
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -8,7 +8,7 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.presentation.PresentationContract
 
 class FavoriteViewModelImpl (
-    private val favoriteInteractor : InteractorContract.FavoriteInteractor,
+    private val QueueInteractor : InteractorContract.QueueInteractor,
     private val postInteractor : InteractorContract.PostInteractor
 ): PresentationContract.FavoriteViewModel{
 
@@ -17,7 +17,7 @@ class FavoriteViewModelImpl (
     @SuppressLint("CheckResult")
     override fun init(){
         if(boards.value == null)
-            favoriteInteractor.getFavorites()
+            QueueInteractor.getQueue()
                 .subscribe(
                     { boards -> this.boards.postValue(boards) },
                     { Log.e("M_DownloadPresenter", "Presenter on first view attach error = $it") }
@@ -28,7 +28,7 @@ class FavoriteViewModelImpl (
 
     @SuppressLint("CheckResult")
     override fun refreshData(){
-        favoriteInteractor.getFavorites()
+        QueueInteractor.getQueue()
             .subscribe(
                 { boards -> this.boards.postValue(boards) },
                 { Log.e("M_DownloadPresenter", "Presenter on refresh error = $it") }
@@ -36,7 +36,7 @@ class FavoriteViewModelImpl (
     }
 
     override fun onDestroy() {
-        favoriteInteractor.release()
+        QueueInteractor.release()
         postInteractor.release()
     }
 

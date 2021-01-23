@@ -16,5 +16,6 @@ data class StoredThread(
     val boardId: String,
     val isHidden: Boolean = false,
     val isDownloaded: Boolean = false,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val isQueued: Boolean = false
 )

@@ -54,6 +54,9 @@ interface DvachDao {
     @Query("SELECT * FROM threads WHERE isDownloaded = 1 OR isFavorite = 1")
     fun getDownloadedAndFavoritesThreads(): Single<List<StoredThread>>
 
+    @Query("SELECT * FROM threads WHERE isQueued = 1")
+    fun getQueuedThreads(): Single<List<StoredThread>>
+
     @Query("SELECT * FROM threads WHERE isFavorite = 1")
     fun getFavoriteThreads(): Single<List<StoredThread>>
 
@@ -61,16 +64,22 @@ interface DvachDao {
     fun getThreadOpPosts(boardId: String): Single<List<StoredThread>>
 
     @Query("UPDATE threads SET isDownloaded = 1 WHERE boardId = :boardId AND num = :threadNum")
-    fun markThreadDownload(boardId: String, threadNum: Int)
+    fun addThreadToDownload(boardId: String, threadNum: Int)
 
     @Query("UPDATE threads SET isFavorite = 1 WHERE boardId = :boardId AND num = :threadNum")
-    fun markThreadFavorite(boardId: String, threadNum: Int)
+    fun addThreadToFavorite(boardId: String, threadNum: Int)
 
-    @Query("UPDATE threads SET isFavorite = 0 WHERE boardId = :boardId AND num = :threadNum")
-    fun unmarkThreadFavorite(boardId: String, threadNum: Int)
-
+    @Query("UPDATE threads SET isQueued = 1 WHERE boardId = :boardId AND num = :threadNum")
+    fun addThreadToQueue(boardId: String, threadNum: Int)
+    
     @Query("UPDATE threads SET isHidden = 1 WHERE boardId = :boardId AND num = :threadNum")
     fun markThreadHidden(boardId: String, threadNum: Int)
+
+    @Query("UPDATE threads SET isQueued = 0 WHERE boardId = :boardId AND num = :threadNum")
+    fun removeThreadFromQueue(boardId: String, threadNum: Int)
+
+    @Query("UPDATE threads SET isFavorite = 0 WHERE boardId = :boardId AND num = :threadNum")
+    fun removeThreadFromFavorite(boardId: String, threadNum: Int)
 
     @Query("UPDATE threads SET isHidden = 0 WHERE boardId = :boardId AND num = :threadNum")
     fun unmarkThreadHidden(boardId: String, threadNum: Int)

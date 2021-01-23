@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.download
+package ru.be_more.orange_forum.presentation.screens.download_favorite
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -8,7 +8,7 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.presentation.PresentationContract
 
 class DownloadViewModelImpl (
-    private val downloadInteractor : InteractorContract.DownloadInteractor,
+    private val downFavInteractor : InteractorContract.DownFavInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor
 ): PresentationContract.DownloadViewModel {
@@ -17,7 +17,7 @@ class DownloadViewModelImpl (
 
     @SuppressLint("CheckResult")
     override fun init(){
-        downloadInteractor.getDownloads()
+        downFavInteractor.getDownloads()
             .subscribe(
                 { boards -> this.boards.postValue(boards) },
                 { Log.e("M_DownloadPresenter", "Presenter on first view attach error = $it") }
@@ -25,7 +25,7 @@ class DownloadViewModelImpl (
     }
 
     override fun onDestroy() {
-        downloadInteractor.release()
+        downFavInteractor.release()
         postInteractor.release()
     }
 

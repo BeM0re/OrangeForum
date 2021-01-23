@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.favorire
+package ru.be_more.orange_forum.presentation.screens.queue
 
 import android.view.View
 import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder

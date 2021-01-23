@@ -5,9 +5,9 @@ import android.os.Parcelable
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 
 data class Board (
-    var name:String,
-    var id: String,
-    var threads: List<BoardThread> = listOf(),
+    val name:String,
+    val id: String,
+    val threads: List<BoardThread> = listOf(),
     val isFavorite: Boolean = false
 ):Parcelable, ExpandableGroup<BoardThread>(name, threads) {
     constructor(parcel: Parcel) : this(
