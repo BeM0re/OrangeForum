@@ -90,8 +90,9 @@ class BoardFragment: Fragment(R.layout.fragment_board),
 
     private fun loadBoard(board: Board) {
         adapter = BoardAdapter(
-            board.threads, this, this, this
-        )
+            board.threads, this, this, this) { threadNum ->
+            viewModel.addToQueue(threadNum)
+        }
 
         recyclerView?.adapter = adapter
         recyclerView?.addItemDecoration(

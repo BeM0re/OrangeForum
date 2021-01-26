@@ -7,11 +7,11 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.processSingle
 
 class QueueInteractorImpl(
-    private val favoriteRepository: DbContract.QueueRepository
+    private val queueRepository: DbContract.QueueRepository
 ): InteractorContract.QueueInteractor, BaseInteractorImpl() {
 
     override fun getQueue(): Single<List<Board>> =
-        favoriteRepository.getQueue()
+        queueRepository.getQueue()
             .processSingle()
 
 }

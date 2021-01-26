@@ -15,7 +15,8 @@ import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 class BoardAdapter(var threads: List<BoardThread> = listOf(),
                    private var picListener: PicOnClickListener,
                    private var boardListener: BoardOnClickListener,
-                   private val linkListener: LinkOnClickListener
+                   private val linkListener: LinkOnClickListener,
+                   private val queueListener: (Int) -> Unit
 ) : RecyclerView.Adapter<OpPostViewHolder>(){
 
 
@@ -45,6 +46,7 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
             holder.setCommentListener(linkListener)
             holder.setHideButton(thread, boardListener)
             holder.setIntoThreadButton(View.OnClickListener { boardListener.onIntoThreadClick(thread.num, thread.title) }, thread.isHidden)
+            holder.setAddToQueueButton(queueListener, thread.num)
         }
     }
 

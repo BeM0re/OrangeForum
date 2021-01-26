@@ -41,6 +41,7 @@ interface PresentationContract {
         fun savePosition(pos: Int)
         fun setFavorite(isFavorite: Boolean)
         fun getBoardName(): String
+        fun addToQueue(threadNum: Int)
     }
 
     interface ThreadViewModel: BaseViewModel, ViewModelWithPosts{

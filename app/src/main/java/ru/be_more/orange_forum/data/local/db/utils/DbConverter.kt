@@ -24,7 +24,8 @@ class DbConverter {
             boardId = boardId,
             isHidden = thread.isHidden,
             isDownloaded = thread.isDownloaded,
-            isFavorite = thread.isFavorite
+            isFavorite = thread.isFavorite,
+            isQueued = thread.isQueued
         )
 
         fun downloadedToStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
