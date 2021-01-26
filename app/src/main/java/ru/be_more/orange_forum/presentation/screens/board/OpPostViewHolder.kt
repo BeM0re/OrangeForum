@@ -108,5 +108,10 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
         }
     }
 
+    fun setAddToQueueButton(queueListener: (Int) -> Unit, threadNum: Int) {
+        iv_board_op_add_queue.setOnClickListener { queueListener(threadNum) }
+
+    }
+
 }
 

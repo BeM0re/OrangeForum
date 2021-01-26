@@ -49,10 +49,10 @@ class ThreadRepositoryImpl(
         )
 
     override fun addThreadToQueue(boardId: String, threadNum: Int) =
-        dao.addThreadToFavorite(boardId, threadNum)
+        dao.addThreadToQueue(boardId, threadNum)
 
     override fun addThreadToFavorite(boardId: String, threadNum: Int) =
-        dao.addThreadToQueue(boardId, threadNum)
+        dao.addThreadToFavorite(boardId, threadNum)
 
     override fun removeThreadFromFavorite(boardId: String, threadNum: Int) =
         dao.removeThreadFromFavorite(boardId, threadNum)

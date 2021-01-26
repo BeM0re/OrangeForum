@@ -114,7 +114,7 @@ class ThreadInteractorImpl (
                 .flatMap { thread ->
                     dbThreadRepository.insertThreadSafety(thread.copy(isQueued = true), boardId)
                         .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.addThreadToFavorite(boardId, threadNum) }
+                            if (!isSaved) dbThreadRepository.addThreadToQueue(boardId, threadNum) }
                 }
                 .flatMap {
                     dbBoardRepository.getBoardCount(boardId)

@@ -125,27 +125,54 @@ class ThreadViewModelImpl (
 
     override fun setQueue(isQueued: Boolean) {
         if (thread.value != null)
-            if (isQueued)
+            if (!isQueued)
                 threadInteractor
                     .addThreadToQueue(threadNum, boardId, boardName)
-                    .subscribe()
+                    .subscribe(
+                        {
+                            this.isQueued.postValue(true)
+                        },
+                        {
+                            Log.e("M_ThreadViewModelImpl","Adding in queue error = $it")
+                        }
+                    )
             else
                 threadInteractor
                     .removeThreadFromQueue(boardId, threadNum)
-                    .subscribe()
+                    .subscribe(
+                        {
+                            this.isQueued.postValue(false)
+                        },
+                        {
+                            Log.e("M_ThreadViewModelImpl","Removing from queue error = $it")
+                        }
+                    )
     }
-
 
     override fun setFavorite(isFavorite: Boolean) {
         if (thread.value != null)
             if (isFavorite)
                 threadInteractor
                     .addThreadToFavorite(threadNum, boardId, boardName)
-                    .subscribe()
+                    .subscribe(
+                        {
+                            this.isFavorite.postValue(true)
+                        },
+                        {
+                            Log.e("M_ThreadViewModelImpl","Adding fav error = $it")
+                        }
+                    )
             else
                 threadInteractor
                     .removeThreadFromFavorite(boardId, threadNum)
-                    .subscribe()
+                    .subscribe(
+                        {
+                            this.isFavorite.postValue(false)
+                        },
+                        {
+                            Log.e("M_ThreadViewModelImpl","Removing fav error = $it")
+                        }
+                    )
     }
 
     override fun download(isDownload: Boolean) {
@@ -153,11 +180,25 @@ class ThreadViewModelImpl (
             if (isDownload)
                 threadInteractor
                     .downloadThread(threadNum, boardId, boardName)
-                    .subscribe()
+                    .subscribe(
+                        {
+                            this.isDownload.postValue(true)
+                        },
+                        {
+                            Log.e("M_ThreadViewModelImpl","Downloading error = $it")
+                        }
+                    )
             else
                 threadInteractor
                     .deleteThread(boardId, threadNum)
-                    .subscribe()
+                    .subscribe(
+                            {
+                                this.isDownload.postValue(false)
+                            },
+                        {
+                            Log.e("M_ThreadViewModelImpl","Removing download error = $it")
+                        }
+                    )
     }
 
 }
