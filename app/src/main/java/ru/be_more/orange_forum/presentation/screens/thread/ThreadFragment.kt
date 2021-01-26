@@ -110,12 +110,12 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
             viewModel.download(false)
             true
         }
-        downButton?.setOnMenuItemClickListener {
-            viewModel.setQueue(true)
+        queueButton?.setOnMenuItemClickListener {
+            viewModel.setQueue(false)
             true
         }
-        downButtonAdded?.setOnMenuItemClickListener {
-            viewModel.setQueue(false)
+        queueButtonAdded?.setOnMenuItemClickListener {
+            viewModel.setQueue(true)
             true
         }
     }

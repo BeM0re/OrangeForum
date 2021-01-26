@@ -131,4 +131,11 @@ class BoardViewModelImpl (
 
     override fun getBoardName(): String =
         board.value?.name?:""
+
+    override fun addToQueue(threadNum: Int) {
+        if (board.value != null)
+            threadInteractor
+                .addThreadToQueue(threadNum, board.value?.id ?: return, board.value?.name ?: return)
+                .subscribe()
+    }
 }

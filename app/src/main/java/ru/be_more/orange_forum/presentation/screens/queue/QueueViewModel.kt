@@ -17,11 +17,7 @@ class FavoriteViewModelImpl (
     @SuppressLint("CheckResult")
     override fun init(){
         if(boards.value == null)
-            QueueInteractor.getQueue()
-                .subscribe(
-                    { boards -> this.boards.postValue(boards) },
-                    { Log.e("M_DownloadPresenter", "Presenter on first view attach error = $it") }
-                )
+            refreshData()
         else
             boards.postValue(boards.value)
     }
