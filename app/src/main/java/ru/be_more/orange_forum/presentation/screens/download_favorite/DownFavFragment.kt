@@ -26,7 +26,7 @@ import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
 class DownFavFragment:
     Fragment(R.layout.fragment_download),
-    DownloadListener,
+    DownFavListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
@@ -90,6 +90,13 @@ class DownFavFragment:
         bundle.putInt(NAVIGATION_THREAD_NUM, threadNum)
         bundle.putString(NAVIGATION_TITLE, threadTitle)
         navController.navigate(R.id.action_downloadFragment_to_threadFragment, bundle)
+    }
+
+    override fun intoBoardClick(boardId: String, boardName: String) {
+        val bundle = Bundle()
+        bundle.putString(NAVIGATION_BOARD_ID, boardId)
+        bundle.putString(NAVIGATION_TITLE, boardName)
+        navController.navigate(R.id.action_downloadFragment_to_boardFragment, bundle)
     }
 
     override fun onRemoveClick(boardId: String, threadNum: Int) {

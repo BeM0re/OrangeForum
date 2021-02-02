@@ -20,7 +20,7 @@ import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_ID
 import ru.be_more.orange_forum.consts.NAVIGATION_THREAD_TITLE
 import ru.be_more.orange_forum.consts.NAVIGATION_TITLE
 import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
-import ru.be_more.orange_forum.presentation.interfaces.FavoriteListener
+import ru.be_more.orange_forum.presentation.interfaces.QueueListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
@@ -32,7 +32,7 @@ import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
 class QueueFragment :
     Fragment(R.layout.fragment_favorite),
-    FavoriteListener,
+    QueueListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {

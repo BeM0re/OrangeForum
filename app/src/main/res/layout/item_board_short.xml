@@ -28,5 +28,15 @@
         app:layout_constraintStart_toStartOf="parent"
         android:background="@color/color_primary"/>
 
+    <ImageView
+        android:id="@+id/iv_board_short_to_board"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_arrow_forward_24"
+        android:layout_margin="@dimen/spacing_normal_16"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
