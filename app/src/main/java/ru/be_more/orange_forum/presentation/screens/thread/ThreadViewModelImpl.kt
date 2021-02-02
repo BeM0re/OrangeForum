@@ -155,23 +155,15 @@ class ThreadViewModelImpl (
                 threadInteractor
                     .addThreadToFavorite(threadNum, boardId, boardName)
                     .subscribe(
-                        {
-                            this.isFavorite.postValue(true)
-                        },
-                        {
-                            Log.e("M_ThreadViewModelImpl","Adding fav error = $it")
-                        }
+                        { this.isFavorite.postValue(true) },
+                        { Log.e("M_ThreadViewModelImpl","Adding fav error = $it") }
                     )
             else
                 threadInteractor
                     .removeThreadFromFavorite(boardId, threadNum)
                     .subscribe(
-                        {
-                            this.isFavorite.postValue(false)
-                        },
-                        {
-                            Log.e("M_ThreadViewModelImpl","Removing fav error = $it")
-                        }
+                        { this.isFavorite.postValue(false) },
+                        { Log.e("M_ThreadViewModelImpl","Removing fav error = $it") }
                     )
     }
 
