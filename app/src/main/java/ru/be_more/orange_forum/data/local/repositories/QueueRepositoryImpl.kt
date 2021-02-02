@@ -35,7 +35,7 @@ class QueueRepositoryImpl (
                         )}
                     )
                 }
-                    .filter { it.threads.isNotEmpty() || it.isFavorite }
+                    .filter { it.threads.isNotEmpty() }
             }
         )
 }
