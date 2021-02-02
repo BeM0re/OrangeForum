@@ -7,7 +7,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_op_post_short.*
-import ru.be_more.orange_forum.presentation.interfaces.DownloadListener
+import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
@@ -77,7 +77,7 @@ class DownFavThreadViewHolder(itemView: View?, private var listener: PicOnClickL
         tv_favorite_op_subject.setOnClickListener(listener)
     }
 
-    fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownloadListener) {
+    fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownFavListener) {
         iv_favorite_close_button.setOnClickListener {
             listener.onRemoveClick(boardId, thread.num)
         }

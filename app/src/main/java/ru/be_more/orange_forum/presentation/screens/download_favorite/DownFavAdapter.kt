@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.interfaces.DownloadListener
+import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
@@ -14,7 +14,7 @@ import ru.be_more.orange_forum.domain.model.BoardThread
 
 
 class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
-                     var downloadListener: DownloadListener,
+                     var downFavListener: DownFavListener,
                      var linkListener: LinkOnClickListener,
                      var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<DownFavBoardViewHolder, DownFavThreadViewHolder>(groups){
@@ -24,7 +24,7 @@ class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
         viewType: Int
     ): DownFavBoardViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_downloaded_board, parent, false)
+        val view: View = inflater.inflate(R.layout.item_board_short, parent, false)
         return DownFavBoardViewHolder(view)
     }
 
@@ -50,13 +50,13 @@ class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
             holder.setTitle(thread.posts[0].subject)
             holder.setPics(thread.posts[0].files.getOrNull(0))
             holder.setCommentListener(View.OnClickListener {
-                downloadListener.intoThreadClick(
+                downFavListener.intoThreadClick(
                     group.id,
                     thread.num,
                     thread.title
                 )
             })
-            holder.setRemoveButton(group.id, thread, downloadListener)
+            holder.setRemoveButton(group.id, thread, downFavListener)
             holder.setDivider()
             holder.setIcon(thread.isFavorite, thread.isDownloaded)
         }
@@ -66,6 +66,13 @@ class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
         holder: DownFavBoardViewHolder, flatPosition: Int,
         group: ExpandableGroup<*>?
     ) {
-        holder.setBoardTitle((group as Board).name)
+        val board = (group as Board)
+        holder.setBoardTitle(board.name)
+        holder.setIntoBoardListener(View.OnClickListener {
+            downFavListener.intoBoardClick(
+                board.id,
+                board.name
+            )
+        })
     }
 }
