@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.interfaces.FavoriteListener
+import ru.be_more.orange_forum.presentation.interfaces.QueueListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 
 
 class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
-                   var favoriteListener: FavoriteListener,
+                   var queueListener: QueueListener,
                    var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<QueueBoardViewHolder, QueueThreadViewHolder>(groups){
 
@@ -22,7 +22,7 @@ class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
         viewType: Int
     ): QueueBoardViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_downloaded_board, parent, false)
+        val view: View = inflater.inflate(R.layout.item_board_short, parent, false)
         return QueueBoardViewHolder(view)
     }
 
@@ -53,7 +53,7 @@ class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
 //            holder.setRemoveButton(group.id, thread, downloadListener) //TODO добавить удоление из избраного
             holder.setDivider()
             holder.setIntoThreadButton(View.OnClickListener {
-                favoriteListener.intoThreadClick(
+                queueListener.intoThreadClick(
                     group.id,
                     thread.num,
                     thread.title
@@ -69,7 +69,7 @@ class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
         val board = group as Board
         holder.setBoardTitle(board.name)
         holder.setIntoBoardListener(View.OnClickListener {
-            favoriteListener.intoBoardClick(
+            queueListener.intoBoardClick(
                 board.id,
                 board.name
             )

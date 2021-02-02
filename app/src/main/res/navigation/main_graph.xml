@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_downloadFragment_to_threadFragment"
             app:destination="@id/threadFragment" />
+        <action
+            android:id="@+id/action_downloadFragment_to_boardFragment"
+            app:destination="@id/boardFragment" />
     </fragment>
     <fragment
         android:id="@+id/threadFragment"
