@@ -122,11 +122,17 @@ class BoardViewModelImpl (
             if (isFavorite)
                 boardInteractor
                     .markBoardFavorite(board.value!!.id, board.value!!.name)
-                    .subscribe()
+                    .subscribe(
+                        { this.isFavorite.postValue(true) },
+                        { Log.e("M_ThreadViewModelImpl","Adding fav error = $it") }
+                    )
             else
                 boardInteractor
                     .unmarkBoardFavorite(board.value!!.id)
-                    .subscribe()
+                    .subscribe(
+                        { this.isFavorite.postValue(false) },
+                        { Log.e("M_ThreadViewModelImpl","Removing fav error = $it") }
+                    )
     }
 
     override fun getBoardName(): String =
