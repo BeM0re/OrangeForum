@@ -42,6 +42,7 @@ interface PresentationContract {
         fun setFavorite(isFavorite: Boolean)
         fun getBoardName(): String
         fun addToQueue(threadNum: Int)
+        fun onMenuReady()
     }
 
     interface ThreadViewModel: BaseViewModel, ViewModelWithPosts{
@@ -56,6 +57,7 @@ interface PresentationContract {
         fun setQueue(isQueued: Boolean)
         fun setFavorite(isFavorite: Boolean)
         fun download(isDownload: Boolean)
+        fun onMenuReady()
     }
 
     interface ResponseViewModel: BaseViewModel{

@@ -188,4 +188,10 @@ class ThreadViewModelImpl (
                     )
     }
 
+    override fun onMenuReady() {
+        isFavorite.postValue(isFavorite.value)
+        isQueued.postValue(isQueued.value)
+        isDownload.postValue(isDownload.value)
+    }
+
 }
