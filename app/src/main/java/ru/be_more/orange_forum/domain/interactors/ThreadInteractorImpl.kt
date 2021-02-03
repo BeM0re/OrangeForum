@@ -156,7 +156,7 @@ class ThreadInteractorImpl (
 
     override fun unhideThread(boardId: String, threadNum: Int) =
         Completable.fromCallable {
-            dbThreadRepository.removeThreadFromFavorite(boardId, threadNum)
+            dbThreadRepository.unhideThread(boardId, threadNum)
         }
             .processCompletable()
 }
