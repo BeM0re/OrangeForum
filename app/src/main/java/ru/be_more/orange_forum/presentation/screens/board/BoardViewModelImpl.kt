@@ -101,12 +101,15 @@ class BoardViewModelImpl (
                 .hideThread(board.value?.id?:"", board.value?.name?:"", threadNum)
                 .subscribe(
                     {},
-                    { Log.e("M_BoardViewModel","hidding error = $it") }
+                    { Log.e("M_BoardViewModel","hiding error = $it") }
                 )
         }
         else {
             threadInteractor.unhideThread(board.value?.id?:"", threadNum)
-                .subscribe()
+                .subscribe(
+                    {},
+                    { Log.e("M_BoardViewModel","hiding error = $it") }
+                )
         }
     }
 
