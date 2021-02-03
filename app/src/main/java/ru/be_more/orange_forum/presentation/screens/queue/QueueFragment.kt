@@ -91,7 +91,6 @@ class QueueFragment :
         )
     }
 
-
     private fun loadFavorites(boards: List<Board>) {
         adapter = QueueAdapter(boards, this, this)
 

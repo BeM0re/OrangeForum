@@ -86,6 +86,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         downButton = menu.findItem(R.id.navigation_download)
         downButtonAdded = menu.findItem(R.id.navigation_download_done)
         setToolbarListeners()
+        viewModel.onMenuReady()
     }
 
     private fun setToolbarListeners() {

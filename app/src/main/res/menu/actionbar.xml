@@ -47,6 +47,7 @@
         android:id="@+id/navigation_pref"
         app:showAsAction="never"
         android:title="Settings"
-        android:icon="@drawable/ic_settings_accent_24dp">
+        android:icon="@drawable/ic_settings_accent_24dp"
+        android:visible="false">
     </item>
 </menu>

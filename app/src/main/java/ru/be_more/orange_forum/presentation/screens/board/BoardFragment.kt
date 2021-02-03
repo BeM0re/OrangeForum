@@ -64,6 +64,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         favButton = menu.findItem(R.id.navigation_favorite)
         favButtonAdded = menu.findItem(R.id.navigation_favorite_added)
         setToolbarListeners()
+        viewModel.onMenuReady()
     }
 
     override fun onDestroyView() {
@@ -182,8 +183,6 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         recyclerView = rv_thread_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
 
-        App.getBus().onNext(BoardToBeOpened)
-        App.getBus().onNext(ThreadToBeClosed)
     }
 
     private fun saveState(){
