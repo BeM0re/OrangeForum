@@ -14,7 +14,6 @@ import ru.be_more.orange_forum.presentation.bus.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
-    private var timestamp: Long = 0
     private var disposable: Disposable? = null
     private lateinit var navController: NavController
 

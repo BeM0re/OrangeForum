@@ -10,6 +10,8 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.bus.BoardToBeOpened
+import ru.be_more.orange_forum.presentation.bus.ThreadToBeClosed
 import java.util.*
 
 class BoardViewModelImpl (
@@ -29,7 +31,9 @@ class BoardViewModelImpl (
 
     @SuppressLint("CheckResult")
     override fun init(boardId: String?, boardName: String?){
-        if (board.value == null || board.value?.id != boardId){
+        App.getBus().onNext(BoardToBeOpened)
+        if (board.value == null || (board.value?.id != boardId && !boardId.isNullOrEmpty())){
+            App.getBus().onNext(ThreadToBeClosed)
             if (!boardId.isNullOrEmpty() && !boardName.isNullOrEmpty()) {
                 boardInteractor.getBoard(boardId, boardName)
                     .subscribe(
@@ -143,5 +147,9 @@ class BoardViewModelImpl (
             threadInteractor
                 .addThreadToQueue(threadNum, board.value?.id ?: return, board.value?.name ?: return)
                 .subscribe()
+    }
+
+    override fun onMenuReady() {
+        isFavorite.postValue(isFavorite.value)
     }
 }
