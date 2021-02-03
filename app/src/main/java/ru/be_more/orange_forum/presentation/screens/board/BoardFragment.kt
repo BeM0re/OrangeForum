@@ -89,6 +89,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
     }
 
     private fun loadBoard(board: Board) {
+        navController.currentDestination?.label = board.name
         adapter = BoardAdapter(
             board.threads, this, this, this) { threadNum ->
             viewModel.addToQueue(threadNum)

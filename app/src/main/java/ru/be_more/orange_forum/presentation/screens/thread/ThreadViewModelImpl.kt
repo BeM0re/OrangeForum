@@ -57,6 +57,9 @@ class ThreadViewModelImpl (
         else{
             thread.postValue(thread.value)
             savedPosition.postValue(savedPosition.value)
+            isFavorite.postValue(isFavorite.value)
+            isQueued.postValue(isQueued.value)
+            isDownload.postValue(isDownload.value)
         }
     }
 
@@ -129,23 +132,15 @@ class ThreadViewModelImpl (
                 threadInteractor
                     .addThreadToQueue(threadNum, boardId, boardName)
                     .subscribe(
-                        {
-                            this.isQueued.postValue(true)
-                        },
-                        {
-                            Log.e("M_ThreadViewModelImpl","Adding in queue error = $it")
-                        }
+                        { this.isQueued.postValue(true) },
+                        { Log.e("M_ThreadViewModelImpl","Adding in queue error = $it") }
                     )
             else
                 threadInteractor
                     .removeThreadFromQueue(boardId, threadNum)
                     .subscribe(
-                        {
-                            this.isQueued.postValue(false)
-                        },
-                        {
-                            Log.e("M_ThreadViewModelImpl","Removing from queue error = $it")
-                        }
+                        { this.isQueued.postValue(false) },
+                        { Log.e("M_ThreadViewModelImpl","Removing from queue error = $it") }
                     )
     }
 
