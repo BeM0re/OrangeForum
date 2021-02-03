@@ -19,7 +19,6 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
-import ru.be_more.orange_forum.presentation.interfaces.CustomOnScrollListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
@@ -27,14 +26,12 @@ import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
-import ru.be_more.orange_forum.presentation.custom.CustomScrollListener
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 import ru.be_more.orange_forum.presentation.screens.response.ResponseFragment
 
 class ThreadFragment : Fragment(R.layout.fragment_thread),
     PicOnClickListener,
     LinkOnClickListener,
-    CustomOnScrollListener,
     CloseModalListener {
 
     private val viewModel: PresentationContract.ThreadViewModel by inject()
@@ -63,8 +60,6 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         subscribe()
 
         setUpDownButtonOnCLickListener()
-
-//        setOnScrollListener()
 
         fab_thread_respond.setOnClickListener { showResponseForm() }
 
@@ -169,7 +164,6 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         )
     }
 
-    //TODO переделать на нормальную капчу, когда (если) макака сделает API
     private fun showResponseForm() {
         val bundle = Bundle()
         bundle.putString(NAVIGATION_BOARD_ID, boardId)
@@ -179,6 +173,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
     }
 
     private fun loadThread(thread: BoardThread) {
+        navController.currentDestination?.label = thread.title
         adapter = ThreadAdapter(thread, this, this)
 
         recyclerView?.adapter = adapter
@@ -251,12 +246,6 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         }
     }
 
-    private fun setOnScrollListener(){
-        val scrollListener = CustomScrollListener(this)
-
-        recyclerView?.setOnScrollChangeListener(scrollListener)
-    }
-
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
         var attachment: Attachment? = null
 
@@ -285,18 +274,6 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
 
     override fun onLinkClick(externalLink: String?) {
         Log.d("M_ThreadPresenter", "outer link = $externalLink")
-    }
-
-    override fun onScrolling(){
-        Log.d("M_ThreadFragment", "scroll")
-        fab_thread_up.visibility = View.VISIBLE
-        fab_thread_down.visibility = View.VISIBLE
-    }
-
-    override fun onScrollStop(){
-        Log.d("M_ThreadFragment", "stop scroll")
-        fab_thread_up.visibility = View.GONE
-        fab_thread_down.visibility = View.GONE
     }
 
     override fun onCloseModalListener(){
