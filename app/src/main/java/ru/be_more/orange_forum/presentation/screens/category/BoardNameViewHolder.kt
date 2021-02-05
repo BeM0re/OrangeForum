@@ -11,6 +11,6 @@ class BoardNameViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutCo
         tv_board_title.text= name
     }
 
-    override val containerView: View?
+    override val containerView: View
         get() = itemView
 }

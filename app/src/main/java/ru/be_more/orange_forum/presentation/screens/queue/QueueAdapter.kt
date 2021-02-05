@@ -13,8 +13,8 @@ import ru.be_more.orange_forum.domain.model.BoardThread
 
 
 class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
-                   var queueListener: QueueListener,
-                   var picListener: PicOnClickListener) :
+                   private var queueListener: QueueListener,
+                   private var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<QueueBoardViewHolder, QueueThreadViewHolder>(groups){
 
     override fun onCreateGroupViewHolder(

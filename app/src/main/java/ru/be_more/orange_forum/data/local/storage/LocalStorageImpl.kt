@@ -36,26 +36,17 @@ class LocalStorageImpl(
             .submit()
             .get()
 
-        try {
-            val photoFile: File? = try {
-                createImageFile()
-            } catch (ex: IOException) {
-                Log.e("M_FileStorage", "$ex")
-                return null
-            }
-            var fileName: Uri? = null
-            if(photoFile != null) {
-                fileName = FileProvider.getUriForFile(
-                    context,"ru.be_more.orange_forum.fileprovider", photoFile)
-                val out = FileOutputStream(photoFile)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                out.flush()
-                out.close()
-            }
-            return fileName
+        return try {
+            val photoFile: File = createImageFile()
+            val fileName = FileProvider.getUriForFile(context,"ru.be_more.orange_forum.fileprovider", photoFile)
+            val out = FileOutputStream(photoFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            out.flush()
+            out.close()
+            fileName
         } catch (e: Exception) {
             Log.e("M_FileStorage", "Image NOT saved. Error = $e")
-            return null
+            null
         }
     }
 
@@ -71,7 +62,7 @@ class LocalStorageImpl(
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
-        val timeStamp: String = "${System.currentTimeMillis()}"
+        val timeStamp = "${System.currentTimeMillis()}"
         val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile(
             "JPEG_${timeStamp}_", /* prefix */

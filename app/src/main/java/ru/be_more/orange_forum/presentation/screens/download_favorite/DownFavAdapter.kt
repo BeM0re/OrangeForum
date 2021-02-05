@@ -14,9 +14,8 @@ import ru.be_more.orange_forum.domain.model.BoardThread
 
 
 class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
-                     var downFavListener: DownFavListener,
-                     var linkListener: LinkOnClickListener,
-                     var picListener: PicOnClickListener) :
+                     private var downFavListener: DownFavListener,
+                     private var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<DownFavBoardViewHolder, DownFavThreadViewHolder>(groups){
 
     override fun onCreateGroupViewHolder(

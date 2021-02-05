@@ -33,7 +33,7 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PicO
         }
     }
 
-    fun updateData(data:List<AttachFile>){
+    /*fun updateData(data:List<AttachFile>){
 
         val diffCallback = object: DiffUtil.Callback(){
             override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean =
@@ -52,7 +52,7 @@ class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PicO
 
         files = data
         diffResult.dispatchUpdatesTo(this)
-    }
+    }*/
 }
 
 

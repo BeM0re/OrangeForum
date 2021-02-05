@@ -5,15 +5,27 @@
     <string name="navigation_thread">Thread</string>
     <string name="navigation_favorites">Favorites</string>
     <string name="navigation_queue">Queue</string>
-    <string name="navigation_downloaded">Downloads</string>
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
-    <string name="fuck_warning">fuck warning</string>
+    <string name="fuck_warning">some image</string>
     <string name="btn_title_hide">Скрыть</string>
     <string name="btn_title_into">В тред</string>
     <string name="op_check">#OP</string>
-    <string name="no_invisible_recaptcha_error">The app works only with invisible recaptcha for now, which is unavailable</string>
-    <string name="captchaHtml">asd</string>
     <string name="play_icon_description">Play icon</string>
     <string name="oppic_description">OpPic</string>
+    <string name="missed_posts_title">Пропущено %1$d постов</string>
+    <string name="posts_with_image">%1$d c картинками</string>
+    <string name="response_form_option_hint">Опции</string>
+    <string name="response_form_send_button_title">Отправить</string>
+    <string name="response_form_choose_photo_button_title">Выбрать фото</string>
+    <string name="response_form_comment_field_hint">Коммент</string>
+    <string name="search_hint">Поиск</string>
+    <string name="thread_download_button">Download</string>
+    <string name="thread_delete_button">Delete</string>
+    <string name="add_to_favorite">Add to favorite</string>
+    <string name="remove_from_favorite">Remove from favorite</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="remove_from_queue">Remove from queue</string>
+    <string name="settings">Settings</string>
+
 
 </resources>

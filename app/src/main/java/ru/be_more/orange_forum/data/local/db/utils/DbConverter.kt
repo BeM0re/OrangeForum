@@ -28,34 +28,6 @@ class DbConverter {
             isQueued = thread.isQueued
         )
 
-        fun downloadedToStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
-            num = thread.num,
-            title = thread.title,
-            boardId = boardId,
-            isHidden = thread.isHidden,
-            isDownloaded = true,
-            isFavorite = thread.isFavorite
-        )
-
-        fun favoriteToStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
-            num = thread.num,
-            title = thread.title,
-            boardId = boardId,
-            isHidden = thread.isHidden,
-            isDownloaded = thread.isDownloaded,
-            isFavorite = true
-        )
-
-        fun toModelThread(thread: StoredThread, posts: List<Post>): BoardThread = BoardThread(
-            num = thread.num,
-            title = thread.title,
-            isHidden = thread.isHidden,
-            isDownloaded = thread.isDownloaded,
-            isFavorite = thread.isFavorite,
-            isQueued = thread.isQueued,
-            posts = posts
-        )
-
         fun toModelThreads(threads: List<StoredThread>): List<BoardThread> =
             threads.map { thread ->
                 BoardThread(
@@ -102,33 +74,9 @@ class DbConverter {
             tn_height = file.tn_height,
             tn_width = file.tn_width,
             webPath = file.path,
-//            localPath = if (file.duration == "") fileStorage.downloadImage(file.path).toString() else "",
             localPath = localPath,
             webThumbnail = file.thumbnail,
-//            localThumbnail = fileStorage.downloadImage(file.thumbnail).toString(),
             localThumbnail = localThumbnail,
-            duration = file.duration,
-            isOpPostFile = postNum == threadNum,
-            threadNum = threadNum
-        )
-
-        fun toStoredFile(
-            file: AttachFile,
-            postNum: Int,
-            boardId: String,
-            threadNum: Int
-        ): StoredFile = StoredFile(
-            boardId = boardId,
-            postNum = postNum,
-            displayName = file.displayName,
-            height = file.height,
-            width = file.width,
-            tn_height = file.tn_height,
-            tn_width = file.tn_width,
-            webPath = file.path,
-            localPath = file.localPath,
-            webThumbnail = file.thumbnail,
-            localThumbnail = file.localThumbnail,
             duration = file.duration,
             isOpPostFile = postNum == threadNum,
             threadNum = threadNum

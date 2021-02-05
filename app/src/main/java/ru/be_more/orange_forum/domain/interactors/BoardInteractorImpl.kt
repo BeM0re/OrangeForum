@@ -26,7 +26,6 @@ class BoardInteractorImpl(
             apiRepository.getDvachThreads(boardId)
                 .doOnError { Log.e("M_BoardInteractorImpl","get web board error = $it") },
             BiFunction <Board, List<BoardThread>, Board> { localBoard, webThreads ->
-                Log.d("M_BoardInteractorImpl","")
                 localBoard.threads.forEach { localThread ->
                     val webIndex = webThreads.indexOfFirst { it.num == localThread.num }
 

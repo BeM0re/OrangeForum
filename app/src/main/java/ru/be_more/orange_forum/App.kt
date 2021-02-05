@@ -19,8 +19,6 @@ class App : Application(){
 
         fun applicationContext(): Context = instance!!.applicationContext
 
-        fun getInstance(): App? = instance
-
         fun showToast(message: String) {
             Toast.makeText(this.applicationContext(), message, Toast.LENGTH_LONG).show()
         }

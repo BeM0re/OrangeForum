@@ -17,11 +17,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
-            android:id="@+id/tiet_board_search"
+            android:id="@+id/et_board_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/color_background"
-            android:hint="Поиск"
+            android:hint="@string/search_hint"
             android:imeOptions="actionDone"
             android:importantForAutofill="no"
             android:inputType="text"
@@ -38,7 +38,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/til_board_search_container"
         app:layout_constraintEnd_toEndOf="@+id/til_board_search_container"
         app:layout_constraintTop_toTopOf="@+id/til_board_search_container"
-        app:srcCompat="@drawable/ic_baseline_clear_24" />
+        app:srcCompat="@drawable/ic_baseline_clear_24"
+        android:contentDescription="@string/fuck_warning" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_category_list"
