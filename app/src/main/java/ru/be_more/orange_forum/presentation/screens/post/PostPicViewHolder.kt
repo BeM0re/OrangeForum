@@ -13,7 +13,7 @@ import ru.be_more.orange_forum.domain.model.AttachFile
 
 class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutContainer {
 
-    override val containerView: View?
+    override val containerView: View
         get() = itemView
 
     fun setParentContainerGone(){

@@ -2,11 +2,10 @@ package ru.be_more.orange_forum.presentation.screens.board
 
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_board_op.*
-import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.domain.model.AttachFile
@@ -17,13 +16,13 @@ import ru.be_more.orange_forum.presentation.screens.post.PostPicAdapter
 class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener ) :
     ChildViewHolder(itemView), LayoutContainer {
 
-    override val containerView: View?
+    override val containerView: View
         get() = itemView
 
     fun setSenderName (param: String){
         tv_board_op_name.text = param
     }
-    fun setIsOp (isOp: Boolean, isHidden: Boolean){
+    fun setIsOp (isOp: Boolean){
         if(isOp)
             tv_board_op_check.visibility=View.VISIBLE
         else
@@ -68,14 +67,14 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
         if(isHidden)
             tv_board_op_total.visibility = View.GONE
         else
-            tv_board_op_total.text ="Пропущено $param постов"
+            tv_board_op_total.text = itemView.context.getString(R.string.missed_posts_title, param)
     }
 
     fun setPostsWithPic (param: Int, isHidden: Boolean){
         if(isHidden)
             tv_board_op_with_pic.visibility = View.GONE
         else
-            tv_board_op_with_pic.text = "$param c картинками"
+            tv_board_op_with_pic.text = itemView.context.getString(R.string.posts_with_image, param)
     }
 
     fun setIntoThreadButton(listener: View.OnClickListener, isHidden: Boolean) {

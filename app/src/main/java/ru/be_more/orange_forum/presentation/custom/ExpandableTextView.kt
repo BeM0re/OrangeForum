@@ -61,22 +61,8 @@ class ExpandableTextView  @JvmOverloads constructor(
     }
 
     override fun onClick(v: View?) {
-//        trim = !trim
         trim = false
         setText()
         requestFocusFromTouch()
-    }
-
-    fun setTrimLength(trimLength : Int) {
-        this.trimLength = getHeight(trimLength)
-        trimmedText = getTrimmedText()
-        setText()
-    }
-
-    private fun getHeight(lineCount : Int) : Int {
-        return if (lineCount > 0 )
-            ((lineCount * getLineCount() + (lineCount - 1) * paint.fontSpacing) / 1.5f).toInt()
-        else
-            ((lineCount * getLineCount()) / 1.5f).toInt()
     }
 }

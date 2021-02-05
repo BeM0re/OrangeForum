@@ -28,7 +28,7 @@
         app:layout_constraintStart_toStartOf="@+id/iv_op_post_pic"
         app:layout_constraintTop_toTopOf="@+id/iv_op_post_pic"
         android:layout_marginTop="6dp"
-        android:layout_marginLeft="5.5dp"
+        android:layout_marginStart="5.5dp"
         android:visibility="gone"
         tools:visibility="visible" />
 
@@ -42,7 +42,8 @@
         android:layout_marginTop="@dimen/spacing_small_8"
         android:layout_marginLeft="@dimen/spacing_small_8"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible"
+        android:contentDescription="@string/fuck_warning" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,21 +1,14 @@
 package ru.be_more.orange_forum.data.local.db.entities
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
 import java.util.*
 
-@Entity(
-    tableName = "posts"/*,
-    foreignKeys = [ForeignKey(entity = StoredThread::class,
-        parentColumns = arrayOf("num"),
-        childColumns = arrayOf("threadNum"),
-        onDelete = ForeignKey.CASCADE)]*/)
+@Entity(tableName = "posts")
 data class StoredPost(
     val boardId: String,
-//    @PrimaryKey val num: Int,
     @PrimaryKey val num: Int,
     val threadNum: Int,
     val name: String,

@@ -11,6 +11,6 @@ class CategoryViewHolder(itemView: View?) : GroupViewHolder(itemView) {
 private var categoryTitle: TextView = itemView!!.findViewById(R.id.tv_category_title)
 
     fun setCategoryTitle(group: Category) {
-        categoryTitle.text = group.title;
+        categoryTitle.text = group.title
     }
 }

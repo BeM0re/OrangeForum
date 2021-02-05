@@ -5,7 +5,7 @@ import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.repositories.BoardRepositoryImpl
 import ru.be_more.orange_forum.data.remote.repositories.CategoryRepositoryImpl
-import ru.be_more.orange_forum.data.remote.repositories.ResponseReposirotyImpl
+import ru.be_more.orange_forum.data.remote.repositories.ResponseRepositoryImpl
 import ru.be_more.orange_forum.data.remote.repositories.ThreadRepositoryImpl
 
 @JvmField
@@ -13,7 +13,7 @@ val repositoryModule = module {
     single<RemoteContract.CategoryRepository> { CategoryRepositoryImpl(get()) }
     single<RemoteContract.BoardRepository> { BoardRepositoryImpl(get()) }
     single<RemoteContract.ThreadRepository> { ThreadRepositoryImpl(get()) }
-    single<RemoteContract.ResponseRepository> { ResponseReposirotyImpl(get()) }
+    single<RemoteContract.ResponseRepository> { ResponseRepositoryImpl(get()) }
 
     single<DbContract.BoardRepository> {
         ru.be_more.orange_forum.data.local.repositories.BoardRepositoryImpl(get())
