@@ -1,11 +1,4 @@
 <resources>
-
-
     <style name="AppTheme.AppBarOverlay" parent="Theme.AppCompat.Light.NoActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
-
-    <style name="AddItemErrorText" parent="Base.TextAppearance.AppCompat" >
-        <item name="android:textColor">@color/error_text</item>
-    </style>
-
 </resources>

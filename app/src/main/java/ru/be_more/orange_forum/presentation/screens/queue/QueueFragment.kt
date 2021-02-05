@@ -32,10 +32,7 @@ import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
 class QueueFragment :
     Fragment(R.layout.fragment_favorite),
-    QueueListener,
-    PicOnClickListener,
-    LinkOnClickListener,
-    CloseModalListener {
+    QueueListener{
 
     private val viewModel: PresentationContract.FavoriteViewModel by inject()
     private var recyclerView : RecyclerView? = null
@@ -75,16 +72,11 @@ class QueueFragment :
             observe(boards, ::loadFavorites)
         }
 
-        disposable = App.getBus().subscribe({
-            if(it is BackPressed) {
-                if (fl_favorite_board_post.visibility != View.GONE)
-//                    viewModel.onBackPressed()
-                else
+        disposable = App.getBus().subscribe(
+            {
+                if (it is BackPressed && fl_favorite_board_post.visibility == View.GONE)
                     App.getBus().onNext(AppToBeClosed)
-            }
-//            if (it.first is RefreshFavorite && it.second == FAVORITE_TAG)
-//                viewModel.refreshData()
-        },
+            },
             {
                 Log.e("M_FavoriteFragment","bus error = \n $it")
             }
@@ -92,16 +84,23 @@ class QueueFragment :
     }
 
     private fun loadFavorites(boards: List<Board>) {
-        adapter = QueueAdapter(boards, this, this)
+        adapter = QueueAdapter(boards, this, object : PicOnClickListener{
+            override fun onThumbnailListener(
+                fullPicUrl: String?,
+                duration: String?,
+                fullPicUri: Uri?
+            ) {
+                //TODO сделоть
+                App.showToast("Картинка")
+            }
+        })
 
         // Iterate and toggle groups
         for (i in (adapter!!.groups.size - 1) downTo 0) {
             if (! adapter!!.isGroupExpanded(i))
                 adapter!!.toggleGroup(i)
         }
-
         recyclerView?.adapter = adapter
-
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
@@ -118,95 +117,4 @@ class QueueFragment :
         bundle.putString(NAVIGATION_TITLE, boardName)
         navController.navigate(R.id.action_queueFragment_to_boardFragment, bundle)
     }
-
-    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-        if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
-            App.showToast("Пост не найден")
-        else
-            ""
-//            viewModel.getSinglePost(chanLink.first, chanLink.third)
-    }
-
-    override fun onLinkClick(postNum: Int) {
-//        downloadPresenter.getSinglePost(postNum)
-        App.showToast("Сделать обработку")
-    }
-
-    override fun onLinkClick(externalLink: String?) {
-        Log.d("M_ThreadPresenter", "outer link = $externalLink")
-    }
-
-    override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
-
-       /* var attachment: Attachment? = null
-
-        if (fullPicUri != null)
-            attachment = Attachment("", duration, fullPicUri)
-        else if (!fullPicUrl.isNullOrEmpty())
-            attachment = Attachment(fullPicUrl, duration)
-
-        if (attachment != null) {
-            favoritePresenter.putContentInStack(attachment)
-            showPic(attachment)
-//            .visibility = View.VISIBLE
-        }*/
-
-    }
-
-    fun showPic(attachment: Attachment){
-
-       /* fl_favorite_board_post.visibility = View.VISIBLE
-
-        postFragment = PostFragment.getPostFragment(
-            attachment,this,this, this)
-
-        fragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fl_favorite_board_post, postFragment!!, POST_IN_FAVORITE_TAG)
-            ?.commit()*/
-    }
-
-    fun showPost(post: Post){
-
-     /*   fl_board_post.visibility = View.VISIBLE
-
-        postFragment = PostFragment.getPostFragment(
-            post,this,this, this)
-
-        fragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fl_favorite_board_post, postFragment!!, POST_IN_FAVORITE_TAG)
-            ?.commit()*/
-    }
-
-    override fun onCloseModalListener() {
-       /* postFragment = null
-        hideModal()*/
-    }
-
-    fun hideModal() {
-       /* fl_favorite_board_post.visibility = View.GONE
-
-        App.getBus().onNext(Pair(VideoToBeClosed, POST_TAG))
-
-        if (fragmentManager?.findFragmentByTag(POST_IN_FAVORITE_TAG) != null)
-            fragmentManager
-                ?.beginTransaction()
-                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_FAVORITE_TAG)!!)
-
-        favoritePresenter.clearStack()*/
-    }
-
-    fun showToast(message: String) {
-        App.showToast(message )
-    }
-
-//    companion object {
-//        fun getFavoriteFragment (
-//            intoThreadClickListener: (boardId: String, threadNum: Int, threadTitle: String) -> Unit,
-//            intoBoardClickListener: (boardId: String, boardName: String) -> Unit,
-//            onRemoveClickListener: (boardId: String, threadNum: Int) -> Unit
-//        ): FavoriteFragment = FavoriteFragment(intoThreadClickListener, intoBoardClickListener, onRemoveClickListener)
-//
-//    }
 }

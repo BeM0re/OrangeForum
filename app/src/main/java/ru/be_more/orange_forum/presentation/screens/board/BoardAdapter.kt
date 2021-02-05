@@ -30,27 +30,26 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
     override fun getItemCount(): Int = threads.size
 
     override fun onBindViewHolder(holder: OpPostViewHolder, position: Int) {
-        val thread: BoardThread? = threads[position]
-        if(thread != null){
-            holder.setSenderName(thread.posts[0].name)
-            holder.setIsOp(thread.posts[0].op > 0, thread.isHidden)
-            holder.setDate(thread.posts[0].date)
-            holder.setThreadNum(thread.posts[0].num)
-            holder.setTitle(thread.posts[0].subject)
-            holder.setComment(thread.posts[0].comment, thread.isHidden)
-            holder.setTotalPosts(thread.posts[0].posts_count, thread.isHidden)
-            holder.setPostsWithPic(thread.posts[0].files_count, thread.isHidden)
-            if(thread.posts[0].files.isNotEmpty()){
-                holder.setPics(thread.posts[0].files, thread.isHidden)
-            }
-            holder.setCommentListener(linkListener)
-            holder.setHideButton(thread, boardListener)
-            holder.setIntoThreadButton(View.OnClickListener { boardListener.onIntoThreadClick(thread.num, thread.title) }, thread.isHidden)
-            holder.setAddToQueueButton(queueListener, thread.num)
+        val thread = threads[position]
+        val opPost = thread.posts[0]
+        holder.setSenderName(opPost.name)
+        holder.setIsOp(opPost.op > 0)
+        holder.setDate(opPost.date)
+        holder.setThreadNum(opPost.num)
+        holder.setTitle(opPost.subject)
+        holder.setComment(opPost.comment, thread.isHidden)
+        holder.setTotalPosts(opPost.posts_count, thread.isHidden)
+        holder.setPostsWithPic(opPost.files_count, thread.isHidden)
+        if(opPost.files.isNotEmpty()){
+            holder.setPics(opPost.files, thread.isHidden)
         }
+        holder.setCommentListener(linkListener)
+        holder.setHideButton(thread, boardListener)
+        holder.setIntoThreadButton(View.OnClickListener { boardListener.onIntoThreadClick(thread.num, thread.title) }, thread.isHidden)
+        holder.setAddToQueueButton(queueListener, thread.num)
     }
 
-    fun updateData(data:List<BoardThread>){
+/*    fun updateData(data:List<BoardThread>){
 
         val diffCallback = object: DiffUtil.Callback(){
             override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean =
@@ -69,7 +68,7 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
 
         threads = data
         diffResult.dispatchUpdatesTo(this)
-    }
+    }*/
 }
 
 

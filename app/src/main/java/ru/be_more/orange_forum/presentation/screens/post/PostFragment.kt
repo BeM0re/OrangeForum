@@ -127,7 +127,7 @@ class PostFragment : Fragment(R.layout.item_post) {
             iv_post1_pic_full.resetZoom()
             iv_post1_pic_full.visibility = View.VISIBLE
             Glide.with(this)
-                .load(if (pic.uri != null) pic.uri else fullPicGlideUrl)
+                .load(pic.uri ?: fullPicGlideUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(

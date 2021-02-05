@@ -32,6 +32,6 @@ class HtmlParseTest {
 
 
     companion object {
-        val log = Logger.getLogger(HtmlParseTest::class.java.name)
+        val log: Logger = Logger.getLogger(HtmlParseTest::class.java.name)
     }
 }

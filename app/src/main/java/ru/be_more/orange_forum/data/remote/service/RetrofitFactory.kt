@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.data.remote.service
 
 import br.com.jeancsanchez.restinterceptor.RestErrorInterceptor
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import okhttp3.OkHttpClient
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 class RetrofitFactory (sslTrustManager : SSLTrustManager){
 
-    var gson = GsonBuilder()
+    var gson: Gson = GsonBuilder()
         .setLenient()
         .create()
 
@@ -23,7 +24,7 @@ class RetrofitFactory (sslTrustManager : SSLTrustManager){
 //                .apply { level = HttpLoggingInterceptor.Level.BODY })
             .addInterceptor(RestErrorInterceptor())
             .addInterceptor(ChuckerInterceptor(App.applicationContext()))
-            .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.X509TrustManager)
+            .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.x509TrustManager)
             .hostnameVerifier(sslTrustManager.hostnameVerifier)
             .readTimeout(45, TimeUnit.SECONDS)
             .writeTimeout(45, TimeUnit.SECONDS)

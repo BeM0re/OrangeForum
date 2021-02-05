@@ -6,6 +6,10 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -65,7 +69,7 @@ class CategoryFragment:
                     collapseCategories()
             }
             observe(savedQuery) {
-                tiet_board_search.setText(it)
+                et_board_search.setText(it)
             }
         }
 
@@ -77,17 +81,17 @@ class CategoryFragment:
 //            }
 //        }
 //        viewModel.saveExpanded(list)
-        viewModel.saveQuery(tiet_board_search.text.toString())
+        viewModel.saveQuery(et_board_search.text.toString())
     }
 
     private fun setSearchListener(){
-        tiet_board_search.addTextChangedListener(SearchTextWatcher { query ->
+        et_board_search.addTextChangedListener(SearchTextWatcher { query ->
             viewModel.search(query)
         })
 
         ib_board_search_clear.setOnClickListener {
-            tiet_board_search.setText("")
-            tiet_board_search.clearFocus()
+            et_board_search.setText("")
+            et_board_search.clearFocus()
             (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 .hideSoftInputFromWindow(view?.windowToken, 0)
         }
@@ -111,7 +115,7 @@ class CategoryFragment:
         for (i in expandedItems) {
             adapter!!.toggleGroup(i)
         }
-        tiet_board_search.setText(savedQuery)
+        et_board_search.setText(savedQuery)
     }
 
     private fun loadCategories(categories: List<Category>) {

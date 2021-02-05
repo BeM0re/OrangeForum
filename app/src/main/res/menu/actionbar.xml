@@ -4,49 +4,49 @@
     <item
         android:id="@+id/navigation_download"
         app:showAsAction="ifRoom"
-        android:title="Download"
+        android:title="@string/thread_download_button"
         android:icon="@drawable/ic_cloud_download_accent_24dp"
         android:visible="false">
     </item>
     <item
         android:id="@+id/navigation_download_done"
         app:showAsAction="ifRoom"
-        android:title="Delete"
+        android:title="@string/thread_delete_button"
         android:icon="@drawable/ic_cloud_done_black_24dp"
         android:visible="false">
     </item>
     <item
         android:id="@+id/navigation_favorite"
         app:showAsAction="ifRoom"
-        android:title="Add to favorite"
+        android:title="@string/add_to_favorite"
         android:icon="@drawable/ic_favorite_border_accent_24dp"
         android:visible="false">
     </item>
     <item
         android:id="@+id/navigation_favorite_added"
         app:showAsAction="ifRoom"
-        android:title="Remove from favorite"
+        android:title="@string/remove_from_favorite"
         android:icon="@drawable/ic_favorite_accent_24dp"
         android:visible="false">
     </item>
     <item
         android:id="@+id/navigation_queue"
         app:showAsAction="always"
-        android:title="Add to queue"
+        android:title="@string/add_to_queue"
         android:icon="@drawable/ic_queue_add_accent_24"
         android:visible="false">
     </item>
     <item
         android:id="@+id/navigation_queue_added"
         app:showAsAction="ifRoom"
-        android:title="Remove from queue"
+        android:title="@string/remove_from_queue"
         android:icon="@drawable/ic_queue_added_accent_24"
         android:visible="false">
     </item>
     <item
         android:id="@+id/navigation_pref"
         app:showAsAction="never"
-        android:title="Settings"
+        android:title="@string/settings"
         android:icon="@drawable/ic_settings_accent_24dp"
         android:visible="false">
     </item>

@@ -20,8 +20,8 @@ class RemoteConverter {
             id = boardDto.id
         )
 
-        fun toBoard(boardDto: BoardDto)
-                = boardDto.threads.map { toThread(it) }
+        fun toBoard(boardDto: BoardDto) =
+            boardDto.threads.map { toThread(it) }
 
         fun toThread(opPostDto: PostDto) = BoardThread(
             num = opPostDto.num,
@@ -49,7 +49,7 @@ class RemoteConverter {
             number = post.number
         )
 
-        fun toFiles (fileDto: FileDto) = AttachFile(
+        private fun toFiles (fileDto: FileDto) = AttachFile(
             path = fileDto.path,
             thumbnail = fileDto.thumbnail,
             duration = if(fileDto.duration.isNullOrEmpty()) "" else fileDto.duration

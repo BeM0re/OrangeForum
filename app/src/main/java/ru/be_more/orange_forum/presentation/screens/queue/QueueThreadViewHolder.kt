@@ -13,7 +13,7 @@ import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 class QueueThreadViewHolder(itemView: View?, private var listener: PicOnClickListener) :
     ChildViewHolder(itemView), LayoutContainer {
 
-    override val containerView: View?
+    override val containerView: View
         get() = itemView
 
     fun setSenderName (param: String){

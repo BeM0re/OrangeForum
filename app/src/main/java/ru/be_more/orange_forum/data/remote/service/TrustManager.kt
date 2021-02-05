@@ -7,18 +7,20 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.*
 
 
-class SSLTrustManager /*@Inject constructor() */{
+class SSLTrustManager {
 
-    val trustAllCerts: Array<TrustManager> = arrayOf(
+    private val trustAllCerts: Array<TrustManager> = arrayOf(
         @SuppressLint("TrustAllX509TrustManager")
         object : X509TrustManager {
+            @SuppressLint("TrustAllX509TrustManager")
             override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+            @SuppressLint("TrustAllX509TrustManager")
             override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
             override fun getAcceptedIssuers(): Array<X509Certificate> { return arrayOf() }
         }
     )
 
-    val X509TrustManager
+    val x509TrustManager
         get() = trustAllCerts[0] as X509TrustManager
 
     val socketFactory: SSLSocketFactory

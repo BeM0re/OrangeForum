@@ -1,15 +1,9 @@
 package ru.be_more.orange_forum.data.local.db.entities
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = "files"/*,
-    foreignKeys = [ForeignKey(entity = StoredPost::class,
-        parentColumns = arrayOf("num"),
-        childColumns = arrayOf("postNum"),
-        onDelete = ForeignKey.CASCADE)]*/)
+@Entity(tableName = "files")
 data class StoredFile(
     val boardId: String,
     val postNum: Int,

@@ -28,10 +28,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/color_background"
-            android:hint="Опции"
+            android:hint="@string/response_form_option_hint"
             android:imeOptions="actionNext"
             android:importantForAutofill="no"
-            tools:text="Content" />
+            android:inputType="text"
+            tools:text="Content"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -50,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/color_background"
-            android:hint="Коммент"
+            android:hint="@string/response_form_comment_field_hint"
             android:importantForAutofill="no"
             android:inputType="textMultiLine"
             tools:text="Content" />
@@ -67,20 +68,17 @@
             android:id="@+id/btn_response_add_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
             android:backgroundTint="@color/color_accent"
-            android:text="Выбрать фото"
+            android:text="@string/response_form_choose_photo_button_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
         <Button
             android:id="@+id/btn_response_submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
             android:backgroundTint="@color/color_accent"
-            android:text="Отправить"
+            android:text="@string/response_form_send_button_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -8,5 +8,5 @@ data class FileDto(
     val tn_width: Int,
     val path: String,
     val thumbnail: String,
-    val duration: String = ""
+    val duration: String? = ""
 )
