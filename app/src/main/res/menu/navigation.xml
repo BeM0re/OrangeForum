@@ -17,12 +17,12 @@
         android:title="@string/navigation_thread"/>
 
     <item
-        android:id="@+id/favoriteFragment"
+        android:id="@+id/queueFragment"
         android:icon="@drawable/ic_list_numbered_accent_24dp"
         android:title="@string/navigation_queue"/>
 
     <item
-        android:id="@+id/downloadFragment"
+        android:id="@+id/downFavFragment"
         android:icon="@drawable/ic_favorite_accent_24dp"
         android:title="@string/navigation_favorites"/>
 
