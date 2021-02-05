@@ -109,14 +109,14 @@ class QueueFragment :
         bundle.putString(NAVIGATION_BOARD_ID, boardId)
         bundle.putInt(NAVIGATION_THREAD_TITLE, threadNum)
         bundle.putString(NAVIGATION_TITLE, threadTitle)
-        navController.navigate(R.id.action_favoriteFragment_to_threadFragment3, bundle)
+        navController.navigate(R.id.action_queueFragment_to_threadFragment3, bundle)
     }
 
     override fun intoBoardClick(boardId: String, boardName: String) {
         val bundle = Bundle()
         bundle.putString(NAVIGATION_BOARD_ID, boardId)
         bundle.putString(NAVIGATION_TITLE, boardName)
-        navController.navigate(R.id.action_favoriteFragment_to_boardFragment, bundle)
+        navController.navigate(R.id.action_queueFragment_to_boardFragment, bundle)
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
