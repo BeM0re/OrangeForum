@@ -21,14 +21,13 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
-import java.util.*
 
 class DownFavFragment:
     Fragment(R.layout.fragment_download),
     DownFavListener,
     LinkOnClickListener{
 
-    private val viewModel: PresentationContract.DownloadViewModel by inject()
+    private val viewModel: PresentationContract.DownFavViewModel by inject()
     private var recyclerView : RecyclerView? = null
     private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
@@ -56,9 +55,8 @@ class DownFavFragment:
 
         disposable = App.getBus().subscribe(
             {
-                if(it is BackPressed && fl_downloaded_board_post.visibility != View.GONE) {
+                if(it is BackPressed && fl_downloaded_board_post.visibility != View.GONE)
                     App.getBus().onNext(AppToBeClosed)
-                }
             },
             { Log.e("M_DownloadFragment","bus error = \n $it") })
     }
