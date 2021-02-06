@@ -77,7 +77,7 @@ class CategoryViewModelImpl(
     }
 
     override fun onDestroy() {
-        interactor.release()
+
     }
 
 }

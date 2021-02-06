@@ -68,7 +68,7 @@ interface PresentationContract {
     interface QueueViewModel: BaseViewModel{
         val boards: LiveData<List<Board>>
         fun init()
-        fun refreshData()
+        fun removeThread(boardId: String, threadNum: Int)
     }
 
     interface DownFavViewModel: BaseViewModel{

@@ -77,9 +77,9 @@ class DownFavThreadViewHolder(itemView: View?, private var listener: PicOnClickL
         cl_favorite_op_post.setOnClickListener(listener)
     }
 
-    fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownFavListener) {
+    fun setRemoveButton(boardId: String, threadNum: Int, listener: DownFavListener) {
         iv_favorite_close_button.setOnClickListener {
-            listener.onRemoveClick(boardId, thread.num)
+            listener.onRemoveClick(boardId, threadNum)
         }
     }
 

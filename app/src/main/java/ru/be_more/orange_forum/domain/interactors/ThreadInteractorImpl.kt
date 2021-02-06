@@ -17,7 +17,7 @@ class ThreadInteractorImpl (
     private val dbThreadRepository: DbContract.ThreadRepository,
     private val dbPostRepository: DbContract.PostRepository,
     private val dbFileRepository: DbContract.FileRepository
-): InteractorContract.ThreadInteractor, BaseInteractorImpl() {
+): InteractorContract.ThreadInteractor {
 
     override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
         Single.zip(
@@ -34,7 +34,8 @@ class ThreadInteractorImpl (
                     else -> // о треде есть заметки (избранное, скрытое)
                         return@Function3 webThread.copy(
                             isHidden = localThreads[0].isHidden,
-                            isFavorite = localThreads[0].isFavorite
+                            isFavorite = localThreads[0].isFavorite,
+                            isQueued =  localThreads[0].isQueued,
                         )
                 }
             }

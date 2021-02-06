@@ -9,7 +9,6 @@ import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.extentions.disposables
 import ru.be_more.orange_forum.extentions.processCompletable
 import ru.be_more.orange_forum.extentions.processSingle
 
@@ -17,7 +16,7 @@ class BoardInteractorImpl(
     private val apiRepository: RemoteContract.BoardRepository,
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository
-): InteractorContract.BoardInteractor, BaseInteractorImpl() {
+): InteractorContract.BoardInteractor {
 
     override fun getBoard(boardId: String, boardName: String): Single<Board> =
         Single.zip(
@@ -61,12 +60,4 @@ class BoardInteractorImpl(
             dbBoardRepository.unmarkBoardFavorite(boardId)
         }
             .processCompletable()
-
-
-    override fun release() {
-        Log.d("M_BaseInteractorImpl","release")
-        disposables.forEach { it.dispose() }
-        disposables.clear()
-    }
-
 }

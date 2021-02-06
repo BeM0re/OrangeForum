@@ -17,16 +17,14 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
 import ru.be_more.orange_forum.presentation.bus.BackPressed
-import ru.be_more.orange_forum.presentation.interfaces.QueueListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
-class QueueFragment :
-    Fragment(R.layout.fragment_favorite),
-    QueueListener{
+class QueueFragment : Fragment(R.layout.fragment_favorite), DownFavListener{
 
     private val viewModel: PresentationContract.QueueViewModel by inject()
     private var recyclerView : RecyclerView? = null
@@ -61,7 +59,7 @@ class QueueFragment :
 
     fun subscribe(){
         with(viewModel){
-            observe(boards, ::loadFavorites)
+            observe(boards, ::loadQueue)
         }
 
         disposable = App.getBus().subscribe(
@@ -73,7 +71,7 @@ class QueueFragment :
         )
     }
 
-    private fun loadFavorites(boards: List<Board>) {
+    private fun loadQueue(boards: List<Board>) {
         adapter = QueueAdapter(boards, this, object : PicOnClickListener{
             override fun onThumbnailListener(
                 fullPicUrl: String?,
@@ -107,5 +105,9 @@ class QueueFragment :
         bundle.putString(NAVIGATION_TITLE, boardName)
         bundle.putString(NAVIGATION_BOARD_NAME, boardName)
         navController.navigate(R.id.action_queueFragment_to_boardFragment, bundle)
+    }
+
+    override fun onRemoveClick(boardId: String, threadNum: Int) {
+        viewModel.removeThread(boardId, threadNum)
     }
 }
