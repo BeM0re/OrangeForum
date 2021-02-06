@@ -45,8 +45,6 @@ class DownFavFragment:
 
     private fun init(view: View){
         navController = Navigation.findNavController(view)
-        navController.currentDestination?.label = "Favorites"
-
         recyclerView = rv_downloaded_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
     }
@@ -102,6 +100,7 @@ class DownFavFragment:
         val bundle = Bundle()
         bundle.putString(NAVIGATION_BOARD_ID, boardId)
         bundle.putString(NAVIGATION_TITLE, boardName)
+        bundle.putString(NAVIGATION_BOARD_NAME, boardName)
         navController.navigate(R.id.action_downFavFragment_to_boardFragment, bundle)
     }
 

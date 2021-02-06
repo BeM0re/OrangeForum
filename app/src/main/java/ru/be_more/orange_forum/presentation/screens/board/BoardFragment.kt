@@ -78,6 +78,18 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         super.onDestroyView()
     }
 
+    private fun init(view: View){
+        navController = Navigation.findNavController(view)
+
+        val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)
+        val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)
+
+        viewModel.init(boardId, boardName)
+        recyclerView = rv_thread_list
+        recyclerView?.layoutManager = LinearLayoutManager(this.context)
+
+    }
+
     private fun setToolbarListeners() {
         favButton?.setOnMenuItemClickListener {
             viewModel.setFavorite(true)
@@ -90,7 +102,6 @@ class BoardFragment: Fragment(R.layout.fragment_board),
     }
 
     private fun loadBoard(board: Board) {
-        navController.currentDestination?.label = board.name
         adapter = BoardAdapter(
             board.threads, this, this, this) { threadNum ->
             viewModel.addToQueue(threadNum)
@@ -171,18 +182,6 @@ class BoardFragment: Fragment(R.layout.fragment_board),
                 }
             },
             { Log.e("M_BoardFragment", "bus error = \n $it") })
-    }
-
-    private fun init(view: View){
-        navController = Navigation.findNavController(view)
-
-        val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)
-        val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)
-
-        viewModel.init(boardId, boardName)
-        recyclerView = rv_thread_list
-        recyclerView?.layoutManager = LinearLayoutManager(this.context)
-
     }
 
     private fun saveState(){
