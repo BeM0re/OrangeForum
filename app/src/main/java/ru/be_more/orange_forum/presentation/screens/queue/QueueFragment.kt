@@ -14,12 +14,9 @@ import kotlinx.android.synthetic.main.fragment_favorite.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
 import ru.be_more.orange_forum.presentation.bus.BackPressed
-import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_ID
-import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_NAME
-import ru.be_more.orange_forum.consts.NAVIGATION_THREAD_TITLE
-import ru.be_more.orange_forum.consts.NAVIGATION_TITLE
 import ru.be_more.orange_forum.presentation.interfaces.QueueListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
@@ -99,7 +96,7 @@ class QueueFragment :
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
         val bundle = Bundle()
         bundle.putString(NAVIGATION_BOARD_ID, boardId)
-        bundle.putInt(NAVIGATION_THREAD_TITLE, threadNum)
+        bundle.putInt(NAVIGATION_THREAD_NUM, threadNum)
         bundle.putString(NAVIGATION_TITLE, threadTitle)
         navController.navigate(R.id.action_queueFragment_to_threadFragment3, bundle)
     }

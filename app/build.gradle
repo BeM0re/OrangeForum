@@ -19,7 +19,7 @@ android {
         applicationId "ru.be_more.orange_forum"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 8
+        versionCode 11
         versionName "0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -127,4 +127,5 @@ dependencies {
 
     //HTTP request traction
     debugImplementation "com.github.chuckerteam.chucker:library:3.4.0"
+    releaseImplementation "com.github.chuckerteam.chucker:library-no-op:3.4.0"
 }
