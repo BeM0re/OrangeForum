@@ -54,7 +54,7 @@ interface PresentationContract {
         fun init(boardId: String?, threadNum: Int, boardName: String)
         fun getPost(chanLink: Triple<String, Int, Int>)
         fun getPost(postNum: Int)
-        fun setQueue(isQueued: Boolean)
+        fun addToQueue(isQueued: Boolean)
         fun setFavorite(isFavorite: Boolean)
         fun download(isDownload: Boolean)
         fun onMenuReady()

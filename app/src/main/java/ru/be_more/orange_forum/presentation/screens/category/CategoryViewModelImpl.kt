@@ -3,13 +3,15 @@ package ru.be_more.orange_forum.presentation.screens.category
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.presentation.PresentationContract
 import java.util.*
 
 class CategoryViewModelImpl(
-    private val interactor : InteractorContract.CategoryInteractor
+    private val interactor : InteractorContract.CategoryInteractor,
+    private val prefs: Preferences
 ): PresentationContract.CategoryViewModel {
 
     private var fullDataset: List<Category>? = null
