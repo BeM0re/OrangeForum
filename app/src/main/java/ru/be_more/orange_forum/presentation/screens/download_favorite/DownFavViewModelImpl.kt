@@ -32,12 +32,22 @@ class DownFavViewModelImpl (
     }
 
     override fun onDestroy() {
-        downFavInteractor.release()
-        postInteractor.release()
+
     }
 
     override fun removeThread(boardId: String, threadNum: Int) {
-        threadInteractor.deleteThread(boardId, threadNum)
-            .subscribe()
+        threadInteractor
+            .deleteThread(boardId, threadNum)
+            .subscribe(
+                { refreshData() },
+                { Log.e("M_QueueViewModelImpl","removing from queue error = $it")}
+            )
+
+        threadInteractor
+            .removeThreadFromFavorite(boardId, threadNum)
+            .subscribe(
+                { refreshData() },
+                { Log.e("M_QueueViewModelImpl","removing from queue error = $it")}
+            )
     }
 }

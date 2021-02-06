@@ -9,6 +9,7 @@ import ru.be_more.orange_forum.presentation.PresentationContract
 
 class QueueViewModelImpl (
     private val queueInteractor : InteractorContract.QueueInteractor,
+    private val threadInteractor : InteractorContract.ThreadInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
     private val prefs: Preferences
 ): PresentationContract.QueueViewModel{
@@ -22,7 +23,7 @@ class QueueViewModelImpl (
             boards.postValue(boards.value)
     }
 
-    override fun refreshData(){
+    private fun refreshData(){
         queueInteractor.getQueue()
             .subscribe(
                 { boards -> this.boards.postValue(boards) },
@@ -30,9 +31,15 @@ class QueueViewModelImpl (
             )
     }
 
-    override fun onDestroy() {
-        queueInteractor.release()
-        postInteractor.release()
+    override fun removeThread(boardId: String, threadNum: Int) {
+        threadInteractor.removeThreadFromQueue(boardId, threadNum)
+            .subscribe(
+                { refreshData() },
+                { Log.e("M_QueueViewModelImpl","removing from queue error = $it")}
+            )
     }
 
+    override fun onDestroy() {
+
+    }
 }

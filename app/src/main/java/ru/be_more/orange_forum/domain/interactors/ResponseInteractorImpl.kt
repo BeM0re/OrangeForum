@@ -9,7 +9,7 @@ import ru.be_more.orange_forum.extentions.processSingle
 
 class ResponseInteractorImpl (
     private val responseRepository: RemoteContract.ResponseRepository
-): InteractorContract.ResponseInteractor, BaseInteractorImpl() {
+): InteractorContract.ResponseInteractor {
     override fun postResponse(
         boardId: String,
         threadNum: Int,
