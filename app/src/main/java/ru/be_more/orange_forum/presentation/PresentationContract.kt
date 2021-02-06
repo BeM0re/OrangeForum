@@ -65,13 +65,13 @@ interface PresentationContract {
         fun postResponse(boardId: String, threadNum: Int, comment: String, token:String)
     }
 
-    interface FavoriteViewModel: BaseViewModel{
+    interface QueueViewModel: BaseViewModel{
         val boards: LiveData<List<Board>>
         fun init()
         fun refreshData()
     }
 
-    interface DownloadViewModel: BaseViewModel{
+    interface DownFavViewModel: BaseViewModel{
         val boards: LiveData<List<Board>>
         fun init()
         fun removeThread(boardId: String, threadNum: Int)

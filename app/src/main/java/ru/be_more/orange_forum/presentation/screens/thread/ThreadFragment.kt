@@ -56,8 +56,8 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         setHasOptionsMenu(true)
         super.onViewCreated(view, savedInstanceState)
 
-        init(view)
         subscribe()
+        init(view)
 
         setUpDownButtonOnCLickListener()
 
@@ -89,6 +89,17 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         viewModel.onMenuReady()
     }
 
+    override fun onDestroyView() {
+        //TODO save state
+        disposable?.dispose()
+        disposable = null
+        adapter = null
+        recyclerView?.adapter = null
+        postFragment = null
+        responseFragment = null
+        super.onDestroyView()
+    }
+
     private fun setToolbarListeners() {
         favButton?.setOnMenuItemClickListener {
             viewModel.setFavorite(true)
@@ -114,17 +125,6 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
             viewModel.setQueue(true)
             true
         }
-    }
-
-    override fun onDestroyView() {
-        //TODO save state
-        disposable?.dispose()
-        disposable = null
-        adapter = null
-        recyclerView?.adapter = null
-        postFragment = null
-        responseFragment = null
-        super.onDestroyView()
     }
 
     private fun init(view: View) {

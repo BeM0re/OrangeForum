@@ -20,13 +20,9 @@ import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_ID
 import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_NAME
 import ru.be_more.orange_forum.consts.NAVIGATION_THREAD_TITLE
 import ru.be_more.orange_forum.consts.NAVIGATION_TITLE
-import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
 import ru.be_more.orange_forum.presentation.interfaces.QueueListener
-import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
@@ -35,7 +31,7 @@ class QueueFragment :
     Fragment(R.layout.fragment_favorite),
     QueueListener{
 
-    private val viewModel: PresentationContract.FavoriteViewModel by inject()
+    private val viewModel: PresentationContract.QueueViewModel by inject()
     private var recyclerView : RecyclerView? = null
     private var postFragment: PostFragment? = null
     private var disposable: Disposable? = null
@@ -76,9 +72,7 @@ class QueueFragment :
                 if (it is BackPressed && fl_favorite_board_post.visibility == View.GONE)
                     App.getBus().onNext(AppToBeClosed)
             },
-            {
-                Log.e("M_FavoriteFragment","bus error = \n $it")
-            }
+            { Log.e("M_FavoriteFragment","bus error = \n $it") }
         )
     }
 
