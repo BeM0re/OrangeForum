@@ -12,7 +12,6 @@ import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 
-
 class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
                      private var downFavListener: DownFavListener,
                      private var picListener: PicOnClickListener) :
@@ -48,14 +47,14 @@ class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
             holder.setThreadNum(thread.posts[0].num)
             holder.setTitle(thread.posts[0].subject)
             holder.setPics(thread.posts[0].files.getOrNull(0))
-            holder.setCommentListener(View.OnClickListener {
+            holder.setCommentListener {
                 downFavListener.intoThreadClick(
                     group.id,
                     thread.num,
                     thread.title
                 )
-            })
-            holder.setRemoveButton(group.id, thread, downFavListener)
+            }
+            holder.setRemoveButton(group.id, thread.num, downFavListener)
             holder.setDivider()
             holder.setIcon(thread.isFavorite, thread.isDownloaded)
         }
@@ -67,11 +66,11 @@ class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
     ) {
         val board = (group as Board)
         holder.setBoardTitle(board.name)
-        holder.setIntoBoardListener(View.OnClickListener {
+        holder.setIntoBoardListener {
             downFavListener.intoBoardClick(
                 board.id,
                 board.name
             )
-        })
+        }
     }
 }

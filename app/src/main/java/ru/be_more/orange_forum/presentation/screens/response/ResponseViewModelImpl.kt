@@ -34,6 +34,6 @@ class ResponseViewModelImpl (
     }
 
     override fun onDestroy(){
-        interactor.release()
+
     }
 }

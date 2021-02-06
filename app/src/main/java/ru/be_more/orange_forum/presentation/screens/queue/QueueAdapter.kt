@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.interfaces.QueueListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 
 
 class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
-                   private var queueListener: QueueListener,
+                   private var queueListener: DownFavListener,
                    private var picListener: PicOnClickListener) :
     ExpandableRecyclerViewAdapter<QueueBoardViewHolder, QueueThreadViewHolder>(groups){
 
@@ -52,13 +52,14 @@ class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
             }
 //            holder.setRemoveButton(group.id, thread, downloadListener) //TODO добавить удоление из избраного
             holder.setDivider()
-            holder.setIntoThreadButton(View.OnClickListener {
+            holder.setIntoThreadButton {
                 queueListener.intoThreadClick(
                     group.id,
                     thread.num,
                     thread.title
                 )
-            })
+            }
+            holder.setRemoveButton(group.id, thread.num, queueListener)
         }
     }
 
@@ -68,12 +69,12 @@ class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
     ) {
         val board = group as Board
         holder.setBoardTitle(board.name)
-        holder.setIntoBoardListener(View.OnClickListener {
+        holder.setIntoBoardListener {
             queueListener.intoBoardClick(
                 board.id,
                 board.name
             )
-        })
+        }
         holder.expand()
     }
 }

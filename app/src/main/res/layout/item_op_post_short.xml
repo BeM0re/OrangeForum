@@ -73,7 +73,6 @@
             android:id="@+id/iv_favorite_close_button"
             app:layout_constraintTop_toTopOf="@id/tv_favorite_op_num"
             app:layout_constraintBottom_toBottomOf="@id/tv_favorite_op_num"
-            app:layout_constraintStart_toEndOf="@id/tv_favorite_op_num"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             android:src="@drawable/ic_baseline_clear_24"

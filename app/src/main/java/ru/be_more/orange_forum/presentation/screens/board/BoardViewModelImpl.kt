@@ -54,12 +54,6 @@ class BoardViewModelImpl (
         }
     }
 
-    override fun onDestroy() {
-        boardInteractor.release()
-        threadInteractor.release()
-        postInteractor.release()
-    }
-
     override fun clearStack() {
         this.modalStack.clear()
     }
@@ -161,5 +155,9 @@ class BoardViewModelImpl (
 
     override fun onMenuReady() {
         isFavorite.postValue(isFavorite.value)
+    }
+
+    override fun onDestroy() {
+
     }
 }

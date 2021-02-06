@@ -10,7 +10,7 @@ import ru.be_more.orange_forum.extentions.processSingle
 
 class CategoryInteractorImpl (
     private val repository: RemoteContract.CategoryRepository):
-        InteractorContract.CategoryInteractor, BaseInteractorImpl() {
+        InteractorContract.CategoryInteractor {
 
     @SuppressLint("CheckResult")
     override fun getCategories(): Single<List<Category>> =

@@ -66,8 +66,7 @@ class ThreadViewModelImpl (
     }
 
     override fun onDestroy() {
-        threadInteractor.release()
-        postInteractor.release()
+
     }
 
     override fun clearStack() {

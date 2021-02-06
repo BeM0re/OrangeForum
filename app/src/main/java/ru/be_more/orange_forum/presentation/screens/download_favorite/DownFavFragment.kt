@@ -22,10 +22,7 @@ import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
-class DownFavFragment:
-    Fragment(R.layout.fragment_download),
-    DownFavListener,
-    LinkOnClickListener{
+class DownFavFragment: Fragment(R.layout.fragment_download), DownFavListener, LinkOnClickListener{
 
     private val viewModel: PresentationContract.DownFavViewModel by inject()
     private var recyclerView : RecyclerView? = null
@@ -50,7 +47,7 @@ class DownFavFragment:
 
     private fun subscribe(){
         with(viewModel){
-            observe(boards, ::loadDownloads)
+            observe(boards, ::loadFavs)
         }
 
         disposable = App.getBus().subscribe(
@@ -71,7 +68,7 @@ class DownFavFragment:
         super.onDestroyView()
     }
 
-    private fun loadDownloads(boards: List<Board>) {
+    private fun loadFavs(boards: List<Board>) {
         adapter = DownFavAdapter(boards, this, object : PicOnClickListener{
             override fun onThumbnailListener(
                 fullPicUrl: String?,
@@ -82,11 +79,16 @@ class DownFavFragment:
                 App.showToast("Картинка")
             }
         })
+
+        // Iterate and toggle groups
+        for (i in (adapter!!.groups.size - 1) downTo 0) {
+            if (! adapter!!.isGroupExpanded(i))
+                adapter!!.toggleGroup(i)
+        }
         recyclerView?.adapter = adapter
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
-//        intoThreadClickListener(boardId, threadNum, threadTitle)
         val bundle = Bundle()
         bundle.putString(NAVIGATION_BOARD_ID, boardId)
         bundle.putInt(NAVIGATION_THREAD_NUM, threadNum)
@@ -103,7 +105,6 @@ class DownFavFragment:
     }
 
     override fun onRemoveClick(boardId: String, threadNum: Int) {
-//        onRemoveClickListener(boardId, threadNum)
         viewModel.removeThread(boardId, threadNum)
     }
 
@@ -122,5 +123,4 @@ class DownFavFragment:
     override fun onLinkClick(externalLink: String?) {
         Log.d("M_ThreadPresenter", "outer link = $externalLink")
     }
-
 }

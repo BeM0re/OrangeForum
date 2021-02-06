@@ -11,7 +11,7 @@ import ru.be_more.orange_forum.extentions.processSingle
 class PostInteractorImpl (
     private val dbPostRepository: DbContract.PostRepository,
     private val dbFileRepository: DbContract.FileRepository
-): InteractorContract.PostInteractor, BaseInteractorImpl() {
+): InteractorContract.PostInteractor{
 
     override fun getPost(boardId: String, postNum: Int): Single<Post> =
         Single.zip(dbPostRepository.getPost(boardId, postNum),
