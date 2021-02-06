@@ -7,11 +7,11 @@ import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.presentation.PresentationContract
 
-class DownloadViewModelImpl (
+class DownFavViewModelImpl (
     private val downFavInteractor : InteractorContract.DownFavInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor
-): PresentationContract.DownloadViewModel {
+): PresentationContract.DownFavViewModel {
 
     override val boards = MutableLiveData<List<Board>>()
 

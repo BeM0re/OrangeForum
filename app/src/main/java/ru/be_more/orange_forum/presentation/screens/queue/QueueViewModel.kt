@@ -7,19 +7,19 @@ import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.presentation.PresentationContract
 
-class FavoriteViewModelImpl (
+class QueueViewModelImpl (
     private val QueueInteractor : InteractorContract.QueueInteractor,
     private val postInteractor : InteractorContract.PostInteractor
-): PresentationContract.FavoriteViewModel{
+): PresentationContract.QueueViewModel{
 
     override val boards = MutableLiveData<List<Board>>()
 
     @SuppressLint("CheckResult")
     override fun init(){
-        if(boards.value == null)
+//        if(boards.value == null)
             refreshData()
-        else
-            boards.postValue(boards.value)
+//        else
+//            boards.postValue(boards.value)
     }
 
     @SuppressLint("CheckResult")

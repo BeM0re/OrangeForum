@@ -4,8 +4,8 @@ import org.koin.dsl.module
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.board.BoardViewModelImpl
 import ru.be_more.orange_forum.presentation.screens.category.CategoryViewModelImpl
-import ru.be_more.orange_forum.presentation.screens.download_favorite.DownloadViewModelImpl
-import ru.be_more.orange_forum.presentation.screens.queue.FavoriteViewModelImpl
+import ru.be_more.orange_forum.presentation.screens.download_favorite.DownFavViewModelImpl
+import ru.be_more.orange_forum.presentation.screens.queue.QueueViewModelImpl
 import ru.be_more.orange_forum.presentation.screens.response.ResponseViewModelImpl
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModelImpl
 
@@ -15,6 +15,6 @@ val presenterModule = module {
     single <PresentationContract.BoardViewModel> { BoardViewModelImpl(get(), get(), get()) }
     single <PresentationContract.ThreadViewModel> { ThreadViewModelImpl(get(), get()) }
     single <PresentationContract.ResponseViewModel> { ResponseViewModelImpl(get()) }
-    single <PresentationContract.FavoriteViewModel> { FavoriteViewModelImpl(get(), get()) }
-    single <PresentationContract.DownloadViewModel> { DownloadViewModelImpl(get(), get(), get()) }
+    single <PresentationContract.QueueViewModel> { QueueViewModelImpl(get(), get()) }
+    single <PresentationContract.DownFavViewModel> { DownFavViewModelImpl(get(), get(), get()) }
  }
