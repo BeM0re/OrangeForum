@@ -74,7 +74,7 @@ class DownFavThreadViewHolder(itemView: View?, private var listener: PicOnClickL
     }
 
     fun setCommentListener(listener: View.OnClickListener){
-        tv_favorite_op_subject.setOnClickListener(listener)
+        cl_favorite_op_post.setOnClickListener(listener)
     }
 
     fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownFavListener) {

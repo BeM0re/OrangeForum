@@ -78,7 +78,7 @@ class QueueThreadViewHolder(itemView: View?, private var listener: PicOnClickLis
     }
 
     fun setIntoThreadButton(listener: View.OnClickListener) {
-        tv_favorite_op_subject.setOnClickListener(listener)
+        cl_favorite_op_post.setOnClickListener(listener)
     }
 
 /*    fun setRemoveButton(boardId: String, thread: BoardThread, listener: DownloadListener) {
