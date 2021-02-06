@@ -174,9 +174,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
     }
 
     private fun loadThread(thread: BoardThread) {
-        navController.currentDestination?.label = thread.title
         adapter = ThreadAdapter(thread, this, this)
-
         recyclerView?.adapter = adapter
         recyclerView?.addItemDecoration(
             DividerItemDecoration(recyclerView?.context, HORIZONTAL)
