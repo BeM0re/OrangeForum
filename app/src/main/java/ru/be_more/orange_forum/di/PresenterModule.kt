@@ -11,10 +11,10 @@ import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModelImpl
 
 @JvmField
 val presenterModule = module {
-    single <PresentationContract.CategoryViewModel> { CategoryViewModelImpl(get()) }
-    single <PresentationContract.BoardViewModel> { BoardViewModelImpl(get(), get(), get()) }
-    single <PresentationContract.ThreadViewModel> { ThreadViewModelImpl(get(), get()) }
+    single <PresentationContract.CategoryViewModel> { CategoryViewModelImpl(get(), get()) }
+    single <PresentationContract.BoardViewModel> { BoardViewModelImpl(get(), get(), get(), get()) }
+    single <PresentationContract.ThreadViewModel> { ThreadViewModelImpl(get(), get(), get()) }
     single <PresentationContract.ResponseViewModel> { ResponseViewModelImpl(get()) }
-    single <PresentationContract.QueueViewModel> { QueueViewModelImpl(get(), get()) }
-    single <PresentationContract.DownFavViewModel> { DownFavViewModelImpl(get(), get(), get()) }
+    single <PresentationContract.QueueViewModel> { QueueViewModelImpl(get(), get(), get()) }
+    single <PresentationContract.DownFavViewModel> { DownFavViewModelImpl(get(), get(), get(), get()) }
  }

@@ -118,11 +118,11 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
             true
         }
         queueButton?.setOnMenuItemClickListener {
-            viewModel.setQueue(false)
+            viewModel.addToQueue(false)
             true
         }
         queueButtonAdded?.setOnMenuItemClickListener {
-            viewModel.setQueue(true)
+            viewModel.addToQueue(true)
             true
         }
     }

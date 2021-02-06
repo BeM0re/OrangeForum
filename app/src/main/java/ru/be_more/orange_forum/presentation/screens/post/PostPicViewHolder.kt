@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.item_post_pics.*
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.AttachFile
 
-class PosPicViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutContainer {
+class PostPicViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutContainer {
 
     override val containerView: View
         get() = itemView

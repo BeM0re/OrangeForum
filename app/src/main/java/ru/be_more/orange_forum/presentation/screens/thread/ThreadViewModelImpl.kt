@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -15,7 +16,8 @@ import java.util.*
 //TODO прятать fab при нажатии на ответ
 class ThreadViewModelImpl (
     private val threadInteractor : InteractorContract.ThreadInteractor,
-    private val postInteractor : InteractorContract.PostInteractor
+    private val postInteractor : InteractorContract.PostInteractor,
+    private val prefs: Preferences
 ): PresentationContract.ThreadViewModel{
     
     override val post = MutableLiveData<Post>()
@@ -50,7 +52,7 @@ class ThreadViewModelImpl (
                             isFavorite.postValue(it.isFavorite)
                             isQueued.postValue(it.isQueued)
                         },
-                        { Log.d("M_ThreadPresenter", "get tread in tread presenter error = $it") }
+                        { Log.e("M_ThreadPresenter", "get tread in tread presenter error = $it") }
                     )
             }
         }
@@ -126,20 +128,26 @@ class ThreadViewModelImpl (
             getSinglePost(postNum)
     }
 
-    override fun setQueue(isQueued: Boolean) {
+    override fun addToQueue(isQueued: Boolean) {
         if (thread.value != null)
             if (!isQueued)
                 threadInteractor
                     .addThreadToQueue(threadNum, boardId, boardName)
                     .subscribe(
-                        { this.isQueued.postValue(true) },
+                        {
+                            this.isQueued.postValue(true)
+                            prefs.queueToUpdate = true
+                        },
                         { Log.e("M_ThreadViewModelImpl","Adding in queue error = $it") }
                     )
             else
                 threadInteractor
                     .removeThreadFromQueue(boardId, threadNum)
                     .subscribe(
-                        { this.isQueued.postValue(false) },
+                        {
+                            this.isQueued.postValue(false)
+                            prefs.queueToUpdate = true
+                        },
                         { Log.e("M_ThreadViewModelImpl","Removing from queue error = $it") }
                     )
     }
@@ -150,14 +158,20 @@ class ThreadViewModelImpl (
                 threadInteractor
                     .addThreadToFavorite(threadNum, boardId, boardName)
                     .subscribe(
-                        { this.isFavorite.postValue(true) },
+                        {
+                            this.isFavorite.postValue(true)
+                            prefs.favsToUpdate = true
+                        },
                         { Log.e("M_ThreadViewModelImpl","Adding fav error = $it") }
                     )
             else
                 threadInteractor
                     .removeThreadFromFavorite(boardId, threadNum)
                     .subscribe(
-                        { this.isFavorite.postValue(false) },
+                        {
+                            this.isFavorite.postValue(false)
+                            prefs.favsToUpdate = true
+                        },
                         { Log.e("M_ThreadViewModelImpl","Removing fav error = $it") }
                     )
     }

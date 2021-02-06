@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
@@ -17,7 +18,8 @@ import java.util.*
 class BoardViewModelImpl (
     private val boardInteractor : InteractorContract.BoardInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
-    private val postInteractor : InteractorContract.PostInteractor
+    private val postInteractor : InteractorContract.PostInteractor,
+    private val prefs: Preferences
 ): PresentationContract.BoardViewModel {
 
     override val board = MutableLiveData<Board>()
@@ -130,15 +132,17 @@ class BoardViewModelImpl (
                 boardInteractor
                     .markBoardFavorite(board.value!!.id, board.value!!.name)
                     .subscribe(
-                        { this.isFavorite.postValue(true) },
-                        { Log.e("M_ThreadViewModelImpl","Adding fav error = $it") }
+                        { this.isFavorite.postValue(true)
+                            prefs.favsToUpdate = true},
+                        { Log.e("M_BoardViewModelImpl","Adding fav error = $it") }
                     )
             else
                 boardInteractor
                     .unmarkBoardFavorite(board.value!!.id)
                     .subscribe(
-                        { this.isFavorite.postValue(false) },
-                        { Log.e("M_ThreadViewModelImpl","Removing fav error = $it") }
+                        { this.isFavorite.postValue(false)
+                            prefs.favsToUpdate = true},
+                        { Log.e("M_BoardViewModelImpl","Removing fav error = $it") }
                     )
     }
 
@@ -149,7 +153,10 @@ class BoardViewModelImpl (
         if (board.value != null)
             threadInteractor
                 .addThreadToQueue(threadNum, board.value?.id ?: return, board.value?.name ?: return)
-                .subscribe()
+                .subscribe(
+                    { prefs.queueToUpdate = true },
+                    { Log.e("M_BoardViewModelImpl","Add to queue error = $it") }
+                )
     }
 
     override fun onMenuReady() {
