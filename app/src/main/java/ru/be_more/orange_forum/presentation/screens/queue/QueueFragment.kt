@@ -17,6 +17,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
 import ru.be_more.orange_forum.presentation.bus.BackPressed
 import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_ID
+import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_NAME
 import ru.be_more.orange_forum.consts.NAVIGATION_THREAD_TITLE
 import ru.be_more.orange_forum.consts.NAVIGATION_TITLE
 import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
@@ -61,8 +62,6 @@ class QueueFragment :
 
     fun init(view: View){
         navController = Navigation.findNavController(view)
-        navController.currentDestination?.label = "Queue"
-
         recyclerView = rv_favorite_list
         recyclerView?.layoutManager = LinearLayoutManager(this.context)
     }
@@ -115,6 +114,7 @@ class QueueFragment :
         val bundle = Bundle()
         bundle.putString(NAVIGATION_BOARD_ID, boardId)
         bundle.putString(NAVIGATION_TITLE, boardName)
+        bundle.putString(NAVIGATION_BOARD_NAME, boardName)
         navController.navigate(R.id.action_queueFragment_to_boardFragment, bundle)
     }
 }
