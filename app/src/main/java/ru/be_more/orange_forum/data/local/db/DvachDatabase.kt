@@ -15,7 +15,7 @@ import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
         StoredPost::class,
         StoredFile::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = false)
 
 @TypeConverters(ReplyConverter::class)

@@ -13,7 +13,7 @@ import ru.be_more.orange_forum.extentions.processCompletable
 import ru.be_more.orange_forum.extentions.processSingle
 
 class BoardInteractorImpl(
-    private val apiRepository: RemoteContract.BoardRepository,
+    private val apiRepository: RemoteContract.ApiRepository,
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository
 ): InteractorContract.BoardInteractor {

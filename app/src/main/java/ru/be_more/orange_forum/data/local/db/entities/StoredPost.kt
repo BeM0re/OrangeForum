@@ -6,10 +6,13 @@ import androidx.room.TypeConverters
 import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
 import java.util.*
 
-@Entity(tableName = "posts")
+@Entity(
+    tableName = "posts",
+    primaryKeys = ["num", "boardId"]
+)
 data class StoredPost(
     val boardId: String,
-    @PrimaryKey val num: Int,
+    val num: Int,
     val threadNum: Int,
     val name: String,
     val comment: String,

@@ -15,7 +15,7 @@ interface DvachApi{
     fun getDvachThreads(@Path("board") board : String): Single<BoardDto>
 
     @GET("{board}/res/{threadNum}.json")
-    fun getDvachPostsRx(
+    fun getDvachPosts(
         @Path("board") board : String,
         @Path("threadNum") threadNum : Int,
         @Header("Cookie") cookie: String

@@ -12,12 +12,11 @@ data class StoredFile(
     val width: Int = 0,
     val tn_height: Int = 0,
     val tn_width: Int = 0,
-    val webPath: String = "",
+    @PrimaryKey val webPath: String,
     val localPath: String = "",
     val webThumbnail: String = "",
     val localThumbnail: String = "",
     val duration : String = "",
     val threadNum: Int = 0,
-    val isOpPostFile: Boolean = false,
-    @PrimaryKey(autoGenerate = true) val id: Long? = null
+    val isOpPostFile: Boolean = false
 )

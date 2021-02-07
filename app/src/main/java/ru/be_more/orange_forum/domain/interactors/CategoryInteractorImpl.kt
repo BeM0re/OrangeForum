@@ -9,7 +9,7 @@ import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.extentions.processSingle
 
 class CategoryInteractorImpl (
-    private val repository: RemoteContract.CategoryRepository):
+    private val repository: RemoteContract.ApiRepository):
         InteractorContract.CategoryInteractor {
 
     @SuppressLint("CheckResult")

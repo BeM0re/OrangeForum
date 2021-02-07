@@ -48,6 +48,9 @@ class ThreadRepositoryImpl(
                 }
         )
 
+    override fun markThreadDownloaded(boardId: String, threadNum: Int)=
+        dao.markThreadDownloaded(boardId, threadNum)
+
     override fun addThreadToQueue(boardId: String, threadNum: Int) =
         dao.addThreadToQueue(boardId, threadNum)
 
