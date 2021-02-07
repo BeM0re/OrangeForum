@@ -9,26 +9,12 @@ import java.io.File
 
 interface RemoteContract {
 
-    interface CategoryRepository {
+    interface ApiRepository {
         fun getDvachCategories(): Single<Map<String, List<BoardNameDto>>>
-    }
-
-    interface BoardRepository {
         fun getDvachThreads(boardId: String): Single<List<BoardThread>>
-    }
-
-    interface ThreadRepository {
-
         fun getThread(boardId: String, threadNum: Int): Single<BoardThread>
-
-        fun getDvachPost(
-            boardId: String,
-            postNum: Int,
-            cookie: String
-        ): Single<Post>
-    }
-
-    interface ResponseRepository {
+        fun getThreadShort(boardId: String, threadNum: Int): Single<BoardThread>
+        fun getDvachPost(boardId: String, postNum: Int, cookie: String): Single<Post>
         fun postResponse(
             boardId: String,
             threadNum: Int,

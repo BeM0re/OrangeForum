@@ -8,7 +8,7 @@ import ru.be_more.orange_forum.domain.model.PostResponse
 import ru.be_more.orange_forum.extentions.processSingle
 
 class ResponseInteractorImpl (
-    private val responseRepository: RemoteContract.ResponseRepository
+    private val responseRepository: RemoteContract.ApiRepository
 ): InteractorContract.ResponseInteractor {
     override fun postResponse(
         boardId: String,
