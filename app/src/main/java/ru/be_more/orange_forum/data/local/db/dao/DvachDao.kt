@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.data.local.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
@@ -64,7 +65,7 @@ interface DvachDao {
     fun getThreadOpPosts(boardId: String): Single<List<StoredThread>>
 
     @Query("UPDATE threads SET isDownloaded = 1 WHERE boardId = :boardId AND num = :threadNum")
-    fun addThreadToDownload(boardId: String, threadNum: Int)
+    fun markThreadDownloaded(boardId: String, threadNum: Int)
 
     @Query("UPDATE threads SET isFavorite = 1 WHERE boardId = :boardId AND num = :threadNum")
     fun addThreadToFavorite(boardId: String, threadNum: Int)
@@ -91,10 +92,10 @@ interface DvachDao {
     fun deleteThread(boardId: String, threadNum: Int)
 
     //posts
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertPost(post: StoredPost)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertFile(file: StoredFile)
 
     @Query("SELECT * FROM posts WHERE boardId = :boardId AND num = threadNum")
@@ -105,6 +106,10 @@ interface DvachDao {
 
     @Query("SELECT * FROM posts WHERE boardId = :boardId")
     fun getPosts(boardId: String): Single<List<StoredPost>>
+
+    //возвращает список из 1 или 0 элементов
+    @Query("SELECT * FROM posts WHERE boardId = :boardId AND num = :postNum")
+    fun getPostOrEmpty(boardId: String, postNum: Int): Single<List<StoredPost>>
 
     @Query("SELECT * FROM posts WHERE threadNum = :threadNum AND boardId = :boardId")
     fun getPosts(boardId: String, threadNum: Int): Single<List<StoredPost>>
@@ -143,7 +148,4 @@ interface DvachDao {
     @Query("DELETE FROM files WHERE boardId = :boardId AND threadNum = :threadNum AND threadNum != postNum")
     fun deletePostFiles(boardId: String, threadNum: Int)
 
-//    @Query("UPDATE files SET localPath = :url WHERE id = :id")
-//    fun setDownloadedFile(id: String, url: String)
-//  надо?
 }

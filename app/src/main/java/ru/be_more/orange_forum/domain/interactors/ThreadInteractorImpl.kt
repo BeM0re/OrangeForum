@@ -12,7 +12,7 @@ import ru.be_more.orange_forum.extentions.processCompletable
 import ru.be_more.orange_forum.extentions.processSingle
 
 class ThreadInteractorImpl (
-    private val apiRepository: RemoteContract.ThreadRepository,
+    private val apiRepository: RemoteContract.ApiRepository,
     private val dbBoardRepository: DbContract.BoardRepository,
     private val dbThreadRepository: DbContract.ThreadRepository,
     private val dbPostRepository: DbContract.PostRepository,
@@ -44,11 +44,9 @@ class ThreadInteractorImpl (
 
     override fun addThreadToFavorite(threadNum: Int, boardId: String, boardName: String): Completable =
         Completable.fromSingle(
-            apiRepository.getThread(boardId, threadNum)
+            apiRepository.getThreadShort(boardId, threadNum)
                 .doOnSuccess { thread ->
                     dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
-                }
-                .doOnSuccess { thread ->
                     dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
                 }
                 .flatMap { thread ->
@@ -76,17 +74,15 @@ class ThreadInteractorImpl (
         Completable.fromSingle(
             apiRepository.getThread(boardId, threadNum)
                 .doOnSuccess { thread ->
-                    dbPostRepository.savePosts(thread.posts, threadNum, boardId)
-                }
-                .doOnSuccess { thread ->
-                    thread.posts.forEach { post ->
-                        dbFileRepository.saveFiles(post.files, post.num, thread.num, boardId)
+                    with(thread.posts) {
+                        dbPostRepository.savePosts(this, threadNum, boardId)
+                        this.forEach { dbFileRepository.saveFiles(it.files, it.num, thread.num, boardId) }
                     }
                 }
                 .flatMap { thread ->
                     dbThreadRepository.insertThreadSafety(thread.copy(isDownloaded = true), boardId)
                         .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.addThreadToFavorite(boardId, threadNum)
+                            if (!isSaved) dbThreadRepository.markThreadDownloaded(boardId, threadNum)
                         }
                 }
                 .flatMap {
@@ -105,12 +101,10 @@ class ThreadInteractorImpl (
 
     override fun addThreadToQueue(threadNum: Int, boardId: String, boardName: String): Completable =
         Completable.fromSingle(
-            apiRepository.getThread(boardId, threadNum)
-                .doOnSuccess { thread ->
-                    dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
-                }
+            apiRepository.getThreadShort(boardId, threadNum)
                 .doOnSuccess { thread ->
                     dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
+                    dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
                 }
                 .flatMap { thread ->
                     dbThreadRepository.insertThreadSafety(thread.copy(isQueued = true), boardId)
@@ -137,8 +131,8 @@ class ThreadInteractorImpl (
         Completable.fromSingle (
             Single.zip(dbBoardRepository.getBoardCount(boardId),
                 dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
-                apiRepository.getThread(boardId, threadNum),
-                Function3 <Int, List<BoardThread>, BoardThread, Unit> {
+                apiRepository.getThreadShort(boardId, threadNum),
+                {
                         boardCount, probablyThread, webThread ->
 
                     if(boardCount == 0 )//борда еще не сохранена

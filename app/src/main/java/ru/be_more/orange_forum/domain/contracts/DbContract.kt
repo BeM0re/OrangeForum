@@ -21,11 +21,12 @@ interface DbContract {
         fun insertThread(thread: BoardThread, boardId: String)
         /**@return true if new thread inserted, false if thread is existed and not inserted*/
         fun insertThreadSafety(thread: BoardThread, boardId: String): Single<Boolean>
-        fun deleteThread(boardId: String, threadNum: Int): Completable
         fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<BoardThread>>
-        fun addThreadToQueue( boardId: String, threadNum: Int)
-        fun addThreadToFavorite(boardId: String, threadNum: Int)
+        fun markThreadDownloaded(boardId: String, threadNum: Int)
+        fun deleteThread(boardId: String, threadNum: Int): Completable
         fun removeThreadFromFavorite(boardId: String, threadNum: Int)
+        fun addThreadToFavorite(boardId: String, threadNum: Int)
+        fun addThreadToQueue( boardId: String, threadNum: Int)
         fun removeThreadFromQueue(boardId: String, threadNum: Int)
         fun hideThread(boardId: String, threadNum: Int)
         fun unhideThread(boardId: String, threadNum: Int)

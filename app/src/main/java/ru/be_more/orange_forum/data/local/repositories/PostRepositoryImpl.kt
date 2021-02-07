@@ -6,6 +6,7 @@ import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.DvachDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredFile
 import ru.be_more.orange_forum.data.local.db.entities.StoredPost
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelPost
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStoredPost
 import ru.be_more.orange_forum.domain.model.Post
@@ -26,7 +27,7 @@ class PostRepositoryImpl(
         Single.zip(
             dao.getPost(boardId, postNum),
             dao.getPostFiles(postNum, boardId),
-            BiFunction <StoredPost, List<StoredFile>, Post> {post, files ->
+            {post, files ->
                 toModelPost(post, files)
             })
 
@@ -34,7 +35,7 @@ class PostRepositoryImpl(
         Single.zip(
             dao.getPosts(boardId, threadNum),
             dao.getThreadFiles(boardId, threadNum),
-            BiFunction <List<StoredPost>, List<StoredFile>, List<Post>> {posts, files ->
+            {posts, files ->
                 posts.map { post -> toModelPost(post, files.filter { it.postNum == post.num }) }
             })
 }

@@ -16,7 +16,7 @@ class PostInteractorImpl (
     override fun getPost(boardId: String, postNum: Int): Single<Post> =
         Single.zip(dbPostRepository.getPost(boardId, postNum),
             dbFileRepository.getPostFiles(boardId, postNum),
-            BiFunction <Post, List<AttachFile>, Post> {post, files ->
+            {post, files ->
                 post.copy(files = files)
             }
         )
