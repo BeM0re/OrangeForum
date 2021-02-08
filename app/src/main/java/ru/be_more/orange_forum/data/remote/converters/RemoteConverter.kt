@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.domain.converters
+package ru.be_more.orange_forum.data.remote.converters
 
 import ru.be_more.orange_forum.data.remote.models.*
 import ru.be_more.orange_forum.domain.model.*
