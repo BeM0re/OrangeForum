@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.presentation.screens.queue
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.disposables.CompositeDisposable
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
@@ -15,6 +16,7 @@ class QueueViewModelImpl (
 ): PresentationContract.QueueViewModel{
 
     override val boards = MutableLiveData<List<Board>>()
+    private var disposables: CompositeDisposable? = CompositeDisposable()
 
     override fun init(){
         if(boards.value == null || prefs.queueToUpdate)
@@ -24,22 +26,27 @@ class QueueViewModelImpl (
     }
 
     private fun refreshData(){
-        queueInteractor.getQueue()
-            .subscribe(
-                { boards -> this.boards.postValue(boards) },
-                { Log.e("M_DownloadPresenter", "Presenter on refresh error = $it") }
-            )
+        disposables?.add(
+            queueInteractor.getQueue()
+                .subscribe(
+                    { boards -> this.boards.postValue(boards) },
+                    { Log.e("M_QueueViewModelImpl", "Presenter on refresh error = $it") }
+                )
+        )
     }
 
     override fun removeThread(boardId: String, threadNum: Int) {
-        threadInteractor.removeThreadFromQueue(boardId, threadNum)
-            .subscribe(
-                { refreshData() },
-                { Log.e("M_QueueViewModelImpl","removing from queue error = $it")}
-            )
+        disposables?.add(
+            threadInteractor.removeThreadFromQueue(boardId, threadNum)
+                .subscribe(
+                    { refreshData() },
+                    { Log.e("M_QueueViewModelImpl","removing from queue error = $it")}
+                )
+        )
     }
 
     override fun onDestroy() {
-
+        disposables?.dispose()
+        disposables = null
     }
 }
