@@ -96,6 +96,9 @@ interface DvachDao {
     fun insertPost(post: StoredPost)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertPosts(posts: List<StoredPost>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertFile(file: StoredFile)
 
     @Query("SELECT * FROM posts WHERE boardId = :boardId AND num = threadNum")
