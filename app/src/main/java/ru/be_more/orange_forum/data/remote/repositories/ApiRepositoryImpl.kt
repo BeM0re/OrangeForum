@@ -2,7 +2,6 @@ package ru.be_more.orange_forum.data.remote.repositories
 
 import android.util.Log
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -11,13 +10,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.api.DvachApi
-import ru.be_more.orange_forum.data.remote.models.BoardNameDto
 import ru.be_more.orange_forum.data.remote.models.ThreadDto
-import ru.be_more.orange_forum.domain.converters.RemoteConverter
-import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.domain.model.PostResponse
+import ru.be_more.orange_forum.data.remote.converters.RemoteConverter
+import ru.be_more.orange_forum.data.remote.converters.RemoteConverter.Companion.toCategories
+import ru.be_more.orange_forum.domain.model.*
 import java.io.File
 import java.util.*
 
@@ -29,9 +25,9 @@ class ApiRepositoryImpl(
     private var lastThreadBoard = ""
     private var lastBoard: Board? = null
 
-    override fun getDvachCategories(): Single<Map<String, List<BoardNameDto>>> =
+    override fun getDvachCategories(): Single<List<Category>> =
         dvachApi.getDvachCategories("get_boards")
-            .subscribeOn(Schedulers.io())
+            .map { toCategories(it) }
             .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting category error = $throwable") }
 
     override fun getDvachThreads(boardId: String): Single<List<BoardThread>> =
@@ -39,7 +35,6 @@ class ApiRepositoryImpl(
             Single.just(lastBoard!!.threads)
         else
             dvachApi.getDvachThreads(boardId)
-                .subscribeOn(Schedulers.io())
                 .map { entity -> RemoteConverter.toBoard(entity) }
                 .doAfterSuccess { lastBoard = Board(name = "", id = boardId, threads = it) }
 
@@ -48,7 +43,6 @@ class ApiRepositoryImpl(
             Single.just(lastThread)
         else
             dvachApi.getDvachPosts(boardId, threadNum, COOKIE)
-                .subscribeOn(Schedulers.io())
                 .doOnError { throwable -> Log.e("M_DvachApiRepository", "get thread via api error = $throwable") }
                 .onErrorReturn { ThreadDto() }
                 .map { entity -> RemoteConverter.toThread(entity, threadNum) }
@@ -79,7 +73,6 @@ class ApiRepositoryImpl(
         cookie: String
     ): Single<Post> =
         dvachApi.getDvachPostRx("get_post", boardId, postNum, COOKIE)
-            .subscribeOn(Schedulers.io())
             .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting post error = $throwable") }
             .map { entity -> RemoteConverter.toPost(entity[0]) }
 
