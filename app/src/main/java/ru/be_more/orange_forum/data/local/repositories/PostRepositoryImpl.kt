@@ -20,7 +20,9 @@ class PostRepositoryImpl(
     }
 
     override fun savePosts(posts: List<Post>, threadNum: Int, boardId: String) {
-        posts.forEach { post -> dao.insertPost(toStoredPost(post, threadNum, boardId)) }
+        dao.insertPosts(
+            posts.map { post -> toStoredPost(post, threadNum, boardId) }
+        )
     }
 
     override fun getPost(boardId: String, postNum: Int): Single<Post> =
