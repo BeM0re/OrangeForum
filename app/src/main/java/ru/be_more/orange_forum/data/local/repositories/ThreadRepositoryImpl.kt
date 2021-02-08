@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.data.local.repositories
 
-import android.annotation.SuppressLint
 import io.reactivex.Completable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.DbContract
@@ -15,7 +14,6 @@ class ThreadRepositoryImpl(
     private val storage: StorageContract.LocalStorage
 ) : DbContract.ThreadRepository {
 
-    @SuppressLint("CheckResult")
     override fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<BoardThread>> =
         dao.getThreadOrEmpty(boardId, threadNum)
             .map { toModelThreads(it) }
