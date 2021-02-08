@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.presentation.screens.category
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.disposables.CompositeDisposable
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -18,25 +19,26 @@ class CategoryViewModelImpl(
     private var firstLaunch = true
     private var expandedItems: List<Int> = listOf()
     private var savedQ = ""
+    private var disposables: CompositeDisposable? = CompositeDisposable()
 
     override val dataset = MutableLiveData<List<Category>>()
     override var expand = MutableLiveData<Boolean>()
     override var savedQuery = MutableLiveData<String>()
 
-    //Здесь и в других презентерах Disposable не сохраняется, т.к. он сохраняется в репо
-    @SuppressLint("CheckResult")
     override fun initViewModel(){
         if(firstLaunch){
-            interactor.getCategories()
-                .subscribe(
-                    {
-                        fullDataset = it
-                        dataset.postValue(fullDataset)
-                        expand.postValue(false)
-                        firstLaunch = false
-                    },
-                    { App.showToast("Can't load categories") }
-                )
+            disposables?.add(
+                interactor.getCategories()
+                    .subscribe(
+                        {
+                            fullDataset = it
+                            dataset.postValue(fullDataset)
+                            expand.postValue(false)
+                            firstLaunch = false
+                        },
+                        { App.showToast("Can't load categories") }
+                    )
+            )
         }
         else{
             dataset.postValue(fullDataset)
@@ -76,8 +78,8 @@ class CategoryViewModelImpl(
         }
     }
 
-    override fun onDestroy() {
-
+    override fun onDestroy(){
+        disposables?.dispose()
+        disposables = null
     }
-
 }
