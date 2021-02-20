@@ -2,6 +2,9 @@ package ru.be_more.orange_forum.presentation.screens.board
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.local.prefs.Preferences
@@ -98,8 +101,9 @@ class BoardViewModelImpl (
             disposables?.add(
                 threadInteractor
                     .hideThread(board.value?.id?:"", board.value?.name?:"", threadNum)
+                    .andThen(boardInteractor.getBoard(board.value?.id ?: "", board.value?.name?:""))
                     .subscribe(
-                        {},
+                        { board.postValue(it) },
                         { Log.e("M_BoardViewModel","hiding error = $it") }
                     )
             )
@@ -107,8 +111,9 @@ class BoardViewModelImpl (
         else {
             disposables?.add(
                 threadInteractor.unhideThread(board.value?.id?:"", threadNum)
+                    .andThen(boardInteractor.getBoard(board.value?.id ?: "", board.value?.name?:""))
                     .subscribe(
-                        {},
+                        { board.postValue(it) },
                         { Log.e("M_BoardViewModel","hiding error = $it") }
                     )
             )

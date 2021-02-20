@@ -45,11 +45,11 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
         }
         holder.setCommentListener(linkListener)
         holder.setHideButton(thread, boardListener)
-        holder.setIntoThreadButton(View.OnClickListener { boardListener.onIntoThreadClick(thread.num, thread.title) }, thread.isHidden)
-        holder.setAddToQueueButton(queueListener, thread.num)
+        holder.setIntoThreadButton( { boardListener.onIntoThreadClick(thread.num, thread.title) }, thread.isHidden)
+        holder.setAddToQueueButton(queueListener, thread.num, thread.isHidden)
     }
 
-/*    fun updateData(data:List<BoardThread>){
+    fun updateData(data:List<BoardThread>){
 
         val diffCallback = object: DiffUtil.Callback(){
             override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean =
@@ -59,8 +59,9 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
 
             override fun getNewListSize(): Int  = data.size
 
-            override fun areContentsTheSame(oldPos: Int, newPos: Int) : Boolean =
-                threads[oldPos].hashCode() == data[newPos].hashCode()
+            override fun areContentsTheSame(oldPos: Int, newPos: Int) : Boolean {
+                return threads[oldPos] == data[newPos]
+            }
 
         }
 
@@ -68,7 +69,7 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
 
         threads = data
         diffResult.dispatchUpdatesTo(this)
-    }*/
+    }
 }
 
 
