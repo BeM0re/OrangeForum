@@ -91,6 +91,9 @@ interface DvachDao {
     @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum AND isFavorite = 0")
     fun deleteThread(boardId: String, threadNum: Int)
 
+    @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum AND isDownloaded = 0")
+    fun removeAllMarks(boardId: String, threadNum: Int)
+
     //posts
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertPost(post: StoredPost)

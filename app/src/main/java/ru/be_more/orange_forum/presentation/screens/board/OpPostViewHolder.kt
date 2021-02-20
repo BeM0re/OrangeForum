@@ -94,22 +94,24 @@ class OpPostViewHolder(itemView: View?, private var listener: PicOnClickListener
         if(thread.isHidden) {
             btn_board_op_hide.visibility = View.GONE
             itemView.setOnClickListener {
-                thread.isHidden = false
-                listener.onHideClick(thread.num, thread.isHidden)
+                listener.onHideClick(thread.num, false)
             }
         }
         else{
             btn_board_op_hide.visibility = View.VISIBLE
             btn_board_op_hide.setOnClickListener {
-                thread.isHidden = true
-                listener.onHideClick(thread.num, thread.isHidden)
+                listener.onHideClick(thread.num, true)
             }
         }
     }
 
-    fun setAddToQueueButton(queueListener: (Int) -> Unit, threadNum: Int) {
-        iv_board_op_add_queue.setOnClickListener { queueListener(threadNum) }
-
+    fun setAddToQueueButton(queueListener: (Int) -> Unit, threadNum: Int, isHidden: Boolean) {
+        if (isHidden)
+            iv_board_op_add_queue.visibility = View.GONE
+        else {
+            iv_board_op_add_queue.setOnClickListener { queueListener(threadNum) }
+            iv_board_op_add_queue.visibility = View.VISIBLE
+        }
     }
 
 }

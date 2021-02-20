@@ -66,4 +66,7 @@ class ThreadRepositoryImpl(
 
     override fun unhideThread(boardId: String, threadNum: Int) =
         dao.unmarkThreadHidden(boardId, threadNum)
+
+    override fun removeAllMarks(boardId: String, threadNum: Int) =
+        dao.removeAllMarks(boardId, threadNum)
 }

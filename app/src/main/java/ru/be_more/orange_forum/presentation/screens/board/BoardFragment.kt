@@ -102,6 +102,10 @@ class BoardFragment: Fragment(R.layout.fragment_board),
     }
 
     private fun loadBoard(board: Board) {
+        adapter?.let {
+            it.updateData(board.threads)
+            return
+        }
         adapter = BoardAdapter(
             board.threads, this, this, this) { threadNum ->
             viewModel.addToQueue(threadNum)
