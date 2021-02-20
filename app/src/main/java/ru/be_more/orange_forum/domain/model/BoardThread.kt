@@ -7,10 +7,10 @@ data class BoardThread(
     val num : Int,
     val posts: List<Post> = listOf(),
     val title: String = "",
-    var isHidden: Boolean = false,
-    var isDownloaded: Boolean = false,
-    var isFavorite: Boolean = false,
-    var isQueued: Boolean = false
+    val isHidden: Boolean = false,
+    val isDownloaded: Boolean = false,
+    val isFavorite: Boolean = false,
+    val isQueued: Boolean = false
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),

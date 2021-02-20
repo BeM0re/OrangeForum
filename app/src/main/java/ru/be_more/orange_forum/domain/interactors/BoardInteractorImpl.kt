@@ -11,6 +11,7 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.extentions.processCompletable
 import ru.be_more.orange_forum.extentions.processSingle
+import java.util.*
 
 class BoardInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
@@ -25,21 +26,31 @@ class BoardInteractorImpl(
             apiRepository.getDvachThreads(boardId)
                 .doOnError { Log.e("M_BoardInteractorImpl","get web board error = $it") },
             BiFunction <Board, List<BoardThread>, Board> { localBoard, webThreads ->
-                localBoard.threads.forEach { localThread ->
-                    val webIndex = webThreads.indexOfFirst { it.num == localThread.num }
+                val resultThreads = LinkedList(webThreads)
 
-                    if (webIndex == -1){ //удаляем инфу об утонувших несохраненных тредах
-                        if (!localThread.isDownloaded)
-                            dbThreadRepository.deleteThread(boardId, localThread.num)
+                localBoard.threads.forEach { localThread ->
+                    webThreads
+                        .indexOfFirst { it.num == localThread.num }
+                        .also{ webIndex ->
+                            when (webIndex) {
+                                -1 -> //удаляем инфу об утонувших несохраненных тредах
+                                    dbThreadRepository.removeAllMarks(boardId, localThread.num)
+                                else -> {
+                                    val thread = resultThreads[webIndex]
+                                    resultThreads.removeAt(webIndex)
+                                    resultThreads.add(webIndex, thread.copy(
+                                        isFavorite = localThread.isFavorite,
+                                        isHidden = localThread.isHidden,
+                                        isDownloaded = localThread.isDownloaded,
+                                        isQueued = localThread.isQueued
+                                    ))
+                                }
+                            }
                     }
-                    else{ //TODO параметр webThreads иммутабелен, переделать
-                        webThreads[webIndex].isFavorite = localThread.isFavorite
-                        webThreads[webIndex].isHidden = localThread.isHidden
-                        webThreads[webIndex].isDownloaded = localThread.isDownloaded
-                        webThreads[webIndex].isQueued = localThread.isQueued
-                    }
+
+
                 }
-                return@BiFunction localBoard.copy(threads = webThreads)
+                return@BiFunction localBoard.copy(threads = resultThreads)
             }
         )
             .processSingle()

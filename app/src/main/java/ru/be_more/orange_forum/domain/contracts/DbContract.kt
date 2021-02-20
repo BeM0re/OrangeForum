@@ -30,6 +30,7 @@ interface DbContract {
         fun removeThreadFromQueue(boardId: String, threadNum: Int)
         fun hideThread(boardId: String, threadNum: Int)
         fun unhideThread(boardId: String, threadNum: Int)
+        fun removeAllMarks(boardId: String, threadNum: Int)
     }
 
     interface PostRepository{
