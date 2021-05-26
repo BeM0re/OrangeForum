@@ -4,9 +4,11 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.MediaController
-import androidx.fragment.app.Fragment
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -18,9 +20,10 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.item_post.*
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.consts.COOKIE
+import ru.be_more.orange_forum.databinding.ItemPostBinding
 import ru.be_more.orange_forum.presentation.bus.VideoToBeClosed
 import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
@@ -28,16 +31,20 @@ import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 
-class PostFragment : Fragment(R.layout.item_post) {
+class PostFragment : BaseFragment<ItemPostBinding>() {
 
+    override val binding: ItemPostBinding by viewBinding()
     private var timestamp: Long = 0
     private lateinit var content: ModalContent
     private lateinit var picListener: PicOnClickListener
     private lateinit var linkListener: LinkOnClickListener
     private lateinit var closeModalListener: CloseModalListener
     private var disposable: Disposable? = null
-    private var recyclerView: RecyclerView? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.item_post, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,52 +69,41 @@ class PostFragment : Fragment(R.layout.item_post) {
     override fun onDestroyView() {
         disposable?.dispose()
         disposable = null
-        recyclerView?.adapter = null
 
         super.onDestroyView()
     }
 
     private fun showPost(post: Post){
 
-        v_post1_pic_full_background.visibility = View.VISIBLE
+        binding.vPostPicFullBackground.visibility = View.VISIBLE
 
-        ll_post_layout.setBackgroundColor(resources.getColor(R.color.color_background))
+        binding.llPostLayout.setBackgroundColor(resources.getColor(R.color.color_background))
 
-        tv_item_post_comment.text = post.comment
-        tv_item_post_comment.setListener(linkListener)
+        binding.tvItemPostComment.text = post.comment
+        binding.tvItemPostComment.setListener(linkListener)
 
-        cl_post_header.visibility = View.GONE
+        binding.clPostHeader.visibility = View.GONE
 
-        if (post.subject.isEmpty())
-            tv_item_post_subject.visibility = View.GONE
-        else
-            tv_item_post_subject.text = post.subject
+        binding.tvItemPostSubject.isVisible = post.subject.isNotEmpty()
+        binding.tvItemPostSubject.text = post.subject
 
-        recyclerView = rv_item_post_pics
-        recyclerView?.layoutManager = LinearLayoutManager(this.context)
+        binding.rvItemPostPics.adapter = PostPicAdapter(post.files, picListener)
 
-        recyclerView?.adapter = PostPicAdapter(post.files, picListener)
-
-        tv_item_post_replies.text = ""
+        binding.tvItemPostReplies.text = ""
         var replyResult = ""
 
         post.replies.forEach { reply ->
+            replyResult = "$replyResult <a href='$reply'>>>$reply</a>"
 
-            replyResult = if (replyResult == "")
-                "<a href='$reply'>>>$reply</a>"
-            else
-                "$replyResult <a href='$reply'>>>$reply</a>"
+            binding.tvItemPostReplies.text = replyResult
 
-            tv_item_post_replies.text = replyResult
-
-            tv_item_post_replies.setListener(linkListener)
+            binding.tvItemPostReplies.setListener(linkListener)
         }
     }
 
     private fun showAttachment(pic: Attachment) {
 
-        v_post1_pic_full_background.visibility = View.VISIBLE
-        pb_post1_pic_loading.visibility = View.VISIBLE
+        binding.vPostPicFullBackground.visibility = View.VISIBLE
 
         if(pic.duration == "") {
             var fullPicGlideUrl: GlideUrl? = null
@@ -115,17 +111,12 @@ class PostFragment : Fragment(R.layout.item_post) {
                 fullPicGlideUrl = GlideUrl(
                     pic.url,
                     LazyHeaders.Builder()
-                        .addHeader(
-                            "Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
-                                    "_ga=GA1.2.57010468.1498700728; " +
-                                    "ageallow=1; " +
-                                    "_gid=GA1.2.1910512907.1585793763; " +
-                                    "_gat=1"
-                        ).build()
+                        .addHeader("Cookie", COOKIE)
+                        .build()
                 )
             }
-            iv_post1_pic_full.resetZoom()
-            iv_post1_pic_full.visibility = View.VISIBLE
+            binding.ivPost1PicFull.resetZoom()
+            binding.ivPost1PicFull.visibility = View.VISIBLE
             Glide.with(this)
                 .load(pic.uri ?: fullPicGlideUrl)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -147,29 +138,24 @@ class PostFragment : Fragment(R.layout.item_post) {
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        pb_post1_pic_loading.visibility = View.GONE
+                        binding.pbPost1PicLoading.visibility = View.GONE
                         return false
                     }
                 })
-                .into(iv_post1_pic_full)
+                .into(binding.ivPost1PicFull)
         }
         else{
-            pb_post1_pic_loading.visibility = View.VISIBLE
+            binding.pbPost1PicLoading.visibility = View.VISIBLE
 
             //TODO потом поменять на нормальные куки
-            val headers = mapOf("cookie" to
-                    "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
-                    "_ga=GA1.2.57010468.1498700728; " +
-                    "ageallow=1; " +
-                    "_gid=GA1.2.1910512907.1585793763; " +
-                    "_gat=1")
+            val headers = mapOf("cookie" to COOKIE)
 
-            vv_post1_video.setOnPreparedListener { pb_post1_pic_loading.visibility = View.GONE }
-            vv_post1_video.setVideoURI(Uri.parse(pic.url), headers)
-            vv_post1_video.visibility = View.VISIBLE
-            vv_post1_video.setMediaController(MediaController(this.context))
-            vv_post1_video.requestFocus(0)
-            vv_post1_video.start()
+            binding.vvPost1Video.setOnPreparedListener { binding.pbPost1PicLoading.visibility = View.GONE }
+            binding.vvPost1Video.setVideoURI(Uri.parse(pic.url), headers)
+            binding.vvPost1Video.visibility = View.VISIBLE
+            binding.vvPost1Video.setMediaController(MediaController(this.context))
+            binding.vvPost1Video.requestFocus(0)
+            binding.vvPost1Video.start()
         }
     }
 
@@ -181,21 +167,21 @@ class PostFragment : Fragment(R.layout.item_post) {
     }
 
     private fun setClosingViewClickListener(){
-        v_post1_pic_full_background.setOnClickListener {
+        binding.vPostPicFullBackground.setOnClickListener {
             hideModal()
         }
 
-        iv_post1_pic_full.setOnClickListener {
-            v_post1_pic_full_background.visibility = View.GONE
-            iv_post1_pic_full.visibility = View.GONE
+        binding.ivPost1PicFull.setOnClickListener {
+            binding.vPostPicFullBackground.visibility = View.GONE
+            binding.ivPost1PicFull.visibility = View.GONE
             hideModal()
         }
 
-        vv_post1_video.setOnClickListener {
+        binding.vvPost1Video.setOnClickListener {
             if(System.currentTimeMillis() - timestamp < 2000) {
-                pb_post1_pic_loading.visibility = View.GONE
-                vv_post1_video.visibility = View.GONE
-                v_post1_pic_full_background.visibility = View.GONE
+                binding.pbPost1PicLoading.visibility = View.GONE
+                binding.vvPost1Video.visibility = View.GONE
+                binding.vPostPicFullBackground.visibility = View.GONE
                 hideModal()
             }
             else
@@ -204,14 +190,14 @@ class PostFragment : Fragment(R.layout.item_post) {
     }
 
     private fun hideModal(){
-        v_post1_pic_full_background.visibility = View.GONE
-        iv_post1_pic_full.visibility = View.GONE
-        Glide.with(this).clear(iv_post1_pic_full)
-        pb_post1_pic_loading.visibility = View.GONE
-        vv_post1_video.visibility = View.GONE
-        tv_item_post_comment.text = ""
-        tv_item_post_subject.text = ""
-        tv_item_post_replies.text = ""
+        binding.vPostPicFullBackground.visibility = View.GONE
+        binding.ivPost1PicFull.visibility = View.GONE
+        Glide.with(this).clear(binding.ivPost1PicFull)
+        binding.pbPost1PicLoading.visibility = View.GONE
+        binding.vvPost1Video.visibility = View.GONE
+        binding.tvItemPostComment.text = ""
+        binding.tvItemPostSubject.text = ""
+        binding.tvItemPostReplies.text = ""
 
         disposable?.dispose()
 

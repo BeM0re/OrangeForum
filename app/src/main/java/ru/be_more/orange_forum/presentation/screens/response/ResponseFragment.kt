@@ -1,16 +1,18 @@
 package ru.be_more.orange_forum.presentation.screens.response
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebSettings
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import kotlinx.android.synthetic.main.item_thread_response_form.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.PAGE_HTML
@@ -19,18 +21,25 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import io.reactivex.disposables.Disposable
 import ru.be_more.orange_forum.App
+import ru.be_more.orange_forum.databinding.FragmentCategoryBinding
+import ru.be_more.orange_forum.databinding.ItemThreadResponseFormBinding
 import ru.be_more.orange_forum.presentation.bus.BackPressed
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 
-class ResponseFragment: Fragment(R.layout.item_thread_response_form){
+class ResponseFragment: BaseFragment<ItemThreadResponseFormBinding>(){
 
+    override val binding: ItemThreadResponseFormBinding by viewBinding()
     private val viewModel: PresentationContract.ResponseViewModel by inject()
     private lateinit var navController: NavController
     private var captchaResponse : MutableLiveData<String>? = MutableLiveData()
     private lateinit var boardId: String
     private var threadNum: Int = 0
     private var disposable: Disposable? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.item_thread_response_form, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,7 +48,7 @@ class ResponseFragment: Fragment(R.layout.item_thread_response_form){
         subscribe()
         setWebView()
 
-        btn_response_submit.setOnClickListener {
+        binding.btnResponseSubmit.setOnClickListener {
             posting()
         }
     }
@@ -60,7 +69,7 @@ class ResponseFragment: Fragment(R.layout.item_thread_response_form){
             viewModel.postResponse(
                 boardId,
                 threadNum,
-                et_response_comment.text.toString(),
+                binding.etResponseComment.text.toString(),
                 token
             )
         })
@@ -72,7 +81,7 @@ class ResponseFragment: Fragment(R.layout.item_thread_response_form){
                 }
             },
             {
-                Log.e("M_ThreadFragment","bus error = \n $it")
+                Log.e("M_ResponseFragment","bus error = \n $it")
             }
         )
     }
@@ -87,49 +96,50 @@ class ResponseFragment: Fragment(R.layout.item_thread_response_form){
         super.onDestroyView()
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun setWebView(){
 
-        wv_post_captcha.settings.userAgentString =
+        binding.wvPostCaptcha.settings.userAgentString =
             "Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) " +
                     "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 " +
                     "Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]"
 
-        wv_post_captcha.settings.javaScriptEnabled = true
-        wv_post_captcha.settings.javaScriptCanOpenWindowsAutomatically = true
-        wv_post_captcha.settings.builtInZoomControls = true
-        wv_post_captcha.settings.pluginState = WebSettings.PluginState.ON
-        wv_post_captcha.settings.allowContentAccess = true
-        wv_post_captcha.settings.domStorageEnabled = true
-        wv_post_captcha.settings.loadWithOverviewMode = true
-        wv_post_captcha.settings.useWideViewPort = false
-        wv_post_captcha.settings.displayZoomControls = false
-        wv_post_captcha.settings.setSupportZoom(false)
-        wv_post_captcha.settings.defaultTextEncodingName = "utf-8"
+        binding.wvPostCaptcha.settings.javaScriptEnabled = true
+        binding.wvPostCaptcha.settings.javaScriptCanOpenWindowsAutomatically = true
+        binding.wvPostCaptcha.settings.builtInZoomControls = true
+        binding.wvPostCaptcha.settings.pluginState = WebSettings.PluginState.ON
+        binding.wvPostCaptcha.settings.allowContentAccess = true
+        binding.wvPostCaptcha.settings.domStorageEnabled = true
+        binding.wvPostCaptcha.settings.loadWithOverviewMode = true
+        binding.wvPostCaptcha.settings.useWideViewPort = false
+        binding.wvPostCaptcha.settings.displayZoomControls = false
+        binding.wvPostCaptcha.settings.setSupportZoom(false)
+        binding.wvPostCaptcha.settings.defaultTextEncodingName = "utf-8"
 
-        wv_post_captcha.setInitialScale(200)
+        binding.wvPostCaptcha.setInitialScale(200)
 
-        CookieManager.getInstance().setAcceptThirdPartyCookies(wv_post_captcha, true)
+        CookieManager.getInstance().setAcceptThirdPartyCookies(binding.wvPostCaptcha, true)
 
-        wv_post_captcha.loadDataWithBaseURL(
+        binding.wvPostCaptcha.loadDataWithBaseURL(
             "https://2ch.hk",
             PAGE_HTML,
             "text/html; charset=UTF-8",
             null,
             null
         )
-        wv_post_captcha.addJavascriptInterface(this, "Android")
+        binding.wvPostCaptcha.addJavascriptInterface(this, "Android")
 
         setHideKeyboardListener()
     }
 
     private fun setHideKeyboardListener(){
-        et_response_comment.setOnFocusChangeListener{ view, isFocused ->
+        binding.etResponseComment.setOnFocusChangeListener{ view, isFocused ->
             if(!isFocused)
                 (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                     .hideSoftInputFromWindow(view.windowToken, 0)
         }
 
-        et_response_option.setOnFocusChangeListener{ view, isFocused ->
+        binding.etResponseOption.setOnFocusChangeListener{ view, isFocused ->
             if(!isFocused)
                 (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                     .hideSoftInputFromWindow(view.windowToken, 0)
@@ -138,7 +148,7 @@ class ResponseFragment: Fragment(R.layout.item_thread_response_form){
 
     private fun posting(){
         CookieManager.getInstance().flush()
-        wv_post_captcha.loadUrl("javascript: Android.responsePushed(sendParams())")
+        binding.wvPostCaptcha.loadUrl("javascript: Android.responsePushed(sendParams())")
     }
 
     private fun handleResult(result: String) {

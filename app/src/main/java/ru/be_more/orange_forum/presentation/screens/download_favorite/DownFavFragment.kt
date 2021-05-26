@@ -3,33 +3,40 @@ package ru.be_more.orange_forum.presentation.screens.download_favorite
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.Fragment
+import android.view.ViewGroup
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_download.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.consts.*
+import ru.be_more.orange_forum.databinding.FragmentCategoryBinding
+import ru.be_more.orange_forum.databinding.FragmentDownloadBinding
 import ru.be_more.orange_forum.presentation.interfaces.*
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
-class DownFavFragment: Fragment(R.layout.fragment_download), DownFavListener, LinkOnClickListener{
+class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
+    DownFavListener,
+    LinkOnClickListener{
 
+    override val binding: FragmentDownloadBinding by viewBinding()
     private val viewModel: PresentationContract.DownFavViewModel by inject()
-    private var recyclerView : RecyclerView? = null
     private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
     private var disposable: Disposable? = null
     var adapter : DownFavAdapter? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_download, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,8 +48,6 @@ class DownFavFragment: Fragment(R.layout.fragment_download), DownFavListener, Li
 
     private fun init(view: View){
         navController = Navigation.findNavController(view)
-        recyclerView = rv_downloaded_list
-        recyclerView?.layoutManager = LinearLayoutManager(this.context)
     }
 
     private fun subscribe(){
@@ -52,7 +57,7 @@ class DownFavFragment: Fragment(R.layout.fragment_download), DownFavListener, Li
 
         disposable = App.getBus().subscribe(
             {
-                if(it is BackPressed && fl_downloaded_board_post.visibility != View.GONE)
+                if(it is BackPressed && binding.flDownloadedBoardPost.visibility != View.GONE)
                     App.getBus().onNext(AppToBeClosed)
             },
             { Log.e("M_DownloadFragment","bus error = \n $it") })
@@ -63,8 +68,7 @@ class DownFavFragment: Fragment(R.layout.fragment_download), DownFavListener, Li
         adapter = null
         disposable?.dispose()
         disposable = null
-        recyclerView = null
-        recyclerView?.adapter = null
+        binding.rvDownloadedList.adapter = null
         super.onDestroyView()
     }
 
@@ -81,11 +85,13 @@ class DownFavFragment: Fragment(R.layout.fragment_download), DownFavListener, Li
         })
 
         // Iterate and toggle groups
-        for (i in (adapter!!.groups.size - 1) downTo 0) {
-            if (! adapter!!.isGroupExpanded(i))
-                adapter!!.toggleGroup(i)
+        adapter?.let {
+            for (i in (it.groups.size - 1) downTo 0) {
+                if (! it.isGroupExpanded(i))
+                    it.toggleGroup(i)
+            }
+            binding.rvDownloadedList.adapter = adapter
         }
-        recyclerView?.adapter = adapter
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
