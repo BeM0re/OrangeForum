@@ -5,30 +5,29 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_op_post_short.*
+import ru.be_more.orange_forum.consts.COOKIE
+import ru.be_more.orange_forum.databinding.ItemBoardOpBinding
+import ru.be_more.orange_forum.databinding.ItemOpPostShortBinding
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.domain.model.AttachFile
-import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 
-class DownFavThreadViewHolder(itemView: View?, private var listener: PicOnClickListener) :
-    ChildViewHolder(itemView), LayoutContainer {
-
-    override val containerView: View
-        get() = itemView
+class DownFavThreadViewHolder(
+    private val binding: ItemOpPostShortBinding,
+    private var listener: PicOnClickListener
+    ) : ChildViewHolder(binding.root) {
 
     fun setSenderName (param: String){
-        tv_favorite_op_name.text = param
+        binding.tvFavoriteOpName.text = param
     }
     fun setDate (param: String){
-        tv_favorite_op_datetime.text = param
+        binding.tvFavoriteOpDatetime.text = param
     }
     fun setThreadNum (param: Int){
-        tv_favorite_op_num.text = param.toString()
+        binding.tvFavoriteOpNum.text = param.toString()
     }
     fun setTitle (param: String){
-        tv_favorite_op_subject.text = param
+        binding.tvFavoriteOpSubject.text = param
     }
 
     fun setPics (url: AttachFile?){
@@ -40,56 +39,52 @@ class DownFavThreadViewHolder(itemView: View?, private var listener: PicOnClickL
 
             val thumbnailGlideUrl = GlideUrl(
                 thumbnailUrl, LazyHeaders.Builder()
-                    .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
-                            "_ga=GA1.2.57010468.1498700728; " +
-                            "ageallow=1; " +
-                            "_gid=GA1.2.1910512907.1585793763; " +
-                            "_gat=1")
+                    .addHeader("Cookie", COOKIE)
                     .build()
             )
 
             Glide.with(itemView)
                 .load(thumbnailGlideUrl)
-                .into(iv_favorite_op_pic)
+                .into(binding.ivFavoriteOpPic)
 
-            iv_favorite_op_pic.visibility = View.VISIBLE
-            iv_favorite_op_pic.setOnClickListener {
+            binding.ivFavoriteOpPic.visibility = View.VISIBLE
+            binding.ivFavoriteOpPic.setOnClickListener {
                 listener.onThumbnailListener(fullPicUrl, url.duration, null) }
 
             //нужно именно .isNullOrEmpty
             if (!url.duration.isNullOrEmpty()){
-                iv_favorite_play_background.visibility = View.VISIBLE
-                iv_favorite_play.visibility = View.VISIBLE
+                binding.ivFavoritePlayBackground.visibility = View.VISIBLE
+                binding.ivFavoritePlay.visibility = View.VISIBLE
             }
             else {
-                iv_favorite_play_background.visibility = View.GONE
-                iv_favorite_play.visibility = View.GONE
+                binding.ivFavoritePlayBackground.visibility = View.GONE
+                binding.ivFavoritePlay.visibility = View.GONE
             }
 
-            iv_favorite_op_pic.visibility = View.VISIBLE
+            binding.ivFavoriteOpPic.visibility = View.VISIBLE
         }
         else{
-            iv_favorite_op_pic.visibility = View.GONE
+            binding.ivFavoriteOpPic.visibility = View.GONE
         }
     }
 
     fun setCommentListener(listener: View.OnClickListener){
-        cl_favorite_op_post.setOnClickListener(listener)
+        binding.clFavoriteOpPost.setOnClickListener(listener)
     }
 
     fun setRemoveButton(boardId: String, threadNum: Int, listener: DownFavListener) {
-        iv_favorite_close_button.setOnClickListener {
+        binding.ivFavoriteCloseButton.setOnClickListener {
             listener.onRemoveClick(boardId, threadNum)
         }
     }
 
     fun setDivider(){
-        v_favorite_post1_pic_divider.visibility = View.VISIBLE
+        binding.vFavoritePost1PicDivider.visibility = View.VISIBLE
     }
 
     fun setIcon(isFavorite: Boolean, isDownloaded: Boolean){
-        ic_short_download.visibility = if (isDownloaded) View.VISIBLE else View.GONE
-        ic_short_favorite.visibility = if (isFavorite) View.VISIBLE else View.GONE
+        binding.icShortDownload.visibility = if (isDownloaded) View.VISIBLE else View.GONE
+        binding.icShortFavorite.visibility = if (isFavorite) View.VISIBLE else View.GONE
     }
 
 }

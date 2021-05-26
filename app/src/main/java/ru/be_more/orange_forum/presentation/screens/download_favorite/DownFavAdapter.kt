@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.databinding.ItemBoardShortBinding
+import ru.be_more.orange_forum.databinding.ItemOpPostShortBinding
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
@@ -20,20 +22,28 @@ class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
     override fun onCreateGroupViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DownFavBoardViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_board_short, parent, false)
-        return DownFavBoardViewHolder(view)
-    }
+    ): DownFavBoardViewHolder =
+        DownFavBoardViewHolder(
+            ItemBoardShortBinding
+                .inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false)
+        )
+
 
     override fun onCreateChildViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DownFavThreadViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_op_post_short, parent, false)
-        return DownFavThreadViewHolder(view, picListener)
-    }
+    ): DownFavThreadViewHolder =
+        DownFavThreadViewHolder(
+            ItemOpPostShortBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false),
+            picListener
+        )
+
 
     override fun onBindChildViewHolder(
         holder: DownFavThreadViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
