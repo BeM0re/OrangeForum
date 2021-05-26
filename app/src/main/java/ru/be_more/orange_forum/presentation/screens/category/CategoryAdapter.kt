@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.databinding.ItemBoardBinding
+import ru.be_more.orange_forum.databinding.ItemCategoryBinding
 import ru.be_more.orange_forum.presentation.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Category
@@ -15,20 +17,30 @@ class CategoryAdapter(groups: List<ExpandableGroup<*>?>?, var listener: Category
     ExpandableRecyclerViewAdapter<CategoryViewHolder,
             BoardNameViewHolder>(groups){
 
-    override fun onCreateGroupViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_category, parent, false)
-        return CategoryViewHolder(view)
-    }
+    override fun onCreateGroupViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder =
+        CategoryViewHolder(
+            ItemCategoryBinding
+                .inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+        )
+
 
     override fun onCreateChildViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BoardNameViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view: View = inflater.inflate(R.layout.item_board, parent, false)
-        return BoardNameViewHolder(view)
-    }
+    ): BoardNameViewHolder =
+        BoardNameViewHolder(
+            ItemBoardBinding
+                .inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+        )
+
 
     override fun onBindChildViewHolder(
         holder: BoardNameViewHolder, flatPosition: Int, group: ExpandableGroup<*>,

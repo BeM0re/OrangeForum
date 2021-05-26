@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.databinding.ItemPostPicsBinding
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.AttachFile
 
@@ -12,11 +12,12 @@ import ru.be_more.orange_forum.domain.model.AttachFile
 class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PicOnClickListener) :
     RecyclerView.Adapter<PostPicViewHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostPicViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-
-        return PostPicViewHolder(inflater.inflate(R.layout.item_post_pics, parent, false))
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostPicViewHolder =
+        PostPicViewHolder(
+            ItemPostPicsBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+        )
 
     override fun getItemCount(): Int = files.size
 

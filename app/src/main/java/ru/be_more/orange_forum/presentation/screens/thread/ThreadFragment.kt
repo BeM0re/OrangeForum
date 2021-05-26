@@ -12,12 +12,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_thread.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.consts.*
+import ru.be_more.orange_forum.databinding.FragmentCategoryBinding
+import ru.be_more.orange_forum.databinding.FragmentThreadBinding
 import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
@@ -26,20 +27,22 @@ import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 import ru.be_more.orange_forum.presentation.screens.response.ResponseFragment
 
-class ThreadFragment : Fragment(R.layout.fragment_thread),
+class ThreadFragment :
+    BaseFragment<FragmentThreadBinding>(),
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
 
     private val viewModel: PresentationContract.ThreadViewModel by inject()
 
+    override val binding: FragmentThreadBinding by viewBinding()
     private var boardId: String = ""
     private var boardName: String = ""
     private var threadNum: Int = 0
-    private var recyclerView : RecyclerView? = null //TODO Убрать, пихать адаптер сразу в верстку
     private var disposable: Disposable? = null
     private var responseFragment: ResponseFragment? = null
     private var postFragment: PostFragment? = null
@@ -52,6 +55,9 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
     private var downButton: MenuItem? = null
     private var downButtonAdded: MenuItem? = null
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_thread, container, false)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onViewCreated(view, savedInstanceState)
@@ -61,7 +67,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
 
         setUpDownButtonOnCLickListener()
 
-        fab_thread_respond.setOnClickListener { showResponseForm() }
+        binding.fabThreadRespond.setOnClickListener { showResponseForm() }
 
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
@@ -94,7 +100,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         disposable?.dispose()
         disposable = null
         adapter = null
-        recyclerView?.adapter = null
+        binding.rvPostList.adapter = null
         postFragment = null
         responseFragment = null
         super.onDestroyView()
@@ -136,8 +142,6 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         threadNum = requireArguments().getInt(NAVIGATION_THREAD_NUM)
 
         viewModel.init(boardId, threadNum, boardName)
-        recyclerView = rv_post_list
-        recyclerView?.layoutManager = LinearLayoutManager(this.context)
     }
 
     private fun subscribe() {
@@ -155,7 +159,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         disposable = App.getBus().subscribe(
             {
                 if(it is BackPressed ) {
-                    if (fl_thread_post.visibility != View.GONE)
+                    if (binding.flThreadPost.visibility != View.GONE)
                             viewModel.onBackPressed()
                     else
                         App.getBus().onNext(AppToBeClosed)
@@ -175,9 +179,9 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
 
     private fun loadThread(thread: BoardThread) {
         adapter = ThreadAdapter(thread, this, this)
-        recyclerView?.adapter = adapter
-        recyclerView?.addItemDecoration(
-            DividerItemDecoration(recyclerView?.context, HORIZONTAL)
+        binding.rvPostList.adapter = adapter
+        binding.rvPostList.addItemDecoration(
+            DividerItemDecoration(requireContext(), HORIZONTAL)
         )
     }
 
@@ -200,48 +204,49 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         postFragment = PostFragment.getPostFragment(
             attachment,this,this, this)
 
-        fragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
-            ?.commit()
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
+            .commit()
     }
 
     //TODO переделать как-нибудь нормально
     private fun showPost(post: Post){
-        fl_thread_post.visibility = View.VISIBLE
+        binding.flThreadPost.visibility = View.VISIBLE
 
         postFragment = PostFragment.getPostFragment(
             post,this,this, this)
 
-        fragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
-            ?.commit()
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
+            .commit()
     }
 
     private fun hideModal() {
-        fl_thread_post.visibility = View.GONE
+        binding.flThreadPost.visibility = View.GONE
 
         App.getBus().onNext(VideoToBeClosed)
 
-        if (fragmentManager?.findFragmentByTag(POST_IN_THREAD_TAG) != null)
-            fragmentManager
-                ?.beginTransaction()
-                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_THREAD_TAG)!!)
-
+        childFragmentManager.findFragmentByTag(POST_IN_THREAD_TAG)
+            ?.let {
+                childFragmentManager
+                    .beginTransaction()
+                    .remove(it)
+            }
         viewModel.clearStack()
     }
 
     private fun setPosition(pos: Int){
-        (recyclerView?.layoutManager as LinearLayoutManager).scrollToPosition(pos)
+        (binding.rvPostList.layoutManager as LinearLayoutManager).scrollToPosition(pos)
     }
 
     private fun setUpDownButtonOnCLickListener(){
-        fab_thread_up.setOnClickListener {
-            recyclerView?.scrollToPosition(0)
+        binding.fabThreadUp.setOnClickListener {
+            binding.rvPostList.scrollToPosition(0)
         }
-        fab_thread_down.setOnClickListener {
-            recyclerView?.scrollToPosition(adapter?.itemCount?:1 - 1)
+        binding.fabThreadDown.setOnClickListener {
+            binding.rvPostList.scrollToPosition(adapter?.itemCount?:1 - 1)
         }
     }
 
@@ -256,7 +261,7 @@ class ThreadFragment : Fragment(R.layout.fragment_thread),
         if (attachment != null) {
             viewModel.putContentInStack(attachment)
             showPic(attachment)
-            fl_thread_post.visibility = View.VISIBLE
+            binding.flThreadPost.visibility = View.VISIBLE
         }
 
     }

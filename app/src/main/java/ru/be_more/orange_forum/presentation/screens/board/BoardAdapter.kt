@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.databinding.ItemBoardOpBinding
 import ru.be_more.orange_forum.presentation.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -19,13 +20,12 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
                    private val queueListener: (Int) -> Unit
 ) : RecyclerView.Adapter<OpPostViewHolder>(){
 
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OpPostViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-
-        return OpPostViewHolder(inflater.inflate(R.layout.item_board_op, parent, false), picListener )
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OpPostViewHolder =
+        OpPostViewHolder(
+            ItemBoardOpBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false),
+            picListener
+        )
 
     override fun getItemCount(): Int = threads.size
 

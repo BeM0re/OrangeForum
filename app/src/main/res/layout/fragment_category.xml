@@ -48,6 +48,7 @@
         android:scrollIndicators="end"
         android:scrollbars="vertical"
         android:paddingBottom="55dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_board_search_container"

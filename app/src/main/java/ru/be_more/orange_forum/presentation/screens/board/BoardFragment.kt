@@ -5,20 +5,17 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_board.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.consts.*
+import ru.be_more.orange_forum.databinding.FragmentBoardBinding
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.Post
@@ -28,23 +25,27 @@ import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
-//TODO сделать динамическое количество картинок через ресайклер
-class BoardFragment: Fragment(R.layout.fragment_board),
+class BoardFragment: BaseFragment<FragmentBoardBinding>(),
     BoardOnClickListener,
     PicOnClickListener,
     LinkOnClickListener,
     CloseModalListener {
 
+    override val binding: FragmentBoardBinding by viewBinding()
     private val viewModel: PresentationContract.BoardViewModel by inject()
-    private var recyclerView : RecyclerView? = null
     private var adapter : BoardAdapter? = null
     private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
     private var favButton: MenuItem? = null
     private var favButtonAdded: MenuItem? = null
     private var disposable: Disposable? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_board, container, false)
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
@@ -73,8 +74,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         disposable = null
         postFragment = null
         adapter = null
-        recyclerView?.adapter = null
-        recyclerView = null
+        binding.rvThreadList.adapter = null
         super.onDestroyView()
     }
 
@@ -85,9 +85,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)
 
         viewModel.init(boardId, boardName)
-        recyclerView = rv_thread_list
-        recyclerView?.layoutManager = LinearLayoutManager(this.context)
-
+        binding.rvThreadList.layoutManager = LinearLayoutManager(this.context)
     }
 
     private fun setToolbarListeners() {
@@ -111,9 +109,9 @@ class BoardFragment: Fragment(R.layout.fragment_board),
             viewModel.addToQueue(threadNum)
         }
 
-        recyclerView?.adapter = adapter
-        recyclerView?.addItemDecoration(
-            DividerItemDecoration(recyclerView?.context, HORIZONTAL)
+        binding.rvThreadList.adapter = adapter
+        binding.rvThreadList.addItemDecoration(
+            DividerItemDecoration(requireContext(), HORIZONTAL)
         )
     }
 
@@ -135,34 +133,42 @@ class BoardFragment: Fragment(R.layout.fragment_board),
 
     private fun showPost(post: Post){
 
-        fl_board_post.visibility = View.VISIBLE
+        binding.flBoardPost.visibility = View.VISIBLE
 
         postFragment = PostFragment.getPostFragment(
             post, this, this, this
         )
 
-        fragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fl_board_post, postFragment!!, POST_IN_BOARD_TAG)
-            ?.commit()
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.fl_board_post, postFragment!!, POST_IN_BOARD_TAG)
+            .commit()
     }
 
     private fun hideModal() {
-        fl_board_post.visibility = View.GONE
+        binding.flBoardPost.visibility = View.GONE
 
         App.getBus().onNext(VideoToBeClosed)
 
-        if (fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG) != null)
-            fragmentManager
-                ?.beginTransaction()
-                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG)!!)
+        childFragmentManager.fragments
+            .filterIsInstance<PostFragment>().firstOrNull()
+            ?.let {
+                childFragmentManager
+                    .beginTransaction()
+                    .remove(it)
+            }
+
+//        if (fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG) != null)
+//            fragmentManager
+//                ?.beginTransaction()
+//                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG)!!)
 
         viewModel.clearStack()
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
-    }
+//    private fun showToast(message: String) {
+//        Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
+//    }
 
     private fun subscribe(){
         //subscribe to viewModel
@@ -172,14 +178,14 @@ class BoardFragment: Fragment(R.layout.fragment_board),
             observe(post, ::showPost)
             observe(attachment, ::showPic)
             observe(emptyStack) { hideModal() }
-            observe(savedPosition) { recyclerView?.scrollToPosition(it) }
+            observe(savedPosition) { binding.rvThreadList.scrollToPosition(it) }
         }
 
         //Subscribe to event bus
         disposable = App.getBus().subscribe(
             {
                 if (it is BackPressed ) {
-                    if (fl_board_post.visibility != View.GONE)
+                    if (binding.flBoardPost.visibility != View.GONE)
                         viewModel.onBackPressed()
                     else
                         App.getBus().onNext(AppToBeClosed)
@@ -190,7 +196,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
 
     private fun saveState(){
         viewModel.savePosition(
-            (recyclerView?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            (binding.rvThreadList.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         )
     }
 
@@ -225,7 +231,7 @@ class BoardFragment: Fragment(R.layout.fragment_board),
         if (attachment != null) {
             viewModel.putContentInStack(attachment)
             showPic(attachment)
-            fl_board_post.visibility = View.VISIBLE
+            binding.flBoardPost.visibility = View.VISIBLE
         }
 
     }
