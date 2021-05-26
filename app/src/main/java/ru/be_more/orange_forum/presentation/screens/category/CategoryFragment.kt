@@ -4,44 +4,46 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_category.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_ID
 import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_NAME
 import ru.be_more.orange_forum.consts.NAVIGATION_TITLE
+import ru.be_more.orange_forum.databinding.FragmentBoardBinding
+import ru.be_more.orange_forum.databinding.FragmentCategoryBinding
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 
 class CategoryFragment:
-    Fragment(R.layout.fragment_category),
+    BaseFragment<FragmentCategoryBinding>(),
     CategoryOnClickListener {
 
+    override val binding: FragmentCategoryBinding by viewBinding()
     private val viewModel: PresentationContract.CategoryViewModel by inject()
-    private var recyclerView : RecyclerView? = null
     private lateinit var navController: NavController
     var adapter : CategoryAdapter? = null
 
     override fun onDestroyView() {
         saveState()
         adapter = null
-        recyclerView?.adapter = null
-        recyclerView = null
+        binding.rvCategoryList.adapter = null
         super.onDestroyView()
     }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_category, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,9 +56,6 @@ class CategoryFragment:
 
     private fun init(view: View){
         navController = Navigation.findNavController(view)
-
-        recyclerView = rv_category_list
-        recyclerView?.layoutManager = LinearLayoutManager(this.context)
     }
 
     private fun subscribe() =
@@ -69,7 +68,7 @@ class CategoryFragment:
                     collapseCategories()
             }
             observe(savedQuery) {
-                et_board_search.setText(it)
+                binding.etBoardSearch.setText(it)
             }
         }
 
@@ -81,17 +80,17 @@ class CategoryFragment:
 //            }
 //        }
 //        viewModel.saveExpanded(list)
-        viewModel.saveQuery(et_board_search.text.toString())
+        viewModel.saveQuery(binding.etBoardSearch.text.toString())
     }
 
     private fun setSearchListener(){
-        et_board_search.addTextChangedListener(SearchTextWatcher { query ->
+        binding.etBoardSearch.addTextChangedListener(SearchTextWatcher { query ->
             viewModel.search(query)
         })
 
-        ib_board_search_clear.setOnClickListener {
-            et_board_search.setText("")
-            et_board_search.clearFocus()
+        binding.ibBoardSearchClear.setOnClickListener {
+            binding.etBoardSearch.setText("")
+            binding.etBoardSearch.clearFocus()
             (context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
                 .hideSoftInputFromWindow(view?.windowToken, 0)
         }
@@ -112,17 +111,16 @@ class CategoryFragment:
     }
 
     fun restoreState(expandedItems: List<Int>, savedQuery: String) {
-        for (i in expandedItems) {
-            adapter!!.toggleGroup(i)
+        expandedItems.forEach {
+            adapter?.toggleGroup(it)
         }
-        et_board_search.setText(savedQuery)
+        binding.etBoardSearch.setText(savedQuery)
     }
 
     private fun loadCategories(categories: List<Category>) {
         adapter = CategoryAdapter(categories, this)
 
-        recyclerView?.adapter = adapter
-
+        binding.rvCategoryList.adapter = adapter
     }
 
     override fun onBoardClick(boardId: String, boardTitle: String) {

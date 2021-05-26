@@ -1,40 +1,39 @@
 package ru.be_more.orange_forum.presentation.screens.queue
 
 import android.view.View
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_op_post_short.*
+import ru.be_more.orange_forum.databinding.ItemOpPostShortBinding
 import ru.be_more.orange_forum.domain.model.AttachFile
-import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 
-class QueueThreadViewHolder(itemView: View?, private var listener: PicOnClickListener) :
-    ChildViewHolder(itemView), LayoutContainer {
+class QueueThreadViewHolder(private val binding: ItemOpPostShortBinding,
+                            private var listener: PicOnClickListener):
+    ChildViewHolder(binding.root) {
 
-    override val containerView: View
-        get() = itemView
 
     fun setSenderName (param: String){
-        tv_favorite_op_name.text = param
+        binding.tvFavoriteOpName.text = param
     }
+
     fun setIsOp (isOp: Boolean){
-        if(isOp)
-            tv_favorite_op_check.visibility=View.VISIBLE
-        else
-            tv_favorite_op_check.visibility=View.GONE
+        binding.tvFavoriteOpCheck.isVisible = isOp
     }
+
     fun setDate (param: String){
-        tv_favorite_op_datetime.text = param
+        binding.tvFavoriteOpDatetime.text = param
     }
+
     fun setThreadNum (param: Int){
-        tv_favorite_op_num.text = param.toString()
+        binding.tvFavoriteOpNum.text = param.toString()
     }
+
     fun setTitle (param: String){
-        tv_favorite_op_subject.text = param
+        binding.tvFavoriteOpSubject.text = param
     }
 
     fun setPics (url: AttachFile?){
@@ -56,41 +55,42 @@ class QueueThreadViewHolder(itemView: View?, private var listener: PicOnClickLis
 
             Glide.with(itemView)
                 .load(thumbnailGlideUrl)
-                .into(iv_favorite_op_pic)
+                .into(binding.ivFavoriteOpPic)
 
-            iv_favorite_op_pic.visibility = View.VISIBLE
-            iv_favorite_op_pic.setOnClickListener {
-                listener.onThumbnailListener(fullPicUrl, url.duration, null) }
+            binding.ivFavoriteOpPic.visibility = View.VISIBLE
+            binding.ivFavoriteOpPic.setOnClickListener {
+                listener.onThumbnailListener(fullPicUrl, url.duration, null)
+            }
 
             //нужно именно .isNullOrEmpty
             if (!url.duration.isNullOrEmpty()){
-                iv_favorite_play_background.visibility = View.VISIBLE
-                iv_favorite_play.visibility = View.VISIBLE
+                binding.ivFavoritePlayBackground.visibility = View.VISIBLE
+                binding.ivFavoritePlay.visibility = View.VISIBLE
             }
             else {
-                iv_favorite_play_background.visibility = View.GONE
-                iv_favorite_play.visibility = View.GONE
+                binding.ivFavoritePlayBackground.visibility = View.GONE
+                binding.ivFavoritePlay.visibility = View.GONE
             }
 
-            iv_favorite_op_pic.visibility = View.VISIBLE
+            binding.ivFavoriteOpPic.visibility = View.VISIBLE
         }
         else{
-            iv_favorite_op_pic.visibility = View.GONE
+            binding.ivFavoriteOpPic.visibility = View.GONE
         }
     }
 
     fun setIntoThreadButton(listener: View.OnClickListener) {
-        cl_favorite_op_post.setOnClickListener(listener)
+        binding.clFavoriteOpPost.setOnClickListener(listener)
     }
 
     fun setRemoveButton(boardId: String, threadNum: Int, listener: DownFavListener) {
-        iv_favorite_close_button.setOnClickListener {
+        binding.ivFavoriteCloseButton.setOnClickListener {
             listener.onRemoveClick(boardId, threadNum)
         }
     }
 
     fun setDivider(){
-        v_favorite_post1_pic_divider.visibility = View.VISIBLE
+        binding.vFavoritePost1PicDivider.visibility = View.VISIBLE
     }
 
 }

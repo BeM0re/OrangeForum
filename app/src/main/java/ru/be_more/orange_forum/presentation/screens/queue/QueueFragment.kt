@@ -3,18 +3,18 @@ package ru.be_more.orange_forum.presentation.screens.queue
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.Fragment
+import android.view.ViewGroup
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_favorite.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.*
+import ru.be_more.orange_forum.databinding.FragmentQueueBinding
 import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
 import ru.be_more.orange_forum.presentation.bus.BackPressed
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
@@ -22,16 +22,20 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
+import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
-class QueueFragment : Fragment(R.layout.fragment_favorite), DownFavListener{
+class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
 
+    override val binding: FragmentQueueBinding by viewBinding()
     private val viewModel: PresentationContract.QueueViewModel by inject()
-    private var recyclerView : RecyclerView? = null
     private var postFragment: PostFragment? = null
     private var disposable: Disposable? = null
     private lateinit var navController: NavController
     var adapter : QueueAdapter? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_queue, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,15 +50,13 @@ class QueueFragment : Fragment(R.layout.fragment_favorite), DownFavListener{
         disposable = null
         postFragment = null
         adapter = null
-        recyclerView?.adapter = null
-        recyclerView = null
+        binding.rvFavoriteList.adapter = null
         super.onDestroyView()
     }
 
     fun init(view: View){
         navController = Navigation.findNavController(view)
-        recyclerView = rv_favorite_list
-        recyclerView?.layoutManager = LinearLayoutManager(this.context)
+        binding.rvFavoriteList.layoutManager = LinearLayoutManager(this.context)
     }
 
     fun subscribe(){
@@ -64,7 +66,7 @@ class QueueFragment : Fragment(R.layout.fragment_favorite), DownFavListener{
 
         disposable = App.getBus().subscribe(
             {
-                if (it is BackPressed && fl_favorite_board_post.visibility == View.GONE)
+                if (it is BackPressed && binding.flFavoriteBoardPost.visibility == View.GONE)
                     App.getBus().onNext(AppToBeClosed)
             },
             { Log.e("M_FavoriteFragment","bus error = \n $it") }
@@ -88,7 +90,7 @@ class QueueFragment : Fragment(R.layout.fragment_favorite), DownFavListener{
             if (! adapter!!.isGroupExpanded(i))
                 adapter!!.toggleGroup(i)
         }
-        recyclerView?.adapter = adapter
+        binding.rvFavoriteList.adapter = adapter
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {

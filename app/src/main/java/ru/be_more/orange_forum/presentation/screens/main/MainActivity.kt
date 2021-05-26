@@ -4,38 +4,38 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.activity_main.*
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.databinding.ActivityMainBinding
 import ru.be_more.orange_forum.presentation.bus.*
+import ru.be_more.orange_forum.presentation.screens.base.ActivityViewBindingProvider
 
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity() {
 
+    val binding: ActivityMainBinding by ActivityViewBindingProvider(ActivityMainBinding::class.java)
     private var disposable: Disposable? = null
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         setTheme(R.style.AppTheme)
+        super.onCreate(savedInstanceState)
 //        Localization.setLanguage(this)
 //        App.getComponent().inject(null)
+        setContentView(binding.root)
 
-        super.onCreate(savedInstanceState)
-
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         navController = (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment)
             .navController
 
-        NavigationUI.setupWithNavController(bottomNavigationView, navController)
+        NavigationUI.setupWithNavController(binding.bottomNavigationView, navController)
         NavigationUI.setupActionBarWithNavController(this, navController)
 
-        bottomNavigationView.menu.getItem(1).isEnabled = false
-        bottomNavigationView.menu.getItem(2).isEnabled = false
+        binding.bottomNavigationView.menu.getItem(1).isEnabled = false
+        binding.bottomNavigationView.menu.getItem(2).isEnabled = false
 
         subscribe()
     }
@@ -71,19 +71,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                    }
 
                    is BoardToBeOpened -> {
-                       bottomNavigationView.menu.getItem(1).isEnabled = true
+                       binding.bottomNavigationView.menu.getItem(1).isEnabled = true
                    }
 
                    is BoardToBeClosed -> {
-                       bottomNavigationView.menu.getItem(1).isEnabled = false
+                       binding.bottomNavigationView.menu.getItem(1).isEnabled = false
                    }
 
                    is ThreadToBeOpened -> {
-                       bottomNavigationView.menu.getItem(2).isEnabled = true
+                       binding.bottomNavigationView.menu.getItem(2).isEnabled = true
                    }
 
                    is ThreadToBeClosed -> {
-                       bottomNavigationView.menu.getItem(2).isEnabled = false
+                       binding.bottomNavigationView.menu.getItem(2).isEnabled = false
                    }
                }
            },

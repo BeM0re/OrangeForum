@@ -7,7 +7,7 @@ import androidx.lifecycle.Observer
 object LifecycleOwnerExtensions {
 
     fun <T> LifecycleOwner.observe(liveData: LiveData<T>, observer: (T) -> Unit) {
-        liveData.observe(this, Observer {
+        liveData.observe(this, {
             it?.let { t -> observer(t) }
         })
     }

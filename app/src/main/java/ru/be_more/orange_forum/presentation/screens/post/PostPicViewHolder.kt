@@ -6,18 +6,15 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.item_post_pics.*
+import ru.be_more.orange_forum.databinding.ItemBoardOpBinding
+import ru.be_more.orange_forum.databinding.ItemPostPicsBinding
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.AttachFile
 
-class PostPicViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutContainer {
-
-    override val containerView: View
-        get() = itemView
+class PostPicViewHolder(private val binding: ItemPostPicsBinding) : ChildViewHolder(binding.root) {
 
     fun setParentContainerGone(){
-        ll_op_post_pics.visibility = View.GONE
+        binding.llOpPostPics.visibility = View.GONE
     }
 
     fun setPic (file1: AttachFile, listener: PicOnClickListener){
@@ -40,40 +37,40 @@ class PostPicViewHolder(itemView: View?) : ChildViewHolder(itemView), LayoutCont
 
             Glide.with(itemView)
                 .load(thumbnailGlideUrl)
-                .into(iv_op_post_pic)
+                .into(binding.ivOpPostPic)
 
-            iv_op_post_pic.visibility = View.VISIBLE
-            iv_op_post_pic.setOnClickListener {
+            binding.ivOpPostPic.visibility = View.VISIBLE
+            binding.ivOpPostPic.setOnClickListener {
                 listener.onThumbnailListener(fullPicUrl, file1.duration, null)
             }
 
             //нужно именно .isNullOrEmpty
             if (!file1.duration.isNullOrEmpty()){
-                iv_play_1.visibility = View.VISIBLE
-                iv_play_background_1.visibility = View.VISIBLE
+                binding.ivPlay1.visibility = View.VISIBLE
+                binding.ivPlayBackground1.visibility = View.VISIBLE
             }
             else {
-                iv_play_1.visibility = View.GONE
-                iv_play_background_1.visibility = View.GONE
+                binding.ivPlay1.visibility = View.GONE
+                binding.ivPlayBackground1.visibility = View.GONE
             }
         }
         else{
             Glide.with(itemView)
                 .load(Uri.parse(file1.localThumbnail))
-                .into(iv_op_post_pic)
+                .into(binding.ivOpPostPic)
 
-            iv_op_post_pic.visibility = View.VISIBLE
-            iv_op_post_pic.setOnClickListener {
+            binding.ivOpPostPic.visibility = View.VISIBLE
+            binding.ivOpPostPic.setOnClickListener {
                 listener.onThumbnailListener(null , file1.duration, Uri.parse(file1.localPath))
             }
             //нужно именно .isNullOrEmpty
             if (!file1.duration.isNullOrEmpty()){
-                iv_play_1.visibility = View.VISIBLE
-                iv_play_background_1.visibility = View.VISIBLE
+                binding.ivPlay1.visibility = View.VISIBLE
+                binding.ivPlayBackground1.visibility = View.VISIBLE
             }
             else {
-                iv_play_1.visibility = View.GONE
-                iv_play_background_1.visibility = View.GONE
+                binding.ivPlay1.visibility = View.GONE
+                binding.ivPlayBackground1.visibility = View.GONE
             }
         }
     }
