@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.presentation.screens.board
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Flowable
@@ -16,6 +17,7 @@ import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.bus.BoardToBeOpened
 import ru.be_more.orange_forum.presentation.bus.ThreadToBeClosed
+import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
 import java.util.*
 
 class BoardViewModelImpl (
@@ -23,7 +25,7 @@ class BoardViewModelImpl (
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
     private val prefs: Preferences
-): PresentationContract.BoardViewModel {
+): PresentationContract.BoardViewModel, BaseViewModelImpl() {
 
     override val board = MutableLiveData<Board>()
     override val isFavorite = MutableLiveData<Boolean>()
@@ -33,14 +35,13 @@ class BoardViewModelImpl (
     override val savedPosition = MutableLiveData<Int>()
 
     private val modalStack: Stack<ModalContent> = Stack()
-    private var disposables: CompositeDisposable? = CompositeDisposable()
 
     override fun init(boardId: String?, boardName: String?){
         App.getBus().onNext(BoardToBeOpened)
         if (board.value == null || (board.value?.id != boardId && !boardId.isNullOrEmpty())){
             App.getBus().onNext(ThreadToBeClosed)
             if (!boardId.isNullOrEmpty() && !boardName.isNullOrEmpty()) {
-                disposables?.add(
+                disposables.add(
                     boardInteractor.getBoard(boardId, boardName)
                         .subscribe(
                             { board ->
@@ -84,7 +85,7 @@ class BoardViewModelImpl (
     }
 
     override fun getSinglePost(boardId: String, postNum: Int){
-        disposables?.add(
+        disposables.add(
             postInteractor.getPost(boardId, postNum)
                 .subscribe(
                     {
@@ -98,10 +99,10 @@ class BoardViewModelImpl (
 
     override fun hideThread(threadNum: Int, toHide: Boolean) {
         if (toHide) {
-            disposables?.add(
+            disposables.add(
                 threadInteractor
-                    .hideThread(board.value?.id?:"", board.value?.name?:"", threadNum)
-                    .andThen(boardInteractor.getBoard(board.value?.id ?: "", board.value?.name?:""))
+                    .hideThread(board.value?.id ?: "", board.value?.name ?: "", threadNum)
+                    .andThen(boardInteractor.getBoard(board.value?.id ?: "", board.value?.name ?: ""))
                     .subscribe(
                         { board.postValue(it) },
                         { Log.e("M_BoardViewModel","hiding error = $it") }
@@ -109,9 +110,9 @@ class BoardViewModelImpl (
             )
         }
         else {
-            disposables?.add(
-                threadInteractor.unhideThread(board.value?.id?:"", threadNum)
-                    .andThen(boardInteractor.getBoard(board.value?.id ?: "", board.value?.name?:""))
+            disposables.add(
+                threadInteractor.unhideThread(board.value?.id ?: "", threadNum)
+                    .andThen(boardInteractor.getBoard(board.value?.id ?: "", board.value?.name ?: ""))
                     .subscribe(
                         { board.postValue(it) },
                         { Log.e("M_BoardViewModel","hiding error = $it") }
@@ -134,7 +135,7 @@ class BoardViewModelImpl (
     override fun setFavorite(isFavorite: Boolean) {
         if (board.value != null)
             if (isFavorite)
-                disposables?.add(
+                disposables.add(
                     boardInteractor
                         .markBoardFavorite(board.value!!.id, board.value!!.name)
                         .subscribe(
@@ -144,7 +145,7 @@ class BoardViewModelImpl (
                         )
                 )
             else
-                disposables?.add(
+                disposables.add(
                     boardInteractor
                         .unmarkBoardFavorite(board.value!!.id)
                         .subscribe(
@@ -160,7 +161,7 @@ class BoardViewModelImpl (
 
     override fun addToQueue(threadNum: Int) {
         if (board.value != null)
-            disposables?.add(
+            disposables.add(
                 threadInteractor
                     .addThreadToQueue(threadNum, board.value?.id ?: return, board.value?.name ?: return)
                     .subscribe(
@@ -174,8 +175,20 @@ class BoardViewModelImpl (
         isFavorite.postValue(isFavorite.value)
     }
 
-    override fun onDestroy() {
-        disposables?.dispose()
-        disposables = null
+    override fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
+        if (!fullPicUrl.isNullOrEmpty() || fullPicUri != null)
+            Attachment(fullPicUrl, duration, fullPicUri).also {
+                putContentInStack(it)
+                attachment.postValue(it)
+            }
     }
+
+    override fun linkClicked(chanLink: Triple<String, Int, Int>?) {
+        if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
+            error.postValue("Пост не найден")
+        else
+            getSinglePost(chanLink.first, chanLink.third)
+    }
+
+
 }

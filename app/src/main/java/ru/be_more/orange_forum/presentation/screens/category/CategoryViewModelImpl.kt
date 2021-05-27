@@ -1,85 +1,73 @@
 package ru.be_more.orange_forum.presentation.screens.category
 
-import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
 import java.util.*
 
 class CategoryViewModelImpl(
     private val interactor : InteractorContract.CategoryInteractor,
     private val prefs: Preferences
-): PresentationContract.CategoryViewModel {
+): PresentationContract.CategoryViewModel, BaseViewModelImpl() {
 
     private var fullDataset: List<Category>? = null
     private var firstLaunch = true
-    private var expandedItems: List<Int> = listOf()
+    private var expandedItems = LinkedList<Int>()
     private var savedQ = ""
-    private var disposables: CompositeDisposable? = CompositeDisposable()
 
     override val dataset = MutableLiveData<List<Category>>()
-    override var expand = MutableLiveData<Boolean>()
+    override var expand = MutableLiveData<List<Int>>()
     override var savedQuery = MutableLiveData<String>()
 
     override fun initViewModel(){
         if(firstLaunch){
-            disposables?.add(
+            disposables.add(
                 interactor.getCategories()
                     .subscribe(
                         {
                             fullDataset = it
                             dataset.postValue(fullDataset)
-                            expand.postValue(false)
+                            expand.postValue(expandedItems)
                             firstLaunch = false
                         },
-                        { App.showToast("Can't load categories") }
+                        { error.postValue("Can't load categories: \n ${it.message}") }
                     )
             )
         }
         else{
             dataset.postValue(fullDataset)
-            expand.postValue(false)
             savedQuery.postValue(savedQ)
+            expand.postValue(expandedItems)
         }
-    }
-
-    override fun saveQuery(query: String){
-        this.savedQ = query
-    }
-
-    override fun saveExpanded(list: List<Int>){
-        expandedItems = list
     }
 
     override fun search(query: String){
+        savedQ = query
         if (query.isEmpty()) {
             dataset.postValue(fullDataset)
-            expand.postValue(false)
+            expandedItems.clear()
+            expand.postValue(expandedItems)
         }
-        else{
-            val filterDataset: LinkedList<Category> = LinkedList()
-            for (category in dataset.value!!){
-                filterDataset.add(
-                    Category(
-                        category.title,
-                        category.items.filter {
-                            (it?.id!!.contains(query, true) ||
-                                    it.name.contains(query, true))
-                        }
-                    )
-                )
-            }
-            dataset.postValue(filterDataset.filter { it.items.isNotEmpty() })
-            expand.postValue(true)
+        else {
+            val filteredDataset = dataset.value
+                ?.map { category ->
+                    category.copy( boards = category.boards?.filter { board ->
+                        board?.id?.contains(query, true) ?: false ||
+                                board?.name?.contains(query, true) ?: false
+                    })
+                }
+                ?.filter { !it.boards.isNullOrEmpty() }
+            dataset.postValue(filteredDataset)
+            expandedItems = LinkedList(filteredDataset?.mapIndexed { index, _ -> index })
+            expand.postValue(expandedItems)
         }
     }
 
-    override fun onDestroy(){
-        disposables?.dispose()
-        disposables = null
+    override fun categoryClicked(index: Int) {
+        if (!expandedItems.remove(index))
+            expandedItems.add(index)
     }
 }

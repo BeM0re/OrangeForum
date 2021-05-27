@@ -1,23 +1,21 @@
 package ru.be_more.orange_forum.presentation.screens.download_favorite
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
-import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.databinding.ItemBoardShortBinding
 import ru.be_more.orange_forum.databinding.ItemOpPostShortBinding
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
-import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 
-class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
+class DownFavAdapter(private var boards: List<ExpandableGroup<*>?>?,
                      private var downFavListener: DownFavListener,
                      private var picListener: PicOnClickListener) :
-    ExpandableRecyclerViewAdapter<DownFavBoardViewHolder, DownFavThreadViewHolder>(groups){
+    ExpandableRecyclerViewAdapter<DownFavBoardViewHolder, DownFavThreadViewHolder>(boards){
 
     override fun onCreateGroupViewHolder(
         parent: ViewGroup,
@@ -46,7 +44,9 @@ class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
 
 
     override fun onBindChildViewHolder(
-        holder: DownFavThreadViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
+        holder: DownFavThreadViewHolder,
+        flatPosition: Int,
+        group: ExpandableGroup<*>,
         childIndex: Int
     ) {
         val thread: BoardThread = (group as Board).items[childIndex]
@@ -82,5 +82,33 @@ class DownFavAdapter(groups: List<ExpandableGroup<*>?>?,
                 board.name
             )
         }
+    }
+
+    fun updateData(groups: List<ExpandableGroup<*>?>?){
+
+        val diffCallback = object: DiffUtil.Callback(){
+            override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean =
+                (boards?.get(oldPos) as? Board)?.id == (groups?.get(newPos) as? Board)?.id
+
+            override fun getOldListSize(): Int = boards?.size ?: 0
+
+            override fun getNewListSize(): Int  = groups?.size ?: 0
+
+            override fun areContentsTheSame(oldPos: Int, newPos: Int) : Boolean {
+                if (boards == null || groups == null)
+                    return false
+
+                boards?.get(oldPos)?.items?.forEachIndexed { index, thread ->
+                    if (thread != groups[newPos]?.items?.get(index) ?: true)
+                        return false
+                }
+                return true
+            }
+        }
+
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        boards = groups
+        diffResult.dispatchUpdatesTo(this)
     }
 }
