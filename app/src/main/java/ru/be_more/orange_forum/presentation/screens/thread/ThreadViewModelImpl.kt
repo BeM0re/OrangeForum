@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.presentation.screens.thread
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.App
@@ -11,6 +12,7 @@ import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
 import java.util.*
 
 //TODO прятать fab при нажатии на ответ
@@ -18,7 +20,7 @@ class ThreadViewModelImpl (
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val postInteractor : InteractorContract.PostInteractor,
     private val prefs: Preferences
-): PresentationContract.ThreadViewModel{
+): PresentationContract.ThreadViewModel, BaseViewModelImpl(){
     
     override val post = MutableLiveData<Post>()
     override val attachment = MutableLiveData<Attachment>()
@@ -34,7 +36,6 @@ class ThreadViewModelImpl (
     private var threadNum: Int = 0
     private val modalStack: Stack<ModalContent> = Stack()
 
-    @SuppressLint("CheckResult")
     override fun init(boardId: String?, threadNum: Int, boardName: String){
 
         //если борда и тред не изменились, то данные не перезагружаем
@@ -44,16 +45,18 @@ class ThreadViewModelImpl (
                 this.threadNum = threadNum
                 this.boardName = boardName
 
-                threadInteractor.getThread(boardId, threadNum)
-                    .subscribe(
-                        {
-                            thread.postValue(it)
-                            isDownload.postValue(it.isDownloaded)
-                            isFavorite.postValue(it.isFavorite)
-                            isQueued.postValue(it.isQueued)
-                        },
-                        { Log.e("M_ThreadPresenter", "get tread in tread presenter error = $it") }
-                    )
+                disposables.add(
+                    threadInteractor.getThread(boardId, threadNum)
+                        .subscribe(
+                            {
+                                thread.postValue(it)
+                                isDownload.postValue(it.isDownloaded)
+                                isFavorite.postValue(it.isFavorite)
+                                isQueued.postValue(it.isQueued)
+                            },
+                            { Log.e("M_ThreadPresenter", "get tread in tread presenter error = $it") }
+                        )
+                )
             }
         }
         else{
@@ -105,7 +108,10 @@ class ThreadViewModelImpl (
             )
     }
 
-    override fun getPost(chanLink: Triple<String, Int, Int>) {
+    override fun getPost(chanLink: Triple<String, Int, Int>?) {
+        if (chanLink == null)
+            return
+
         val post = thread.value?.posts?.find { it.num == chanLink.third }
 
         if (post != null) {
@@ -181,23 +187,15 @@ class ThreadViewModelImpl (
                 threadInteractor
                     .downloadThread(threadNum, boardId, boardName)
                     .subscribe(
-                        {
-                            this.isDownload.postValue(true)
-                        },
-                        {
-                            Log.e("M_ThreadViewModelImpl","Downloading error = $it")
-                        }
+                        { this.isDownload.postValue(true) },
+                        { Log.e("M_ThreadViewModelImpl","Downloading error = $it") }
                     )
             else
                 threadInteractor
                     .deleteThread(boardId, threadNum)
                     .subscribe(
-                            {
-                                this.isDownload.postValue(false)
-                            },
-                        {
-                            Log.e("M_ThreadViewModelImpl","Removing download error = $it")
-                        }
+                        { this.isDownload.postValue(false) },
+                        { Log.e("M_ThreadViewModelImpl","Removing download error = $it") }
                     )
     }
 
@@ -205,6 +203,19 @@ class ThreadViewModelImpl (
         isFavorite.postValue(isFavorite.value)
         isQueued.postValue(isQueued.value)
         isDownload.postValue(isDownload.value)
+    }
+
+    override fun closeModal() {
+        clearStack()
+        emptyStack.postValue(true)
+    }
+
+    override fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
+        if (!fullPicUrl.isNullOrEmpty() || fullPicUri != null)
+            Attachment(fullPicUrl, duration, fullPicUri).also {
+                putContentInStack(it)
+                attachment.postValue(it)
+            }
     }
 
 }

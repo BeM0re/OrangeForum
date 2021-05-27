@@ -5,16 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
 
 class ResponseViewModelImpl (
     private val interactor : InteractorContract.ResponseInteractor
-): PresentationContract.ResponseViewModel{
+): PresentationContract.ResponseViewModel, BaseViewModelImpl(){
 
     override val result = MutableLiveData<String>()
-    private var disposables: CompositeDisposable? = CompositeDisposable()
 
     override fun postResponse(boardId: String, threadNum: Int, comment: String, token:String){
-        disposables?.add(
+        disposables.add(
             interactor.postResponse(
                 boardId = boardId,
                 threadNum = threadNum,
@@ -35,8 +35,4 @@ class ResponseViewModelImpl (
         )
     }
 
-    override fun onDestroy(){
-        disposables?.dispose()
-        disposables = null
-    }
 }

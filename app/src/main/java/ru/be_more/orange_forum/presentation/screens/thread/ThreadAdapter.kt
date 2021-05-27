@@ -37,11 +37,11 @@ class ThreadAdapter(var thread: BoardThread,
                 holder.setReplies(thread.posts[position].replies, linkListener)
         }
 
-    /*fun updateData(data: BoardThread){
+    fun updateData(data: BoardThread){
 
         val diffCallback = object: DiffUtil.Callback(){
             override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean =
-                thread.num == data.num
+                thread.posts[oldPos] == data.posts[newPos]
 
             override fun getOldListSize(): Int = thread.posts.size
 
@@ -55,7 +55,7 @@ class ThreadAdapter(var thread: BoardThread,
 
         thread = data
         diffResult.dispatchUpdatesTo(this)
-    }*/
+    }
 }
 
 

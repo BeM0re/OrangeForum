@@ -18,6 +18,7 @@ import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.databinding.FragmentBoardBinding
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.interfaces.BoardOnClickListener
@@ -36,7 +37,6 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
 
     override val binding: FragmentBoardBinding by viewBinding()
     private val viewModel: PresentationContract.BoardViewModel by inject()
-    private var adapter : BoardAdapter? = null
     private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
     private var favButton: MenuItem? = null
@@ -45,7 +45,6 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_board, container, false)
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
@@ -73,7 +72,6 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         disposable?.dispose()
         disposable = null
         postFragment = null
-        adapter = null
         binding.rvThreadList.adapter = null
         super.onDestroyView()
     }
@@ -85,7 +83,6 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)
 
         viewModel.init(boardId, boardName)
-        binding.rvThreadList.layoutManager = LinearLayoutManager(this.context)
     }
 
     private fun setToolbarListeners() {
@@ -100,16 +97,14 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
     }
 
     private fun loadBoard(board: Board) {
-        adapter?.let {
+        (binding.rvThreadList.adapter as? BoardAdapter)?.let {
             it.updateData(board.threads)
             return
         }
-        adapter = BoardAdapter(
+        binding.rvThreadList.adapter = BoardAdapter(
             board.threads, this, this, this) { threadNum ->
             viewModel.addToQueue(threadNum)
         }
-
-        binding.rvThreadList.adapter = adapter
         binding.rvThreadList.addItemDecoration(
             DividerItemDecoration(requireContext(), HORIZONTAL)
         )
@@ -120,29 +115,20 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         favButtonAdded?.isVisible = isFavorite
     }
 
-    private fun showPic(attachment: Attachment){
-        postFragment = PostFragment.getPostFragment(
-            attachment, this, this, this
-        )
-
-        fragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fl_board_post, postFragment!!, POST_IN_BOARD_TAG)
-            ?.commit()
-    }
-
-    private fun showPost(post: Post){
-
+    private fun showPost(post: ModalContent){
         binding.flBoardPost.visibility = View.VISIBLE
-
-        postFragment = PostFragment.getPostFragment(
-            post, this, this, this
+        PostFragment.getPostFragment(
+            content = post,
+            this,
+            this,
+            this
         )
-
-        childFragmentManager
-            .beginTransaction()
-            .replace(R.id.fl_board_post, postFragment!!, POST_IN_BOARD_TAG)
-            .commit()
+            .also {
+                childFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fl_board_post, it, POST_IN_BOARD_TAG)
+                    .commit()
+            }
     }
 
     private fun hideModal() {
@@ -158,30 +144,19 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
                     .remove(it)
             }
 
-//        if (fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG) != null)
-//            fragmentManager
-//                ?.beginTransaction()
-//                ?.remove(fragmentManager?.findFragmentByTag(POST_IN_BOARD_TAG)!!)
-
         viewModel.clearStack()
     }
 
-//    private fun showToast(message: String) {
-//        Toast.makeText(App.applicationContext(), message, Toast.LENGTH_SHORT).show()
-//    }
-
     private fun subscribe(){
-        //subscribe to viewModel
         with(viewModel){
             observe(board, ::loadBoard)
             observe(isFavorite) { setBoardMarks(it) }
             observe(post, ::showPost)
-            observe(attachment, ::showPic)
+            observe(attachment, ::showPost)
             observe(emptyStack) { hideModal() }
             observe(savedPosition) { binding.rvThreadList.scrollToPosition(it) }
         }
 
-        //Subscribe to event bus
         disposable = App.getBus().subscribe(
             {
                 if (it is BackPressed ) {
@@ -201,7 +176,6 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
     }
 
     override fun onCloseModalListener(){
-        postFragment = null
         hideModal()
     }
 
@@ -216,31 +190,14 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
 
     override fun onHideClick(threadNum: Int, toHide: Boolean) {
         viewModel.hideThread(threadNum, toHide)
-        adapter?.notifyDataSetChanged()
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
-
-        var attachment: Attachment? = null
-
-        if (fullPicUri != null)
-            attachment = Attachment("", duration, fullPicUri)
-        else if (!fullPicUrl.isNullOrEmpty())
-            attachment = Attachment(fullPicUrl, duration)
-
-        if (attachment != null) {
-            viewModel.putContentInStack(attachment)
-            showPic(attachment)
-            binding.flBoardPost.visibility = View.VISIBLE
-        }
-
+        viewModel.prepareModal(fullPicUrl, duration, fullPicUri)
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-        if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
-            showToast("Пост не найден")
-        else
-            viewModel.getSinglePost(chanLink.first, chanLink.third)
+        viewModel.linkClicked(chanLink)
     }
 
     override fun onLinkClick(postNum: Int) {

@@ -1,11 +1,9 @@
 package ru.be_more.orange_forum.presentation.screens.category
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
-import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.databinding.ItemBoardBinding
 import ru.be_more.orange_forum.databinding.ItemCategoryBinding
 import ru.be_more.orange_forum.presentation.interfaces.CategoryOnClickListener
@@ -28,10 +26,7 @@ class CategoryAdapter(groups: List<ExpandableGroup<*>?>?, var listener: Category
         )
 
 
-    override fun onCreateChildViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): BoardNameViewHolder =
+    override fun onCreateChildViewHolder(parent: ViewGroup, viewType: Int): BoardNameViewHolder =
         BoardNameViewHolder(
             ItemBoardBinding
                 .inflate(
@@ -46,7 +41,7 @@ class CategoryAdapter(groups: List<ExpandableGroup<*>?>?, var listener: Category
         holder: BoardNameViewHolder, flatPosition: Int, group: ExpandableGroup<*>,
         childIndex: Int
     ) {
-        val board: Board? = (group as Category).items[childIndex]
+        val board: Board? = (group as Category).boards?.get(childIndex)
         holder.setBoardName(board?.name.orEmpty())
         if(board != null)
             holder.itemView.setOnClickListener { listener.onBoardClick(board.id, board.name) }
