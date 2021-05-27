@@ -1,11 +1,13 @@
 package ru.be_more.orange_forum.presentation
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import ru.be_more.orange_forum.domain.model.*
 
 interface PresentationContract {
 
     interface BaseViewModel{
+        val error: LiveData<String>
         fun onDestroy()
     }
 
@@ -22,12 +24,11 @@ interface PresentationContract {
 
     interface CategoryViewModel: BaseViewModel{
         val dataset: LiveData<List<Category>>
-        val expand: LiveData<Boolean>
+        val expand: LiveData<List<Int>>
         val savedQuery: LiveData<String>
         fun initViewModel()
-        fun saveQuery(query: String)
-        fun saveExpanded(list: List<Int>)
         fun search(query: String)
+        fun categoryClicked(index: Int)
     }
 
     interface BoardViewModel: BaseViewModel, ViewModelWithPosts{
@@ -43,6 +44,8 @@ interface PresentationContract {
         fun getBoardName(): String
         fun addToQueue(threadNum: Int)
         fun onMenuReady()
+        fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?)
+        fun linkClicked(chanLink: Triple<String, Int, Int>?)
     }
 
     interface ThreadViewModel: BaseViewModel, ViewModelWithPosts{
@@ -52,12 +55,14 @@ interface PresentationContract {
         val isQueued: LiveData<Boolean>
         val isDownload: LiveData<Boolean>
         fun init(boardId: String?, threadNum: Int, boardName: String)
-        fun getPost(chanLink: Triple<String, Int, Int>)
+        fun getPost(chanLink: Triple<String, Int, Int>?)
         fun getPost(postNum: Int)
         fun addToQueue(isQueued: Boolean)
         fun setFavorite(isFavorite: Boolean)
         fun download(isDownload: Boolean)
         fun onMenuReady()
+        fun closeModal()
+        fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?)
     }
 
     interface ResponseViewModel: BaseViewModel{

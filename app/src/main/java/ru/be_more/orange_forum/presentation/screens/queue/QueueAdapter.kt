@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.presentation.screens.queue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import ru.be_more.orange_forum.R
@@ -14,10 +15,10 @@ import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 
 
-class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
+class QueueAdapter(private var boards: List<ExpandableGroup<*>?>?,
                    private var queueListener: DownFavListener,
                    private var picListener: PicOnClickListener) :
-    ExpandableRecyclerViewAdapter<QueueBoardViewHolder, QueueThreadViewHolder>(groups){
+    ExpandableRecyclerViewAdapter<QueueBoardViewHolder, QueueThreadViewHolder>(boards){
 
     override fun onCreateGroupViewHolder(parent: ViewGroup, viewType: Int): QueueBoardViewHolder =
         QueueBoardViewHolder(
@@ -80,5 +81,33 @@ class QueueAdapter(groups: List<ExpandableGroup<*>?>?,
             )
         }
         holder.expand()
+    }
+
+    fun updateData(groups: List<ExpandableGroup<*>?>?){
+
+        val diffCallback = object: DiffUtil.Callback(){
+            override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean =
+                (boards?.get(oldPos) as? Board)?.id == (groups?.get(newPos) as? Board)?.id
+
+            override fun getOldListSize(): Int = boards?.size ?: 0
+
+            override fun getNewListSize(): Int  = groups?.size ?: 0
+
+            override fun areContentsTheSame(oldPos: Int, newPos: Int) : Boolean {
+                if (boards == null || groups == null)
+                    return false
+
+                boards?.get(oldPos)?.items?.forEachIndexed { index, thread ->
+                    if (thread != groups[newPos]?.items?.get(index) ?: true)
+                        return false
+                }
+                return true
+            }
+        }
+
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        boards = groups
+        diffResult.dispatchUpdatesTo(this)
     }
 }

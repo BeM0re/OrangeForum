@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -24,10 +25,12 @@ import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
+import ru.be_more.orange_forum.presentation.screens.board.BoardAdapter
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 import ru.be_more.orange_forum.presentation.screens.response.ResponseFragment
 
@@ -40,13 +43,7 @@ class ThreadFragment :
     private val viewModel: PresentationContract.ThreadViewModel by inject()
 
     override val binding: FragmentThreadBinding by viewBinding()
-    private var boardId: String = ""
-    private var boardName: String = ""
-    private var threadNum: Int = 0
     private var disposable: Disposable? = null
-    private var responseFragment: ResponseFragment? = null
-    private var postFragment: PostFragment? = null
-    private var adapter : ThreadAdapter? = null
     private lateinit var navController: NavController
     private var favButton: MenuItem? = null
     private var favButtonAdded: MenuItem? = null
@@ -66,8 +63,6 @@ class ThreadFragment :
         init(view)
 
         setUpDownButtonOnCLickListener()
-
-        binding.fabThreadRespond.setOnClickListener { showResponseForm() }
 
         //Swipe to refresh. maybe return later
         /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
@@ -99,10 +94,7 @@ class ThreadFragment :
         //TODO save state
         disposable?.dispose()
         disposable = null
-        adapter = null
         binding.rvPostList.adapter = null
-        postFragment = null
-        responseFragment = null
         super.onDestroyView()
     }
 
@@ -137,10 +129,11 @@ class ThreadFragment :
         App.getBus().onNext(ThreadToBeOpened)
         navController = Navigation.findNavController(view)
 
-        boardId = requireArguments().getString(NAVIGATION_BOARD_ID)?:""
-        boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)?:""
-        threadNum = requireArguments().getInt(NAVIGATION_THREAD_NUM)
+        binding.fabThreadRespond.setOnClickListener { showResponseForm() }
 
+        val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)?:""
+        val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)?:""
+        val threadNum = requireArguments().getInt(NAVIGATION_THREAD_NUM)
         viewModel.init(boardId, threadNum, boardName)
     }
 
@@ -148,7 +141,7 @@ class ThreadFragment :
         with(viewModel){
             observe(thread, ::loadThread)
             observe(post, ::showPost)
-            observe(attachment, ::showPic)
+            observe(attachment, ::showPost)
             observe(emptyStack) { hideModal() }
             observe(savedPosition, ::setPosition)
             observe(isFavorite, ::setFavoriteMark)
@@ -170,6 +163,8 @@ class ThreadFragment :
     }
 
     private fun showResponseForm() {
+        val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)?:""
+        val threadNum = requireArguments().getInt(NAVIGATION_THREAD_NUM)
         val bundle = Bundle()
         bundle.putString(NAVIGATION_BOARD_ID, boardId)
         bundle.putInt(NAVIGATION_THREAD_NUM, threadNum)
@@ -178,8 +173,11 @@ class ThreadFragment :
     }
 
     private fun loadThread(thread: BoardThread) {
-        adapter = ThreadAdapter(thread, this, this)
-        binding.rvPostList.adapter = adapter
+        (binding.rvPostList.adapter as? ThreadAdapter)?.let {
+            it.updateData(thread)
+            return
+        }
+        binding.rvPostList.adapter = ThreadAdapter(thread, this, this)
         binding.rvPostList.addItemDecoration(
             DividerItemDecoration(requireContext(), HORIZONTAL)
         )
@@ -200,27 +198,20 @@ class ThreadFragment :
         queueButtonAdded?.isVisible = isQueued
     }
 
-    private fun showPic(attachment: Attachment){
-        postFragment = PostFragment.getPostFragment(
-            attachment,this,this, this)
-
-        childFragmentManager
-            .beginTransaction()
-            .replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
-            .commit()
-    }
-
-    //TODO переделать как-нибудь нормально
-    private fun showPost(post: Post){
+    private fun showPost(content: ModalContent){
         binding.flThreadPost.visibility = View.VISIBLE
-
-        postFragment = PostFragment.getPostFragment(
-            post,this,this, this)
-
-        childFragmentManager
-            .beginTransaction()
-            .replace(R.id.fl_thread_post, postFragment!!, POST_IN_THREAD_TAG)
-            .commit()
+        PostFragment.getPostFragment(
+            content = content,
+            this,
+            this,
+            this
+        )
+            .also {
+                childFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fl_thread_post, it, POST_IN_THREAD_TAG)
+                    .commit()
+            }
     }
 
     private fun hideModal() {
@@ -234,11 +225,10 @@ class ThreadFragment :
                     .beginTransaction()
                     .remove(it)
             }
-        viewModel.clearStack()
     }
 
     private fun setPosition(pos: Int){
-        (binding.rvPostList.layoutManager as LinearLayoutManager).scrollToPosition(pos)
+        binding.rvPostList.layoutManager?.scrollToPosition(pos)
     }
 
     private fun setUpDownButtonOnCLickListener(){
@@ -246,30 +236,16 @@ class ThreadFragment :
             binding.rvPostList.scrollToPosition(0)
         }
         binding.fabThreadDown.setOnClickListener {
-            binding.rvPostList.scrollToPosition(adapter?.itemCount?:1 - 1)
+            binding.rvPostList.scrollToPosition(binding.rvPostList.adapter?.itemCount ?: 1 - 1)
         }
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
-        var attachment: Attachment? = null
-
-        if (fullPicUri != null)
-            attachment = Attachment("", duration, fullPicUri)
-        else if (!fullPicUrl.isNullOrEmpty())
-            attachment = Attachment(fullPicUrl, duration)
-
-        if (attachment != null) {
-            viewModel.putContentInStack(attachment)
-            showPic(attachment)
-            binding.flThreadPost.visibility = View.VISIBLE
-        }
-
+        viewModel.prepareModal(fullPicUrl, duration, fullPicUri)
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-        if (chanLink != null) {
-            viewModel.getPost(chanLink)
-        }
+        viewModel.getPost(chanLink)
     }
 
     override fun onLinkClick(postNum: Int) {
@@ -278,10 +254,12 @@ class ThreadFragment :
 
     override fun onLinkClick(externalLink: String?) {
         Log.d("M_ThreadPresenter", "outer link = $externalLink")
+        Toast
+            .makeText(requireContext(), "outer link = $externalLink", Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun onCloseModalListener(){
-        postFragment = null
-        hideModal()
+        viewModel.closeModal()
     }
 }

@@ -30,10 +30,8 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
 
     override val binding: FragmentDownloadBinding by viewBinding()
     private val viewModel: PresentationContract.DownFavViewModel by inject()
-    private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
     private var disposable: Disposable? = null
-    var adapter : DownFavAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_download, container, false)
@@ -60,12 +58,11 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
                 if(it is BackPressed && binding.flDownloadedBoardPost.visibility != View.GONE)
                     App.getBus().onNext(AppToBeClosed)
             },
-            { Log.e("M_DownloadFragment","bus error = \n $it") })
+            { Log.e("M_DownloadFragment","bus error = \n $it") }
+        )
     }
 
     override fun onDestroyView() {
-        postFragment = null
-        adapter = null
         disposable?.dispose()
         disposable = null
         binding.rvDownloadedList.adapter = null
@@ -73,7 +70,11 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
     }
 
     private fun loadFavs(boards: List<Board>) {
-        adapter = DownFavAdapter(boards, this, object : PicOnClickListener{
+        (binding.rvDownloadedList.adapter as? DownFavAdapter)?.let {
+            it.updateData(boards)
+            return
+        }
+        DownFavAdapter(boards, this, object : PicOnClickListener{
             override fun onThumbnailListener(
                 fullPicUrl: String?,
                 duration: String?,
@@ -83,15 +84,13 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
                 App.showToast("Картинка")
             }
         })
-
-        // Iterate and toggle groups
-        adapter?.let {
-            for (i in (it.groups.size - 1) downTo 0) {
-                if (! it.isGroupExpanded(i))
-                    it.toggleGroup(i)
+            .apply {
+                for (i in (groups.size - 1) downTo 0) {
+                    if (! isGroupExpanded(i))
+                        toggleGroup(i)
+                }
+                binding.rvDownloadedList.adapter = this
             }
-            binding.rvDownloadedList.adapter = adapter
-        }
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
@@ -114,12 +113,7 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
         viewModel.removeThread(boardId, threadNum)
     }
 
-    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-        if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
-            App.showToast("Пост не найден")
-//        else
-//            downloadPresenter.getSinglePost(chanLink.first, chanLink.third)
-    }
+    override fun onLinkClick(chanLink: Triple<String, Int, Int>?) { }
 
     override fun onLinkClick(postNum: Int) {
 //        downloadPresenter.getSinglePost(postNum)

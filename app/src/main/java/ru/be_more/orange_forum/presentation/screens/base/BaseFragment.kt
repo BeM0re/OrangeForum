@@ -1,5 +1,7 @@
 package ru.be_more.orange_forum.presentation.screens.base
 
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.ContentView
 import androidx.annotation.LayoutRes
@@ -21,5 +23,10 @@ abstract class BaseFragment<TViewBinding : ViewBinding> : Fragment {
 
     protected fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    protected fun hideKeyboard(){
+        (requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(view?.windowToken, 0)
     }
 }

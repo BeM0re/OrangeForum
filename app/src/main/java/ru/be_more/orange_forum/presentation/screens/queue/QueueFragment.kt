@@ -23,16 +23,15 @@ import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
+import ru.be_more.orange_forum.presentation.screens.download_favorite.DownFavAdapter
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
 class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
 
     override val binding: FragmentQueueBinding by viewBinding()
     private val viewModel: PresentationContract.QueueViewModel by inject()
-    private var postFragment: PostFragment? = null
     private var disposable: Disposable? = null
     private lateinit var navController: NavController
-    var adapter : QueueAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_queue, container, false)
@@ -48,15 +47,12 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
     override fun onDestroyView() {
         disposable?.dispose()
         disposable = null
-        postFragment = null
-        adapter = null
         binding.rvFavoriteList.adapter = null
         super.onDestroyView()
     }
 
     fun init(view: View){
         navController = Navigation.findNavController(view)
-        binding.rvFavoriteList.layoutManager = LinearLayoutManager(this.context)
     }
 
     fun subscribe(){
@@ -74,7 +70,11 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
     }
 
     private fun loadQueue(boards: List<Board>) {
-        adapter = QueueAdapter(boards, this, object : PicOnClickListener{
+        (binding.rvFavoriteList.adapter as? QueueAdapter)?.let {
+            it.updateData(boards)
+            return
+        }
+        QueueAdapter(boards, this, object : PicOnClickListener{
             override fun onThumbnailListener(
                 fullPicUrl: String?,
                 duration: String?,
@@ -84,13 +84,13 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
                 App.showToast("Картинка")
             }
         })
-
-        // Iterate and toggle groups
-        for (i in (adapter!!.groups.size - 1) downTo 0) {
-            if (! adapter!!.isGroupExpanded(i))
-                adapter!!.toggleGroup(i)
-        }
-        binding.rvFavoriteList.adapter = adapter
+            .apply {
+                for (i in (groups.size - 1) downTo 0) {
+                    if (! isGroupExpanded(i))
+                        toggleGroup(i)
+                }
+                binding.rvFavoriteList.adapter = this
+            }
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {
