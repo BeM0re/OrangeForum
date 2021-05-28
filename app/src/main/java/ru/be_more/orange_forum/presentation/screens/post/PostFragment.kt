@@ -9,8 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.MediaController
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -20,22 +18,15 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.reactivex.disposables.Disposable
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.databinding.ItemPostBinding
-import ru.be_more.orange_forum.presentation.bus.VideoToBeClosed
 import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
-import ru.be_more.orange_forum.presentation.bus.BackPressed
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 
 class PostFragment : BaseFragment<ItemPostBinding>() {
@@ -58,18 +49,7 @@ class PostFragment : BaseFragment<ItemPostBinding>() {
         setContent(content)
     }
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onMessageEvent(event: VideoToBeClosed) {
+    fun closeVideo(){
         hideModal()
     }
 

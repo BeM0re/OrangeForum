@@ -30,4 +30,9 @@ abstract class BaseFragment<TViewBinding : ViewBinding> : Fragment {
         (requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
             .hideSoftInputFromWindow(view?.windowToken, 0)
     }
+
+    /**@return true if need to handle back press, false if it was handled*/
+    open fun onBackPressed() : Boolean{
+        return true
+    }
 }

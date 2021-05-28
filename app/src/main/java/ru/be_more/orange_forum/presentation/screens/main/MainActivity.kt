@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.presentation.screens.main
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -13,12 +14,13 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.databinding.ActivityMainBinding
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.presentation.screens.base.ActivityViewBindingProvider
+import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 
 class MainActivity : AppCompatActivity() {
 
-    val binding: ActivityMainBinding by ActivityViewBindingProvider(ActivityMainBinding::class.java)
-    private var disposable: Disposable? = null
+    private val binding: ActivityMainBinding by ActivityViewBindingProvider(ActivityMainBinding::class.java)
     private lateinit var navController: NavController
+    private var timestamp: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -49,13 +51,17 @@ class MainActivity : AppCompatActivity() {
         EventBus.getDefault().unregister(this)
     }
 
-    override fun onDestroy() {
-        disposable?.dispose()
-        super.onDestroy()
-    }
-
     override fun onBackPressed() {
-        EventBus.getDefault().post(BackPressed)
+        if ((supportFragmentManager
+                .fragments
+                .filterIsInstance<NavHostFragment>()
+                .firstOrNull()
+                ?.childFragmentManager
+                ?.fragments?.get(0) as? BaseFragment<*>)
+                ?.onBackPressed() != false
+        )
+            closeApp()
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -69,11 +75,6 @@ class MainActivity : AppCompatActivity() {
 
     fun refreshDownload() {
         EventBus.getDefault().post(RefreshDownload)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onMessageEvent(event: AppToBeClosed) {
-        navController.navigateUp()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
@@ -94,6 +95,15 @@ class MainActivity : AppCompatActivity() {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onMessageEvent(event: ThreadToBeClosed) {
         binding.bottomNavigationView.menu.getItem(2).isEnabled = false
+    }
+
+    private fun closeApp(){
+        if(System.currentTimeMillis() - timestamp < 2000)
+            super.onBackPressed()
+        else {
+            timestamp = System.currentTimeMillis()
+            Toast.makeText(this, R.string.push_again_to_quit, Toast.LENGTH_SHORT).show()
+        }
     }
 
 }

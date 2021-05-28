@@ -45,16 +45,6 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
         viewModel.init()
     }
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
-
     private fun init(view: View){
         navController = Navigation.findNavController(view)
     }
@@ -63,10 +53,10 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
         observe(viewModel.boards, ::loadFavs)
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onMessageEvent(event: BackPressed) {
-        if (binding.flDownloadedBoardPost.visibility != View.GONE)
-            EventBus.getDefault().post(AppToBeClosed)
+    override fun onBackPressed() : Boolean{
+//        if (binding.flDownloadedBoardPost.visibility != View.GONE)
+        //TODO доделать закрытие открытой фото
+        return true
     }
 
     override fun onDestroyView() {

@@ -76,16 +76,6 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
-
     private fun init(view: View){
         navController = Navigation.findNavController(view)
 
@@ -144,11 +134,11 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
     private fun hideModal() {
         binding.flBoardPost.visibility = View.GONE
 
-        EventBus.getDefault().post(VideoToBeClosed)
-
-        childFragmentManager.fragments
+        childFragmentManager
+            .fragments
             .filterIsInstance<PostFragment>().firstOrNull()
             ?.let {
+                it.closeVideo()
                 childFragmentManager
                     .beginTransaction()
                     .remove(it)
@@ -168,12 +158,13 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onMessageEvent(event: BackPressed) {
-        if (binding.flBoardPost.visibility != View.GONE)
+    override fun onBackPressed() : Boolean{
+        return if (binding.flBoardPost.visibility != View.GONE) {
             viewModel.onBackPressed()
+            false
+        }
         else
-            EventBus.getDefault().post(AppToBeClosed)
+            true
     }
 
     private fun saveState(){
