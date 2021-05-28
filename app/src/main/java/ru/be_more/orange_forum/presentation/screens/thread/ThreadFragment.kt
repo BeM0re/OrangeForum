@@ -101,16 +101,6 @@ class ThreadFragment :
         super.onDestroyView()
     }
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
-
     private fun setToolbarListeners() {
         favButton?.setOnMenuItemClickListener {
             viewModel.setFavorite(true)
@@ -163,12 +153,13 @@ class ThreadFragment :
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onMessageEvent(event: BackPressed) {
-        if (binding.flThreadPost.visibility != View.GONE)
+    override fun onBackPressed() : Boolean {
+        return if (binding.flThreadPost.visibility != View.GONE){
             viewModel.onBackPressed()
+            false
+        }
         else
-            EventBus.getDefault().post(AppToBeClosed)
+            true
     }
 
     private fun showResponseForm() {
@@ -226,10 +217,11 @@ class ThreadFragment :
     private fun hideModal() {
         binding.flThreadPost.visibility = View.GONE
 
-        EventBus.getDefault().post(VideoToBeClosed)
-
-        childFragmentManager.findFragmentByTag(POST_IN_THREAD_TAG)
+        childFragmentManager
+            .fragments
+            .filterIsInstance<PostFragment>().firstOrNull()
             ?.let {
+                it.closeVideo()
                 childFragmentManager
                     .beginTransaction()
                     .remove(it)

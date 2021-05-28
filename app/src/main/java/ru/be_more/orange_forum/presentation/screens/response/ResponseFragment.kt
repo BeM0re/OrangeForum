@@ -3,7 +3,6 @@ package ru.be_more.orange_forum.presentation.screens.response
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebSettings
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
@@ -21,16 +19,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import io.reactivex.disposables.Disposable
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.databinding.FragmentCategoryBinding
 import ru.be_more.orange_forum.databinding.ItemThreadResponseFormBinding
-import ru.be_more.orange_forum.presentation.bus.BackPressed
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
-import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 
 class ResponseFragment: BaseFragment<ItemThreadResponseFormBinding>(){
@@ -78,9 +69,9 @@ class ResponseFragment: BaseFragment<ItemThreadResponseFormBinding>(){
         })
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onMessageEvent(event: BackPressed) {
+    override fun onBackPressed() : Boolean{
         navController.navigateUp()
+        return false
     }
 
     //TODO save state
@@ -151,7 +142,7 @@ class ResponseFragment: BaseFragment<ItemThreadResponseFormBinding>(){
     private fun handleResult(result: String) {
         if (result.isEmpty()){
             Toast.makeText(requireContext(), "Отправлено", Toast.LENGTH_SHORT).show()
-            EventBus.getDefault().post(BackPressed)
+            navController.navigateUp()
         }
         else
             Toast.makeText(requireContext(), result, Toast.LENGTH_SHORT).show()

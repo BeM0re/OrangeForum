@@ -9,32 +9,21 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.LinearLayoutManager
-import io.reactivex.disposables.Disposable
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.databinding.FragmentQueueBinding
-import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
-import ru.be_more.orange_forum.presentation.bus.BackPressed
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
-import ru.be_more.orange_forum.presentation.screens.download_favorite.DownFavAdapter
-import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
 class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
 
     override val binding: FragmentQueueBinding by viewBinding()
     private val viewModel: PresentationContract.QueueViewModel by inject()
-    private var disposable: Disposable? = null
     private lateinit var navController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -49,20 +38,8 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
     }
 
     override fun onDestroyView() {
-        disposable?.dispose()
-        disposable = null
         binding.rvFavoriteList.adapter = null
         super.onDestroyView()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
     }
 
     fun init(view: View){
@@ -73,10 +50,10 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
         observe(viewModel.boards, ::loadQueue)
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onMessageEvent(event: BackPressed) {
-        if (binding.flFavoriteBoardPost.visibility == View.GONE)
-            EventBus.getDefault().post(AppToBeClosed)
+    override fun onBackPressed() : Boolean{
+//        if (binding.flFavoriteBoardPost.visibility == View.GONE)
+        //TODO доделать закрытие открытой фото
+        return true
     }
 
     private fun loadQueue(boards: List<Board>) {
