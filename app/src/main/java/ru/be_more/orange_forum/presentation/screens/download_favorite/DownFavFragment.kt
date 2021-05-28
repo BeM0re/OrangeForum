@@ -6,23 +6,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.disposables.Disposable
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.consts.*
-import ru.be_more.orange_forum.databinding.FragmentCategoryBinding
 import ru.be_more.orange_forum.databinding.FragmentDownloadBinding
 import ru.be_more.orange_forum.presentation.interfaces.*
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
-import ru.be_more.orange_forum.presentation.screens.post.PostFragment
 
 class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
     DownFavListener,
@@ -44,22 +45,28 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
         viewModel.init()
     }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
     private fun init(view: View){
         navController = Navigation.findNavController(view)
     }
 
     private fun subscribe(){
-        with(viewModel){
-            observe(boards, ::loadFavs)
-        }
+        observe(viewModel.boards, ::loadFavs)
+    }
 
-        disposable = App.getBus().subscribe(
-            {
-                if(it is BackPressed && binding.flDownloadedBoardPost.visibility != View.GONE)
-                    App.getBus().onNext(AppToBeClosed)
-            },
-            { Log.e("M_DownloadFragment","bus error = \n $it") }
-        )
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: BackPressed) {
+        if (binding.flDownloadedBoardPost.visibility != View.GONE)
+            EventBus.getDefault().post(AppToBeClosed)
     }
 
     override fun onDestroyView() {
@@ -81,7 +88,7 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
                 fullPicUri: Uri?
             ) {
                 //TODO сделоть
-                App.showToast("Картинка")
+                Toast.makeText(requireContext(), "Картинка", Toast.LENGTH_SHORT).show()
             }
         })
             .apply {
@@ -117,7 +124,7 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
 
     override fun onLinkClick(postNum: Int) {
 //        downloadPresenter.getSinglePost(postNum)
-        App.showToast("Сделать обработку")
+        Toast.makeText(requireContext(), "Сделать обработку", Toast.LENGTH_SHORT).show()
     }
 
     override fun onLinkClick(externalLink: String?) {

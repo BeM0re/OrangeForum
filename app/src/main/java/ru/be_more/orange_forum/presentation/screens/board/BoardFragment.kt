@@ -10,16 +10,16 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.disposables.Disposable
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.databinding.FragmentBoardBinding
-import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.ModalContent
-import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
@@ -74,6 +74,16 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         postFragment = null
         binding.rvThreadList.adapter = null
         super.onDestroyView()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
     private fun init(view: View){
@@ -134,7 +144,7 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
     private fun hideModal() {
         binding.flBoardPost.visibility = View.GONE
 
-        App.getBus().onNext(VideoToBeClosed)
+        EventBus.getDefault().post(VideoToBeClosed)
 
         childFragmentManager.fragments
             .filterIsInstance<PostFragment>().firstOrNull()
@@ -156,17 +166,14 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
             observe(emptyStack) { hideModal() }
             observe(savedPosition) { binding.rvThreadList.scrollToPosition(it) }
         }
+    }
 
-        disposable = App.getBus().subscribe(
-            {
-                if (it is BackPressed ) {
-                    if (binding.flBoardPost.visibility != View.GONE)
-                        viewModel.onBackPressed()
-                    else
-                        App.getBus().onNext(AppToBeClosed)
-                }
-            },
-            { Log.e("M_BoardFragment", "bus error = \n $it") })
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: BackPressed) {
+        if (binding.flBoardPost.visibility != View.GONE)
+            viewModel.onBackPressed()
+        else
+            EventBus.getDefault().post(AppToBeClosed)
     }
 
     private fun saveState(){

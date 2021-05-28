@@ -20,6 +20,9 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import io.reactivex.disposables.Disposable
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.COOKIE
@@ -31,6 +34,8 @@ import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
+import ru.be_more.orange_forum.presentation.bus.BackPressed
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 
 class PostFragment : BaseFragment<ItemPostBinding>() {
@@ -50,20 +55,22 @@ class PostFragment : BaseFragment<ItemPostBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         setClosingViewClickListener()
-        subscribe()
         setContent(content)
     }
 
-    private fun subscribe(){
-        disposable = App.getBus().subscribe(
-            {
-                if(it is VideoToBeClosed)
-                    hideModal()
-            },
-            {
-                Log.e("M_PostFragment","bus error = \n $it")
-            }
-        )
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: VideoToBeClosed) {
+        hideModal()
     }
 
     override fun onDestroyView() {

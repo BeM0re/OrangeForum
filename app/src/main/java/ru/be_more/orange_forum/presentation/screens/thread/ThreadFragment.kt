@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
@@ -98,6 +101,16 @@ class ThreadFragment :
         super.onDestroyView()
     }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
     private fun setToolbarListeners() {
         favButton?.setOnMenuItemClickListener {
             viewModel.setFavorite(true)
@@ -126,7 +139,7 @@ class ThreadFragment :
     }
 
     private fun init(view: View) {
-        App.getBus().onNext(ThreadToBeOpened)
+        EventBus.getDefault().post(ThreadToBeOpened)
         navController = Navigation.findNavController(view)
 
         binding.fabThreadRespond.setOnClickListener { showResponseForm() }
@@ -148,18 +161,14 @@ class ThreadFragment :
             observe(isQueued, ::setQueueMark)
             observe(isDownload, ::setDownloadMark)
         }
+    }
 
-        disposable = App.getBus().subscribe(
-            {
-                if(it is BackPressed ) {
-                    if (binding.flThreadPost.visibility != View.GONE)
-                            viewModel.onBackPressed()
-                    else
-                        App.getBus().onNext(AppToBeClosed)
-                }
-            },
-            { Log.e("M_ThreadFragment","bus error = \n $it") }
-        )
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: BackPressed) {
+        if (binding.flThreadPost.visibility != View.GONE)
+            viewModel.onBackPressed()
+        else
+            EventBus.getDefault().post(AppToBeClosed)
     }
 
     private fun showResponseForm() {
@@ -217,7 +226,7 @@ class ThreadFragment :
     private fun hideModal() {
         binding.flThreadPost.visibility = View.GONE
 
-        App.getBus().onNext(VideoToBeClosed)
+        EventBus.getDefault().post(VideoToBeClosed)
 
         childFragmentManager.findFragmentByTag(POST_IN_THREAD_TAG)
             ?.let {

@@ -1,13 +1,14 @@
 package ru.be_more.orange_forum.presentation.screens.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import io.reactivex.disposables.Disposable
-import ru.be_more.orange_forum.App
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.databinding.ActivityMainBinding
 import ru.be_more.orange_forum.presentation.bus.*
@@ -36,8 +37,16 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
         binding.bottomNavigationView.menu.getItem(2).isEnabled = false
+    }
 
-        subscribe()
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onDestroy() {
@@ -46,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        App.getBus().onNext(BackPressed)
+        EventBus.getDefault().post(BackPressed)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -55,40 +64,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun refreshFavorite() {
-        App.getBus().onNext(RefreshFavorite)
+        EventBus.getDefault().post(RefreshFavorite)
     }
 
     fun refreshDownload() {
-        App.getBus().onNext(RefreshDownload)
+        EventBus.getDefault().post(RefreshDownload)
     }
 
-    private fun subscribe(){
-       disposable = App.getBus().subscribe(
-           {
-               when (it) {
-                   is AppToBeClosed -> {
-                       navController.navigateUp()
-                   }
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: AppToBeClosed) {
+        navController.navigateUp()
+    }
 
-                   is BoardToBeOpened -> {
-                       binding.bottomNavigationView.menu.getItem(1).isEnabled = true
-                   }
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: BoardToBeOpened) {
+        binding.bottomNavigationView.menu.getItem(1).isEnabled = true
+    }
 
-                   is BoardToBeClosed -> {
-                       binding.bottomNavigationView.menu.getItem(1).isEnabled = false
-                   }
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: BoardToBeClosed) {
+        binding.bottomNavigationView.menu.getItem(1).isEnabled = false
+    }
 
-                   is ThreadToBeOpened -> {
-                       binding.bottomNavigationView.menu.getItem(2).isEnabled = true
-                   }
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: ThreadToBeOpened) {
+        binding.bottomNavigationView.menu.getItem(2).isEnabled = true
+    }
 
-                   is ThreadToBeClosed -> {
-                       binding.bottomNavigationView.menu.getItem(2).isEnabled = false
-                   }
-               }
-           },
-           { Log.e("M_MainActivity", "bus error = \n $it") }
-       )
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: ThreadToBeClosed) {
+        binding.bottomNavigationView.menu.getItem(2).isEnabled = false
     }
 
 }
