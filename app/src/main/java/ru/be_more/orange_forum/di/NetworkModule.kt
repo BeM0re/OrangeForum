@@ -9,9 +9,9 @@ import ru.be_more.orange_forum.data.remote.service.SSLTrustManager
 @JvmField
 val networkModule = module {
     single { SSLTrustManager() }
-    single { RetrofitFactory(get()) }
+    single { RetrofitFactory(get(), get()) }
     single {
-        RetrofitFactory(get())
+        RetrofitFactory(get(), get())
             .retrofit(DVACH_ROOT_URL)
             .create(DvachApi::class.java)
     }

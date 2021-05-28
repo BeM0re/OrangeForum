@@ -7,6 +7,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import org.greenrobot.eventbus.EventBus
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -15,6 +16,7 @@ import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.PresentationContract
+import ru.be_more.orange_forum.presentation.bus.AppToBeClosed
 import ru.be_more.orange_forum.presentation.bus.BoardToBeOpened
 import ru.be_more.orange_forum.presentation.bus.ThreadToBeClosed
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
@@ -37,9 +39,9 @@ class BoardViewModelImpl (
     private val modalStack: Stack<ModalContent> = Stack()
 
     override fun init(boardId: String?, boardName: String?){
-        App.getBus().onNext(BoardToBeOpened)
+        EventBus.getDefault().post(BoardToBeOpened)
         if (board.value == null || (board.value?.id != boardId && !boardId.isNullOrEmpty())){
-            App.getBus().onNext(ThreadToBeClosed)
+            EventBus.getDefault().post(ThreadToBeClosed)
             if (!boardId.isNullOrEmpty() && !boardName.isNullOrEmpty()) {
                 disposables.add(
                     boardInteractor.getBoard(boardId, boardName)
@@ -92,7 +94,7 @@ class BoardViewModelImpl (
                         this.putContentInStack(it)
                         post.postValue(it)
                     },
-                    { App.showToast("Пост не найден") }
+                    { error.postValue("Пост не найден") }
                 )
         )
     }
@@ -189,6 +191,4 @@ class BoardViewModelImpl (
         else
             getSinglePost(chanLink.first, chanLink.third)
     }
-
-
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import org.greenrobot.eventbus.EventBus
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -104,7 +105,7 @@ class ThreadViewModelImpl (
                     this.putContentInStack(it)
                     post.postValue(it)
                 },
-                { App.showToast("Пост не найден") }
+                { error.postValue("Пост не найден") }
             )
     }
 
@@ -217,5 +218,4 @@ class ThreadViewModelImpl (
                 attachment.postValue(it)
             }
     }
-
 }

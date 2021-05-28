@@ -6,10 +6,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.reactivex.disposables.Disposable
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
@@ -51,22 +55,28 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
         super.onDestroyView()
     }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
     fun init(view: View){
         navController = Navigation.findNavController(view)
     }
 
     fun subscribe(){
-        with(viewModel){
-            observe(boards, ::loadQueue)
-        }
+        observe(viewModel.boards, ::loadQueue)
+    }
 
-        disposable = App.getBus().subscribe(
-            {
-                if (it is BackPressed && binding.flFavoriteBoardPost.visibility == View.GONE)
-                    App.getBus().onNext(AppToBeClosed)
-            },
-            { Log.e("M_FavoriteFragment","bus error = \n $it") }
-        )
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onMessageEvent(event: BackPressed) {
+        if (binding.flFavoriteBoardPost.visibility == View.GONE)
+            EventBus.getDefault().post(AppToBeClosed)
     }
 
     private fun loadQueue(boards: List<Board>) {
@@ -81,7 +91,7 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
                 fullPicUri: Uri?
             ) {
                 //TODO сделоть
-                App.showToast("Картинка")
+                Toast.makeText(requireContext(), "Картинка", Toast.LENGTH_SHORT).show()
             }
         })
             .apply {

@@ -13,22 +13,8 @@ import ru.be_more.orange_forum.di.*
 
 class App : Application(){
 
-    companion object {
-        private var instance: App? = null
-        private var bus:Subject<Event> = PublishSubject.create()
-
-        fun applicationContext(): Context = instance!!.applicationContext
-
-        fun showToast(message: String) {
-            Toast.makeText(this.applicationContext(), message, Toast.LENGTH_LONG).show()
-        }
-
-        fun getBus() = this.bus
-    }
-
     override fun onCreate() {
         super.onCreate()
-        instance = this
 
         startKoin {
             androidContext(this@App)
