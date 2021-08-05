@@ -1,15 +1,16 @@
 package ru.be_more.orange_forum.presentation.screens.category
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.thoughtbot.expandablerecyclerview.listeners.GroupExpandCollapseListener
-import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
+import androidx.work.*
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.consts.NAVIGATION_BOARD_ID
@@ -21,7 +22,8 @@ import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.interfaces.CategoryOnClickListener
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
-import java.util.*
+import ru.be_more.orange_forum.worker.CheckFavoriteUpdateWorker
+import java.util.concurrent.TimeUnit
 
 class CategoryFragment:
     BaseFragment<FragmentCategoryBinding>(),
@@ -39,13 +41,15 @@ class CategoryFragment:
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_category, container, false)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         init(view)
         subscribe()
-        viewModel.initViewModel()
         setSearchListener()
+//        initRefreshFavWorker()
+        viewModel.initViewModel()
     }
 
     private fun init(view: View){
@@ -110,6 +114,16 @@ class CategoryFragment:
                     true
                 }
             }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun initRefreshFavWorker(){
+        val refreshWorkRequest =
+            PeriodicWorkRequestBuilder<CheckFavoriteUpdateWorker> (15, TimeUnit.MINUTES)
+                .build()
+
+        WorkManager.getInstance(requireContext())
+            .enqueue(refreshWorkRequest)
     }
 
     override fun onBoardClick(boardId: String, boardTitle: String) {

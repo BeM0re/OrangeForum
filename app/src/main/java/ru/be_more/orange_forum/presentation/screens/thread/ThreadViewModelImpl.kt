@@ -159,6 +159,7 @@ class ThreadViewModelImpl (
                         },
                         { Log.e("M_ThreadViewModelImpl","Adding fav error = $it") }
                     )
+                    .addToSubscribe()
             else
                 threadInteractor
                     .removeThreadFromFavorite(boardId, threadNum)
@@ -169,6 +170,7 @@ class ThreadViewModelImpl (
                         },
                         { Log.e("M_ThreadViewModelImpl","Removing fav error = $it") }
                     )
+                    .addToSubscribe()
     }
 
     override fun download(isDownload: Boolean) {
@@ -180,6 +182,7 @@ class ThreadViewModelImpl (
                         { this.isDownload.postValue(true) },
                         { Log.e("M_ThreadViewModelImpl","Downloading error = $it") }
                     )
+                    .addToSubscribe()
             else
                 threadInteractor
                     .deleteThread(boardId, threadNum)
@@ -187,6 +190,7 @@ class ThreadViewModelImpl (
                         { this.isDownload.postValue(false) },
                         { Log.e("M_ThreadViewModelImpl","Removing download error = $it") }
                     )
+                    .addToSubscribe()
     }
 
     override fun onMenuReady() {

@@ -2,7 +2,6 @@ package ru.be_more.orange_forum.presentation.screens.download_favorite
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.disposables.CompositeDisposable
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
@@ -56,7 +55,7 @@ class DownFavViewModelImpl (
     }
 
     private fun loadData() =
-        downFavInteractor.getDownloads()
+        downFavInteractor.getDownFavs()
             .subscribe(
                 { boards -> this.boards.postValue(boards) },
                 { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }

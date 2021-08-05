@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import io.reactivex.disposables.Disposable
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -15,6 +17,8 @@ import ru.be_more.orange_forum.databinding.ActivityMainBinding
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.presentation.screens.base.ActivityViewBindingProvider
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
+import ru.be_more.orange_forum.worker.CheckFavoriteUpdateWorker
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,6 +53,16 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val refreshWorkRequest =
+            PeriodicWorkRequestBuilder<CheckFavoriteUpdateWorker> (15, TimeUnit.MINUTES)
+                .build()
+
+        WorkManager.getInstance(this)
+            .enqueue(refreshWorkRequest)
     }
 
     override fun onBackPressed() {
