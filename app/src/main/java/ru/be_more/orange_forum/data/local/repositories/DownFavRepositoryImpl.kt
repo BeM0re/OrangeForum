@@ -23,7 +23,6 @@ class DownFavRepositoryImpl (
             dao.getDownloadedAndFavoritesThreads(),
             dao.getOpPosts(),
             dao.getOpFiles(),
-            Function4 <List<StoredBoard>, List<StoredThread>, List<StoredPost>, List<StoredFile>, List<Board>>
             { boards, threads, posts, files ->
                 boards.map { board ->
                     toModelBoard(board, toModelThreads(threads.filter { it.boardId == board.id })
@@ -38,4 +37,26 @@ class DownFavRepositoryImpl (
                     .filter { it.threads.isNotEmpty() || it.isFavorite }
             }
         )
+
+    override fun getFavoritesOnly(): Single<List<Board>> {
+        return Single.zip(
+            dao.getBoards(),
+            dao.getFavoriteThreads(),
+            dao.getOpPosts(),
+            dao.getOpFiles(),
+            { boards, threads, posts, files ->
+                boards.map { board ->
+                    toModelBoard(board, toModelThreads(threads.filter { it.boardId == board.id })
+                        .map { thread -> thread.copy(posts = posts
+                            .filter { it.threadNum == thread.num && it.boardId == board.id}
+                            .map{ post -> toModelPost(post, files
+                                .filter { it.postNum == post.num && it.boardId == board.id }
+                            )}
+                        )}
+                    )
+                }
+                    .filter { it.threads.isNotEmpty() || it.isFavorite }
+            }
+        )
+    }
 }

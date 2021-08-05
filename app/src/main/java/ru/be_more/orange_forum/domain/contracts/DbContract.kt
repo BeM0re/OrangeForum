@@ -58,5 +58,6 @@ interface DbContract {
 
     interface DownFavRepository{
         fun getDownloadsAndFavorites(): Single<List<Board>>
+        fun getFavoritesOnly(): Single<List<Board>>
     }
 }

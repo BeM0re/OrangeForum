@@ -9,7 +9,14 @@ import ru.be_more.orange_forum.extentions.processSingle
 class DownFavInteractorImpl(
     private val dbDownFavRepository: DbContract.DownFavRepository
 ): InteractorContract.DownFavInteractor {
-    override fun getDownloads(): Single<List<Board>> =
-        dbDownFavRepository.getDownloadsAndFavorites()
+    override fun getDownFavs(): Single<List<Board>> =
+        dbDownFavRepository
+            .getDownloadsAndFavorites()
             .processSingle()
+
+    override fun getFavoritesOnly(): Single<List<Board>> {
+        return dbDownFavRepository
+            .getFavoritesOnly()
+            .processSingle()
+    }
 }

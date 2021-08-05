@@ -11,6 +11,9 @@ const val NAVIGATION_THREAD_NUM = "NAVIGATION_THREAD_NUM"
 const val NAVIGATION_THREAD_TITLE = "NAVIGATION_THREAD_TITLE"
 const val NAVIGATION_TITLE = "title"
 
+//push notification channel
+const val CHANNEL_ID = "4e8a3b3c8d5c3d6cffb841e9bf7da63"
+
 //Base URL
 const val DVACH_ROOT_URL = "https://2ch.hk/"
 

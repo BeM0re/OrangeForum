@@ -44,7 +44,8 @@ interface InteractorContract {
     }
 
     interface DownFavInteractor {
-        fun getDownloads(): Single<List<Board>>
+        fun getDownFavs(): Single<List<Board>>
+        fun getFavoritesOnly(): Single<List<Board>>
     }
 
 }
