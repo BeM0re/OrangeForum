@@ -54,6 +54,7 @@ interface PresentationContract {
         val isFavorite: LiveData<Boolean>
         val isQueued: LiveData<Boolean>
         val isDownload: LiveData<Boolean>
+        val isRefreshing: LiveData<Boolean>
         fun init(boardId: String?, threadNum: Int, boardName: String)
         fun getPost(chanLink: Triple<String, Int, Int>?)
         fun getPost(postNum: Int)
@@ -63,6 +64,7 @@ interface PresentationContract {
         fun onMenuReady()
         fun closeModal()
         fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?)
+        fun onRefresh()
     }
 
     interface ResponseViewModel: BaseViewModel{

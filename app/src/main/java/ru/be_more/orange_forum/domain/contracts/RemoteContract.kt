@@ -13,7 +13,7 @@ interface RemoteContract {
     interface ApiRepository {
         fun getDvachCategories(): Single<List<Category>>
         fun getDvachThreads(boardId: String): Single<List<BoardThread>>
-        fun getThread(boardId: String, threadNum: Int): Single<BoardThread>
+        fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean = false): Single<BoardThread>
         fun getThreadShort(boardId: String, threadNum: Int): Single<BoardThread>
         fun getDvachPost(boardId: String, postNum: Int, cookie: String): Single<Post>
         fun postResponse(

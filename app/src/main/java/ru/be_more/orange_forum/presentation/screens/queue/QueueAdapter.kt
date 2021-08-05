@@ -98,7 +98,7 @@ class QueueAdapter(private var boards: List<ExpandableGroup<*>?>?,
                     return false
 
                 boards?.get(oldPos)?.items?.forEachIndexed { index, thread ->
-                    if (thread != groups[newPos]?.items?.get(index) ?: true)
+                    if (thread != groups.getOrNull(newPos)?.items?.get(index) ?: true)
                         return false
                 }
                 return true

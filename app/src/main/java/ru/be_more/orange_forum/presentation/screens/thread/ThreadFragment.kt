@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getColor
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -35,7 +36,6 @@ class ThreadFragment :
     private val viewModel: PresentationContract.ThreadViewModel by inject()
 
     override val binding: FragmentThreadBinding by viewBinding()
-    private var disposable: Disposable? = null
     private lateinit var navController: NavController
     private var favButton: MenuItem? = null
     private var favButtonAdded: MenuItem? = null
@@ -43,6 +43,7 @@ class ThreadFragment :
     private var queueButtonAdded: MenuItem? = null
     private var downButton: MenuItem? = null
     private var downButtonAdded: MenuItem? = null
+    private var refreshButton: MenuItem? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_thread, container, false)
@@ -55,14 +56,6 @@ class ThreadFragment :
         init(view)
 
         setUpDownButtonOnCLickListener()
-
-        //Swipe to refresh. maybe return later
-        /*srl_thread.setColorSchemeColors(ContextCompat.getColor(App.applicationContext(), R.color.color_accent))
-        srl_thread.setOnRefreshListener {
-            srl_thread.isRefreshing = false
-            threadPresenter.updateThreadData()
-        }*/
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -78,14 +71,13 @@ class ThreadFragment :
         queueButtonAdded = menu.findItem(R.id.navigation_queue_added)
         downButton = menu.findItem(R.id.navigation_download)
         downButtonAdded = menu.findItem(R.id.navigation_download_done)
+        refreshButton = menu.findItem(R.id.navigation_refresh)
         setToolbarListeners()
         viewModel.onMenuReady()
     }
 
     override fun onDestroyView() {
         //TODO save state
-        disposable?.dispose()
-        disposable = null
         binding.rvPostList.adapter = null
         super.onDestroyView()
     }
@@ -115,6 +107,11 @@ class ThreadFragment :
             viewModel.addToQueue(true)
             true
         }
+        refreshButton?.setOnMenuItemClickListener {
+            viewModel.onRefresh()
+            true
+        }
+        refreshButton?.isVisible = true
     }
 
     private fun init(view: View) {
@@ -122,6 +119,12 @@ class ThreadFragment :
         navController = Navigation.findNavController(view)
 
         binding.fabThreadRespond.setOnClickListener { showResponseForm() }
+
+        binding.strPostList.setColorSchemeColors(getColor(requireContext(), R.color.color_accent))
+
+        binding.strPostList.setOnRefreshListener {
+            viewModel.onRefresh()
+        }
 
         val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)?:""
         val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)?:""
@@ -139,6 +142,7 @@ class ThreadFragment :
             observe(isFavorite, ::setFavoriteMark)
             observe(isQueued, ::setQueueMark)
             observe(isDownload, ::setDownloadMark)
+            observe(isRefreshing, ::setRefresh)
         }
     }
 
@@ -228,6 +232,10 @@ class ThreadFragment :
         binding.fabThreadDown.setOnClickListener {
             binding.rvPostList.scrollToPosition(binding.rvPostList.adapter?.itemCount ?: 1 - 1)
         }
+    }
+
+    private fun setRefresh(isRefreshing: Boolean){
+        binding.strPostList.isRefreshing = isRefreshing
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
