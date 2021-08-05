@@ -6,36 +6,25 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.disposables.Disposable
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.consts.*
-import ru.be_more.orange_forum.databinding.FragmentCategoryBinding
 import ru.be_more.orange_forum.databinding.FragmentThreadBinding
 import ru.be_more.orange_forum.presentation.interfaces.CloseModalListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.ModalContent
-import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
-import ru.be_more.orange_forum.presentation.screens.board.BoardAdapter
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
-import ru.be_more.orange_forum.presentation.screens.response.ResponseFragment
 
 class ThreadFragment :
     BaseFragment<FragmentThreadBinding>(),

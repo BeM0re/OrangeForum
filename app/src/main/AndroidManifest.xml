@@ -4,12 +4,10 @@
     package="ru.be_more.orange_forum">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".App"
-        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:usesCleartextTraffic="false"
         android:label="@string/app_name"
