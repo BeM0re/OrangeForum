@@ -19,10 +19,10 @@ class ThreadInteractorImpl (
     private val dbFileRepository: DbContract.FileRepository
 ): InteractorContract.ThreadInteractor {
 
-    override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
+    override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
         Single.zip(
             dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
-            apiRepository.getThread(boardId, threadNum),
+            apiRepository.getThread(boardId, threadNum, forceUpdate),
             dbPostRepository.getPosts(boardId, threadNum),
             Function3 <List<BoardThread>, BoardThread, List<Post>, BoardThread>
             { localThreads, webThread, posts ->

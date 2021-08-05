@@ -17,7 +17,7 @@ interface InteractorContract {
     }
 
     interface ThreadInteractor {
-        fun getThread(boardId: String, threadNum: Int): Single<BoardThread>
+        fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread>
         fun addThreadToFavorite(threadNum: Int, boardId: String, boardName: String): Completable
         fun addThreadToQueue(threadNum: Int, boardId: String, boardName: String): Completable
         fun removeThreadFromFavorite(boardId: String, threadNum: Int):Completable

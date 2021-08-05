@@ -38,8 +38,8 @@ class ApiRepositoryImpl(
                 .map { entity -> RemoteConverter.toBoard(entity) }
                 .doAfterSuccess { lastBoard = Board(name = "", id = boardId, threads = it) }
 
-    override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
-        if (boardId == lastThreadBoard && threadNum == lastThread?.num)
+    override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
+        if (boardId == lastThreadBoard && threadNum == lastThread?.num && !forceUpdate)
             Single.just(lastThread)
         else
             dvachApi.getDvachPosts(boardId, threadNum, COOKIE)

@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import org.greenrobot.eventbus.EventBus
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment
@@ -31,6 +29,7 @@ class ThreadViewModelImpl (
     override val isFavorite = MutableLiveData<Boolean>()
     override val isQueued = MutableLiveData<Boolean>()
     override val isDownload = MutableLiveData<Boolean>()
+    override val isRefreshing = MutableLiveData<Boolean>()
 
     private var boardId: String = ""
     private var boardName: String = ""
@@ -45,19 +44,7 @@ class ThreadViewModelImpl (
                 this.boardId = boardId
                 this.threadNum = threadNum
                 this.boardName = boardName
-
-                disposables.add(
-                    threadInteractor.getThread(boardId, threadNum)
-                        .subscribe(
-                            {
-                                thread.postValue(it)
-                                isDownload.postValue(it.isDownloaded)
-                                isFavorite.postValue(it.isFavorite)
-                                isQueued.postValue(it.isQueued)
-                            },
-                            { Log.e("M_ThreadPresenter", "get tread in tread presenter error = $it") }
-                        )
-                )
+                refreshThread(false)
             }
         }
         else{
@@ -146,6 +133,7 @@ class ThreadViewModelImpl (
                         },
                         { Log.e("M_ThreadViewModelImpl","Adding in queue error = $it") }
                     )
+                    .addToSubscribe()
             else
                 threadInteractor
                     .removeThreadFromQueue(boardId, threadNum)
@@ -156,6 +144,7 @@ class ThreadViewModelImpl (
                         },
                         { Log.e("M_ThreadViewModelImpl","Removing from queue error = $it") }
                     )
+                    .addToSubscribe()
     }
 
     override fun setFavorite(isFavorite: Boolean) {
@@ -217,5 +206,24 @@ class ThreadViewModelImpl (
                 putContentInStack(it)
                 attachment.postValue(it)
             }
+    }
+
+    override fun onRefresh() {
+        refreshThread(true)
+    }
+
+    private fun refreshThread(forceUpdate: Boolean) {
+        threadInteractor.getThread(boardId, threadNum, forceUpdate)
+            .doFinally { isRefreshing.postValue(false) }
+            .subscribe(
+                {
+                    thread.postValue(it)
+                    isDownload.postValue(it.isDownloaded)
+                    isFavorite.postValue(it.isFavorite)
+                    isQueued.postValue(it.isQueued)
+                },
+                { Log.e("M_ThreadPresenter", "get tread in tread presenter error = $it") }
+            )
+            .addToSubscribe()
     }
 }
