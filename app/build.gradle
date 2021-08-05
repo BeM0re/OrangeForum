@@ -68,7 +68,6 @@ dependencies {
     implementation "androidx.preference:preference-ktx:1.1.1"
     implementation 'com.thoughtbot:expandablerecyclerview:1.3'
     implementation 'com.thoughtbot:expandablecheckrecyclerview:1.4'
-//    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
 
     //Navigation
@@ -86,7 +85,6 @@ dependencies {
     kapt "androidx.room:room-compiler:2.2.6"
     implementation "androidx.room:room-runtime:2.2.6"
     implementation "androidx.room:room-rxjava2:2.2.6"
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 
     //Retrofit2
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
@@ -117,8 +115,11 @@ dependencies {
     implementation 'com.github.thijsk:TouchImageView:1.3.1'
 
     //Koin
-    implementation "org.koin:koin-android:2.2.0-alpha-1"
-    implementation "org.koin:koin-android-scope:2.2.0-alpha-1"
+    implementation "io.insert-koin:koin-core:3.1.2"
+    implementation "io.insert-koin:koin-android:3.1.2"
+    implementation "io.insert-koin:koin-android-compat:3.1.2"
+    implementation "io.insert-koin:koin-androidx-workmanager:3.1.2"
+    implementation "io.insert-koin:koin-androidx-compose:3.1.2"
 
     //Handler for textView links
     implementation 'me.saket:better-link-movement-method:2.2.0'

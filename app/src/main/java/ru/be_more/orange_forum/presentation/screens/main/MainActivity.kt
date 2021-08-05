@@ -69,14 +69,6 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    fun refreshFavorite() {
-        EventBus.getDefault().post(RefreshFavorite)
-    }
-
-    fun refreshDownload() {
-        EventBus.getDefault().post(RefreshDownload)
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onMessageEvent(event: BoardToBeOpened) {
         binding.bottomNavigationView.menu.getItem(1).isEnabled = true
