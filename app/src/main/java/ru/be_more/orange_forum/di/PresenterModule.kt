@@ -15,6 +15,6 @@ val presenterModule = module {
     single <PresentationContract.BoardViewModel> { BoardViewModelImpl(get(), get(), get(), get()) }
     single <PresentationContract.ThreadViewModel> { ThreadViewModelImpl(get(), get(), get()) }
     single <PresentationContract.ResponseViewModel> { ResponseViewModelImpl(get()) }
-    single <PresentationContract.QueueViewModel> { QueueViewModelImpl(get(), get(), get(), get()) }
-    single <PresentationContract.DownFavViewModel> { DownFavViewModelImpl(get(), get(), get(), get()) }
+    single <PresentationContract.QueueViewModel> { QueueViewModelImpl(get(), get(), get()) }
+    single <PresentationContract.DownFavViewModel> { DownFavViewModelImpl(get(), get(), get()) }
  }

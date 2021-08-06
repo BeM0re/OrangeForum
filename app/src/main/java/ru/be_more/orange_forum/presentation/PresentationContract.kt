@@ -38,7 +38,7 @@ interface PresentationContract {
         fun init(boardId: String?, boardName: String?)
         fun hideThread(threadNum: Int, toHide: Boolean)
         fun setBoardMarks()
-        fun getBoardId(): String?
+        @Deprecated("") fun getBoardId(): String?
         fun savePosition(pos: Int)
         fun setFavorite(isFavorite: Boolean)
         fun getBoardName(): String

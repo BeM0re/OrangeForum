@@ -2,156 +2,130 @@ package ru.be_more.orange_forum.domain.interactors
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.functions.Function3
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
+import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.extentions.processCompletable
-import ru.be_more.orange_forum.extentions.processSingle
 
 class ThreadInteractorImpl (
     private val apiRepository: RemoteContract.ApiRepository,
-    private val dbBoardRepository: DbContract.BoardRepository,
-    private val dbThreadRepository: DbContract.ThreadRepository,
-    private val dbPostRepository: DbContract.PostRepository,
-    private val dbFileRepository: DbContract.FileRepository
+    private val boardRepository: DbContract.BoardRepository,
+    private val threadRepository: DbContract.ThreadRepository
 ): InteractorContract.ThreadInteractor {
 
-    override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
+    override fun getThread(
+        boardId: String,
+        threadNum: Int,
+        forceUpdate: Boolean
+    ): Single<BoardThread> =
         Single.zip(
-            dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
+            threadRepository.getThread(boardId, threadNum)
+                .switchIfEmpty(Single.just(BoardThread.empty())),
             apiRepository.getThread(boardId, threadNum, forceUpdate),
-            dbPostRepository.getPosts(boardId, threadNum),
-            Function3 <List<BoardThread>, BoardThread, List<Post>, BoardThread>
-            { localThreads, webThread, posts ->
-                when{
-                    localThreads.isEmpty() -> // в базе вообще нет данных о треде
-                        return@Function3 webThread
-                    localThreads[0].isDownloaded -> // тред полностью скачан
-                        return@Function3 localThreads[0].copy(posts = posts) //TODO переделать, чтобы новые посты доставлялись в старый тред
-                    else -> // о треде есть заметки (избранное, скрытое)
-                        return@Function3 webThread.copy(
-                            isHidden = localThreads[0].isHidden,
-                            isFavorite = localThreads[0].isFavorite,
-                            isQueued =  localThreads[0].isQueued,
-                        )
+            { localThread, webThread ->
+                if (localThread.isEmpty())
+                    webThread
+                else {
+                    threadRepository.updateLastPostNum(boardId, threadNum, webThread.lastPostNumber)
+                    webThread.copy(
+                        isHidden = localThread.isHidden,
+                        isFavorite = localThread.isFavorite,
+                        isDownloaded = localThread.isDownloaded,
+                        isQueued = localThread.isQueued
+                    )
                 }
             }
         )
-            .processSingle()
 
-    override fun addThreadToFavorite(threadNum: Int, boardId: String, boardName: String): Completable =
-        Completable.fromSingle(
-            apiRepository.getThreadShort(boardId, threadNum)
-                .doOnSuccess { thread ->
-                    dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
-                    dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
-                }
-                .flatMap { thread ->
-                    dbThreadRepository.insertThreadSafety(thread.copy(isFavorite = true), boardId)
-                        .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.addThreadToFavorite(boardId, threadNum) }
-                }
-                .flatMap {
-                    dbBoardRepository.getBoardCount(boardId)
-                        .doOnSuccess {
-                            if (it == 0)
-                                dbBoardRepository.insertBoard(boardId, boardName, false)
-                        }
-                }
-        )
-            .processCompletable()
-
-    override fun removeThreadFromFavorite(boardId: String, threadNum: Int): Completable =
-        Completable.fromCallable {
-            dbThreadRepository.removeThreadFromFavorite(boardId, threadNum)
-        }
-            .processCompletable()
-
-    override fun downloadThread(threadNum: Int, boardId: String, boardName: String): Completable =
-        Completable.fromSingle(
-            apiRepository.getThread(boardId, threadNum)
-                .doOnSuccess { thread ->
-                    with(thread.posts) {
-                        dbPostRepository.savePosts(this, threadNum, boardId)
-                        this.forEach { dbFileRepository.saveFiles(it.files, it.num, thread.num, boardId) }
+    override fun markThreadFavorite(
+        boardId: String,
+        boardName: String,
+        threadNum: Int,
+        isFavorite: Boolean
+    ): Completable {
+        return threadRepository.getThread(boardId, threadNum)
+            .switchIfEmpty(apiRepository.getThreadShort(boardId, threadNum))
+            .doOnSuccess { threadRepository.insertThread(it.copy(isFavorite = isFavorite), boardId) }
+            .flatMap { thread ->
+                boardRepository.getBoard(boardId)
+                    .switchIfEmpty(Single.just(Board(id = boardId, name = boardName)))
+                    .map { board ->
+                        board.threads.firstOrNull{ it.num == threadNum }?.copy(isFavorite = isFavorite)
+                            ?: thread.copy(isFavorite = isFavorite, posts = listOf(thread.posts.first()))
                     }
-                }
-                .flatMap { thread ->
-                    dbThreadRepository.insertThreadSafety(thread.copy(isDownloaded = true), boardId)
-                        .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.markThreadDownloaded(boardId, threadNum)
-                        }
-                }
-                .flatMap {
-                    dbBoardRepository.getBoardCount(boardId)
-                        .doOnSuccess {
-                            if (it == 0)
-                                dbBoardRepository.insertBoard(boardId, boardName, false)
-                        }
-                }
-        )
-            .processCompletable()
+            }
+            .flatMapCompletable {
+                boardRepository.insertThreadIntoBoard(boardId, boardName, it)
+            }
+    }
 
+    //todo make worker for this
+    override fun downloadThread(
+        boardId: String,
+        boardName: String,
+        threadNum: Int
+    ): Completable {
+        return apiRepository.getThread(boardId, threadNum)
+            .doOnSuccess { threadRepository.saveThread(it.copy(isDownloaded = true), boardId) }
+            .flatMap { thread ->
+                boardRepository.getBoard(boardId)
+                    .switchIfEmpty(Single.just(Board(id = boardId, name = boardName)))
+                    .map { board ->
+                        board.threads.firstOrNull{ it.num == threadNum }?.copy(isDownloaded = true)
+                            ?: thread.copy(isDownloaded = true, posts = listOf(thread.posts.first()))
+                    }
+            }
+            .flatMapCompletable {
+                boardRepository.insertThreadIntoBoard(boardId, boardName, it)
+            }
+    }
+
+    //todo make worker for this
     override fun deleteThread(boardId: String, threadNum: Int) =
-        dbThreadRepository.deleteThread(boardId, threadNum)
-            .processCompletable()
+        threadRepository.deleteThread(boardId, threadNum)
 
-    override fun addThreadToQueue(threadNum: Int, boardId: String, boardName: String): Completable =
-        Completable.fromSingle(
-            apiRepository.getThreadShort(boardId, threadNum)
-                .doOnSuccess { thread ->
-                    dbFileRepository.saveFiles(thread.posts[0].files, thread.num, thread.num, boardId)
-                    dbPostRepository.savePost(thread.posts[0], threadNum, boardId)
-                }
-                .flatMap { thread ->
-                    dbThreadRepository.insertThreadSafety(thread.copy(isQueued = true), boardId)
-                        .doOnSuccess { isSaved ->
-                            if (!isSaved) dbThreadRepository.addThreadToQueue(boardId, threadNum) }
-                }
-                .flatMap {
-                    dbBoardRepository.getBoardCount(boardId)
-                        .doOnSuccess {
-                            if (it == 0)
-                                dbBoardRepository.insertBoard(boardId, boardName, false)
-                        }
-                }
-        )
-            .processCompletable()
-
-    override fun removeThreadFromQueue(boardId: String, threadNum: Int): Completable =
-        Completable.fromCallable {
-            dbThreadRepository.removeThreadFromQueue(boardId, threadNum)
-        }
-            .processCompletable()
-
-    override fun hideThread(boardId: String, boardName: String, threadNum: Int): Completable =
-        Completable.fromSingle (
-            Single.zip(dbBoardRepository.getBoardCount(boardId),
-                dbThreadRepository.getThreadOrEmpty(boardId, threadNum),
-                apiRepository.getThreadShort(boardId, threadNum),
-                {
-                        boardCount, probablyThread, webThread ->
-
-                    if(boardCount == 0 )//борда еще не сохранена
-                        dbBoardRepository.insertBoard(boardId, boardName, false)
-
-                    if (probablyThread.isEmpty()){//тред еще не сохранен
-                        dbThreadRepository.insertThread(webThread.copy(isHidden = true), boardId)
+    override fun markThreadQueued(
+        boardId: String,
+        boardName: String,
+        threadNum: Int,
+        isQueued: Boolean
+    ): Completable {
+        return threadRepository.getThread(boardId, threadNum)
+            .switchIfEmpty(apiRepository.getThreadShort(boardId, threadNum))
+            .doOnSuccess { threadRepository.insertThread(it.copy(isQueued = isQueued), boardId) }
+            .flatMap { thread ->
+                boardRepository.getBoard(boardId)
+                    .switchIfEmpty(Single.just(Board(id = boardId, name = boardName)))
+                    .map { board ->
+                        board.threads.firstOrNull{ it.num == threadNum }?.copy(isQueued = isQueued)
+                            ?: thread.copy(isQueued = isQueued)
                     }
-                    else
-                        dbThreadRepository.hideThread(boardId, threadNum)
+            }
+            .flatMapCompletable {
+                boardRepository.insertThreadIntoBoard(boardId, boardName, it)
+            }
+    }
 
-                }
-            )
-        )
-            .processCompletable()
-
-    override fun unhideThread(boardId: String, threadNum: Int) =
-        Completable.fromCallable {
-            dbThreadRepository.unhideThread(boardId, threadNum)
-        }
-            .processCompletable()
+    override fun markThreadHidden(
+        boardId: String,
+        boardName: String,
+        threadNum: Int,
+        isHidden: Boolean
+    ): Completable {
+        return threadRepository.getThread(boardId, threadNum)
+            .switchIfEmpty(apiRepository.getThreadShort(boardId, threadNum))
+            .doOnSuccess { threadRepository.insertThread(it.copy(isHidden = isHidden), boardId) }
+            .flatMap { thread ->
+                boardRepository.getBoard(boardId)
+                    .switchIfEmpty(Single.just(Board(id = boardId, name = boardName)))
+                    .map { board ->
+                        board.threads.firstOrNull{ it.num == threadNum }?.copy(isHidden = isHidden)
+                            ?: thread.copy(isHidden = isHidden, posts = listOf(thread.posts.first()))
+                    }
+            }
+            .flatMapCompletable {
+                boardRepository.insertThreadIntoBoard(boardId, boardName, it)
+            }
+    }
 }

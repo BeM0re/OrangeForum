@@ -10,7 +10,6 @@ import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
 
 class DownFavViewModelImpl (
     private val downFavInteractor : InteractorContract.DownFavInteractor,
-    private val postInteractor : InteractorContract.PostInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val prefs: Preferences
 ): PresentationContract.DownFavViewModel, BaseViewModelImpl() {
@@ -27,37 +26,40 @@ class DownFavViewModelImpl (
     }
 
     private fun refreshData(){
-        disposables.add(
-            loadData()
-        )
-    }
-
-    override fun removeThread(boardId: String, threadNum: Int) {
-        disposables.add(
-            threadInteractor
-                .deleteThread(boardId, threadNum)
-                .andThen { loadData() }
-                .subscribe(
-                    { },
-                    { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
-                )
-        )
-
-        disposables.add(
-            threadInteractor
-                .removeThreadFromFavorite(boardId, threadNum)
-                .andThen { loadData() }
-                .subscribe(
-                    { },
-                    { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
-                )
-        )
-    }
-
-    private fun loadData() =
         downFavInteractor.getDownFavs()
+            .defaultThreads()
             .subscribe(
                 { boards -> this.boards.postValue(boards) },
                 { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }
             )
+            .addToSubscribe()
+    }
+
+    override fun removeThread(boardId: String, threadNum: Int) {
+        threadInteractor
+            .deleteThread(boardId, threadNum)
+            .andThen (downFavInteractor.getDownFavs())
+            .defaultThreads()
+            .subscribe(
+                { boards -> this.boards.postValue(boards) },
+                { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
+            )
+            .addToSubscribe()
+
+        threadInteractor
+            .markThreadFavorite(
+                boardId = boardId,
+                boardName = "",
+                threadNum = threadNum,
+                isFavorite = false
+            )
+            .andThen (downFavInteractor.getDownFavs())
+            .defaultThreads()
+            .subscribe(
+                { boards -> this.boards.postValue(boards) },
+                { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
+            )
+            .addToSubscribe()
+
+    }
 }

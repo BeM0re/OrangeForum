@@ -15,17 +15,4 @@ val repositoryModule = module {
     single<DbContract.ThreadRepository> {
         ru.be_more.orange_forum.data.local.repositories.ThreadRepositoryImpl(get(), get())
     }
-    single<DbContract.PostRepository> {
-        ru.be_more.orange_forum.data.local.repositories.PostRepositoryImpl(get())
-    }
-    single<DbContract.FileRepository> {
-        ru.be_more.orange_forum.data.local.repositories.FileRepositoryImpl(get(), get())
-    }
-    single<DbContract.DownFavRepository> {
-        ru.be_more.orange_forum.data.local.repositories.DownFavRepositoryImpl(get())
-    }
-    single<DbContract.QueueRepository> {
-        ru.be_more.orange_forum.data.local.repositories.QueueRepositoryImpl(get())
-    }
-
 }

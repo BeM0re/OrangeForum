@@ -1,10 +1,10 @@
 package ru.be_more.orange_forum.data.local.repositories
 
 import io.reactivex.Completable
-import io.reactivex.Single
+import io.reactivex.Maybe
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.DvachDao
-import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThreads
+import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelThread
 import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStoredThread
 import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -14,59 +14,49 @@ class ThreadRepositoryImpl(
     private val storage: StorageContract.LocalStorage
 ) : DbContract.ThreadRepository {
 
-    override fun getThreadOrEmpty(boardId: String, threadNum: Int): Single<List<BoardThread>> =
-        dao.getThreadOrEmpty(boardId, threadNum)
-            .map { toModelThreads(it) }
+    override fun getThread(boardId: String, threadNum: Int): Maybe<BoardThread> =
+        dao.getThread(boardId, threadNum)
+            .map { toModelThread(it) }
 
     override fun insertThread(thread: BoardThread, boardId: String) =
         dao.insertThread(toStoredThread(thread, boardId))
 
-    override fun insertThreadSafety(thread: BoardThread, boardId: String): Single<Boolean> =
-        dao.getThreadOrEmpty(boardId, thread.num)
-            .map { probablyThread ->
-                if (probablyThread.isEmpty()) {
-                    dao.insertThread(toStoredThread(thread, boardId))
-                    return@map true
-                }
-                else
-                    return@map false
-            }
+    override fun saveThread(thread: BoardThread, boardId: String) {
+        return dao.insertThread(
+            toStoredThread(
+                thread = thread.copy(
+                    posts = thread.posts.map { post ->
+                        post.copy(
+                            files = post.files.map { file ->
+                                file.copy(
+                                    localPath = storage.saveFile(file.path).toString(),
+                                    localThumbnail = storage.saveFile(file.thumbnail).toString()
+                                )
+                            }
+                        )
+                    }
+                ),
+                boardId = boardId
+            )
+        )
+    }
 
-    override fun deleteThread(boardId: String, threadNum: Int): Completable =
-        Completable.fromSingle(
-            dao.getNonOpFilesFromThread(threadNum, boardId)
-                .doOnSuccess { files ->
-                    files.forEach { file ->
+    override fun deleteThread(boardId: String, threadNum: Int): Completable {
+        return dao.getThread(boardId, threadNum)
+            .doOnSuccess { thread ->
+                thread.posts.forEach { post ->
+                    post.files.forEach { file ->
                         storage.removeFile(file.localPath)
                         storage.removeFile(file.localThumbnail)
                     }
-                    dao.deleteThreadFiles(boardId, threadNum)
-                    dao.deletePosts(boardId, threadNum)
-                    dao.deleteThread(boardId, threadNum)
                 }
-        )
+            }
+            .map { it.copy(posts = it.posts.subList(0, 1), isDownloaded = false) }
+            .doOnSuccess { dao.insertThread(it) }
+            .ignoreElement()
+    }
 
-    override fun markThreadDownloaded(boardId: String, threadNum: Int)=
-        dao.markThreadDownloaded(boardId, threadNum)
+    override fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int) =
+        dao.updateLastPostNum(boardId, threadNum, postNum)
 
-    override fun addThreadToQueue(boardId: String, threadNum: Int) =
-        dao.addThreadToQueue(boardId, threadNum)
-
-    override fun addThreadToFavorite(boardId: String, threadNum: Int) =
-        dao.addThreadToFavorite(boardId, threadNum)
-
-    override fun removeThreadFromFavorite(boardId: String, threadNum: Int) =
-        dao.removeThreadFromFavorite(boardId, threadNum)
-
-    override fun removeThreadFromQueue(boardId: String, threadNum: Int) =
-        dao.removeThreadFromQueue(boardId, threadNum)
-
-    override fun hideThread(boardId: String, threadNum: Int) =
-         dao.markThreadHidden(boardId, threadNum)
-
-    override fun unhideThread(boardId: String, threadNum: Int) =
-        dao.unmarkThreadHidden(boardId, threadNum)
-
-    override fun removeAllMarks(boardId: String, threadNum: Int) =
-        dao.removeAllMarks(boardId, threadNum)
 }

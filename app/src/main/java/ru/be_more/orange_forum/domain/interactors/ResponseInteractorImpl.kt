@@ -5,7 +5,6 @@ import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.PostResponse
-import ru.be_more.orange_forum.extentions.processSingle
 
 class ResponseInteractorImpl (
     private val responseRepository: RemoteContract.ApiRepository
@@ -27,5 +26,4 @@ class ResponseInteractorImpl (
         )
             .doOnSubscribe { Log.d("M_ResponseInteractorImpl","pot sub") }
             .doOnSuccess { Log.d("M_ResponseInteractorImpl","post success") }
-            .processSingle()
 }
