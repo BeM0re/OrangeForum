@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.domain.interactors
 
+import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -18,5 +19,16 @@ class QueueInteractorImpl(
                     }
                     .filter { it.threads.isNotEmpty() }
             }
+
+    override fun getQueueObservable(): Observable<List<Board>> {
+        return boardRepository.getBoardsObservable()
+            .map { boardList ->
+                boardList
+                    .map { board ->
+                        board.copy(threads = board.threads.filter { it.isQueued })
+                    }
+                    .filter { it.threads.isNotEmpty() }
+            }
+    }
 
 }

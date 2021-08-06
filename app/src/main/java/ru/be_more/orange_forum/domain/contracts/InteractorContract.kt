@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.domain.contracts
 
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.model.*
 
@@ -61,10 +62,12 @@ interface InteractorContract {
 
     interface QueueInteractor {
         fun getQueue(): Single<List<Board>>
+        fun getQueueObservable(): Observable<List<Board>>
     }
 
     interface DownFavInteractor {
         fun getDownFavs(): Single<List<Board>>
+        fun getDownFavsObservable(): Observable<List<Board>>
         fun getFavoritesOnly(): Single<List<Board>>
     }
 

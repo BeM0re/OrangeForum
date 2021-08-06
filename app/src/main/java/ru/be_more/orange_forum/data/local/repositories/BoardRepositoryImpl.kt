@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.data.local.repositories
 import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.DvachDao
@@ -23,6 +24,13 @@ class BoardRepositoryImpl (
 
     override fun getBoards(): Single<List<Board>> {
         return dao.getBoards()
+            .map { boardList ->
+                boardList.map { toModelBoard(it) }
+            }
+    }
+
+    override fun getBoardsObservable(): Observable<List<Board>> {
+        return dao.getBoardsObservable()
             .map { boardList ->
                 boardList.map { toModelBoard(it) }
             }

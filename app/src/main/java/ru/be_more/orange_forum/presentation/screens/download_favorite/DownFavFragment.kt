@@ -32,7 +32,6 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
     override val binding: FragmentDownloadBinding by viewBinding()
     private val viewModel: PresentationContract.DownFavViewModel by inject()
     private lateinit var navController: NavController
-    private var disposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_download, container, false)
@@ -60,17 +59,15 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
     }
 
     override fun onDestroyView() {
-        disposable?.dispose()
-        disposable = null
         binding.rvDownloadedList.adapter = null
         super.onDestroyView()
     }
 
     private fun loadFavs(boards: List<Board>) {
-        (binding.rvDownloadedList.adapter as? DownFavAdapter)?.let {
-            it.updateData(boards)
-            return
-        }
+//        (binding.rvDownloadedList.adapter as? DownFavAdapter)?.let {
+//            it.updateData(boards)
+//            return
+//        }
         DownFavAdapter(boards, this, object : PicOnClickListener{
             override fun onThumbnailListener(
                 fullPicUrl: String?,
