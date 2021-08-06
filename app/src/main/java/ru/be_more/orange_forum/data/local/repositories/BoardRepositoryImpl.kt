@@ -63,7 +63,11 @@ class BoardRepositoryImpl (
     override fun unmarkBoardFavorite(boardId: String) =
         dao.unmarkBoardFavorite(boardId)
 
-    override fun insertThreadIntoBoard(boardId: String, boardName: String, thread: BoardThread): Completable {
+    override fun insertThreadIntoBoard(
+        boardId: String,
+        boardName: String,
+        thread: BoardThread
+    ): Completable {
         return dao.getBoard(boardId)
             .switchIfEmpty(Single.just(StoredBoard(id = boardId, name = boardName)))
             .doOnSuccess { board ->
@@ -79,6 +83,27 @@ class BoardRepositoryImpl (
                     }
                 )
             }
+            .ignoreElement()
+    }
+
+    override fun updateThreadNewMessageCounter(
+        boardId: String,
+        threadNum: Int,
+        count: Int
+    ): Completable {
+        return dao.getBoard(boardId)
+            .map { board ->
+                val index = board.threads.indexOfFirst{ it.num == threadNum}
+                if (index > -1)
+                    board.copy(
+                        threads = board.threads.toMutableList().apply {
+                            set(index, get(index).copy(newMessageAmount = count))
+                        }
+                    )
+                else
+                    board
+            }
+            .doOnSuccess { dao.insertBoard(it) }
             .ignoreElement()
     }
 

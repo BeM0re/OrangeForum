@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Attachment
@@ -215,13 +217,20 @@ class ThreadViewModelImpl (
         threadInteractor.getThread(boardId, threadNum, forceUpdate)
             .defaultThreads()
             .doFinally { isRefreshing.postValue(false) }
+            .doOnSuccess {
+                thread.postValue(it)
+                isDownload.postValue(it.isDownloaded)
+                isFavorite.postValue(it.isFavorite)
+                isQueued.postValue(it.isQueued)
+            }
+            .observeOn(Schedulers.io())
+            .flatMapCompletable {
+                threadInteractor.updateLastPostNum(boardId, threadNum, it.posts.last().num)
+            }
+            .andThen(threadInteractor.updateNewMessages(boardId, threadNum, 0))
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                {
-                    thread.postValue(it)
-                    isDownload.postValue(it.isDownloaded)
-                    isFavorite.postValue(it.isFavorite)
-                    isQueued.postValue(it.isQueued)
-                },
+                {  },
                 { Log.e("M_ThreadPresenter", "get tread in tread presenter error = $it") }
             )
             .addToSubscribe()

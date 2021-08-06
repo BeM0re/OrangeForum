@@ -47,6 +47,23 @@ interface InteractorContract {
             boardName: String,
             threadNum: Int,
             isHidden: Boolean): Completable
+
+        fun updateNewMessages(
+            boardId: String,
+            threadNum: Int
+        ): Completable
+
+        fun updateNewMessages(
+            boardId: String,
+            threadNum: Int,
+            newMessageCount: Int
+        ): Completable
+
+        fun updateLastPostNum(
+            boardId: String,
+            threadNum: Int,
+            lastPostNum: Int
+        ): Completable
     }
 
     interface PostInteractor {
@@ -69,6 +86,11 @@ interface InteractorContract {
         fun getDownFavs(): Single<List<Board>>
         fun getDownFavsObservable(): Observable<List<Board>>
         fun getFavoritesOnly(): Single<List<Board>>
+        fun updateNewMessageCount(
+            boardId: String,
+            threadNum: Int,
+            count: Int
+        ): Completable
     }
 
 }

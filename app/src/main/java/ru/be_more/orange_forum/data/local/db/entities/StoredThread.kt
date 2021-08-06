@@ -14,6 +14,7 @@ data class StoredThread(
     val boardId: String,
     val title: String,
     val lastPostNumber: Int,
+    val newMessageAmount: Int,
     val posts: List<StoredPost> = listOf(),
     val isHidden: Boolean = false,
     val isDownloaded: Boolean = false,

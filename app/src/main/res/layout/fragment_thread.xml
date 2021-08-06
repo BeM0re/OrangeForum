@@ -69,7 +69,6 @@
         app:backgroundTint="@color/color_accent"
         app:layout_constraintBottom_toBottomOf="@id/gl_thread_bottom_third"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"
         app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -81,7 +80,6 @@
         android:src="@drawable/ic_keyboard_arrow_down_white_24dp"
         app:backgroundTint="@color/color_accent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/gl_thread_bottom_third"
         app:tint="@android:color/white" />
 
