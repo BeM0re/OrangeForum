@@ -106,8 +106,8 @@ class QueueAdapter(private var boards: List<ExpandableGroup<*>?>?,
         }
 
         val diffResult = DiffUtil.calculateDiff(diffCallback)
-
         boards = groups
         diffResult.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 }

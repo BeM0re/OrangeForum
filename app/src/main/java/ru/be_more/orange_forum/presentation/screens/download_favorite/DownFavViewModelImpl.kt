@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.presentation.screens.download_favorite
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.disposables.Disposable
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
@@ -15,33 +16,24 @@ class DownFavViewModelImpl (
 ): PresentationContract.DownFavViewModel, BaseViewModelImpl() {
 
     override val boards = MutableLiveData<List<Board>>()
+    private var favDisposable: Disposable? = null
 
     override fun init(){
-        if(boards.value == null || prefs.favsToUpdate) {
-            refreshData()
-            prefs.favsToUpdate = false
-        }
-        else
-            boards.postValue(boards.value)
+        subscribe()
     }
 
-    private fun refreshData(){
-        downFavInteractor.getDownFavs()
-            .defaultThreads()
-            .subscribe(
-                { boards -> this.boards.postValue(boards) },
-                { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }
-            )
-            .addToSubscribe()
+    override fun onDestroy() {
+        favDisposable?.dispose()
+        favDisposable = null
+        super.onDestroy()
     }
 
     override fun removeThread(boardId: String, threadNum: Int) {
         threadInteractor
             .deleteThread(boardId, threadNum)
-            .andThen (downFavInteractor.getDownFavs())
             .defaultThreads()
             .subscribe(
-                { boards -> this.boards.postValue(boards) },
+                {  },
                 { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
             )
             .addToSubscribe()
@@ -53,13 +45,23 @@ class DownFavViewModelImpl (
                 threadNum = threadNum,
                 isFavorite = false
             )
-            .andThen (downFavInteractor.getDownFavs())
             .defaultThreads()
             .subscribe(
-                { boards -> this.boards.postValue(boards) },
+                {  },
                 { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
             )
             .addToSubscribe()
-
     }
+
+    private fun subscribe(){
+        favDisposable?.dispose()
+        favDisposable = downFavInteractor
+            .getDownFavsObservable()
+            .defaultThreads()
+            .subscribe(
+                { boards -> this.boards.postValue(boards) },
+                { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }
+            )
+    }
+
 }

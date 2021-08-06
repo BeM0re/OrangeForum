@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.domain.contracts
 
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.model.AttachFile
 import ru.be_more.orange_forum.domain.model.Board
@@ -13,6 +14,7 @@ interface DbContract {
     interface BoardRepository{
         fun getBoard(boardId: String): Maybe<Board>
         fun getBoards(): Single<List<Board>>
+        fun getBoardsObservable(): Observable<List<Board>>
         fun getBoardCount(boardId: String): Single<Int>
         fun insertBoard(board: Board)
         fun insertBoard(boardId: String, boardName: String, isFavorite: Boolean)

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.db.entities.StoredFile
@@ -22,6 +23,9 @@ interface DvachDao {
 
     @Query("SELECT * FROM boards")
     fun getBoards(): Single<List<StoredBoard>>
+
+    @Query("SELECT * FROM boards")
+    fun getBoardsObservable(): Observable<List<StoredBoard>>
 
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun getBoard(boardId: String): Maybe<StoredBoard>

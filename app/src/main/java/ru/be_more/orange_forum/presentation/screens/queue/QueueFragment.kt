@@ -57,10 +57,10 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
     }
 
     private fun loadQueue(boards: List<Board>) {
-        (binding.rvFavoriteList.adapter as? QueueAdapter)?.let {
-            it.updateData(boards)
-            return
-        }
+//        (binding.rvFavoriteList.adapter as? QueueAdapter)?.let {
+//            it.updateData(boards)
+//            return
+//        }
         QueueAdapter(boards, this, object : PicOnClickListener{
             override fun onThumbnailListener(
                 fullPicUrl: String?,
