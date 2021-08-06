@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import io.reactivex.disposables.Disposable
@@ -53,16 +54,16 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
         val refreshWorkRequest =
             PeriodicWorkRequestBuilder<CheckFavoriteUpdateWorker> (15, TimeUnit.MINUTES)
                 .build()
 
         WorkManager.getInstance(this)
-            .enqueue(refreshWorkRequest)
+            .enqueueUniquePeriodicWork(
+                "refreshWorkRequest",
+                ExistingPeriodicWorkPolicy.KEEP,
+                refreshWorkRequest
+            )
     }
 
     override fun onBackPressed() {

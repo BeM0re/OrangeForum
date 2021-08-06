@@ -26,8 +26,7 @@ class CheckFavoriteUpdateWorker(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun createWork(): Single<Result> {
-        return favoriteInteractor
-            .getFavoritesOnly()
+        return favoriteInteractor.getFavoritesOnly()
             .map { boardList ->
                 boardList.map { board ->
                     board.threads.map { thread ->
@@ -38,27 +37,30 @@ class CheckFavoriteUpdateWorker(
             .flatMapObservable{
                 Observable.fromIterable(it)
             }
-            .flatMapSingle { (board, thread) ->
-                threadInteractor.getThread(board, thread, true)
-                    .doOnSuccess { newThread ->
-                        showPush(newThread.posts.size, newThread.num)
-                    }
+            .flatMapCompletable { (board, thread) ->
+                threadInteractor.updateNewMessages(board, thread)
             }
-            .ignoreElements()
-            .toSingleDefault(Result.success())
+            .andThen(favoriteInteractor.getFavoritesOnly())
+            .doOnSuccess { boardList ->
+                boardList.map { board ->
+                    board.threads.forEach { thread ->
+                        if (thread.newMessageAmount > 0)
+                            showPush(thread.num, thread.newMessageAmount, thread.title.substring(0, 20))
+                    }
+                }
+            }
+            .map { Result.success() }
             .onErrorReturn { Result.failure() }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun showPush(newPosts: Int, notificationId: Int){
-        val name: CharSequence = "2ch"
-        val description: String = "New Messages"
-
+    private fun showPush(notificationId: Int, newPosts: Int, threadTitle: String){
+        val name: CharSequence = "2ch New Messages"
         val importance = NotificationManager.IMPORTANCE_LOW
 
         val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
             .apply {
-                this.description = description
+                this.description = threadTitle
                 enableLights(true)
                 enableVibration(true)
                 vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
