@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.presentation.screens.download_favorite
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -20,6 +21,7 @@ class DownFavViewModelImpl (
 
     override fun init(){
         subscribe()
+        checkUpdates()
     }
 
     override fun onDestroy() {
@@ -62,6 +64,29 @@ class DownFavViewModelImpl (
                 { boards -> this.boards.postValue(boards) },
                 { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }
             )
+    }
+
+    private fun checkUpdates(){
+        downFavInteractor
+            .getDownFavs()
+            .flatMapObservable { boards ->
+                Observable.fromIterable(
+                    boards.map { board ->
+                        board.threads.map { thread ->
+                            board.id to thread.num
+                        }
+                    }.flatten()
+                )
+            }
+            .flatMapCompletable { (boardId, threadNum) ->
+                threadInteractor.updateNewMessages(boardId, threadNum)
+            }
+            .defaultThreads()
+            .subscribe(
+                { },
+                { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }
+            )
+            .addToSubscribe()
     }
 
 }

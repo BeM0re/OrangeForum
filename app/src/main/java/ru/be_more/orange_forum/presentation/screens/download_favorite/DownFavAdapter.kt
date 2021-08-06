@@ -67,6 +67,7 @@ class DownFavAdapter(private var boards: List<ExpandableGroup<*>?>?,
             holder.setRemoveButton(group.id, thread.num, downFavListener)
             holder.setDivider()
             holder.setIcon(thread.isFavorite, thread.isDownloaded)
+            holder.setNewMessageBadge(thread.newMessageAmount)
         }
     }
 

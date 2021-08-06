@@ -128,4 +128,33 @@ class ThreadInteractorImpl (
                 boardRepository.insertThreadIntoBoard(boardId, boardName, it)
             }
     }
+
+    override fun updateNewMessages(boardId: String, threadNum: Int): Completable {
+        return Single.zip(
+            threadRepository.getThread(boardId, threadNum)
+                .switchIfEmpty(
+                    Single.error(Throwable("ThreadInteractorImpl: trying to update null thread"))
+                ),
+            apiRepository.getThread(boardId, threadNum, true),
+            { local, web -> web.posts.filter { it.num > local.lastPostNumber }.size }
+        )
+            .flatMapCompletable { boardRepository.updateThreadNewMessageCounter(boardId, threadNum, it) }
+    }
+
+    override fun updateNewMessages(
+        boardId: String,
+        threadNum: Int,
+        newMessageCount: Int
+    ): Completable =
+        boardRepository.updateThreadNewMessageCounter(boardId, threadNum, newMessageCount)
+
+    override fun updateLastPostNum(
+        boardId: String,
+        threadNum: Int,
+        lastPostNum: Int
+    ): Completable {
+        return Completable.fromCallable {
+            threadRepository.updateLastPostNum(boardId, threadNum, lastPostNum)
+        }
+    }
 }

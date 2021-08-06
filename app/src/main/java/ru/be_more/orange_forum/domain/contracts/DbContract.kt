@@ -25,6 +25,11 @@ interface DbContract {
             boardName: String,
             thread: BoardThread
         ):Completable
+        fun updateThreadNewMessageCounter(
+            boardId: String,
+            threadNum: Int,
+            count: Int
+        ):Completable
     }
 
     interface ThreadRepository{

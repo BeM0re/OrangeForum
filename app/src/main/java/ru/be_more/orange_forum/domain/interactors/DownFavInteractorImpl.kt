@@ -29,7 +29,6 @@ class DownFavInteractorImpl(
                     .filter { it.threads.isNotEmpty() }
             }
 
-
     override fun getFavoritesOnly(): Single<List<Board>> =
         boardRepository.getBoards()
             .map { boardList ->
@@ -39,4 +38,7 @@ class DownFavInteractorImpl(
                     }
                     .filter { it.threads.isNotEmpty() }
             }
+
+    override fun updateNewMessageCount(boardId: String, threadNum: Int, count: Int) =
+        boardRepository.updateThreadNewMessageCounter(boardId, threadNum, count)
 }

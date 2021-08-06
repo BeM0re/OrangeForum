@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.presentation.screens.download_favorite
 
 import android.view.View
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
@@ -85,6 +86,11 @@ class DownFavThreadViewHolder(
     fun setIcon(isFavorite: Boolean, isDownloaded: Boolean){
         binding.icShortDownload.visibility = if (isDownloaded) View.VISIBLE else View.GONE
         binding.icShortFavorite.visibility = if (isFavorite) View.VISIBLE else View.GONE
+    }
+
+    fun setNewMessageBadge(count: Int){
+        binding.tvFavoriteOpNewMessages.isVisible = count > 0
+        binding.tvFavoriteOpNewMessages.text = count.toString()
     }
 
 }

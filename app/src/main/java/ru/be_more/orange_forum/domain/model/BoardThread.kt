@@ -9,6 +9,7 @@ data class BoardThread(
     val posts: List<Post> = listOf(),
     val title: String = "",
     val lastPostNumber: Int = 0,
+    val newMessageAmount: Int = 0,
     val isHidden: Boolean = false,
     val isDownloaded: Boolean = false,
     val isFavorite: Boolean = false,
@@ -19,6 +20,7 @@ data class BoardThread(
         parcel.readInt(),
         listOf(),
         parcel.readString() ?: "",
+        parcel.readInt(),
         parcel.readInt(),
         parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte(),
@@ -33,6 +35,7 @@ data class BoardThread(
         parcel.writeInt(num)
         parcel.writeString(title)
         parcel.writeInt(lastPostNumber)
+        parcel.writeInt(newMessageAmount)
         parcel.writeByte(if (isHidden) 1 else 0)
         parcel.writeByte(if (isDownloaded) 1 else 0)
         parcel.writeByte(if (isFavorite) 1 else 0)

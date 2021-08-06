@@ -13,7 +13,7 @@ import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
         StoredBoard::class,
         StoredThread::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false)
 
 @TypeConverters(ReplyConverter::class)
