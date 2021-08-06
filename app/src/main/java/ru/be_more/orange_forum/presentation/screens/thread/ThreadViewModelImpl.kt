@@ -87,10 +87,11 @@ class ThreadViewModelImpl (
     @SuppressLint("CheckResult")
     override fun getSinglePost(boardId: String, postNum: Int){
         postInteractor.getPost(boardId, postNum)
+            .defaultThreads()
             .subscribe(
                 {
-                    this.putContentInStack(it)
-                    post.postValue(it)
+//                    this.putContentInStack(it) //todo
+//                    post.postValue(it)
                 },
                 { error.postValue("Пост не найден") }
             )
@@ -123,61 +124,54 @@ class ThreadViewModelImpl (
 
     override fun addToQueue(isQueued: Boolean) {
         if (thread.value != null)
-            if (!isQueued)
-                threadInteractor
-                    .addThreadToQueue(threadNum, boardId, boardName)
-                    .subscribe(
-                        {
-                            this.isQueued.postValue(true)
-                            prefs.queueToUpdate = true
-                        },
-                        { Log.e("M_ThreadViewModelImpl","Adding in queue error = $it") }
-                    )
-                    .addToSubscribe()
-            else
-                threadInteractor
-                    .removeThreadFromQueue(boardId, threadNum)
-                    .subscribe(
-                        {
-                            this.isQueued.postValue(false)
-                            prefs.queueToUpdate = true
-                        },
-                        { Log.e("M_ThreadViewModelImpl","Removing from queue error = $it") }
-                    )
-                    .addToSubscribe()
+            threadInteractor
+                .markThreadQueued(
+                    boardId = boardId,
+                    boardName = boardName,
+                    threadNum = threadNum,
+                    isQueued = !isQueued
+                )
+                .defaultThreads()
+                .subscribe(
+                    {
+                        this.isQueued.postValue(true)
+                        prefs.queueToUpdate = true
+                    },
+                    { Log.e("M_ThreadViewModelImpl","Adding in queue error = $it") }
+                )
+                .addToSubscribe()
     }
 
     override fun setFavorite(isFavorite: Boolean) {
         if (thread.value != null)
-            if (isFavorite)
-                threadInteractor
-                    .addThreadToFavorite(threadNum, boardId, boardName)
-                    .subscribe(
-                        {
-                            this.isFavorite.postValue(true)
-                            prefs.favsToUpdate = true
-                        },
-                        { Log.e("M_ThreadViewModelImpl","Adding fav error = $it") }
-                    )
-                    .addToSubscribe()
-            else
-                threadInteractor
-                    .removeThreadFromFavorite(boardId, threadNum)
-                    .subscribe(
-                        {
-                            this.isFavorite.postValue(false)
-                            prefs.favsToUpdate = true
-                        },
-                        { Log.e("M_ThreadViewModelImpl","Removing fav error = $it") }
-                    )
-                    .addToSubscribe()
+            threadInteractor
+                .markThreadFavorite(
+                    boardId = boardId,
+                    boardName = boardName,
+                    threadNum = threadNum,
+                    isFavorite = isFavorite
+                )
+                .defaultThreads()
+                .subscribe(
+                    {
+                        this.isFavorite.postValue(true)
+                        prefs.favsToUpdate = true
+                    },
+                    { Log.e("M_ThreadViewModelImpl","Adding fav error = $it") }
+                )
+                .addToSubscribe()
     }
 
     override fun download(isDownload: Boolean) {
         if (thread.value != null)
             if (isDownload)
                 threadInteractor
-                    .downloadThread(threadNum, boardId, boardName)
+                    .downloadThread(
+                        boardId = boardId,
+                        boardName = boardName,
+                        threadNum = threadNum
+                    )
+                    .defaultThreads()
                     .subscribe(
                         { this.isDownload.postValue(true) },
                         { Log.e("M_ThreadViewModelImpl","Downloading error = $it") }
@@ -186,6 +180,7 @@ class ThreadViewModelImpl (
             else
                 threadInteractor
                     .deleteThread(boardId, threadNum)
+                    .defaultThreads()
                     .subscribe(
                         { this.isDownload.postValue(false) },
                         { Log.e("M_ThreadViewModelImpl","Removing download error = $it") }
@@ -218,6 +213,7 @@ class ThreadViewModelImpl (
 
     private fun refreshThread(forceUpdate: Boolean) {
         threadInteractor.getThread(boardId, threadNum, forceUpdate)
+            .defaultThreads()
             .doFinally { isRefreshing.postValue(false) }
             .subscribe(
                 {

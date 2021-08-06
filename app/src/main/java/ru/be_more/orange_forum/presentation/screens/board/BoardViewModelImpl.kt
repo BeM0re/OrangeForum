@@ -36,18 +36,17 @@ class BoardViewModelImpl (
         EventBus.getDefault().post(BoardToBeOpened)
         if (board.value == null || (board.value?.id != boardId && !boardId.isNullOrEmpty())){
             EventBus.getDefault().post(ThreadToBeClosed)
-            if (!boardId.isNullOrEmpty() && !boardName.isNullOrEmpty()) {
-                disposables.add(
-                    boardInteractor.getBoard(boardId, boardName)
-                        .subscribe(
-                            { board ->
-                                this.board.postValue(board)
-                                isFavorite.postValue(board.isFavorite)
-                            },
-                            { Log.e("M_BoardViewModel", "Getting board error = $it") }
-                        )
-                )
-            }
+            if (!boardId.isNullOrEmpty() && !boardName.isNullOrEmpty())
+                boardInteractor.getBoard(boardId, boardName)
+                    .defaultThreads()
+                    .subscribe(
+                        { board ->
+                            this.board.postValue(board)
+                            isFavorite.postValue(board.isFavorite)
+                        },
+                        { Log.e("M_BoardViewModel", "Getting board error = $it") }
+                    )
+                    .addToSubscribe()
         }
         else{
             board.postValue(board.value)
@@ -80,41 +79,39 @@ class BoardViewModelImpl (
         getSinglePost(board.value?.id?:"", postNum)
     }
 
-    override fun getSinglePost(boardId: String, postNum: Int){
-        disposables.add(
-            postInteractor.getPost(boardId, postNum)
-                .subscribe(
-                    {
-                        this.putContentInStack(it)
-                        post.postValue(it)
-                    },
-                    { error.postValue("Пост не найден") }
-                )
-        )
+    override fun getSinglePost(boardId: String, postNum: Int) {
+        postInteractor.getPost(boardId, postNum)
+            .defaultThreads()
+            .subscribe(
+                {
+//                        this.putContentInStack(it) //todo
+//                        post.postValue(it)
+                },
+                { error.postValue("Пост не найден") }
+            )
+            .addToSubscribe()
     }
 
     override fun hideThread(threadNum: Int, toHide: Boolean) {
-        if (toHide) {
-            disposables.add(
-                threadInteractor
-                    .hideThread(board.value?.id ?: "", board.value?.name ?: "", threadNum)
-                    .andThen(boardInteractor.getBoard(board.value?.id ?: "", board.value?.name ?: ""))
-                    .subscribe(
-                        { board.postValue(it) },
-                        { Log.e("M_BoardViewModel","hiding error = $it") }
-                    )
+        threadInteractor
+            .markThreadHidden(
+                boardId = requireNotNull(board.value?.id),
+                boardName = requireNotNull(board.value?.name),
+                threadNum = threadNum,
+                isHidden = toHide
             )
-        }
-        else {
-            disposables.add(
-                threadInteractor.unhideThread(board.value?.id ?: "", threadNum)
-                    .andThen(boardInteractor.getBoard(board.value?.id ?: "", board.value?.name ?: ""))
-                    .subscribe(
-                        { board.postValue(it) },
-                        { Log.e("M_BoardViewModel","hiding error = $it") }
-                    )
+            .andThen(
+                boardInteractor.getBoard(
+                    requireNotNull(board.value?.id),
+                    requireNotNull(board.value?.name)
+                )
             )
-        }
+            .defaultThreads()
+            .subscribe(
+                { board.postValue(it) },
+                { Log.e("M_BoardViewModel","hiding error = $it") }
+            )
+            .addToSubscribe()
     }
 
     override fun setBoardMarks(){
@@ -131,25 +128,29 @@ class BoardViewModelImpl (
     override fun setFavorite(isFavorite: Boolean) {
         if (board.value != null)
             if (isFavorite)
-                disposables.add(
-                    boardInteractor
-                        .markBoardFavorite(board.value!!.id, board.value!!.name)
-                        .subscribe(
-                            { this.isFavorite.postValue(true)
-                                prefs.favsToUpdate = true},
-                            { Log.e("M_BoardViewModelImpl","Adding fav error = $it") }
-                        )
-                )
+                boardInteractor
+                    .markBoardFavorite(board.value!!.id, board.value!!.name)
+                    .defaultThreads()
+                    .subscribe(
+                        {
+                            this.isFavorite.postValue(true)
+                            prefs.favsToUpdate = true
+                        },
+                        { Log.e("M_BoardViewModelImpl","Adding fav error = $it") }
+                    )
+                    .addToSubscribe()
             else
-                disposables.add(
-                    boardInteractor
-                        .unmarkBoardFavorite(board.value!!.id)
-                        .subscribe(
-                            { this.isFavorite.postValue(false)
-                                prefs.favsToUpdate = true},
-                            { Log.e("M_BoardViewModelImpl","Removing fav error = $it") }
-                        )
-                )
+                boardInteractor
+                    .unmarkBoardFavorite(board.value!!.id)
+                    .defaultThreads()
+                    .subscribe(
+                        {
+                            this.isFavorite.postValue(false)
+                            prefs.favsToUpdate = true
+                        },
+                        { Log.e("M_BoardViewModelImpl","Removing fav error = $it") }
+                    )
+                    .addToSubscribe()
     }
 
     override fun getBoardName(): String =
@@ -157,14 +158,19 @@ class BoardViewModelImpl (
 
     override fun addToQueue(threadNum: Int) {
         if (board.value != null)
-            disposables.add(
-                threadInteractor
-                    .addThreadToQueue(threadNum, board.value?.id ?: return, board.value?.name ?: return)
-                    .subscribe(
-                        { prefs.queueToUpdate = true },
-                        { Log.e("M_BoardViewModelImpl","Add to queue error = $it") }
-                    )
-            )
+            threadInteractor
+                .markThreadQueued(
+                    boardId = requireNotNull(board.value?.id),
+                    boardName = requireNotNull(board.value?.name),
+                    threadNum = threadNum,
+                    isQueued = true
+                )
+                .defaultThreads()
+                .subscribe(
+                    { prefs.queueToUpdate = true },
+                    { Log.e("M_BoardViewModelImpl","Add to queue error = $it") }
+                )
+                .addToSubscribe()
     }
 
     override fun onMenuReady() {

@@ -11,11 +11,9 @@ import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
     entities = [
         StoredCategory::class,
         StoredBoard::class,
-        StoredThread::class,
-        StoredPost::class,
-        StoredFile::class
+        StoredThread::class
     ],
-    version = 5,
+    version = 7,
     exportSchema = false)
 
 @TypeConverters(ReplyConverter::class)

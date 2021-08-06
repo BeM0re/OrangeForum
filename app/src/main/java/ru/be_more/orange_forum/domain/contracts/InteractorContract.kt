@@ -17,19 +17,39 @@ interface InteractorContract {
     }
 
     interface ThreadInteractor {
-        fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread>
-        fun addThreadToFavorite(threadNum: Int, boardId: String, boardName: String): Completable
-        fun addThreadToQueue(threadNum: Int, boardId: String, boardName: String): Completable
-        fun removeThreadFromFavorite(boardId: String, threadNum: Int):Completable
-        fun removeThreadFromQueue(boardId: String, threadNum: Int):Completable
-        fun downloadThread(threadNum: Int, boardId: String, boardName: String):Completable
+        fun getThread(
+            boardId: String,
+            threadNum: Int,
+            forceUpdate: Boolean): Single<BoardThread>
+
+        fun markThreadFavorite(
+            boardId: String,
+            boardName: String,
+            threadNum: Int,
+            isFavorite: Boolean): Completable
+
+        fun markThreadQueued(
+            boardId: String,
+            boardName: String,
+            threadNum: Int,
+            isQueued: Boolean): Completable
+
+        fun downloadThread(
+            boardId: String,
+            boardName: String,
+            threadNum: Int):Completable
+
         fun deleteThread(boardId: String, threadNum: Int): Completable
-        fun hideThread(boardId: String, boardName: String, threadNum: Int): Completable
-        fun unhideThread(boardId: String, threadNum: Int):Completable
+
+        fun markThreadHidden(
+            boardId: String,
+            boardName: String,
+            threadNum: Int,
+            isHidden: Boolean): Completable
     }
 
     interface PostInteractor {
-        fun getPost(boardId: String, postNum: Int): Single<Post>
+        fun getPost(boardId: String, postNum: Int): Single<Int>
     }
 
     interface ResponseInteractor {

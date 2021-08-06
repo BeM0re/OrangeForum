@@ -26,12 +26,15 @@ class RemoteConverter {
         fun toThread(opPostDto: PostDto) = BoardThread(
             num = opPostDto.num,
             posts = listOf(toPost(opPostDto)),
-            title = opPostDto.subject
+            title = opPostDto.subject,
+            lastPostNumber = opPostDto.num
         )
+
         fun toThread(threadDto: ThreadDto, threadNum: Int) = BoardThread(
             num = threadNum,
             posts = threadDto.threads[0].posts.map { toPost(it) },
-            title = threadDto.title
+            title = threadDto.title,
+            lastPostNumber =  threadDto.threads[0].posts.last().num
         )
 
         fun toPost(post: PostDto) = Post(

@@ -18,7 +18,6 @@ class PostPicViewHolder(private val binding: ItemPostPicsBinding) : ChildViewHol
     }
 
     fun setPic (file1: AttachFile, listener: PicOnClickListener){
-
         if (file1.localThumbnail.isEmpty()){
 
             //TODO перенести в константы

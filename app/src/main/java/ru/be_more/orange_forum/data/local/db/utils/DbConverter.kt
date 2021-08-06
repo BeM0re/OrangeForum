@@ -11,6 +11,7 @@ import ru.be_more.orange_forum.domain.model.Post
 
 class DbConverter {
     companion object{
+        @Deprecated("Stop using it")
         fun toModelBoard(board: StoredBoard, threads: List<BoardThread>): Board = Board(
             name = board.name,
             id = board.id,
@@ -18,33 +19,39 @@ class DbConverter {
             isFavorite = board.isFavorite
         )
 
+        fun toModelBoard(board: StoredBoard): Board = Board(
+            name = board.name,
+            id = board.id,
+            threads = board.threads.map { toModelThread(it) },
+            isFavorite = board.isFavorite
+        )
+
         fun toStoredThread(thread: BoardThread, boardId: String): StoredThread = StoredThread(
             num = thread.num,
             title = thread.title,
             boardId = boardId,
+            lastPostNumber = thread.lastPostNumber,
+            posts = thread.posts.map { toStoredPost(it) },
             isHidden = thread.isHidden,
             isDownloaded = thread.isDownloaded,
             isFavorite = thread.isFavorite,
             isQueued = thread.isQueued
         )
 
-        fun toModelThreads(threads: List<StoredThread>): List<BoardThread> =
-            threads.map { thread ->
-                BoardThread(
-                    num = thread.num,
-                    title = thread.title,
-                    isHidden = thread.isHidden,
-                    isDownloaded = thread.isDownloaded,
-                    isFavorite = thread.isFavorite,
-                    isQueued = thread.isQueued
-                )
+        fun toModelThread(thread: StoredThread): BoardThread =
+            BoardThread(
+                num = thread.num,
+                title = thread.title,
+                lastPostNumber = thread.lastPostNumber,
+                posts = thread.posts.map { toModelPost(it) },
+                isHidden = thread.isHidden,
+                isDownloaded = thread.isDownloaded,
+                isFavorite = thread.isFavorite,
+                isQueued = thread.isQueued
+            )
 
-            }
-
-        fun toStoredPost(post: Post, threadNum: Int, boardId: String): StoredPost = StoredPost(
-            boardId = boardId,
+        fun toStoredPost(post: Post): StoredPost = StoredPost(
             num = post.num,
-            threadNum = threadNum,
             name = post.name,
             comment = post.comment,
             date = post.date,
@@ -55,19 +62,15 @@ class DbConverter {
             subject = post.subject,
             timestamp = post.timestamp,
             number = post.number,
-            replies = post.replies
+            replies = post.replies,
+            files = post.files.map { toStoredFile(it, it.localPath, it.localThumbnail) }
         )
 
         fun toStoredFile(
             file: AttachFile,
-            postNum: Int,
-            boardId: String,
-            threadNum: Int,
             localPath: String,
             localThumbnail: String
         ): StoredFile = StoredFile(
-            boardId = boardId,
-            postNum = postNum,
             displayName = file.displayName,
             height = file.height,
             width = file.width,
@@ -77,11 +80,10 @@ class DbConverter {
             localPath = localPath,
             webThumbnail = file.thumbnail,
             localThumbnail = localThumbnail,
-            duration = file.duration,
-            isOpPostFile = postNum == threadNum,
-            threadNum = threadNum
+            duration = file.duration
         )
 
+        @Deprecated("")
         fun toModelPost(post: StoredPost, files: List<StoredFile>): Post = Post(
             num = post.num,
             name = post.name,
@@ -98,7 +100,22 @@ class DbConverter {
             files = files.map { toModelFile(it) }
         )
 
-
+        fun toModelPost(post: StoredPost): Post = Post(
+            num = post.num,
+            name = post.name,
+            comment = post.comment,
+            date = post.date,
+            email = post.email,
+            files_count = post.files_count,
+            op = post.op,
+            posts_count = post.posts_count,
+            subject = post.subject,
+            timestamp = post.timestamp,
+            number = post.number,
+            replies = post.replies,
+            files = post.files.map { toModelFile(it) }
+        )
+        
         fun toModelFile(file: StoredFile): AttachFile = AttachFile(
             path = file.webPath,
             thumbnail = file.webThumbnail,

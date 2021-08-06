@@ -4,7 +4,6 @@ import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Category
-import ru.be_more.orange_forum.extentions.processSingle
 
 class CategoryInteractorImpl (
     private val repository: RemoteContract.ApiRepository):
@@ -12,5 +11,4 @@ class CategoryInteractorImpl (
 
     override fun getCategories(): Single<List<Category>> =
         repository.getDvachCategories()
-            .processSingle()
 }

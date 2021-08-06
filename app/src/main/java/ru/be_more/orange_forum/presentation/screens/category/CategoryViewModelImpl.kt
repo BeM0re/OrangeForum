@@ -22,29 +22,28 @@ class CategoryViewModelImpl(
     override var expand = MutableLiveData<List<Int>>()
     override var savedQuery = MutableLiveData<String>()
 
-    override fun initViewModel(){
-        if(firstLaunch){
-            disposables.add(
-                interactor.getCategories()
-                    .subscribe(
-                        {
-                            fullDataset = it
-                            dataset.postValue(fullDataset)
-                            expand.postValue(expandedItems)
-                            firstLaunch = false
-                        },
-                        { error.postValue("Can't load categories: \n ${it.message}") }
-                    )
-            )
-        }
-        else{
+    override fun initViewModel() {
+        if (firstLaunch)
+            interactor.getCategories()
+                .defaultThreads()
+                .subscribe(
+                    {
+                        fullDataset = it
+                        dataset.postValue(fullDataset)
+                        expand.postValue(expandedItems)
+                        firstLaunch = false
+                    },
+                    { error.postValue("Can't load categories: \n ${it.message}") }
+                )
+                .addToSubscribe()
+        else {
             dataset.postValue(fullDataset)
             savedQuery.postValue(savedQ)
             expand.postValue(expandedItems)
         }
     }
 
-    override fun search(query: String){
+    override fun search(query: String) {
         savedQ = query
         if (query.isEmpty()) {
             dataset.postValue(fullDataset)
