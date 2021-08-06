@@ -7,10 +7,16 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getColor
+import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.R
@@ -26,6 +32,7 @@ import ru.be_more.orange_forum.extentions.LifecycleOwnerExtensions.observe
 import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 import ru.be_more.orange_forum.presentation.screens.post.PostFragment
+import java.util.concurrent.TimeUnit
 
 class ThreadFragment :
     BaseFragment<FragmentThreadBinding>(),
@@ -44,6 +51,8 @@ class ThreadFragment :
     private var downButton: MenuItem? = null
     private var downButtonAdded: MenuItem? = null
     private var refreshButton: MenuItem? = null
+    private var buttonUpDisposable: Disposable? = null
+    private var buttonDownDisposable: Disposable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_thread, container, false)
@@ -125,6 +134,22 @@ class ThreadFragment :
         binding.strPostList.setOnRefreshListener {
             viewModel.onRefresh()
         }
+
+        binding.rvPostList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                when {
+                    dy < 0 -> {
+                        buttonUpDisposable?.dispose()
+                        buttonUpDisposable = showUpDownFab(binding.fabThreadUp)
+                    }
+                    dy > 0 -> {
+                        buttonDownDisposable?.dispose()
+                        buttonDownDisposable = showUpDownFab(binding.fabThreadDown)
+                    }
+                }
+            }
+        })
 
         val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)?:""
         val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)?:""
@@ -230,12 +255,25 @@ class ThreadFragment :
             binding.rvPostList.scrollToPosition(0)
         }
         binding.fabThreadDown.setOnClickListener {
-            binding.rvPostList.scrollToPosition(binding.rvPostList.adapter?.itemCount ?: 1 - 1)
+            val position = binding.rvPostList.adapter?.itemCount ?: 1
+            setPosition(position - 3)
         }
     }
 
     private fun setRefresh(isRefreshing: Boolean){
         binding.strPostList.isRefreshing = isRefreshing
+    }
+
+    private fun showUpDownFab(fab: FloatingActionButton): Disposable {
+        fab.isVisible = true
+
+        return Single.timer(2, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { fab.isVisible = false },
+                { Log.e("M_ThreadFragment","hide fab error = $it") }
+            )
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
