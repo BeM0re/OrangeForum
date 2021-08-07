@@ -237,7 +237,8 @@ class ThreadFragment :
 
         childFragmentManager
             .fragments
-            .filterIsInstance<PostFragment>().firstOrNull()
+            .filterIsInstance<PostFragment>()
+            .firstOrNull()
             ?.let {
                 it.closeVideo()
                 childFragmentManager

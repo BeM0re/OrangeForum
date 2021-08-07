@@ -57,6 +57,7 @@ class BoardViewModelImpl (
 
     override fun clearStack() {
         this.modalStack.clear()
+        emptyStack.postValue(true)
     }
 
     override fun putContentInStack(modal: ModalContent) {
@@ -65,9 +66,8 @@ class BoardViewModelImpl (
 
     override fun onBackPressed() {
         modalStack.pop()
-
-        if(!modalStack.empty()) {
-            when(val content = modalStack.peek()){
+        if (!modalStack.empty()) {
+            when (val content = modalStack.peek()) {
                 is Attachment -> attachment.postValue(content)
                 is Post -> post.postValue(content)
             }
