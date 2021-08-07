@@ -71,15 +71,17 @@ class ThreadViewModelImpl (
     }
 
     override fun onBackPressed() {
-        modalStack.pop()
+        if (!modalStack.empty()) {
+            modalStack.pop()
 
-        if(!modalStack.empty()) {
-            when(val content = modalStack.peek()){
-                is Attachment -> attachment.postValue(content)
-                is Post -> post.postValue(content)
-            }
-        } else
-            emptyStack.postValue(true)
+            if (!modalStack.empty()) {
+                when (val content = modalStack.peek()) {
+                    is Attachment -> attachment.postValue(content)
+                    is Post -> post.postValue(content)
+                }
+            } else
+                emptyStack.postValue(true)
+        }
     }
 
     override fun getSinglePost(postNum: Int) {
@@ -198,15 +200,16 @@ class ThreadViewModelImpl (
 
     override fun closeModal() {
         clearStack()
-        emptyStack.postValue(true)
+        onBackPressed()
     }
 
     override fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
         if (!fullPicUrl.isNullOrEmpty() || fullPicUri != null)
-            Attachment(fullPicUrl, duration, fullPicUri).also {
-                putContentInStack(it)
-                attachment.postValue(it)
-            }
+            Attachment(fullPicUrl, duration, fullPicUri)
+                .also {
+                    putContentInStack(it)
+                    attachment.postValue(it)
+                }
     }
 
     override fun onRefresh() {

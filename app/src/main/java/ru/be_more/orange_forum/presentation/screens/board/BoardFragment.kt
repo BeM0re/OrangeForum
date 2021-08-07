@@ -143,8 +143,6 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
                     .beginTransaction()
                     .remove(it)
             }
-
-        viewModel.clearStack()
     }
 
     private fun subscribe(){
@@ -174,7 +172,7 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
     }
 
     override fun onCloseModalListener(){
-        hideModal()
+        viewModel.clearStack()
     }
 
     override fun onIntoThreadClick(threadNum: Int, threadTitle: String) {
