@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.data.remote.service
 
 import android.content.Context
 import br.com.jeancsanchez.restinterceptor.RestErrorInterceptor
+import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -13,9 +14,9 @@ import java.util.concurrent.TimeUnit
 
 class RetrofitFactory (
     sslTrustManager : SSLTrustManager,
-    context: Context){
-
-    var gson: Gson = GsonBuilder()
+    context: Context
+){
+    private val gson: Gson = GsonBuilder()
         .setLenient()
         .create()
 
@@ -25,7 +26,14 @@ class RetrofitFactory (
 //            .addInterceptor(HttpLoggingInterceptor { Log.v("M_RetrofitFactory", it) }
 //                .apply { level = HttpLoggingInterceptor.Level.BODY })
             .addInterceptor(RestErrorInterceptor())
-            .addInterceptor(ChuckerInterceptor(context))
+            .addInterceptor(
+                ChuckerInterceptor.Builder(context)
+                    .collector(ChuckerCollector(context))
+                    .maxContentLength(250000L)
+                    .redactHeaders(emptySet())
+                    .alwaysReadResponseBody(false)
+                    .build()
+            )
             .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.x509TrustManager)
             .hostnameVerifier(sslTrustManager.hostnameVerifier)
             .readTimeout(45, TimeUnit.SECONDS)

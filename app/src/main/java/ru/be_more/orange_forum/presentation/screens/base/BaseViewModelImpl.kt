@@ -16,7 +16,7 @@ abstract class BaseViewModelImpl : ViewModel(), PresentationContract.BaseViewMod
     private var privateDisposables: CompositeDisposable? = CompositeDisposable()
 
     protected val disposables
-        get() = this.privateDisposables!!
+        get() = this.privateDisposables
 
     override val  error = MutableLiveData<String>()
 
@@ -26,7 +26,7 @@ abstract class BaseViewModelImpl : ViewModel(), PresentationContract.BaseViewMod
     }
 
     fun Disposable.addToSubscribe(){
-        disposables.add(this)
+        disposables?.add(this)
     }
 
     fun <T> Single<T>.defaultThreads(): Single<T> {

@@ -22,21 +22,20 @@ class ThreadInteractorImpl (
         Single.zip(
             threadRepository.getThread(boardId, threadNum)
                 .switchIfEmpty(Single.just(BoardThread.empty())),
-            apiRepository.getThread(boardId, threadNum, forceUpdate),
-            { localThread, webThread ->
-                if (localThread.isEmpty())
-                    webThread
-                else {
-                    threadRepository.updateLastPostNum(boardId, threadNum, webThread.lastPostNumber)
-                    webThread.copy(
-                        isHidden = localThread.isHidden,
-                        isFavorite = localThread.isFavorite,
-                        isDownloaded = localThread.isDownloaded,
-                        isQueued = localThread.isQueued
-                    )
-                }
+            apiRepository.getThread(boardId, threadNum, forceUpdate)
+        ) { localThread, webThread ->
+            if (localThread.isEmpty())
+                webThread
+            else {
+                threadRepository.updateLastPostNum(boardId, threadNum, webThread.lastPostNumber)
+                webThread.copy(
+                    isHidden = localThread.isHidden,
+                    isFavorite = localThread.isFavorite,
+                    isDownloaded = localThread.isDownloaded,
+                    isQueued = localThread.isQueued
+                )
             }
-        )
+        }
 
     override fun markThreadFavorite(
         boardId: String,
@@ -49,7 +48,15 @@ class ThreadInteractorImpl (
             .doOnSuccess { threadRepository.insertThread(it.copy(isFavorite = isFavorite), boardId) }
             .flatMap { thread ->
                 boardRepository.getBoard(boardId)
-                    .switchIfEmpty(Single.just(Board(id = boardId, name = boardName)))
+                    .switchIfEmpty(
+                        Single.just(
+                            Board(
+                                id = boardId,
+                                name = boardName,
+                                category = "" //todo
+                            )
+                        )
+                    )
                     .map { board ->
                         board.threads.firstOrNull{ it.num == threadNum }?.copy(isFavorite = isFavorite)
                             ?: thread.copy(isFavorite = isFavorite, posts = listOf(thread.posts.first()))
@@ -70,7 +77,15 @@ class ThreadInteractorImpl (
             .doOnSuccess { threadRepository.saveThread(it.copy(isDownloaded = true), boardId) }
             .flatMap { thread ->
                 boardRepository.getBoard(boardId)
-                    .switchIfEmpty(Single.just(Board(id = boardId, name = boardName)))
+                    .switchIfEmpty(
+                        Single.just(
+                            Board(
+                                id = boardId,
+                                name = boardName,
+                                category = "" //todo
+                            )
+                        )
+                    )
                     .map { board ->
                         board.threads.firstOrNull{ it.num == threadNum }?.copy(isDownloaded = true)
                             ?: thread.copy(isDownloaded = true, posts = listOf(thread.posts.first()))
@@ -96,7 +111,15 @@ class ThreadInteractorImpl (
             .doOnSuccess { threadRepository.insertThread(it.copy(isQueued = isQueued), boardId) }
             .flatMap { thread ->
                 boardRepository.getBoard(boardId)
-                    .switchIfEmpty(Single.just(Board(id = boardId, name = boardName)))
+                    .switchIfEmpty(
+                        Single.just(
+                            Board(
+                                id = boardId,
+                                name = boardName,
+                                category = "" //todo
+                            )
+                        )
+                    )
                     .map { board ->
                         board.threads.firstOrNull{ it.num == threadNum }?.copy(isQueued = isQueued)
                             ?: thread.copy(isQueued = isQueued)
@@ -118,7 +141,15 @@ class ThreadInteractorImpl (
             .doOnSuccess { threadRepository.insertThread(it.copy(isHidden = isHidden), boardId) }
             .flatMap { thread ->
                 boardRepository.getBoard(boardId)
-                    .switchIfEmpty(Single.just(Board(id = boardId, name = boardName)))
+                    .switchIfEmpty(
+                        Single.just(
+                            Board(
+                                id = boardId,
+                                name = boardName,
+                                category = ""//todo
+                            )
+                        )
+                    )
                     .map { board ->
                         board.threads.firstOrNull{ it.num == threadNum }?.copy(isHidden = isHidden)
                             ?: thread.copy(isHidden = isHidden, posts = listOf(thread.posts.first()))
@@ -135,9 +166,8 @@ class ThreadInteractorImpl (
                 .switchIfEmpty(
                     Single.error(Throwable("ThreadInteractorImpl: trying to update null thread"))
                 ),
-            apiRepository.getThread(boardId, threadNum, true),
-            { local, web -> web.posts.filter { it.num > local.lastPostNumber }.size }
-        )
+            apiRepository.getThread(boardId, threadNum, true)
+        ) { local, web -> web.posts.filter { it.num > local.lastPostNumber }.size }
             .flatMapCompletable { boardRepository.updateThreadNewMessageCounter(boardId, threadNum, it) }
     }
 

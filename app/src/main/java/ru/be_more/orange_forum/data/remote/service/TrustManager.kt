@@ -30,6 +30,4 @@ class SSLTrustManager {
 
     val hostnameVerifier: HostnameVerifier
         get() = HostnameVerifier { _, _ -> true }
-
-
 }

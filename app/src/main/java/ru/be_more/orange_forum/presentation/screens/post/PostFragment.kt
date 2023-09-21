@@ -112,7 +112,7 @@ class PostFragment : BaseFragment<ItemPostBinding>() {
                     override fun onLoadFailed(
                         e: GlideException?,
                         model: Any?,
-                        target: Target<Drawable>?,
+                        target: Target<Drawable>,
                         isFirstResource: Boolean
                     ): Boolean {
                         Log.d("M_PostFragment", "$e")
@@ -120,10 +120,10 @@ class PostFragment : BaseFragment<ItemPostBinding>() {
                     }
 
                     override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
+                        resource: Drawable,
+                        model: Any,
                         target: Target<Drawable>?,
-                        dataSource: DataSource?,
+                        dataSource: DataSource,
                         isFirstResource: Boolean
                     ): Boolean {
                         binding.pbPost1PicLoading.visibility = View.GONE

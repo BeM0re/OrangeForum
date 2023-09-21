@@ -9,13 +9,16 @@ import ru.be_more.orange_forum.data.remote.models.*
 interface DvachApi{
 
     @GET("makaba/mobile.fcgi")
-    fun getDvachCategories(@Query("task") task : String): Single<Map<String, List<BoardNameDto>>>
+    fun getCategories(@Query("task") task : String): Single<Map<String, List<BoardShortDto>>>
+
+    @GET("index.json")
+    fun getBoardList(): Single<BoardListDto>
 
     @GET("{board}/catalog.json")
-    fun getDvachThreads(@Path("board") board : String): Single<BoardDto>
+    fun getBoard(@Path("board") board : String): Single<BoardDto>
 
     @GET("{board}/res/{threadNum}.json")
-    fun getDvachPosts(
+    fun getThread(
         @Path("board") board : String,
         @Path("threadNum") threadNum : Int,
         @Header("Cookie") cookie: String

@@ -12,6 +12,7 @@ import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.api.DvachApi
 import ru.be_more.orange_forum.data.remote.models.ThreadDto
 import ru.be_more.orange_forum.data.remote.converters.RemoteConverter
+import ru.be_more.orange_forum.data.remote.converters.RemoteConverter.Companion.toBoardShortModel
 import ru.be_more.orange_forum.data.remote.converters.RemoteConverter.Companion.toCategories
 import ru.be_more.orange_forum.domain.model.*
 import java.io.File
@@ -25,24 +26,44 @@ class ApiRepositoryImpl(
     private var lastThreadBoard = ""
     private var lastBoard: Board? = null
 
-    override fun getDvachCategories(): Single<List<Category>> =
-        dvachApi.getDvachCategories("get_boards")
-            .map { toCategories(it) }
-            .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting category error = $throwable") }
+//    override fun getCategories(): Single<List<Category>> =
+//        dvachApi.getCategories("get_boards")
+//            .map { toCategories(it) }
+//            .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting category error = $throwable") }
 
-    override fun getDvachThreads(boardId: String): Single<List<BoardThread>> =
+    override fun getCategories(): Single<List<Category>> =
+        dvachApi.getBoardList()
+            .map { dto ->
+                toBoardShortModel(dto.boardList)
+                    .groupBy { it.category }
+                    .map { (category, boards) ->
+                        Category(
+                            name = category,
+                            boards = boards
+                        )
+                    }
+            }
+
+    override fun getBoard(boardId: String): Single<List<BoardThread>> =
         if (lastBoard?.id == boardId)
             Single.just(lastBoard!!.threads)
         else
-            dvachApi.getDvachThreads(boardId)
+            dvachApi.getBoard(boardId)
                 .map { entity -> RemoteConverter.toBoard(entity) }
-                .doAfterSuccess { lastBoard = Board(name = "", id = boardId, threads = it) }
+                .doAfterSuccess {
+                    lastBoard = Board(
+                        name = "",
+                        id = boardId,
+                        category = "",
+                        threads = it
+                    )
+                }
 
     override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
         if (boardId == lastThreadBoard && threadNum == lastThread?.num && !forceUpdate)
             Single.just(lastThread)
         else
-            dvachApi.getDvachPosts(boardId, threadNum, COOKIE)
+            dvachApi.getThread(boardId, threadNum, COOKIE)
                 .doOnError { throwable -> Log.e("M_DvachApiRepository", "get thread via api error = $throwable") }
                 .onErrorReturn { ThreadDto() }
                 .map { entity -> RemoteConverter.toThread(entity, threadNum) }
@@ -67,7 +88,7 @@ class ApiRepositoryImpl(
         }
 
 
-    override fun getDvachPost(
+    override fun getPost(
         boardId: String,
         postNum: Int,
         cookie: String

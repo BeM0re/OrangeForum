@@ -7,17 +7,18 @@ import ru.be_more.orange_forum.utils.ParseHtml
 class RemoteConverter {
     companion object{
 
-        fun toCategories (allCategories: Map<String, List<BoardNameDto>>) : List<Category> =
+        fun toCategories (allCategories: Map<String, List<BoardShortDto>>) : List<Category> =
             allCategories.map {
-                Category(it.key, getBoardNames(it.value))
+                Category(it.key, toBoardShortModel(it.value))
             }
 
-        private fun getBoardNames(boardDtos : List<BoardNameDto>) =
-            boardDtos.map { toBoard(it) }
+        fun toBoardShortModel(boardDtoList : List<BoardShortDto>) =
+            boardDtoList.map { toBoard(it) }
 
-        fun toBoard(boardDto: BoardNameDto) = Board(
+        fun toBoard(boardDto: BoardShortDto) = Board(
             name = boardDto.name,
-            id = boardDto.id
+            id = boardDto.id,
+            category = boardDto.category
         )
 
         fun toBoard(boardDto: BoardDto) =

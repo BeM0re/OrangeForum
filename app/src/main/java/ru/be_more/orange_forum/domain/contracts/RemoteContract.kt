@@ -1,7 +1,6 @@
 package ru.be_more.orange_forum.domain.contracts
 
 import io.reactivex.Single
-import ru.be_more.orange_forum.data.remote.models.*
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.domain.model.Post
@@ -11,11 +10,11 @@ import java.io.File
 interface RemoteContract {
 
     interface ApiRepository {
-        fun getDvachCategories(): Single<List<Category>>
-        fun getDvachThreads(boardId: String): Single<List<BoardThread>>
+        fun getCategories(): Single<List<Category>>
+        fun getBoard(boardId: String): Single<List<BoardThread>>
         fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean = false): Single<BoardThread>
         fun getThreadShort(boardId: String, threadNum: Int): Single<BoardThread>
-        fun getDvachPost(boardId: String, postNum: Int, cookie: String): Single<Post>
+        fun getPost(boardId: String, postNum: Int, cookie: String): Single<Post>
         fun postResponse(
             boardId: String,
             threadNum: Int,
