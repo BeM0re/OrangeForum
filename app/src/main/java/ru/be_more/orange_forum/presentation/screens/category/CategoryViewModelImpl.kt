@@ -13,7 +13,7 @@ class CategoryViewModelImpl(
     private val prefs: Preferences
 ): PresentationContract.CategoryViewModel, BaseViewModelImpl() {
 
-    private var fullDataset: List<Category>? = null
+    private var fullDataset: List<Category> = emptyList()
     private var firstLaunch = true
     private var expandedItems = LinkedList<Int>()
     private var savedQ = ""
@@ -51,16 +51,19 @@ class CategoryViewModelImpl(
             expand.postValue(expandedItems)
         }
         else {
-            val filteredDataset = dataset.value
-                ?.map { category ->
-                    category.copy( boards = category.boards?.filter { board ->
-                        board?.id?.contains(query, true) ?: false ||
-                                board?.name?.contains(query, true) ?: false
-                    })
+            dataset.value ?: return
+            val filteredDataset: List<Category> = requireNotNull(dataset.value)
+                .map { category ->
+                    category.copy(
+                        boards = category.boards?.filter { board ->
+                            board?.id?.contains(query, true) == true ||
+                                    board?.name?.contains(query, true) == true
+                            }
+                    )
                 }
-                ?.filter { !it.boards.isNullOrEmpty() }
+                .filter { !it.boards.isNullOrEmpty() }
             dataset.postValue(filteredDataset)
-            expandedItems = LinkedList(filteredDataset?.mapIndexed { index, _ -> index })
+            expandedItems = LinkedList(filteredDataset.mapIndexed { index, _ -> index })
             expand.postValue(expandedItems)
         }
     }

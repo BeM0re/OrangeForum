@@ -14,25 +14,24 @@ class ResponseViewModelImpl (
     override val result = MutableLiveData<String>()
 
     override fun postResponse(boardId: String, threadNum: Int, comment: String, token:String){
-        disposables.add(
-            interactor.postResponse(
-                boardId = boardId,
-                threadNum = threadNum,
-                comment = comment,
-                token = token
-            )
-                .subscribe (
-                    { response ->
-                        if(response.Num != 0) //0 - ошибка постинга
-                            result.postValue("")
-                        else
-                            result.postValue(response.Reason)
-                    },
-                    { throwable ->
-                        Log.e("M_ResponseViewModelImpl", "post error = $throwable")
-                    }
-                )
+        interactor.postResponse(
+            boardId = boardId,
+            threadNum = threadNum,
+            comment = comment,
+            token = token
         )
+            .subscribe (
+                { response ->
+                    if(response.Num != 0) //0 - ошибка постинга
+                        result.postValue("")
+                    else
+                        result.postValue(response.Reason)
+                },
+                { throwable ->
+                    Log.e("M_ResponseViewModelImpl", "post error = $throwable")
+                }
+            )
+            .addToSubscribe()
     }
 
 }

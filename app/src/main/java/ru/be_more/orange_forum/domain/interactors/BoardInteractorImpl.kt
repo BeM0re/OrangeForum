@@ -15,25 +15,24 @@ class BoardInteractorImpl(
     override fun getBoard(boardId: String, boardName: String): Single<Board> =
         Single.zip(
             dbBoardRepository.getBoard(boardId)
-                .switchIfEmpty(Single.just(Board(id = boardId, name = boardName))),
-            apiRepository.getDvachThreads(boardId),
-            { localBoard, webThreads ->
-                localBoard.copy( threads =
-                    webThreads
-                        .map { webThread ->
-                            webThread to localBoard.threads.firstOrNull{ webThread.num == it.num }
-                        }
-                        .map { (web, local) ->
-                            web.copy(
-                                isDownloaded = local?.isDownloaded ?: false,
-                                isFavorite = local?.isFavorite ?: false,
-                                isHidden = local?.isHidden ?: false,
-                                isQueued = local?.isQueued ?: false
-                            )
-                        }
-                )
-            }
-        )
+                .switchIfEmpty(Single.just(Board(id = boardId, name = boardName, category = ""/*todo*/))),
+            apiRepository.getBoard(boardId)
+        ) { localBoard, webThreads ->
+            localBoard.copy(threads =
+            webThreads
+                .map { webThread ->
+                    webThread to localBoard.threads.firstOrNull { webThread.num == it.num }
+                }
+                .map { (web, local) ->
+                    web.copy(
+                        isDownloaded = local?.isDownloaded ?: false,
+                        isFavorite = local?.isFavorite ?: false,
+                        isHidden = local?.isHidden ?: false,
+                        isQueued = local?.isQueued ?: false
+                    )
+                }
+            )
+        }
 
     override fun markBoardFavorite(boardId: String, boardName: String): Completable =
         dbBoardRepository.getBoardCount(boardId)

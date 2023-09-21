@@ -15,6 +15,7 @@ class DbConverter {
         fun toModelBoard(board: StoredBoard, threads: List<BoardThread>): Board = Board(
             name = board.name,
             id = board.id,
+            category = board.categoryId,
             threads = threads,
             isFavorite = board.isFavorite
         )
@@ -22,6 +23,7 @@ class DbConverter {
         fun toModelBoard(board: StoredBoard): Board = Board(
             name = board.name,
             id = board.id,
+            category = board.categoryId,
             threads = board.threads.map { toModelThread(it) },
             isFavorite = board.isFavorite
         )

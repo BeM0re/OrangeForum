@@ -10,5 +10,5 @@ class CategoryInteractorImpl (
         InteractorContract.CategoryInteractor {
 
     override fun getCategories(): Single<List<Category>> =
-        repository.getDvachCategories()
+        repository.getCategories()
 }
