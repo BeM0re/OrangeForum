@@ -4,11 +4,11 @@ data class AttachFile(
     val displayName: String = "",
     val height: Int = 0,
     val width: Int = 0,
-    val tn_height: Int = 0,
-    val tn_width: Int = 0,
+    val tnHeight: Int = 0,
+    val tnWidth: Int = 0,
     val path: String = "",
     val thumbnail: String = "",
     val duration : String = "",
     val localPath: String = "",
-    val localThumbnail: String = ""
+    val localThumbnail: String = "",
 )

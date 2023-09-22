@@ -107,13 +107,13 @@ class CategoryFragment:
     }
 
     private fun loadCategories(categories: List<Category>) {
-        binding.rvCategoryList.adapter = CategoryAdapter(categories, this)
-            .apply {
-                setOnGroupClickListener {
-                    viewModel.categoryClicked(it)
-                    true
-                }
-            }
+//        binding.rvCategoryList.adapter = CategoryAdapter(categories, this)
+//            .apply {
+//                setOnGroupClickListener {
+//                    viewModel.categoryClicked(it)
+//                    true
+//                }
+//            }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

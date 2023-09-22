@@ -1,18 +1,19 @@
 package ru.be_more.orange_forum.data.remote.models
 
+import com.google.gson.annotations.SerializedName
 import ru.be_more.orange_forum.domain.model.PostResponse
 
 data class PostResponseDto(
     val error : String,
-    val Status :String,
-    val Num: Int,
-    val Reason: String
+    @SerializedName("Status") val status :String,
+    @SerializedName("Num") val num: Int,
+    @SerializedName("Reason") val reason: String
 ){
     fun toModel() =
         PostResponse(
             error = error,
-            Status = Status,
-            Num = Num,
-            Reason = Reason
+            status = status,
+            num = num,
+            reason = reason
         )
 }

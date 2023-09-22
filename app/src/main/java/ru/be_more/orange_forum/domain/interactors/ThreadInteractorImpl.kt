@@ -1,176 +1,83 @@
 package ru.be_more.orange_forum.domain.interactors
 
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
+import ru.be_more.orange_forum.consts.ThreadUpdateInterval
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
+import java.util.concurrent.TimeUnit
 
-class ThreadInteractorImpl (
+class ThreadInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
     private val boardRepository: DbContract.BoardRepository,
-    private val threadRepository: DbContract.ThreadRepository
+    private val threadRepository: DbContract.ThreadRepository,
+    private val postRepository: DbContract.PostRepository
 ): InteractorContract.ThreadInteractor {
 
-    override fun getThread(
+    override fun observe(
         boardId: String,
         threadNum: Int,
-        forceUpdate: Boolean
-    ): Single<BoardThread> =
-        Single.zip(
-            threadRepository.getThread(boardId, threadNum)
-                .switchIfEmpty(Single.just(BoardThread.empty())),
-            apiRepository.getThread(boardId, threadNum, forceUpdate)
-        ) { localThread, webThread ->
-            if (localThread.isEmpty())
-                webThread
-            else {
-                threadRepository.updateLastPostNum(boardId, threadNum, webThread.lastPostNumber)
-                webThread.copy(
-                    isHidden = localThread.isHidden,
-                    isFavorite = localThread.isFavorite,
-                    isDownloaded = localThread.isDownloaded,
-                    isQueued = localThread.isQueued
-                )
-            }
-        }
+    ): Observable<BoardThread> =
+        downloadThread(boardId, threadNum)
+            .andThen(
+                Observable.combineLatest(
+                    threadRepository.observe(boardId, threadNum),
+                    postRepository.observe(boardId, threadNum)
+                ) { thread, posts ->
+                    thread.copy(posts = posts)
+                }
+            )
 
-    override fun markThreadFavorite(
+    override fun markFavorite(
         boardId: String,
         boardName: String,
         threadNum: Int,
-        isFavorite: Boolean
-    ): Completable {
-        return threadRepository.getThread(boardId, threadNum)
-            .switchIfEmpty(apiRepository.getThreadShort(boardId, threadNum))
-            .doOnSuccess { threadRepository.insertThread(it.copy(isFavorite = isFavorite), boardId) }
-            .flatMap { thread ->
-                boardRepository.getBoard(boardId)
+    ): Completable =
+        threadRepository
+            .get(boardId, threadNum)
+            .flatMapCompletable {
+                threadRepository.markFavorite(boardId, threadNum, !it.isFavorite)
+            }
+
+    override fun markQueued(boardId: String, boardName: String, threadNum: Int): Completable =
+        threadRepository
+            .get(boardId, threadNum)
+            .flatMapCompletable {
+                threadRepository.markQueued(boardId, threadNum, !it.isQueued)
+            }
+
+    override fun markHidden(boardId: String, boardName: String, threadNum: Int): Completable =
+        threadRepository
+            .get(boardId, threadNum)
+            .flatMapCompletable {
+                threadRepository.markHidden(boardId, threadNum, !it.isHidden)
+            }
+
+    override fun subToUpdate(boardId: String, threadNum: Int): Completable =
+        Observable
+            .interval(ThreadUpdateInterval, TimeUnit.SECONDS)
+            .flatMapCompletable { downloadThread(boardId, threadNum) }
+
+    @Deprecated("Maybe delete")
+    override fun updateNewMessages(boardId: String, threadNum: Int): Completable =
+        Single
+            .zip(
+                threadRepository.get(boardId, threadNum)
                     .switchIfEmpty(
-                        Single.just(
-                            Board(
-                                id = boardId,
-                                name = boardName,
-                                category = "" //todo
-                            )
-                        )
-                    )
-                    .map { board ->
-                        board.threads.firstOrNull{ it.num == threadNum }?.copy(isFavorite = isFavorite)
-                            ?: thread.copy(isFavorite = isFavorite, posts = listOf(thread.posts.first()))
-                    }
+                        Single.error(Throwable("ThreadInteractorImpl: trying to update null thread"))
+                    ),
+                apiRepository.getThread(boardId, threadNum, true)
+            ) { local, web ->
+                web.posts.filter { it.id > local.lastPostNumber }.size
             }
             .flatMapCompletable {
-                boardRepository.insertThreadIntoBoard(boardId, boardName, it)
+                boardRepository.updateThreadNewMessageCounter(boardId, threadNum, it)
             }
-    }
 
-    //todo make worker for this
-    override fun downloadThread(
-        boardId: String,
-        boardName: String,
-        threadNum: Int
-    ): Completable {
-        return apiRepository.getThread(boardId, threadNum)
-            .doOnSuccess { threadRepository.saveThread(it.copy(isDownloaded = true), boardId) }
-            .flatMap { thread ->
-                boardRepository.getBoard(boardId)
-                    .switchIfEmpty(
-                        Single.just(
-                            Board(
-                                id = boardId,
-                                name = boardName,
-                                category = "" //todo
-                            )
-                        )
-                    )
-                    .map { board ->
-                        board.threads.firstOrNull{ it.num == threadNum }?.copy(isDownloaded = true)
-                            ?: thread.copy(isDownloaded = true, posts = listOf(thread.posts.first()))
-                    }
-            }
-            .flatMapCompletable {
-                boardRepository.insertThreadIntoBoard(boardId, boardName, it)
-            }
-    }
-
-    //todo make worker for this
-    override fun deleteThread(boardId: String, threadNum: Int) =
-        threadRepository.deleteThread(boardId, threadNum)
-
-    override fun markThreadQueued(
-        boardId: String,
-        boardName: String,
-        threadNum: Int,
-        isQueued: Boolean
-    ): Completable {
-        return threadRepository.getThread(boardId, threadNum)
-            .switchIfEmpty(apiRepository.getThreadShort(boardId, threadNum))
-            .doOnSuccess { threadRepository.insertThread(it.copy(isQueued = isQueued), boardId) }
-            .flatMap { thread ->
-                boardRepository.getBoard(boardId)
-                    .switchIfEmpty(
-                        Single.just(
-                            Board(
-                                id = boardId,
-                                name = boardName,
-                                category = "" //todo
-                            )
-                        )
-                    )
-                    .map { board ->
-                        board.threads.firstOrNull{ it.num == threadNum }?.copy(isQueued = isQueued)
-                            ?: thread.copy(isQueued = isQueued)
-                    }
-            }
-            .flatMapCompletable {
-                boardRepository.insertThreadIntoBoard(boardId, boardName, it)
-            }
-    }
-
-    override fun markThreadHidden(
-        boardId: String,
-        boardName: String,
-        threadNum: Int,
-        isHidden: Boolean
-    ): Completable {
-        return threadRepository.getThread(boardId, threadNum)
-            .switchIfEmpty(apiRepository.getThreadShort(boardId, threadNum))
-            .doOnSuccess { threadRepository.insertThread(it.copy(isHidden = isHidden), boardId) }
-            .flatMap { thread ->
-                boardRepository.getBoard(boardId)
-                    .switchIfEmpty(
-                        Single.just(
-                            Board(
-                                id = boardId,
-                                name = boardName,
-                                category = ""//todo
-                            )
-                        )
-                    )
-                    .map { board ->
-                        board.threads.firstOrNull{ it.num == threadNum }?.copy(isHidden = isHidden)
-                            ?: thread.copy(isHidden = isHidden, posts = listOf(thread.posts.first()))
-                    }
-            }
-            .flatMapCompletable {
-                boardRepository.insertThreadIntoBoard(boardId, boardName, it)
-            }
-    }
-
-    override fun updateNewMessages(boardId: String, threadNum: Int): Completable {
-        return Single.zip(
-            threadRepository.getThread(boardId, threadNum)
-                .switchIfEmpty(
-                    Single.error(Throwable("ThreadInteractorImpl: trying to update null thread"))
-                ),
-            apiRepository.getThread(boardId, threadNum, true)
-        ) { local, web -> web.posts.filter { it.num > local.lastPostNumber }.size }
-            .flatMapCompletable { boardRepository.updateThreadNewMessageCounter(boardId, threadNum, it) }
-    }
-
+    @Deprecated("Maybe delete")
     override fun updateNewMessages(
         boardId: String,
         threadNum: Int,
@@ -178,6 +85,7 @@ class ThreadInteractorImpl (
     ): Completable =
         boardRepository.updateThreadNewMessageCounter(boardId, threadNum, newMessageCount)
 
+    @Deprecated("Maybe delete")
     override fun updateLastPostNum(
         boardId: String,
         threadNum: Int,
@@ -187,4 +95,19 @@ class ThreadInteractorImpl (
             threadRepository.updateLastPostNum(boardId, threadNum, lastPostNum)
         }
     }
+
+    override fun delete(boardId: String, threadNum: Int) =
+        threadRepository.delete(boardId, threadNum)
+            .andThen(postRepository.delete(boardId, threadNum))
+
+    private fun downloadThread(
+        boardId: String,
+        threadNum: Int,
+    ): Completable =
+        apiRepository.getThread(boardId, threadNum)
+            .flatMapCompletable {
+                //todo save states
+                threadRepository.save(it.copy(isDownloaded = true), boardId)
+                    .andThen(postRepository.insert(it.posts))
+            }
 }

@@ -44,7 +44,7 @@ class LocalStorageImpl(
             out.flush()
             out.close()
             fileName
-        } catch (e: Exception) {
+        } catch(e: Exception) {
             Log.e("M_FileStorage", "Image NOT saved. Error = $e")
             null
         }
@@ -54,7 +54,7 @@ class LocalStorageImpl(
         try {
             context.contentResolver.delete(Uri.parse(path), null, null)
         }
-        catch (e: java.lang.Exception){
+        catch(e: java.lang.Exception){
             Log.e("M_FileStorage", "on delete error = $e")
         }
     }

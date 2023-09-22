@@ -19,4 +19,7 @@
     <color name="color_green">#4Fd149</color>
     <color name="splash_background">#FFFFFF</color>
     <color name="error_text">#F82F20</color>
+
+    <color name="main_background">@color/color_gray_light</color>
+    <color name="main_text_color">@color/color_gray_light</color>
 </resources>

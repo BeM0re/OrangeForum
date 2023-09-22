@@ -30,11 +30,10 @@ class QueueViewModelImpl (
 
     override fun removeThread(boardId: String, threadNum: Int) {
         threadInteractor
-            .markThreadQueued(
+            .markQueued(
                 boardId = boardId,
                 boardName = "",
                 threadNum = threadNum,
-                isQueued = false
             )
             .defaultThreads()
             .subscribe(
@@ -47,7 +46,7 @@ class QueueViewModelImpl (
     private fun subscribe(){
         queueDisposable?.dispose()
         queueDisposable = queueInteractor
-            .getQueueObservable()
+            .observe()
             .defaultThreads()
             .subscribe(
                 { boards ->

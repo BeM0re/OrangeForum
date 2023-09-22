@@ -24,7 +24,7 @@ class CategoryViewModelImpl(
 
     override fun initViewModel() {
         if (firstLaunch)
-            interactor.getCategories()
+            interactor.get()
                 .defaultThreads()
                 .subscribe(
                     {
@@ -55,7 +55,7 @@ class CategoryViewModelImpl(
             val filteredDataset: List<Category> = requireNotNull(dataset.value)
                 .map { category ->
                     category.copy(
-                        boards = category.boards?.filter { board ->
+                        boards = category.boards.filter { board ->
                             board?.id?.contains(query, true) == true ||
                                     board?.name?.contains(query, true) == true
                             }

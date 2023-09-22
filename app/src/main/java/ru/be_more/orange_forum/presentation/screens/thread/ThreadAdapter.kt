@@ -27,9 +27,9 @@ class ThreadAdapter(var thread: BoardThread,
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
                 holder.setNumber(thread.posts[position].number)
                 holder.setSenderName(thread.posts[position].name)
-                holder.setIsOp(thread.posts[position].op > 0)
+                holder.setIsOp(thread.posts[position].isAuthorOp)
                 holder.setDate(thread.posts[position].date)
-                holder.setThreadNum(thread.posts[position].num)
+                holder.setThreadNum(thread.posts[position].id)
                 holder.setTitle(thread.posts[position].subject)
                 holder.setComment(thread.posts[position].comment)
                 holder.setPics(thread.posts[position].files)

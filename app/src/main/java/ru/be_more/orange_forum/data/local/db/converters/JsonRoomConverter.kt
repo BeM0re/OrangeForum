@@ -8,6 +8,7 @@ import ru.be_more.orange_forum.data.local.db.entities.StoredFile
 import ru.be_more.orange_forum.data.local.db.entities.StoredPost
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 
+//todo review and remove redundant
 object JsonRoomConverter {
     @TypeConverter
     @JvmStatic

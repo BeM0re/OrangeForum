@@ -2,96 +2,80 @@ package ru.be_more.orange_forum.data.local.repositories
 
 import android.util.Log
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.DbContract
-import ru.be_more.orange_forum.data.local.db.dao.DvachDao
+import ru.be_more.orange_forum.data.local.db.dao.BoardDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
-import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toModelBoard
-import ru.be_more.orange_forum.data.local.db.utils.DbConverter.Companion.toStoredThread
 import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.BoardThread
 
-class BoardRepositoryImpl (
-    private val dao: DvachDao
-) : DbContract.BoardRepository{
+class BoardRepositoryImpl(
+    private val dao: BoardDao
+) : DbContract.BoardRepository {
 
-    override fun getBoard(boardId: String): Maybe<Board> =
-        dao.getBoard(boardId)
-            .map { toModelBoard(it) }
-            .doOnError { Log.e("M_BoardRepositoryImpl","error = $it") }
+    override fun get(boardId: String): Single<Board> =
+        dao.get(boardId)
+            .switchIfEmpty (
+                Single.error(Throwable("No board found"))
+            )
+            .map { it.toModel() }
 
-    override fun getBoards(): Single<List<Board>> {
-        return dao.getBoards()
+    override fun observe(boardId: String): Observable<Board> =
+        dao.observe(boardId)
+            .map { it.toModel() }
+            .doOnError { Log.e("BoardRepositoryImpl","error = $it") }
+
+    override fun observeList(): Observable<List<Board>> =
+        dao.observeList()
             .map { boardList ->
-                boardList.map { toModelBoard(it) }
+                boardList.map { it.toModel() }
             }
-    }
 
-    override fun getBoardsObservable(): Observable<List<Board>> {
-        return dao.getBoardsObservable()
+    @Deprecated("why boardId? remove?")
+    override fun observeCount(boardId: String): Observable<Int> =
+        dao.observeCount(boardId)
+
+    fun getBoardsObservable(): Observable<List<Board>> =
+        dao.observeList()
             .map { boardList ->
-                boardList.map { toModelBoard(it) }
+                boardList.map { it.toModel() }
             }
-    }
 
-    override fun getBoardCount(boardId: String): Single<Int> =
-        dao.getBoardCount(boardId)
-
-    override fun insertBoard(board: Board) =
+    override fun insert(board: Board): Completable =
+        //todo save states
         dao.insertBoard(
             StoredBoard(
                 id = board.id,
-                categoryId = "",
+                category = "",
                 name = board.name,
-                threads = board.threads.map { toStoredThread(it, board.id) },
-                isFavorite = board.isFavorite))
+                isFavorite = board.isFavorite
+            )
+        )
 
-    override fun insertBoard(boardId: String, boardName: String, isFavorite: Boolean) =
+    @Deprecated("Delete")
+    override fun insert(boardId: String, boardName: String, isFavorite: Boolean) =
         dao.insertBoard(
             StoredBoard(
                 id = boardId,
-                categoryId = "",
+                category = "",
                 name = boardName,
-                threads = listOf(),
-                isFavorite = isFavorite))
+                isFavorite = isFavorite)
+        )
 
-    override fun markBoardFavorite(boardId: String, boardName: String) =
-        dao.markBoardFavorite(boardId)
-
-    override fun unmarkBoardFavorite(boardId: String) =
-        dao.unmarkBoardFavorite(boardId)
-
-    override fun insertThreadIntoBoard(
+    override fun markFavorite(
         boardId: String,
-        boardName: String,
-        thread: BoardThread
-    ): Completable {
-        return dao.getBoard(boardId)
-            .switchIfEmpty(Single.just(StoredBoard(id = boardId, name = boardName)))
-            .doOnSuccess { board ->
-                val index = board.threads.indexOfFirst { it.num == thread.num }
-                dao.insertBoard(
-                    if (index == -1)
-                        board.copy(threads = board.threads.plus(toStoredThread(thread, boardId)))
-                    else {
-                        board.copy(
-                            threads = board.threads.toMutableList()
-                                .apply { this[index] = toStoredThread(thread, boardId) }
-                        )
-                    }
-                )
-            }
-            .ignoreElement()
-    }
+        isFavorite: Boolean
+    ): Completable =
+        dao.markFavorite(boardId, isFavorite)
 
+    @Deprecated("Delete")
     override fun updateThreadNewMessageCounter(
         boardId: String,
         threadNum: Int,
         count: Int
-    ): Completable {
-        return dao.getBoard(boardId)
+    ): Completable =
+        Completable.complete()
+        /* dao.get(boardId)
             .map { board ->
                 val index = board.threads.indexOfFirst{ it.num == threadNum}
                 if (index > -1)
@@ -104,8 +88,6 @@ class BoardRepositoryImpl (
                     board
             }
             .doOnSuccess { dao.insertBoard(it) }
-            .ignoreElement()
-    }
-
+            .ignoreElement()*/
 
 }

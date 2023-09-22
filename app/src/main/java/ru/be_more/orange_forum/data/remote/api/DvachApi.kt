@@ -8,6 +8,7 @@ import ru.be_more.orange_forum.data.remote.models.*
 
 interface DvachApi{
 
+    @Deprecated("старое апи, не актуально")
     @GET("makaba/mobile.fcgi")
     fun getCategories(@Query("task") task : String): Single<Map<String, List<BoardShortDto>>>
 
@@ -39,14 +40,14 @@ interface DvachApi{
         @Part("task") task: RequestBody,
         @Part("board") board: RequestBody,
         @Part("thread") thread: RequestBody,
-        @Part("op_mark") op_mark: RequestBody?, //1 или пусто (или 0)
-        @Part("usercode") usercode: RequestBody?, //passcode
-        @Part("captcha_type") captcha_type: RequestBody,
+        @Part("op_mark") opMark: RequestBody?, //1 или пусто (или 0)
+        @Part("usercode") userCode: RequestBody?, //passcode
+        @Part("captcha_type") captchaType: RequestBody,
         @Part("email") email: RequestBody?, //имейл или сажа
         @Part("subject") subject: RequestBody?,
         @Part("comment") comment: RequestBody,
-        @Part("g-recaptcha-response") g_recaptcha_response: RequestBody,
-        @Part("2chaptcha_id") chaptcha_id: RequestBody,
+        @Part("g-recaptcha-response") gRecaptchaResponse: RequestBody,
+        @Part("2chaptcha_id") chaptchaId: RequestBody,
         @Part files: List<MultipartBody.Part>
     ): Single<PostResponseDto>
 

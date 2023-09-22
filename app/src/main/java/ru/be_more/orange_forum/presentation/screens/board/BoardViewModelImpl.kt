@@ -37,7 +37,7 @@ class BoardViewModelImpl (
         if (board.value == null || (board.value?.id != boardId && !boardId.isNullOrEmpty())){
             EventBus.getDefault().post(ThreadToBeClosed)
             if (!boardId.isNullOrEmpty() && !boardName.isNullOrEmpty())
-                boardInteractor.getBoard(boardId, boardName)
+                boardInteractor.get(boardId)
                     .defaultThreads()
                     .subscribe(
                         { board ->
@@ -94,16 +94,14 @@ class BoardViewModelImpl (
 
     override fun hideThread(threadNum: Int, toHide: Boolean) {
         threadInteractor
-            .markThreadHidden(
+            .markHidden(
                 boardId = requireNotNull(board.value?.id),
                 boardName = requireNotNull(board.value?.name),
                 threadNum = threadNum,
-                isHidden = toHide
             )
             .andThen(
-                boardInteractor.getBoard(
+                boardInteractor.get(
                     requireNotNull(board.value?.id),
-                    requireNotNull(board.value?.name)
                 )
             )
             .defaultThreads()
@@ -127,30 +125,17 @@ class BoardViewModelImpl (
 
     override fun setFavorite(isFavorite: Boolean) {
         if (board.value != null)
-            if (isFavorite)
-                boardInteractor
-                    .markBoardFavorite(board.value!!.id, board.value!!.name)
-                    .defaultThreads()
-                    .subscribe(
-                        {
-                            this.isFavorite.postValue(true)
-                            prefs.favsToUpdate = true
-                        },
-                        { Log.e("M_BoardViewModelImpl","Adding fav error = $it") }
-                    )
-                    .addToSubscribe()
-            else
-                boardInteractor
-                    .unmarkBoardFavorite(board.value!!.id)
-                    .defaultThreads()
-                    .subscribe(
-                        {
-                            this.isFavorite.postValue(false)
-                            prefs.favsToUpdate = true
-                        },
-                        { Log.e("M_BoardViewModelImpl","Removing fav error = $it") }
-                    )
-                    .addToSubscribe()
+            boardInteractor
+                .markFavorite(board.value!!.id)
+                .defaultThreads()
+                .subscribe(
+                    {
+                        this.isFavorite.postValue(true)
+                        prefs.favsToUpdate = true
+                    },
+                    { Log.e("M_BoardViewModelImpl","Adding fav error = $it") }
+                )
+                .addToSubscribe()
     }
 
     override fun getBoardName(): String =
@@ -159,11 +144,10 @@ class BoardViewModelImpl (
     override fun addToQueue(threadNum: Int) {
         if (board.value != null)
             threadInteractor
-                .markThreadQueued(
+                .markQueued(
                     boardId = requireNotNull(board.value?.id),
                     boardName = requireNotNull(board.value?.name),
                     threadNum = threadNum,
-                    isQueued = true
                 )
                 .defaultThreads()
                 .subscribe(

@@ -8,8 +8,6 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewbinding.ViewBinding
-import org.greenrobot.eventbus.EventBus
-import ru.be_more.orange_forum.App
 
 abstract class BaseFragment<TViewBinding : ViewBinding> : Fragment {
 
@@ -32,7 +30,7 @@ abstract class BaseFragment<TViewBinding : ViewBinding> : Fragment {
     }
 
     /**@return true if need to handle back press, false if it was handled*/
-    open fun onBackPressed() : Boolean{
+    open fun onBackPressed() : Boolean {
         return true
     }
 }

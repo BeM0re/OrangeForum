@@ -3,7 +3,6 @@ package ru.be_more.orange_forum.data.local.db.utils
 import androidx.room.TypeConverter
 import java.util.*
 
-
 class ReplyConverter {
     @TypeConverter
     fun fromReplies(replies: List<Int?>): String {
