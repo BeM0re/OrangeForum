@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.domain.contracts
 
 import io.reactivex.Single
+import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.domain.model.Post
@@ -11,7 +12,7 @@ interface RemoteContract {
 
     interface ApiRepository {
         fun getCategories(): Single<List<Category>>
-        fun getBoard(boardId: String): Single<List<BoardThread>>
+        fun getBoard(boardId: String): Single<Board>
         fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean = false): Single<BoardThread>
         fun getThreadShort(boardId: String, threadNum: Int): Single<BoardThread>
         fun getPost(boardId: String, postNum: Int, cookie: String): Single<Post>
@@ -22,6 +23,7 @@ interface RemoteContract {
             captcha_type: String,
             g_recaptcha_response: String,
             chaptcha_id : String,
-            files : List<File>): Single<PostResponse>
+            files : List<File>
+        ): Single<PostResponse>
     }
 }

@@ -61,7 +61,7 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
 //            it.updateData(boards)
 //            return
 //        }
-        QueueAdapter(boards, this, object : PicOnClickListener{
+        /*QueueAdapter(boards, this, object : PicOnClickListener{
             override fun onThumbnailListener(
                 fullPicUrl: String?,
                 duration: String?,
@@ -77,7 +77,7 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
                         toggleGroup(i)
                 }
                 binding.rvFavoriteList.adapter = this
-            }
+            }*/
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {

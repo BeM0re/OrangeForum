@@ -68,7 +68,7 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
 //            it.updateData(boards)
 //            return
 //        }
-        DownFavAdapter(boards, this, object : PicOnClickListener{
+/*        DownFavAdapter(boards, this, object : PicOnClickListener{
             override fun onThumbnailListener(
                 fullPicUrl: String?,
                 duration: String?,
@@ -84,7 +84,7 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
                         toggleGroup(i)
                 }
                 binding.rvDownloadedList.adapter = this
-            }
+            }*/
     }
 
     override fun intoThreadClick(boardId: String, threadNum: Int, threadTitle: String) {

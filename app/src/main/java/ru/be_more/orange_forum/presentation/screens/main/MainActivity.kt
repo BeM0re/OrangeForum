@@ -48,25 +48,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+
         EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
-        EventBus.getDefault().unregister(this)
-        val refreshWorkRequest =
-            PeriodicWorkRequestBuilder<CheckFavoriteUpdateWorker> (15, TimeUnit.MINUTES)
-                .build()
 
-        WorkManager.getInstance(this)
-            .enqueueUniquePeriodicWork(
-                "refreshWorkRequest",
-                ExistingPeriodicWorkPolicy.KEEP,
-                refreshWorkRequest
-            )
+        EventBus.getDefault().unregister(this)//todo delete
+        startUpdateWorker()
     }
 
     override fun onBackPressed() {
+        //FIXME review, doesn't work
         if ((supportFragmentManager
                 .fragments
                 .filterIsInstance<NavHostFragment>()
@@ -74,9 +69,7 @@ class MainActivity : AppCompatActivity() {
                 ?.childFragmentManager
                 ?.fragments?.get(0) as? BaseFragment<*>)
                 ?.onBackPressed() != false
-        )
-            closeApp()
-
+        ) closeApp()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -84,21 +77,25 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    //todo delete
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onMessageEvent(event: BoardToBeOpened) {
         binding.bottomNavigationView.menu.getItem(1).isEnabled = true
     }
 
+    //todo delete
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onMessageEvent(event: BoardToBeClosed) {
         binding.bottomNavigationView.menu.getItem(1).isEnabled = false
     }
 
+    //todo delete
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onMessageEvent(event: ThreadToBeOpened) {
         binding.bottomNavigationView.menu.getItem(2).isEnabled = true
     }
 
+    //todo delete
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onMessageEvent(event: ThreadToBeClosed) {
         binding.bottomNavigationView.menu.getItem(2).isEnabled = false
@@ -111,6 +108,19 @@ class MainActivity : AppCompatActivity() {
             timestamp = System.currentTimeMillis()
             Toast.makeText(this, R.string.push_again_to_quit, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun startUpdateWorker() {
+        val refreshWorkRequest =
+            PeriodicWorkRequestBuilder<CheckFavoriteUpdateWorker>(15, TimeUnit.MINUTES)
+                .build()
+
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork(
+                "refreshWorkRequest",
+                ExistingPeriodicWorkPolicy.KEEP,
+                refreshWorkRequest
+            )
     }
 
 }

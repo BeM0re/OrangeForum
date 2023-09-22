@@ -171,7 +171,7 @@ class ThreadFragment :
         }
     }
 
-    override fun onBackPressed() : Boolean {
+    override fun onBackPressed(): Boolean {
         return if (binding.flThreadPost.visibility != View.GONE){
             viewModel.onBackPressed()
             false

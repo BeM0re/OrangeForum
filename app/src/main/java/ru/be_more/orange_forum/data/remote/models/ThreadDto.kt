@@ -1,7 +1,28 @@
 package ru.be_more.orange_forum.data.remote.models
 
+import com.google.gson.annotations.SerializedName
+import ru.be_more.orange_forum.domain.model.BoardThread
+
 data class ThreadDto(
-    val posts_count: Int = 0,
+    @SerializedName("current_thread")
+    val num: Int,
+    @SerializedName("posts_count")
+    val postCount: Int = 0,
+    @SerializedName("files_count")
+    val fileCount: Int = 0,
     val title: String = "",
-    val threads: List<PostsDto> = listOf(PostsDto())
-)
+    @SerializedName("threads")
+    val threads: InnerThreadDto
+) {
+    fun toModel(boardId: String) =
+        BoardThread(
+            num = num,
+            posts = threads.posts.map { it.toModel(boardId, num) },
+            title = title,
+            boardId = boardId,
+        )
+
+    data class InnerThreadDto(
+        val posts: List<PostDto> = emptyList()
+    )
+}

@@ -105,7 +105,7 @@ class ThreadViewModelImpl (
         if (chanLink == null)
             return
 
-        val post = thread.value?.posts?.find { it.num == chanLink.third }
+        val post = thread.value?.posts?.find { it.id == chanLink.third }
 
         if (post != null) {
             putContentInStack(post)
@@ -116,7 +116,7 @@ class ThreadViewModelImpl (
     }
 
     override fun getPost(postNum: Int) {
-        val post = thread.value?.posts?.find { it.num == postNum }
+        val post = thread.value?.posts?.find { it.id == postNum }
 
         if (post != null) {
             putContentInStack(post)
@@ -129,11 +129,10 @@ class ThreadViewModelImpl (
     override fun addToQueue(isQueued: Boolean) {
         if (thread.value != null)
             threadInteractor
-                .markThreadQueued(
+                .markQueued(
                     boardId = boardId,
                     boardName = boardName,
                     threadNum = threadNum,
-                    isQueued = !isQueued
                 )
                 .defaultThreads()
                 .subscribe(
@@ -149,11 +148,10 @@ class ThreadViewModelImpl (
     override fun setFavorite(isFavorite: Boolean) {
         if (thread.value != null)
             threadInteractor
-                .markThreadFavorite(
+                .markFavorite(
                     boardId = boardId,
                     boardName = boardName,
                     threadNum = threadNum,
-                    isFavorite = isFavorite
                 )
                 .defaultThreads()
                 .subscribe(
@@ -170,9 +168,8 @@ class ThreadViewModelImpl (
         if (thread.value != null)
             if (isDownload)
                 threadInteractor
-                    .downloadThread(
+                    .observe(
                         boardId = boardId,
-                        boardName = boardName,
                         threadNum = threadNum
                     )
                     .defaultThreads()
@@ -183,7 +180,7 @@ class ThreadViewModelImpl (
                     .addToSubscribe()
             else
                 threadInteractor
-                    .deleteThread(boardId, threadNum)
+                    .delete(boardId, threadNum)
                     .defaultThreads()
                     .subscribe(
                         { this.isDownload.postValue(false) },
@@ -217,10 +214,10 @@ class ThreadViewModelImpl (
     }
 
     private fun refreshThread(forceUpdate: Boolean) {
-        threadInteractor.getThread(boardId, threadNum, forceUpdate)
+        threadInteractor.observe(boardId, threadNum)
             .defaultThreads()
             .doFinally { isRefreshing.postValue(false) }
-            .doOnSuccess {
+            .doOnNext {
                 thread.postValue(it)
                 isDownload.postValue(it.isDownloaded)
                 isFavorite.postValue(it.isFavorite)
@@ -228,7 +225,7 @@ class ThreadViewModelImpl (
             }
             .observeOn(Schedulers.io())
             .flatMapCompletable {
-                threadInteractor.updateLastPostNum(boardId, threadNum, it.posts.last().num)
+                threadInteractor.updateLastPostNum(boardId, threadNum, it.posts.last().id)
             }
             .andThen(threadInteractor.updateNewMessages(boardId, threadNum, 0))
             .observeOn(AndroidSchedulers.mainThread())

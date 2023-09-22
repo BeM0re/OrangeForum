@@ -1,8 +1,8 @@
 package ru.be_more.orange_forum.presentation.bus
-
+//todo delete
 sealed class Event
 
-object BoardToBeOpened: Event()
-object BoardToBeClosed: Event()
-object ThreadToBeOpened: Event()
-object ThreadToBeClosed: Event()
+data object BoardToBeOpened: Event()
+data object BoardToBeClosed: Event()
+data object ThreadToBeOpened: Event()
+data object ThreadToBeClosed: Event()

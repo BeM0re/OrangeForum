@@ -1,11 +1,9 @@
 package ru.be_more.orange_forum.presentation.screens.board
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.databinding.ItemBoardOpBinding
 import ru.be_more.orange_forum.presentation.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
@@ -33,13 +31,13 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
         val thread = threads[position]
         val opPost = thread.posts[0]
         holder.setSenderName(opPost.name)
-        holder.setIsOp(opPost.op > 0)
+        holder.setIsOp(opPost.isAuthorOp)
         holder.setDate(opPost.date)
-        holder.setThreadNum(opPost.num)
+        holder.setThreadNum(opPost.id)
         holder.setTitle(opPost.subject)
         holder.setComment(opPost.comment, thread.isHidden)
-        holder.setTotalPosts(opPost.posts_count, thread.isHidden)
-        holder.setPostsWithPic(opPost.files_count, thread.isHidden)
+        holder.setTotalPosts(opPost.postsCount, thread.isHidden)
+        holder.setPostsWithPic(opPost.filesCount, thread.isHidden)
         if(opPost.files.isNotEmpty()){
             holder.setPics(opPost.files, thread.isHidden)
         }

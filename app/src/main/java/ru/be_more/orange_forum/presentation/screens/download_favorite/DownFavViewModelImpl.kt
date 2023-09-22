@@ -11,7 +11,7 @@ import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
 
 class DownFavViewModelImpl (
-    private val downFavInteractor : InteractorContract.DownFavInteractor,
+    private val favoriteInteractor : InteractorContract.FavoriteInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val prefs: Preferences
 ): PresentationContract.DownFavViewModel, BaseViewModelImpl() {
@@ -32,7 +32,7 @@ class DownFavViewModelImpl (
 
     override fun removeThread(boardId: String, threadNum: Int) {
         threadInteractor
-            .deleteThread(boardId, threadNum)
+            .delete(boardId, threadNum)
             .defaultThreads()
             .subscribe(
                 {  },
@@ -41,11 +41,10 @@ class DownFavViewModelImpl (
             .addToSubscribe()
 
         threadInteractor
-            .markThreadFavorite(
+            .markFavorite(
                 boardId = boardId,
                 boardName = "",
                 threadNum = threadNum,
-                isFavorite = false
             )
             .defaultThreads()
             .subscribe(
@@ -57,8 +56,8 @@ class DownFavViewModelImpl (
 
     private fun subscribe(){
         favDisposable?.dispose()
-        favDisposable = downFavInteractor
-            .getDownFavsObservable()
+        favDisposable = favoriteInteractor
+            .observe()
             .defaultThreads()
             .subscribe(
                 { boards -> this.boards.postValue(boards) },
@@ -67,9 +66,9 @@ class DownFavViewModelImpl (
     }
 
     private fun checkUpdates(){
-        downFavInteractor
-            .getDownFavs()
-            .flatMapObservable { boards ->
+        favoriteInteractor
+            .observe()
+            .flatMap { boards ->
                 Observable.fromIterable(
                     boards.map { board ->
                         board.threads.map { thread ->

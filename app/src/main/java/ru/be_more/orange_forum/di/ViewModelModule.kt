@@ -10,7 +10,7 @@ import ru.be_more.orange_forum.presentation.screens.response.ResponseViewModelIm
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModelImpl
 
 @JvmField
-val presenterModule = module {
+val viewModelModule = module {
     single <PresentationContract.CategoryViewModel> { CategoryViewModelImpl(get(), get()) }
     single <PresentationContract.BoardViewModel> { BoardViewModelImpl(get(), get(), get(), get()) }
     single <PresentationContract.ThreadViewModel> { ThreadViewModelImpl(get(), get(), get()) }

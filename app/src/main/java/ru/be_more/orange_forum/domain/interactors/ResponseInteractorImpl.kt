@@ -6,9 +6,10 @@ import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.PostResponse
 
-class ResponseInteractorImpl (
+class ResponseInteractorImpl(
     private val responseRepository: RemoteContract.ApiRepository
 ): InteractorContract.ResponseInteractor {
+    //todo review
     override fun postResponse(
         boardId: String,
         threadNum: Int,

@@ -16,6 +16,9 @@ val databaseModule = module {
             .fallbackToDestructiveMigration()
             .build()
     }
-    single  {get<AppDatabase>().dao()}
+    single { get<AppDatabase>().categoryDao() }
+    single { get<AppDatabase>().boardDao() }
+    single { get<AppDatabase>().threadDao() }
+    single { get<AppDatabase>().postDao() }
 
 }

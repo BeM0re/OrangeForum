@@ -22,7 +22,7 @@ class CheckFavoriteUpdateWorker(
 
 
     private val threadInteractor: InteractorContract.ThreadInteractor by inject(InteractorContract.ThreadInteractor::class.java)
-    private val favoriteInteractor: InteractorContract.DownFavInteractor by inject(InteractorContract.DownFavInteractor::class.java)
+    private val favoriteInteractor: InteractorContract.FavoriteInteractor by inject(InteractorContract.FavoriteInteractor::class.java)
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun createWork(): Single<Result> {

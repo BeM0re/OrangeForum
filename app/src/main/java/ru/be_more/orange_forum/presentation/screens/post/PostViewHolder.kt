@@ -27,7 +27,7 @@ class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
     private var comment: LinkedTextView = itemView.findViewById(R.id.tv_item_post_comment)
     private var replyPosts: LinkedTextView = itemView.findViewById(R.id.tv_item_post_replies)
 
-    fun setNumber (param: Int){
+    fun setNumber(param: Int){
         senderNumber.text = param.toString()
     }
     fun setSenderName (param: String){

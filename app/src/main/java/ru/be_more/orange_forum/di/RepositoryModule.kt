@@ -9,10 +9,16 @@ import ru.be_more.orange_forum.data.remote.repositories.ApiRepositoryImpl
 val repositoryModule = module {
     single<RemoteContract.ApiRepository> { ApiRepositoryImpl(get()) }
 
+    single<DbContract.CategoryRepository> {
+        ru.be_more.orange_forum.data.local.repositories.CategoryRepositoryImpl(get())
+    }
     single<DbContract.BoardRepository> {
         ru.be_more.orange_forum.data.local.repositories.BoardRepositoryImpl(get())
     }
     single<DbContract.ThreadRepository> {
         ru.be_more.orange_forum.data.local.repositories.ThreadRepositoryImpl(get(), get())
+    }
+    single<DbContract.PostRepository> {
+        ru.be_more.orange_forum.data.local.repositories.PostRepositoryImpl(get())
     }
 }

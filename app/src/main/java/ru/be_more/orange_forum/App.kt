@@ -16,7 +16,7 @@ class App : Application(){
             androidLogger()
             modules(listOf(
                 appModule,
-                presenterModule,
+                viewModelModule,
                 repositoryModule,
                 storageModule,
                 databaseModule,

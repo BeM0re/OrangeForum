@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.data.remote.repositories
 
 import android.util.Log
+import io.reactivex.Maybe
 import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -10,11 +11,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.api.DvachApi
-import ru.be_more.orange_forum.data.remote.models.ThreadDto
-import ru.be_more.orange_forum.data.remote.converters.RemoteConverter
-import ru.be_more.orange_forum.data.remote.converters.RemoteConverter.Companion.toBoardShortModel
-import ru.be_more.orange_forum.data.remote.converters.RemoteConverter.Companion.toCategories
 import ru.be_more.orange_forum.domain.model.*
+import ru.be_more.orange_forum.utils.ParseHtml
 import java.io.File
 import java.util.*
 
@@ -22,52 +20,44 @@ class ApiRepositoryImpl(
     private val dvachApi : DvachApi
 ) : RemoteContract.ApiRepository{
 
-    private var lastThread: BoardThread? = null
+    private var lastThread: BoardThread? = null //todo delete
     private var lastThreadBoard = ""
     private var lastBoard: Board? = null
-
-//    override fun getCategories(): Single<List<Category>> =
-//        dvachApi.getCategories("get_boards")
-//            .map { toCategories(it) }
-//            .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting category error = $throwable") }
 
     override fun getCategories(): Single<List<Category>> =
         dvachApi.getBoardList()
             .map { dto ->
-                toBoardShortModel(dto.boardList)
+                dto.boardList
+                    .map { it.toModel() }
                     .groupBy { it.category }
                     .map { (category, boards) ->
                         Category(
                             name = category,
-                            boards = boards
+                            boards = boards,
+                            isExpanded = false
                         )
                     }
             }
 
-    override fun getBoard(boardId: String): Single<List<BoardThread>> =
-        if (lastBoard?.id == boardId)
-            Single.just(lastBoard!!.threads)
-        else
-            dvachApi.getBoard(boardId)
-                .map { entity -> RemoteConverter.toBoard(entity) }
-                .doAfterSuccess {
-                    lastBoard = Board(
-                        name = "",
-                        id = boardId,
-                        category = "",
-                        threads = it
-                    )
-                }
+    override fun getBoard(boardId: String): Single<Board> =
+        Maybe
+            .just(lastBoard?.takeIf { it.id == boardId })
+            .switchIfEmpty(
+                dvachApi.getBoard(boardId)
+                    .map { it.toModel(boardId) }
+                    .doAfterSuccess { lastBoard = it }
+            )
+            .map { it } //без мапа почему то свитч проходит в ?, а не !
 
     override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
         if (boardId == lastThreadBoard && threadNum == lastThread?.num && !forceUpdate)
             Single.just(lastThread)
         else
             dvachApi.getThread(boardId, threadNum, COOKIE)
-                .doOnError { throwable -> Log.e("M_DvachApiRepository", "get thread via api error = $throwable") }
-                .onErrorReturn { ThreadDto() }
-                .map { entity -> RemoteConverter.toThread(entity, threadNum) }
-                .map { entity -> RemoteConverter.findResponses(entity) }
+                .doOnError { throwable -> Log.e("DvachApiRepository", "get thread via api error = $throwable") }
+//                .onErrorReturn { ThreadDto() } //todo ?
+                .map { entity -> entity.toModel(boardId) }
+                .map { entity -> findResponses(entity) }
                 .doAfterSuccess {
                     lastThread = it
                     lastThreadBoard = boardId
@@ -87,15 +77,10 @@ class ApiRepositoryImpl(
                 getThread(boardId, threadNum)
         }
 
-
-    override fun getPost(
-        boardId: String,
-        postNum: Int,
-        cookie: String
-    ): Single<Post> =
+    override fun getPost(boardId: String, postNum: Int, cookie: String): Single<Post> =
         dvachApi.getDvachPostRx("get_post", boardId, postNum, COOKIE)
             .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting post error = $throwable") }
-            .map { entity -> RemoteConverter.toPost(entity[0]) }
+            .map { entity -> entity[0].toModel(boardId, postNum) } //todo postNum ok?
 
     override fun postResponse(
         boardId: String,
@@ -107,6 +92,7 @@ class ApiRepositoryImpl(
         files: List<File>
     ): Single<PostResponse> {
 
+        //todo redo for new capture
         val requestTask = "post".toRequestBody("text/plain".toMediaTypeOrNull())
         val requestCookie = COOKIE.toRequestBody("text/plain".toMediaTypeOrNull())
         val requestBoardId = boardId.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -131,16 +117,32 @@ class ApiRepositoryImpl(
             task = requestTask ,
             board = requestBoardId,
             thread = requestThreadNum,
-            op_mark = null,
-            usercode = null,
-            captcha_type = requestCaptchaType,
+            opMark = null,
+            userCode = null,
+            captchaType = requestCaptchaType,
             email = null,
             subject = null,
             comment = requestComment,
-            g_recaptcha_response = requestGRecaptchaResponse,
-            chaptcha_id = requestChaptchaId,
+            gRecaptchaResponse = requestGRecaptchaResponse,
+            chaptchaId = requestChaptchaId,
             files = requestFiles
         )
             .map { it.toModel() }
+    }
+
+    private fun findResponses(board: BoardThread): BoardThread {
+        board.posts.forEach { post ->
+            //replies - на какие посты ответы
+            val replies = ParseHtml.findReply(post.comment)
+
+            //пост с номером post.num отвечает на пост с номером reply
+            //reply сохраняет, что на него ссылается post.num
+            replies.forEach { reply ->
+                board.posts.find { it.id == reply }
+                    ?.replies?.add(post.id)
+            }
+        }
+
+        return board
     }
 }

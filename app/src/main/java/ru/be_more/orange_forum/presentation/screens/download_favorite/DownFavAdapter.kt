@@ -49,12 +49,12 @@ class DownFavAdapter(private var boards: List<ExpandableGroup<*>?>?,
         group: ExpandableGroup<*>,
         childIndex: Int
     ) {
-        val thread: BoardThread = (group as Board).items[childIndex]
+        /*val thread: BoardThread = (group as Board).items[childIndex]
 
         if(thread.posts.isNotEmpty()) {
             holder.setSenderName(thread.posts[0].name)
             holder.setDate(thread.posts[0].date)
-            holder.setThreadNum(thread.posts[0].num)
+            holder.setThreadNum(thread.posts[0].id)
             holder.setTitle(thread.posts[0].subject)
             holder.setPics(thread.posts[0].files.getOrNull(0))
             holder.setCommentListener {
@@ -68,7 +68,7 @@ class DownFavAdapter(private var boards: List<ExpandableGroup<*>?>?,
             holder.setDivider()
             holder.setIcon(thread.isFavorite, thread.isDownloaded)
             holder.setNewMessageBadge(thread.newMessageAmount)
-        }
+        }*/
     }
 
     override fun onBindGroupViewHolder(
