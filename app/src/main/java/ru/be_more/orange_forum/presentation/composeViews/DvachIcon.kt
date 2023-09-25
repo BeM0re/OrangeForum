@@ -15,6 +15,5 @@ fun DvachIcon(painter: Painter, modifier: Modifier = Modifier,) {
         tint = MaterialTheme.colorScheme.tertiary,
         contentDescription = null,
         modifier = modifier
-            .padding(0.dp, 8.dp, 8.dp, 8.dp)
     )
 }
