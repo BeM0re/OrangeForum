@@ -12,44 +12,42 @@ import ru.be_more.orange_forum.domain.model.Attachment
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.PresentationContract
-import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
+import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 import java.util.*
 
 //TODO прятать fab при нажатии на ответ
-class ThreadViewModelImpl (
-    private val threadInteractor : InteractorContract.ThreadInteractor,
-    private val postInteractor : InteractorContract.PostInteractor,
+class ThreadViewModel(
+    private val boardId: String,
+    private val threadNum: Int,
+    private val threadInteractor: InteractorContract.ThreadInteractor,
+    private val postInteractor: InteractorContract.PostInteractor,
     private val prefs: Preferences
-): PresentationContract.ThreadViewModel, BaseViewModelImpl(){
-    
-    override val post = MutableLiveData<Post>()
-    override val attachment = MutableLiveData<Attachment>()
-    override val emptyStack = MutableLiveData<Boolean>()
-    override val thread = MutableLiveData<BoardThread>()
-    override val savedPosition = MutableLiveData<Int>()
-    override val isFavorite = MutableLiveData<Boolean>()
-    override val isQueued = MutableLiveData<Boolean>()
-    override val isDownload = MutableLiveData<Boolean>()
-    override val isRefreshing = MutableLiveData<Boolean>()
+) : BaseViewModel() {
 
-    private var boardId: String = ""
+    val post = MutableLiveData<Post>()
+    val attachment = MutableLiveData<Attachment>()
+    val emptyStack = MutableLiveData<Boolean>()
+    val thread = MutableLiveData<BoardThread>()
+    val savedPosition = MutableLiveData<Int>()
+    val isFavorite = MutableLiveData<Boolean>()
+    val isQueued = MutableLiveData<Boolean>()
+    val isDownload = MutableLiveData<Boolean>()
+    val isRefreshing = MutableLiveData<Boolean>()
+
     private var boardName: String = ""
-    private var threadNum: Int = 0
     private val modalStack: Stack<ModalContent> = Stack()
 
-    override fun init(boardId: String?, threadNum: Int, boardName: String){
+    fun init(boardId: String?, threadNum: Int, boardName: String) {
 
         //если борда и тред не изменились, то данные не перезагружаем
         if (this.boardId != boardId || this.threadNum != threadNum) {
             if (!boardId.isNullOrEmpty()) {
-                this.boardId = boardId
-                this.threadNum = threadNum
+//                this.boardId = boardId
+//                this.threadNum = threadNum
                 this.boardName = boardName
                 refreshThread(false)
             }
-        }
-        else{
+        } else {
             thread.postValue(thread.value)
             savedPosition.postValue(savedPosition.value)
             isFavorite.postValue(isFavorite.value)
@@ -58,19 +56,15 @@ class ThreadViewModelImpl (
         }
     }
 
-    override fun onDestroy() {
-
-    }
-
-    override fun clearStack() {
+    fun clearStack() {
         this.modalStack.clear()
     }
 
-    override fun putContentInStack(modal: ModalContent) {
+    fun putContentInStack(modal: ModalContent) {
         this.modalStack.push(modal)
     }
 
-    override fun onBackPressed() {
+    fun onBackPressed() {
         if (!modalStack.empty()) {
             modalStack.pop()
 
@@ -84,12 +78,12 @@ class ThreadViewModelImpl (
         }
     }
 
-    override fun getSinglePost(postNum: Int) {
+    fun getSinglePost(postNum: Int) {
         getSinglePost(this.boardId, postNum)
     }
 
     @SuppressLint("CheckResult")
-    override fun getSinglePost(boardId: String, postNum: Int){
+    fun getSinglePost(boardId: String, postNum: Int) {
         postInteractor.getPost(boardId, postNum)
             .defaultThreads()
             .subscribe(
@@ -101,7 +95,7 @@ class ThreadViewModelImpl (
             )
     }
 
-    override fun getPost(chanLink: Triple<String, Int, Int>?) {
+    fun getPost(chanLink: Triple<String, Int, Int>?) {
         if (chanLink == null)
             return
 
@@ -110,23 +104,21 @@ class ThreadViewModelImpl (
         if (post != null) {
             putContentInStack(post)
             this.post.postValue(post)
-        }
-        else
+        } else
             getSinglePost(chanLink.first, chanLink.third)
     }
 
-    override fun getPost(postNum: Int) {
+    fun getPost(postNum: Int) {
         val post = thread.value?.posts?.find { it.id == postNum }
 
         if (post != null) {
             putContentInStack(post)
             this.post.postValue(post)
-        }
-        else
+        } else
             getSinglePost(postNum)
     }
 
-    override fun addToQueue(isQueued: Boolean) {
+    fun addToQueue(isQueued: Boolean) {
         if (thread.value != null)
             threadInteractor
                 .markQueued(
@@ -140,12 +132,12 @@ class ThreadViewModelImpl (
                         this.isQueued.postValue(true)
                         prefs.queueToUpdate = true
                     },
-                    { Log.e("M_ThreadViewModelImpl","Adding in queue error = $it") }
+                    { Log.e("M_ThreadViewModelImpl", "Adding in queue error = $it") }
                 )
                 .addToSubscribe()
     }
 
-    override fun setFavorite(isFavorite: Boolean) {
+    fun setFavorite(isFavorite: Boolean) {
         if (thread.value != null)
             threadInteractor
                 .markFavorite(
@@ -159,12 +151,12 @@ class ThreadViewModelImpl (
                         this.isFavorite.postValue(true)
                         prefs.favsToUpdate = true
                     },
-                    { Log.e("M_ThreadViewModelImpl","Adding fav error = $it") }
+                    { Log.e("M_ThreadViewModelImpl", "Adding fav error = $it") }
                 )
                 .addToSubscribe()
     }
 
-    override fun download(isDownload: Boolean) {
+    fun download(isDownload: Boolean) {
         if (thread.value != null)
             if (isDownload)
                 threadInteractor
@@ -175,7 +167,7 @@ class ThreadViewModelImpl (
                     .defaultThreads()
                     .subscribe(
                         { this.isDownload.postValue(true) },
-                        { Log.e("M_ThreadViewModelImpl","Downloading error = $it") }
+                        { Log.e("M_ThreadViewModelImpl", "Downloading error = $it") }
                     )
                     .addToSubscribe()
             else
@@ -184,23 +176,23 @@ class ThreadViewModelImpl (
                     .defaultThreads()
                     .subscribe(
                         { this.isDownload.postValue(false) },
-                        { Log.e("M_ThreadViewModelImpl","Removing download error = $it") }
+                        { Log.e("M_ThreadViewModelImpl", "Removing download error = $it") }
                     )
                     .addToSubscribe()
     }
 
-    override fun onMenuReady() {
+    fun onMenuReady() {
         isFavorite.postValue(isFavorite.value)
         isQueued.postValue(isQueued.value)
         isDownload.postValue(isDownload.value)
     }
 
-    override fun closeModal() {
+    fun closeModal() {
         clearStack()
         onBackPressed()
     }
 
-    override fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
+    fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
         if (!fullPicUrl.isNullOrEmpty() || fullPicUri != null)
             Attachment(fullPicUrl, duration, fullPicUri)
                 .also {
@@ -209,7 +201,7 @@ class ThreadViewModelImpl (
                 }
     }
 
-    override fun onRefresh() {
+    fun onRefresh() {
         refreshThread(true)
     }
 
@@ -230,7 +222,7 @@ class ThreadViewModelImpl (
             .andThen(threadInteractor.updateNewMessages(boardId, threadNum, 0))
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                {  },
+                { },
                 { Log.e("M_ThreadPresenter", "get tread in tread presenter error = $it") }
             )
             .addToSubscribe()

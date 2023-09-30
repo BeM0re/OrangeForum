@@ -5,6 +5,7 @@ apply plugin: 'kotlin-android'
 //    experimental = true
 //}
 apply plugin: "kotlin-kapt"
+apply plugin: "kotlin-parcelize"
 
 android {
     compileSdkVersion 34
@@ -80,6 +81,7 @@ dependencies {
     implementation composeBom
     androidTestImplementation composeBom
     implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
     // Android Studio Preview support
     implementation 'androidx.compose.ui:ui-tooling-preview'
     debugImplementation 'androidx.compose.ui:ui-tooling'

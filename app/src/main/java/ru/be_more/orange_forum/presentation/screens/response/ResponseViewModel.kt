@@ -4,15 +4,15 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.presentation.PresentationContract
-import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
+import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 
-class ResponseViewModelImpl (
+class ResponseViewModel (
     private val interactor : InteractorContract.ResponseInteractor
-): PresentationContract.ResponseViewModel, BaseViewModelImpl(){
+): BaseViewModel(){
 
-    override val result = MutableLiveData<String>()
+    val result = MutableLiveData<String>()
 
-    override fun postResponse(boardId: String, threadNum: Int, comment: String, token:String){
+    fun postResponse(boardId: String, threadNum: Int, comment: String, token:String){
         interactor.postResponse(
             boardId = boardId,
             threadNum = threadNum,

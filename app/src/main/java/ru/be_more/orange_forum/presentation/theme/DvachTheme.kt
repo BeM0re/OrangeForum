@@ -22,6 +22,7 @@ private val LightColorScheme = lightColorScheme(
     onSecondary = greyDark,
     tertiary = orangeLight,
     onTertiary = whiteDark,
+    tertiaryContainer = greyDark,
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -31,6 +32,7 @@ private val DarkColorScheme = darkColorScheme(
     onSecondary = whiteDark,
     tertiary = orangeMedium,
     onTertiary = whiteDark,
+    tertiaryContainer = greyLight,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -47,7 +49,7 @@ private val DarkColorScheme = darkColorScheme(
 fun DvachTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

@@ -14,12 +14,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,47 +33,56 @@ import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 
 @Composable
-fun SearchView(modifier: Modifier = Modifier, args: SearchViewInitArgs) {
-    var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(args.query))
+fun SearchView(args: SearchViewInitArgs, modifier: Modifier = Modifier) {
+    var text by rememberSaveable {
+        mutableStateOf("")
     }
+    val focusRequester = remember { FocusRequester() }
 
-    Row (modifier = Modifier
-        .background(MaterialTheme.colorScheme.secondary)
+    Row (modifier = modifier
+        .background(MaterialTheme.colorScheme.primary)
         .fillMaxWidth()
     ) {
         TextField(
             modifier = Modifier
-                .padding(16.dp, 8.dp)
-                .background(MaterialTheme.colorScheme.secondary)
-                .weight(1f),
+//                .padding(16.dp, 0.dp)
+                .background(MaterialTheme.colorScheme.primary)
+                .weight(1f)
+                .focusRequester(focusRequester),
             value = text,
             singleLine = true,
             onValueChange = {
                 text = it
-                args.onTextChanged(it.text)
+                args.onTextChanged(it)
             },
-            label = { args.label?.let { Text(it) } },
             placeholder = { args.placeholder?.let { Text(it) } },
             colors = TextFieldDefaults.colors(
                 focusedTextColor = MaterialTheme.colorScheme.onSecondary,
                 unfocusedTextColor = MaterialTheme.colorScheme.onSecondary,
-                focusedContainerColor = MaterialTheme.colorScheme.secondary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondary,
+                focusedContainerColor = MaterialTheme.colorScheme.primary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.primary,
                 focusedPlaceholderColor = MaterialTheme.colorScheme.onSecondary,
                 unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSecondary,
                 focusedLabelColor = MaterialTheme.colorScheme.tertiary,
                 unfocusedLabelColor = MaterialTheme.colorScheme.tertiary,
+                cursorColor = MaterialTheme.colorScheme.tertiary,
             )
         )
         DvachIcon(
             modifier = Modifier
                 .size(40.dp)
-                .clickable { text = TextFieldValue("") }
+                .clickable {
+                    args.onClose()
+//                    text = ""
+                }
                 .padding(8.dp)
                 .align(Alignment.CenterVertically),
             painter = painterResource(R.drawable.ic_baseline_clear_24)
         )
+
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
     }
 
 
@@ -90,9 +103,11 @@ fun SearchViewPreview() {
     DvachTheme(dynamicColor = false) {
         SearchView(
             args = SearchViewInitArgs(
+                query = "asd,",
                 label = "null",
                 placeholder = null,
                 onTextChanged = {},
+                onClose = {},
                 onSearchClick = {}
             )
         )
@@ -100,9 +115,10 @@ fun SearchViewPreview() {
 }
 
 data class SearchViewInitArgs(
-    val query: String = "",
+    val query: String,
     val placeholder: String? = null,
     val label: String? = null,
     val onTextChanged: (String) -> Unit,
-    val onSearchClick: (String) -> Unit,
+    val onClose: () -> Unit,
+    val onSearchClick: (String) -> Unit = {},
 )

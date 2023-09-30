@@ -1,6 +1,5 @@
-package ru.be_more.orange_forum.presentation.screens.download_favorite
+package ru.be_more.orange_forum.presentation.screens.favorite
 
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,14 +8,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import io.reactivex.disposables.Disposable
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
-import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.bus.*
 import ru.be_more.orange_forum.consts.*
 import ru.be_more.orange_forum.databinding.FragmentDownloadBinding
 import ru.be_more.orange_forum.presentation.interfaces.*
@@ -30,7 +23,7 @@ class DownFavFragment: BaseFragment<FragmentDownloadBinding>(),
     LinkOnClickListener{
 
     override val binding: FragmentDownloadBinding by viewBinding()
-    private val viewModel: PresentationContract.DownFavViewModel by inject()
+    private val viewModel: FavoriteViewModel by inject()
     private lateinit var navController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

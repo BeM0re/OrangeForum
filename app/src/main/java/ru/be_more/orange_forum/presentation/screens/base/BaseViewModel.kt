@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.presentation.screens.base
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -10,17 +11,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import ru.be_more.orange_forum.presentation.PresentationContract
 
-abstract class BaseViewModelImpl : ViewModel(), PresentationContract.BaseViewModel {
+abstract class BaseViewModel : ViewModel() {
     private var privateDisposables: CompositeDisposable? = CompositeDisposable()
 
     protected val disposables
         get() = this.privateDisposables
 
-    override val  error = MutableLiveData<String>()
+    val  error = MutableLiveData<String>()
 
-    override fun onDestroy(){
+    open fun onDestroy(){
         privateDisposables?.dispose()
         privateDisposables = null
     }
@@ -36,6 +36,12 @@ abstract class BaseViewModelImpl : ViewModel(), PresentationContract.BaseViewMod
     }
 
     fun <T> Observable<T>.defaultThreads(): Observable<T> {
+        return this
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun <T> Flowable<T>.defaultThreads(): Flowable<T> {
         return this
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

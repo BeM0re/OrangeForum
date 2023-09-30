@@ -100,7 +100,7 @@ fun PostView(args: PostViewInitArgs, modifier: Modifier = Modifier) {
                 lineHeight = 16.sp,
                 color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp)
-            )
+            ) //todo expandable
 
             Text(
                 text = replies.mapIndexed { index, num ->

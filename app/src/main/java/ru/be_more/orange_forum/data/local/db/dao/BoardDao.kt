@@ -15,6 +15,9 @@ interface BoardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBoard(board: StoredBoard): Completable
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertBoardList(boardList: List<StoredBoard>): Completable
+
     @Query("SELECT COUNT(id) FROM boards WHERE id = :boardId")
     fun getCount(boardId: String): Single<Int>
 

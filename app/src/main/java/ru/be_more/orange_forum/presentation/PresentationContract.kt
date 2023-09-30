@@ -6,7 +6,7 @@ import ru.be_more.orange_forum.domain.model.*
 
 interface PresentationContract {
 
-    interface BaseViewModel{
+/*    interface BaseViewModel{
         val error: LiveData<String>
         fun onDestroy()
     }
@@ -35,6 +35,7 @@ interface PresentationContract {
         val board: LiveData<Board>
         val isFavorite: LiveData<Boolean>
         val savedPosition: LiveData<Int>
+        val text: String
         fun init(boardId: String?, boardName: String?)
         fun hideThread(threadNum: Int, toHide: Boolean)
         fun setBoardMarks()
@@ -78,10 +79,10 @@ interface PresentationContract {
         fun removeThread(boardId: String, threadNum: Int)
     }
 
-    interface DownFavViewModel: BaseViewModel{
+    interface FavoriteViewModel: BaseViewModel{
         val boards: LiveData<List<Board>>
         fun init()
         fun removeThread(boardId: String, threadNum: Int)
-    }
+    }*/
 
 }

@@ -35,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/downFavFragment"
-        android:name="ru.be_more.orange_forum.presentation.screens.download_favorite.DownFavFragment"
+        android:name="ru.be_more.orange_forum.presentation.screens.favorite.DownFavFragment"
         android:label="Favorite" >
         <action
             android:id="@+id/action_downFavFragment_to_threadFragment"

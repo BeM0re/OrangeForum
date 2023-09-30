@@ -10,7 +10,7 @@ import androidx.viewbinding.ViewBinding
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-class FragmentViewBindingProvider <TViewBinding : ViewBinding>(
+class FragmentViewBindingProvider <TViewBinding : ViewBinding>( //todo delete
     private val clazz: Class<TViewBinding>,
     lifecycleOwner: LifecycleOwner
 ) : ReadOnlyProperty<Fragment, TViewBinding>, LifecycleObserver {
