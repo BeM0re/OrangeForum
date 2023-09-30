@@ -14,7 +14,7 @@ interface DbContract {
     interface CategoryRepository {
         fun insert(categories: List<Category>): Completable
         fun observe(): Observable<List<Category>>
-        fun get(name: String): Single<Category>
+        fun getEmpty(name: String): Single<Category> //empty = empty board list
         fun setIsExpanded(name: String, isExpanded: Boolean): Completable
     }
 

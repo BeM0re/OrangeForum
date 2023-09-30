@@ -130,7 +130,7 @@ fun OpPostView(args: OpPostViewInitArgs, modifier: Modifier = Modifier) {
                         .shadow(1.dp, shape = RoundedCornerShape(CornerSize(4.dp)))
                         .padding(16.dp, 8.dp)
                 )
-                Text(
+                Text( //FIXME fix button width
                     text = stringResource(id = R.string.btn_title_hide),
                     color = MaterialTheme.colorScheme.tertiary,
                     fontWeight = W500,

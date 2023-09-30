@@ -27,7 +27,7 @@ import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 class ResponseFragment: BaseFragment<ItemThreadResponseFormBinding>(){
 
     override val binding: ItemThreadResponseFormBinding by viewBinding()
-    private val viewModel: PresentationContract.ResponseViewModel by inject()
+    private val viewModel: ResponseViewModel by inject()
     private lateinit var navController: NavController
     private var captchaResponse : MutableLiveData<String>? = MutableLiveData()
     private lateinit var boardId: String

@@ -9,7 +9,8 @@ interface InteractorContract {
 
     interface CategoryInteractor {
         fun get(): Observable<List<Category>>
-        fun setIsExpanded(name: String, isExpanded: Boolean): Completable
+        fun setIsExpanded(name: String): Completable
+        fun setSearchQuery(query: String)
     }
 
     interface BoardInteractor {

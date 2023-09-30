@@ -30,7 +30,7 @@ class CategoryFragment:
     CategoryOnClickListener {
 
     override val binding: FragmentCategoryBinding by viewBinding()
-    private val viewModel: PresentationContract.CategoryViewModel by inject()
+    private val viewModel: CategoryViewModel by inject()
     private lateinit var navController: NavController
 
     override fun onDestroyView() {
@@ -49,7 +49,6 @@ class CategoryFragment:
         subscribe()
         setSearchListener()
 //        initRefreshFavWorker()
-        viewModel.initViewModel()
     }
 
     private fun init(view: View){
@@ -58,9 +57,6 @@ class CategoryFragment:
 
     private fun subscribe() =
         with(viewModel){
-            observe(dataset, ::loadCategories)
-            observe(expand, ::expandCategories)
-            observe(savedQuery) { binding.etBoardSearch.setText(it) }
         }
 
     private fun setSearchListener(){

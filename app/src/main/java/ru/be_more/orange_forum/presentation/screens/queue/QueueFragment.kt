@@ -23,7 +23,7 @@ import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
 
     override val binding: FragmentQueueBinding by viewBinding()
-    private val viewModel: PresentationContract.QueueViewModel by inject()
+    private val viewModel: QueueViewModel by inject()
     private lateinit var navController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

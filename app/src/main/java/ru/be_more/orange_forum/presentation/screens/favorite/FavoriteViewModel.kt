@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.download_favorite
+package ru.be_more.orange_forum.presentation.screens.favorite
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -7,30 +7,30 @@ import io.reactivex.disposables.Disposable
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.presentation.PresentationContract
-import ru.be_more.orange_forum.presentation.screens.base.BaseViewModelImpl
+import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 
-class DownFavViewModelImpl (
+class FavoriteViewModel (
     private val favoriteInteractor : InteractorContract.FavoriteInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
     private val prefs: Preferences
-): PresentationContract.DownFavViewModel, BaseViewModelImpl() {
+): BaseViewModel() {
 
-    override val boards = MutableLiveData<List<Board>>()
+     val boards = MutableLiveData<List<Board>>()
     private var favDisposable: Disposable? = null
 
-    override fun init(){
+     fun init(){
         subscribe()
         checkUpdates()
     }
 
-    override fun onDestroy() {
+     override fun onDestroy() {
+        super.onDestroy()
+
         favDisposable?.dispose()
         favDisposable = null
-        super.onDestroy()
     }
 
-    override fun removeThread(boardId: String, threadNum: Int) {
+     fun removeThread(boardId: String, threadNum: Int) {
         threadInteractor
             .delete(boardId, threadNum)
             .defaultThreads()

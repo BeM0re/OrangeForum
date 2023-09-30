@@ -36,7 +36,7 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
     CloseModalListener {
 
     override val binding: FragmentBoardBinding by viewBinding()
-    private val viewModel: PresentationContract.BoardViewModel by inject()
+    private val viewModel: BoardViewModel by inject()
     private var postFragment: PostFragment? = null
     private lateinit var navController: NavController
     private var favButton: MenuItem? = null

@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.download_favorite
+package ru.be_more.orange_forum.presentation.screens.favorite
 
 import android.view.View
 import androidx.core.view.isVisible
@@ -7,7 +7,6 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.consts.COOKIE
-import ru.be_more.orange_forum.databinding.ItemBoardOpBinding
 import ru.be_more.orange_forum.databinding.ItemOpPostShortBinding
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.domain.model.AttachFile

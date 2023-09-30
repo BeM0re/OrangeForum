@@ -10,7 +10,7 @@ val repositoryModule = module {
     single<RemoteContract.ApiRepository> { ApiRepositoryImpl(get()) }
 
     single<DbContract.CategoryRepository> {
-        ru.be_more.orange_forum.data.local.repositories.CategoryRepositoryImpl(get())
+        ru.be_more.orange_forum.data.local.repositories.CategoryRepositoryImpl(get(), get())
     }
     single<DbContract.BoardRepository> {
         ru.be_more.orange_forum.data.local.repositories.BoardRepositoryImpl(get())

@@ -40,7 +40,7 @@ class ThreadFragment :
     LinkOnClickListener,
     CloseModalListener {
 
-    private val viewModel: PresentationContract.ThreadViewModel by inject()
+    private val viewModel: ThreadViewModel by inject()
 
     override val binding: FragmentThreadBinding by viewBinding()
     private lateinit var navController: NavController

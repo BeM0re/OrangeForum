@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.download_favorite
+package ru.be_more.orange_forum.presentation.screens.favorite
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,7 +10,6 @@ import ru.be_more.orange_forum.databinding.ItemOpPostShortBinding
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.BoardThread
 
 class DownFavAdapter(private var boards: List<ExpandableGroup<*>?>?,
                      private var downFavListener: DownFavListener,
