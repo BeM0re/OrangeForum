@@ -2,10 +2,12 @@ package ru.be_more.orange_forum.presentation.screens.category
 
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,10 +20,6 @@ import androidx.navigation.compose.composable
 import org.koin.androidx.compose.koinViewModel
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
-import ru.be_more.orange_forum.presentation.composeViews.BoardShortListItemView
-import ru.be_more.orange_forum.presentation.composeViews.BoardShortListItemViewInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.CategoryListItemView
-import ru.be_more.orange_forum.presentation.composeViews.CategoryListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
@@ -43,7 +41,7 @@ fun CategoryScreen(
             ) {
                 DvachIcon(
                     painter = painterResource(id = R.drawable.ic_settings_accent_24dp),
-                    Modifier.clickable {
+                    modifier = Modifier.clickable {
                         Toast.makeText(
                             context.get(),
                             "Will be later",
@@ -53,18 +51,19 @@ fun CategoryScreen(
                 )
             }
         },
-        modifier = Modifier,
+        modifier = Modifier.background(MaterialTheme.colorScheme.primary),
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier
+                .padding(paddingValues)
         ) {
             items(viewModel.items) { listItem ->
                 when (listItem) {
                     is CategoryListItemViewInitArgs ->
-                        CategoryListItemView(listItem)
+                        CategoryListItem(listItem)
 
                     is BoardShortListItemViewInitArgs ->
-                        BoardShortListItemView(listItem) {
+                        BoardShortListItem(listItem) {
                             onNavigateToBoard(it)
                         }
                 }
@@ -73,9 +72,6 @@ fun CategoryScreen(
 
     }
 }
-
-
-
 
 fun NavGraphBuilder.categoryScreen(onNavigateToBoard: (String) -> Unit){
     composable(route = Screen.Category.route) {

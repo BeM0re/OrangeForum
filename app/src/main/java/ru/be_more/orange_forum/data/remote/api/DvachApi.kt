@@ -8,33 +8,45 @@ import ru.be_more.orange_forum.data.remote.models.*
 
 interface DvachApi{
 
-    @Deprecated("старое апи, не актуально")
-    @GET("makaba/mobile.fcgi")
-    fun getCategories(@Query("task") task : String): Single<Map<String, List<BoardShortDto>>>
+    @GET("/api/mobile/v2/boards")
+    fun getBoardList(): Single<List<BoardShortDto>>
 
-    @GET("index.json")
-    fun getBoardList(): Single<BoardListDto>
+    @GET("/{board}/catalog.json")
+    fun getBoard(@Path("board") boardId: String): Single<BoardDto>
 
-    @GET("{board}/catalog.json")
-    fun getBoard(@Path("board") board : String): Single<BoardDto>
-
-    @GET("{board}/res/{threadNum}.json")
-    fun getThread(
-        @Path("board") board : String,
-        @Path("threadNum") threadNum : Int,
-        @Header("Cookie") cookie: String
-    ): Single<ThreadDto>
-
-    @GET("makaba/mobile.fcgi")
-    fun getDvachPostRx(
-        @Query("task") task : String? = "get_post",
-        @Query("board") board : String,
-        @Query("post") post : Int,
+    //todo получать новые посты
+    @GET("/api/mobile/v2/after/{board}/{thread}/{num}")
+    fun getPostsAfter(
+        @Path("board") boardId: String,
+        @Query("thread") thread: Int,
+        @Query("num") num: Int,
         @Header("Cookie") cookie: String
     ): Single<List<PostDto>>
 
+    //todo получать инфо о треде, если ли новые сообщения, наверное.
+    @GET("/api/mobile/v2/info/{board}/{thread}")
+    fun getThreadInfo(
+        @Path("board") boardId: String,
+        @Query("thread") thread: Int,
+        @Header("Cookie") cookie: String
+    ): Single<List<PostDto>>
+
+    @GET("/api/mobile/v2/post/{board}/{id}")
+    fun getPost(
+        @Path("board") boardId: String,
+        @Path("id") postId: Int,
+        @Header("Cookie") cookie: String
+    ): Single<PostResponseDto>
+
+    @GET("/{board}/res/{id}.json")
+    fun getThread(
+        @Path("board") boardId: String,
+        @Path("id") postId: Int,
+        @Header("Cookie") cookie: String
+    ): Single<ThreadDto>
+
     @Multipart
-    @POST("makaba/posting.fcgi?json=1")
+    @POST("/makaba/posting.fcgi?json=1")
     fun postThreadResponseRx(
         @Header("Cookie") cookie: RequestBody,
         @Part("task") task: RequestBody,
@@ -49,6 +61,6 @@ interface DvachApi{
         @Part("g-recaptcha-response") gRecaptchaResponse: RequestBody,
         @Part("2chaptcha_id") chaptchaId: RequestBody,
         @Part files: List<MultipartBody.Part>
-    ): Single<PostResponseDto>
+    ): Single<ResponseDto>
 
 }

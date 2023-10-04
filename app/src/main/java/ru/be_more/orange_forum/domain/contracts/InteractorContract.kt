@@ -21,9 +21,9 @@ interface InteractorContract {
 
     interface ThreadInteractor {
         fun observe(boardId: String, threadNum: Int, ): Observable<BoardThread>
-        fun markFavorite(boardId: String, boardName: String, threadNum: Int, ): Completable
-        fun markQueued(boardId: String, boardName: String, threadNum: Int, ): Completable
-        fun markHidden(boardId: String, boardName: String, threadNum: Int, ): Completable
+        fun markFavorite(boardId: String, threadNum: Int): Completable
+        fun markQueued(boardId: String, threadNum: Int): Completable
+        fun markHidden(boardId: String, threadNum: Int): Completable
         fun subToUpdate(boardId: String, threadNum: Int): Completable
         fun delete(boardId: String, threadNum: Int): Completable
         @Deprecated("Maybe delete")

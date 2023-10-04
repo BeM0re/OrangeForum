@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.composeViews
+package ru.be_more.orange_forum.presentation.screens.category
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -16,7 +16,7 @@ import ru.be_more.orange_forum.presentation.data.ListItemArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
-fun CategoryListItemView(args: CategoryListItemViewInitArgs, modifier: Modifier = Modifier) {
+fun CategoryListItem(args: CategoryListItemViewInitArgs, modifier: Modifier = Modifier) {
     with (args) {
         Text(
             text = title,
@@ -44,7 +44,7 @@ fun CategoryListItemView(args: CategoryListItemViewInitArgs, modifier: Modifier 
 @Composable
 fun CategoryListItemViewPreview() {
     DvachTheme(dynamicColor = false) {
-        CategoryListItemView(
+        CategoryListItem(
             modifier = Modifier.background(MaterialTheme.colorScheme.primary),
             args = CategoryListItemViewInitArgs(
                 title = "diy",

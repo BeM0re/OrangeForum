@@ -64,7 +64,7 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         favButton = menu.findItem(R.id.navigation_favorite)
         favButtonAdded = menu.findItem(R.id.navigation_favorite_added)
         setToolbarListeners()
-        viewModel.onMenuReady()
+//        viewModel.onMenuReady()
     }
 
     override fun onDestroyView() {
@@ -82,16 +82,16 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)
         val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)
 
-        viewModel.init(boardId, boardName)
+//        viewModel.init(boardId, boardName)
     }
 
     private fun setToolbarListeners() {
         favButton?.setOnMenuItemClickListener {
-            viewModel.setFavorite(true)
+//            viewModel.setFavorite(true)
             true
         }
         favButtonAdded?.setOnMenuItemClickListener {
-            viewModel.setFavorite(false)
+//            viewModel.setFavorite(false)
             true
         }
     }
@@ -103,7 +103,7 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
         }
         binding.rvThreadList.adapter = BoardAdapter(
             board.threads, this, this, this) { threadNum ->
-            viewModel.addToQueue(threadNum)
+//            viewModel.addToQueue(threadNum)
         }
         binding.rvThreadList.addItemDecoration(
             DividerItemDecoration(requireContext(), HORIZONTAL)
@@ -147,18 +147,18 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
 
     private fun subscribe(){
         with(viewModel){
-            observe(board, ::loadBoard)
-            observe(isFavorite) { setBoardMarks(it) }
-            observe(post, ::showPost)
-            observe(attachment, ::showPost)
-            observe(emptyStack) { hideModal() }
-            observe(savedPosition) { binding.rvThreadList.scrollToPosition(it) }
+//            observe(board, ::loadBoard)
+//            observe(isFavorite) { setBoardMarks(it) }
+//            observe(post, ::showPost)
+//            observe(attachment, ::showPost)
+//            observe(emptyStack) { hideModal() }
+//            observe(savedPosition) { binding.rvThreadList.scrollToPosition(it) }
         }
     }
 
     override fun onBackPressed() : Boolean{
         return if (binding.flBoardPost.visibility != View.GONE) {
-            viewModel.onBackPressed()
+//            viewModel.onBackPressed()
             false
         }
         else
@@ -166,38 +166,38 @@ class BoardFragment: BaseFragment<FragmentBoardBinding>(),
     }
 
     private fun saveState(){
-        viewModel.savePosition(
-            (binding.rvThreadList.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-        )
+//        viewModel.savePosition(
+//            (binding.rvThreadList.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+//        )
     }
 
     override fun onCloseModalListener(){
-        viewModel.clearStack()
+//        viewModel.clearStack()
     }
 
     override fun onIntoThreadClick(threadNum: Int, threadTitle: String) {
         val bundle = Bundle()
-        bundle.putString(NAVIGATION_BOARD_ID, viewModel.getBoardId())
-        bundle.putString(NAVIGATION_BOARD_NAME, viewModel.getBoardName())
+//        bundle.putString(NAVIGATION_BOARD_ID, viewModel.getBoardId())
+//        bundle.putString(NAVIGATION_BOARD_NAME, viewModel.getBoardName())
         bundle.putInt(NAVIGATION_THREAD_NUM, threadNum)
         bundle.putString(NAVIGATION_TITLE, threadTitle)
         navController.navigate(R.id.action_boardFragment_to_threadFragment, bundle)
     }
 
     override fun onHideClick(threadNum: Int, toHide: Boolean) {
-        viewModel.hideThread(threadNum, toHide)
+//        viewModel.hideThread(threadNum)
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
-        viewModel.prepareModal(fullPicUrl, duration, fullPicUri)
+//        viewModel.prepareModal(fullPicUrl, duration, fullPicUri)
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-        viewModel.linkClicked(chanLink)
+//        viewModel.linkClicked(chanLink)
     }
 
     override fun onLinkClick(postNum: Int) {
-        viewModel.getSinglePost(postNum)
+//        viewModel.getSinglePost(postNum)
     }
 
     override fun onLinkClick(externalLink: String?) {

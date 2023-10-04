@@ -1,20 +1,15 @@
 package ru.be_more.orange_forum.presentation.screens.board
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewmodel.CreationExtras
-import org.greenrobot.eventbus.EventBus
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.Attachment
-import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.AttachedFile
+import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.ModalContent
-import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.bus.ThreadToBeClosed
+import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 import java.util.*
 
@@ -26,23 +21,96 @@ class BoardViewModel(
     private val prefs: Preferences,
 ): BaseViewModel() {
 
-    val board = MutableLiveData<Board>()
-    val isFavorite = MutableLiveData<Boolean>()
-    val post = MutableLiveData<Post>()
-    val attachment = MutableLiveData<Attachment>()
-    val emptyStack = MutableLiveData<Boolean>()
-    val savedPosition = MutableLiveData<Int>()
-
     private val modalStack: Stack<ModalContent> = Stack()
 
-    var text by mutableStateOf("asd")
+    var items by mutableStateOf(listOf<OpPostInitArgs>())
+        private set
+
+    var screenTitle by mutableStateOf("")
+        private set
+
+    var isFavorite by mutableStateOf(false)
+        private set
+
+    var modalContent by mutableStateOf<ModalContentDialogInitArgs?>(null)
         private set
 
     init {
-        text = boardId
+        boardInteractor
+            .get(boardId)
+            .defaultThreads()
+            .subscribe(
+                { board ->
+                    screenTitle = board.name
+                    isFavorite = board.isFavorite
+                    items = prepareItemList(
+                        board.threads
+                    )
+                },
+                { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
+            )
+            .addToSubscribe()
     }
 
-    fun init(boardId: String?, boardName: String?){
+    private fun prepareItemList(threads: List<BoardThread>): List<OpPostInitArgs> =
+        threads.mapNotNull { thread ->
+            val post = thread.posts.getOrNull(0) ?: return@mapNotNull null
+
+            OpPostInitArgs(
+                post = post,
+                onHide = ::hideThread,
+                onQueue = ::addToQueue,
+                onPick = ::onPick
+            )
+        }
+
+    private fun addToQueue(boardId: String, threadNum: Int) {
+        threadInteractor
+            .markQueued(boardId, threadNum)
+            .defaultThreads()
+            .subscribe(
+                { prefs.queueToUpdate = true },
+                { Log.e("BoardViewModel","BoardViewModel.addToQueue: \n $it") }
+            )
+            .addToSubscribe()
+    }
+
+    private fun hideThread(boardId: String, threadNum: Int) {
+        threadInteractor
+            .markHidden(boardId, threadNum)
+            .defaultThreads()
+            .subscribe(
+                { },
+                { Log.e("BoardViewModel","BoardViewModel.hideThread: \n $it") }
+            )
+            .addToSubscribe()
+    }
+
+    private fun onPick(file: AttachedFile) {
+        modalContent = ModalContentDialogInitArgs(
+            content = file,
+            onPicClick = ::onPick,
+            onDismiss = ::closeModal
+        )
+    }
+
+    fun setFavorite() {
+        boardInteractor
+            .markFavorite(boardId)
+            .defaultThreads()
+            .subscribe(
+                { },
+                { Log.e("BoardViewModel","BoardViewModel.setFavorite: \n $it") }
+            )
+            .addToSubscribe()
+    }
+
+    fun closeModal() {
+        //todo add stack into super
+        modalContent = null
+    }
+
+/*    fun init(boardId: String?, boardName: String?){
 
 //        EventBus.getDefault().post(BoardToBeOpened)
         if (board.value == null || (board.value?.id != boardId && !boardId.isNullOrEmpty())){
@@ -103,26 +171,6 @@ class BoardViewModel(
             .addToSubscribe()
     }
 
-    fun hideThread(threadNum: Int, toHide: Boolean) {
-        threadInteractor
-            .markHidden(
-                boardId = requireNotNull(board.value?.id),
-                boardName = requireNotNull(board.value?.name),
-                threadNum = threadNum,
-            )
-            .andThen(
-                boardInteractor.get(
-                    requireNotNull(board.value?.id),
-                )
-            )
-            .defaultThreads()
-            .subscribe(
-                { board.postValue(it) },
-                { Log.e("M_BoardViewModel","hiding error = $it") }
-            )
-            .addToSubscribe()
-    }
-
     fun setBoardMarks(){
         isFavorite.postValue(board.value?.isFavorite)
     }
@@ -134,39 +182,10 @@ class BoardViewModel(
         savedPosition.postValue(pos)
     }
 
-     fun setFavorite(isFavorite: Boolean) {
-        if (board.value != null)
-            boardInteractor
-                .markFavorite(board.value!!.id)
-                .defaultThreads()
-                .subscribe(
-                    {
-                        this.isFavorite.postValue(true)
-                        prefs.favsToUpdate = true
-                    },
-                    { Log.e("M_BoardViewModelImpl","Adding fav error = $it") }
-                )
-                .addToSubscribe()
-    }
+
 
      fun getBoardName(): String =
         board.value?.name?:""
-
-     fun addToQueue(threadNum: Int) {
-        if (board.value != null)
-            threadInteractor
-                .markQueued(
-                    boardId = requireNotNull(board.value?.id),
-                    boardName = requireNotNull(board.value?.name),
-                    threadNum = threadNum,
-                )
-                .defaultThreads()
-                .subscribe(
-                    { prefs.queueToUpdate = true },
-                    { Log.e("M_BoardViewModelImpl","Add to queue error = $it") }
-                )
-                .addToSubscribe()
-    }
 
      fun onMenuReady() {
         isFavorite.postValue(isFavorite.value)
@@ -186,8 +205,5 @@ class BoardViewModel(
         else
             getSinglePost(chanLink.first, chanLink.third)
     }
-
-    companion object {
-        val boardIdKey = object : CreationExtras.Key<String>{}
-    }
+    */
 }

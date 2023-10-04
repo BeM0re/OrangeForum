@@ -16,9 +16,7 @@ class BoardInteractorImpl(
 
     override fun get(boardId: String): Observable<Board> =
         downloadBoard(boardId)
-            .andThen(
-                observeBoard(boardId)
-            )
+            .andThen(observeBoard(boardId))
 
     override fun markFavorite(boardId: String): Completable =
         boardRepository

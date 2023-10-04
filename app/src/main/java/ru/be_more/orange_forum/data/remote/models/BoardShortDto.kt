@@ -8,6 +8,7 @@ data class BoardShortDto(
     val category : String,
     val id : String,
     val name : String
+    //todo icons
 ) {
     fun toModel(): Board =
         Board(

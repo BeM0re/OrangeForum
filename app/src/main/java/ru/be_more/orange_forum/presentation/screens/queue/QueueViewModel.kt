@@ -32,7 +32,6 @@ class QueueViewModel (
         threadInteractor
             .markQueued(
                 boardId = boardId,
-                boardName = "",
                 threadNum = threadNum,
             )
             .defaultThreads()
