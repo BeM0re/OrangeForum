@@ -151,6 +151,7 @@ class PostFragment : BaseFragment<ItemPostBinding>() {
         when (content){
             is Post -> showPost(content)
             is Attachment -> showAttachment(content)
+            else -> {}
         }
     }
 

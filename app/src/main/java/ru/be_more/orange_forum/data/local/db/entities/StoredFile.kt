@@ -1,6 +1,6 @@
 package ru.be_more.orange_forum.data.local.db.entities
 
-import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.domain.model.AttachedFile
 
 data class StoredFile(
     val displayName: String = "",
@@ -9,12 +9,12 @@ data class StoredFile(
     val tnHeight: Int = 0,
     val tnWidth: Int = 0,
     val webPath: String,
-    val localPath: String = "",
+    val localPath: String? = null,
     val webThumbnail: String = "",
-    val localThumbnail: String = "",
+    val localThumbnail: String? = null,
     val duration : String = ""
 ) {
-    constructor(file: AttachFile): this(
+    constructor(file: AttachedFile): this(
         displayName = file.displayName,
         height = file.height,
         width = file.width,
@@ -27,7 +27,7 @@ data class StoredFile(
         duration = file.duration,
     )
 
-    fun toModel() = AttachFile(
+    fun toModel() = AttachedFile(
         displayName = displayName,
         height = height,
         width = width,

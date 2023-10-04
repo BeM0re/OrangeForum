@@ -43,7 +43,6 @@ class FavoriteViewModel (
         threadInteractor
             .markFavorite(
                 boardId = boardId,
-                boardName = "",
                 threadNum = threadNum,
             )
             .defaultThreads()

@@ -1,7 +1,6 @@
 package ru.be_more.orange_forum.data.remote.repositories
 
 import android.util.Log
-import io.reactivex.Maybe
 import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -16,6 +15,8 @@ import ru.be_more.orange_forum.utils.ParseHtml
 import java.io.File
 import java.util.*
 
+//инфа по обезьяньему апи: https://2ch.hk/abu/res/42375.html
+
 class ApiRepositoryImpl(
     private val dvachApi : DvachApi
 ) : RemoteContract.ApiRepository{
@@ -27,7 +28,7 @@ class ApiRepositoryImpl(
     override fun getCategories(): Single<List<Category>> =
         dvachApi.getBoardList()
             .map { dto ->
-                dto.boardList
+                dto
                     .map { it.toModel() }
                     .groupBy { it.category }
                     .map { (category, boards) ->
@@ -40,14 +41,9 @@ class ApiRepositoryImpl(
             }
 
     override fun getBoard(boardId: String): Single<Board> =
-        Maybe
-            .just(lastBoard?.takeIf { it.id == boardId })
-            .switchIfEmpty(
-                dvachApi.getBoard(boardId)
-                    .map { it.toModel(boardId) }
-                    .doAfterSuccess { lastBoard = it }
-            )
-            .map { it } //без мапа почему то свитч проходит в ?, а не !
+        dvachApi.getBoard(boardId)
+            .map { it.toModel(boardId) }
+//            .map { it } //без мапа почему то свитч проходит в ?, а не !
 
     override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
         if (boardId == lastThreadBoard && threadNum == lastThread?.num && !forceUpdate)
@@ -56,8 +52,8 @@ class ApiRepositoryImpl(
             dvachApi.getThread(boardId, threadNum, COOKIE)
                 .doOnError { throwable -> Log.e("DvachApiRepository", "get thread via api error = $throwable") }
 //                .onErrorReturn { ThreadDto() } //todo ?
-                .map { entity -> entity.toModel(boardId) }
-                .map { entity -> findResponses(entity) }
+                .map { it.toModel(boardId) }
+                .map { findResponses(it) }
                 .doAfterSuccess {
                     lastThread = it
                     lastThreadBoard = boardId
@@ -77,10 +73,14 @@ class ApiRepositoryImpl(
                 getThread(boardId, threadNum)
         }
 
-    override fun getPost(boardId: String, postNum: Int, cookie: String): Single<Post> =
-        dvachApi.getDvachPostRx("get_post", boardId, postNum, COOKIE)
-            .doOnError { throwable -> Log.e("M_DvachApiRepository", "Getting post error = $throwable") }
-            .map { entity -> entity[0].toModel(boardId, postNum) } //todo postNum ok?
+    override fun getPost(
+        boardId: String,
+        postNum: Int,
+        cookie: String
+    ): Single<Post> =
+        dvachApi.getPost(boardId, postNum, COOKIE)
+            .doOnError { throwable -> Log.e("MvachApiRepository", "ApiRepositoryImpl.getPost = \n$throwable") }
+            .map { it.post.toModel(boardId, postNum) } //todo postNum ok?
 
     override fun postResponse(
         boardId: String,

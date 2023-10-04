@@ -31,25 +31,21 @@ class ThreadInteractorImpl(
                 }
             )
 
-    override fun markFavorite(
-        boardId: String,
-        boardName: String,
-        threadNum: Int,
-    ): Completable =
+    override fun markFavorite(boardId: String, threadNum: Int): Completable =
         threadRepository
             .get(boardId, threadNum)
             .flatMapCompletable {
                 threadRepository.markFavorite(boardId, threadNum, !it.isFavorite)
             }
 
-    override fun markQueued(boardId: String, boardName: String, threadNum: Int): Completable =
+    override fun markQueued(boardId: String, threadNum: Int): Completable =
         threadRepository
             .get(boardId, threadNum)
             .flatMapCompletable {
                 threadRepository.markQueued(boardId, threadNum, !it.isQueued)
             }
 
-    override fun markHidden(boardId: String, boardName: String, threadNum: Int): Completable =
+    override fun markHidden(boardId: String, threadNum: Int): Completable =
         threadRepository
             .get(boardId, threadNum)
             .flatMapCompletable {

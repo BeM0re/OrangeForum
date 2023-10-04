@@ -36,8 +36,8 @@ class BoardAdapter(var threads: List<BoardThread> = listOf(),
         holder.setThreadNum(opPost.id)
         holder.setTitle(opPost.subject)
         holder.setComment(opPost.comment, thread.isHidden)
-        holder.setTotalPosts(opPost.postsCount, thread.isHidden)
-        holder.setPostsWithPic(opPost.filesCount, thread.isHidden)
+        holder.setTotalPosts(opPost.postCount, thread.isHidden)
+        holder.setPostsWithPic(opPost.fileCount, thread.isHidden)
         if(opPost.files.isNotEmpty()){
             holder.setPics(opPost.files, thread.isHidden)
         }

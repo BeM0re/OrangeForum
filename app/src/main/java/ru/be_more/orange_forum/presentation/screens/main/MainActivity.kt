@@ -21,6 +21,7 @@ import ru.be_more.orange_forum.presentation.screens.base.BaseFragment
 import ru.be_more.orange_forum.worker.CheckFavoriteUpdateWorker
 import java.util.concurrent.TimeUnit
 
+/*
 class MainActivity : AppCompatActivity() {
 
     private val binding: ActivityMainBinding by ActivityViewBindingProvider(ActivityMainBinding::class.java)
@@ -123,4 +124,4 @@ class MainActivity : AppCompatActivity() {
             )
     }
 
-}
+}*/

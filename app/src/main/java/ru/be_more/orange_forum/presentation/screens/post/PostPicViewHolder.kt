@@ -6,10 +6,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
-import ru.be_more.orange_forum.databinding.ItemBoardOpBinding
 import ru.be_more.orange_forum.databinding.ItemPostPicsBinding
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.domain.model.AttachedFile
 
 class PostPicViewHolder(private val binding: ItemPostPicsBinding) : ChildViewHolder(binding.root) {
 
@@ -17,8 +16,8 @@ class PostPicViewHolder(private val binding: ItemPostPicsBinding) : ChildViewHol
         binding.llOpPostPics.visibility = View.GONE
     }
 
-    fun setPic (file1: AttachFile, listener: PicOnClickListener){
-        if (file1.localThumbnail.isEmpty()){
+    fun setPic (file1: AttachedFile, listener: PicOnClickListener){
+        if (file1.localThumbnail.isNullOrEmpty()){
 
             //TODO перенести в константы
             val thumbnailUrl = "https://2ch.hk${file1.thumbnail}"

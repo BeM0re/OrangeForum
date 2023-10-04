@@ -12,10 +12,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class RetrofitFactory (
+class RetrofitFactory(
     sslTrustManager : SSLTrustManager,
     context: Context
-){
+) {
     private val gson: Gson = GsonBuilder()
         .setLenient()
         .create()
@@ -31,7 +31,7 @@ class RetrofitFactory (
                     .collector(ChuckerCollector(context))
                     .maxContentLength(250000L)
                     .redactHeaders(emptySet())
-                    .alwaysReadResponseBody(false)
+                    .alwaysReadResponseBody(true)
                     .build()
             )
             .sslSocketFactory(sslTrustManager.socketFactory, sslTrustManager.x509TrustManager)

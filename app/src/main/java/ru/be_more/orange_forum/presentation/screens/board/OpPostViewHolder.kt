@@ -7,7 +7,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.databinding.ItemBoardOpBinding
 import ru.be_more.orange_forum.presentation.interfaces.BoardOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
-import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 import ru.be_more.orange_forum.presentation.screens.post.PostPicAdapter
@@ -37,7 +37,7 @@ class OpPostViewHolder(
         binding.tvBoardOpSubject.text = param
     }
 
-    fun setPics (urls: List<AttachFile>, isHidden: Boolean){
+    fun setPics (urls: List<AttachedFile>, isHidden: Boolean){
         binding.rvOpPostPics.isVisible = !isHidden && urls.isNotEmpty()
 
 //            binding.rvOpPostPics.layoutManager = GridLayoutManager(itemView.context, 2)

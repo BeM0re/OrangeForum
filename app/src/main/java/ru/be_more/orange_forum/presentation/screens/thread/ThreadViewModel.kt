@@ -72,6 +72,7 @@ class ThreadViewModel(
                 when (val content = modalStack.peek()) {
                     is Attachment -> attachment.postValue(content)
                     is Post -> post.postValue(content)
+                    else -> {  }
                 }
             } else
                 emptyStack.postValue(true)
@@ -123,7 +124,6 @@ class ThreadViewModel(
             threadInteractor
                 .markQueued(
                     boardId = boardId,
-                    boardName = boardName,
                     threadNum = threadNum,
                 )
                 .defaultThreads()
@@ -142,7 +142,6 @@ class ThreadViewModel(
             threadInteractor
                 .markFavorite(
                     boardId = boardId,
-                    boardName = boardName,
                     threadNum = threadNum,
                 )
                 .defaultThreads()

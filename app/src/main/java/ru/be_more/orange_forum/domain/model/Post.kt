@@ -1,5 +1,7 @@
 package ru.be_more.orange_forum.domain.model
 
+import android.os.Build
+import java.time.Instant
 import java.util.*
 
 data class Post(
@@ -11,12 +13,16 @@ data class Post(
     val isOpPost: Boolean,
     val date: String,
     val email: String,
-    val files: List<AttachFile> = listOf(),
-    val filesCount: Int,
+    val files: List<AttachedFile> = listOf(),
+    val fileCount: Int,
     val isAuthorOp: Boolean,
-    val postsCount: Int,
+    val postCount: Int,
     val subject: String,
-    val timestamp: Int,
+    val timestamp: Long,
     val number: Int, //Порядковый номер в треде
     val replies: Stack<Int> = Stack()
-) : ModalContent()
+) : ModalContent {
+    val dateTimeString =
+        if (Build.VERSION.SDK_INT >= 26) Instant.ofEpochSecond(timestamp.toLong()).toString()
+        else "todo" //todo
+}

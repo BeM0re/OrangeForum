@@ -1,7 +1,7 @@
 package ru.be_more.orange_forum.data.remote.models
 
 import com.google.gson.annotations.SerializedName
-import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.domain.model.AttachedFile
 
 data class FileDto(
     @SerializedName("displayname")
@@ -16,7 +16,7 @@ data class FileDto(
     val thumbnail: String,
     val duration: String? = ""
 ) {
-    fun toModel() = AttachFile(
+    fun toModel() = AttachedFile(
         path = path,
         thumbnail = thumbnail,
         duration = duration ?: ""

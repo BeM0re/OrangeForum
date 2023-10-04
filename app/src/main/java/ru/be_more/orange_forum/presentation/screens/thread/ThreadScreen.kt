@@ -34,7 +34,7 @@ fun NavGraphBuilder.threadScreen() {
             },
         )
     ) { entry ->
-        val boardId = entry.arguments?.getString("boardId") ?: "asddsa"
+        val boardId = entry.arguments?.getString("boardId") ?: ""
         val threadNum = entry.arguments?.getInt("threadNum") ?: 0
 
         ThreadScreen(

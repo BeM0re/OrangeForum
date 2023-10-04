@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.databinding.ItemPostPicsBinding
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.domain.model.AttachedFile
 
 
-class PostPicAdapter( var files: List<AttachFile> = listOf(), var listener: PicOnClickListener) :
+class PostPicAdapter(var files: List<AttachedFile> = listOf(), var listener: PicOnClickListener) :
     RecyclerView.Adapter<PostPicViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostPicViewHolder =

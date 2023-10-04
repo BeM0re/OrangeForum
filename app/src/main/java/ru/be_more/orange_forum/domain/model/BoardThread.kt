@@ -7,9 +7,11 @@ data class BoardThread(
     val boardId: String,
     val lastPostNumber: Int = 0,
     val newMessageAmount: Int = 0,
+    val postCount: Int,
+    val fileCount: Int,
     val isHidden: Boolean = false,
     val isDownloaded: Boolean = false, //todo delete?
-    val isFavorite: Boolean = false,
+    val isFavorite: Boolean = false, //todo save on re-download
     val isQueued: Boolean = false
 ) {
     fun isEmpty(): Boolean =

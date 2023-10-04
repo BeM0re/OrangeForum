@@ -16,10 +16,12 @@ data class ThreadDto(
 ) {
     fun toModel(boardId: String) =
         BoardThread(
+            boardId = boardId,
             num = num,
             posts = threads.posts.map { it.toModel(boardId, num) },
             title = title,
-            boardId = boardId,
+            postCount = postCount,
+            fileCount = fileCount,
         )
 
     data class InnerThreadDto(

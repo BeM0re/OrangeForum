@@ -1,9 +1,8 @@
-package ru.be_more.orange_forum.presentation.composeViews
+package ru.be_more.orange_forum.presentation.screens.category
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,7 +21,7 @@ import ru.be_more.orange_forum.presentation.data.ListItemArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
-fun BoardShortListItemView(
+fun BoardShortListItem(
     args: BoardShortListItemViewInitArgs,
     modifier: Modifier = Modifier,
     onClick: (String) -> Unit,
@@ -31,7 +30,7 @@ fun BoardShortListItemView(
         Row(modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.secondary)
-            .clickable { onClick(title) }
+            .clickable { onClick(id) }
         ) {
             Text(
                 text = title,
@@ -67,9 +66,10 @@ fun BoardShortListItemView(
 @Composable
 fun BoardShortListItemViewPreview() {
     DvachTheme(dynamicColor = false) {
-        BoardShortListItemView(
+        BoardShortListItem(
             modifier = Modifier.background(MaterialTheme.colorScheme.primary),
             args = BoardShortListItemViewInitArgs(
+                id = "diy",
                 title = "diy",
             )
         ) {}
@@ -77,5 +77,6 @@ fun BoardShortListItemViewPreview() {
 }
 
 data class BoardShortListItemViewInitArgs(
+    val id: String,
     val title: String,
 ) : ListItemArgs

@@ -9,7 +9,7 @@ import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.databinding.ItemOpPostShortBinding
 import ru.be_more.orange_forum.presentation.interfaces.DownFavListener
-import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
 
 class DownFavThreadViewHolder(
@@ -30,7 +30,7 @@ class DownFavThreadViewHolder(
         binding.tvFavoriteOpSubject.text = param
     }
 
-    fun setPics (url: AttachFile?){
+    fun setPics (url: AttachedFile?){
         if (url != null){
 
             //TODO перенести в константы

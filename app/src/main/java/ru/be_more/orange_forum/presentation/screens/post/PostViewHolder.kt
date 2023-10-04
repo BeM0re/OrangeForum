@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.presentation.interfaces.PicOnClickListener
-import ru.be_more.orange_forum.domain.model.AttachFile
+import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.presentation.custom.LinkedTextView
 import java.util.*
 
@@ -56,7 +56,7 @@ class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
         }
     }
 
-    fun setPics (urls: List<AttachFile>){
+    fun setPics (urls: List<AttachedFile>){
         if(urls.isNotEmpty()){
             val adapter = PostPicAdapter(urls, listener = listener)
 

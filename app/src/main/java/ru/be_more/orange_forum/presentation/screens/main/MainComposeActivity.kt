@@ -28,12 +28,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import ru.be_more.orange_forum.R
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.GlobalContext.startKoin
+import ru.be_more.orange_forum.di.*
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.board.boardScreen
 import ru.be_more.orange_forum.presentation.screens.category.categoryScreen
@@ -42,24 +44,10 @@ import ru.be_more.orange_forum.presentation.screens.queue.queueScreen
 import ru.be_more.orange_forum.presentation.screens.thread.threadScreen
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
-class MainComposeActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-      /*  startKoin{
-            androidLogger()
-            androidContext(this@MainComposeActivity)
-            modules(listOf(
-                appModule,
-                viewModelModule,
-                repositoryModule,
-                storageModule,
-                databaseModule,
-                interactorModule,
-                networkModule
-            ))
-        }*/
 
         setContent {
             DvachTheme {
@@ -118,8 +106,8 @@ class MainComposeActivity : ComponentActivity() {
                         ?.any { it.route?.contains(menuItem.route) == true } == true,
                     onClick = {
                         Toast.makeText(
-                            this@MainComposeActivity,
-                            this@MainComposeActivity.resources.getString(menuItem.title),
+                            this@MainActivity,
+                            this@MainActivity.resources.getString(menuItem.title),
                             Toast.LENGTH_SHORT
                         ).show()
                         navController.navigate(menuItem.route) {

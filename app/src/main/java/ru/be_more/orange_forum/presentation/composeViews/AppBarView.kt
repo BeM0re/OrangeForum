@@ -46,7 +46,7 @@ fun AppBarView(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.secondary)
             .padding(16.dp, 8.dp, 16.dp, 8.dp)
             .height(56.dp)
 
