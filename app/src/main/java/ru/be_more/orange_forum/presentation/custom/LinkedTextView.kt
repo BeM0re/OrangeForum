@@ -11,7 +11,6 @@ import ru.be_more.orange_forum.extentions.toChanLink
 import ru.be_more.orange_forum.presentation.interfaces.LinkOnClickListener
 import ru.be_more.orange_forum.utils.ParseHtml
 
-
 open class LinkedTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null)

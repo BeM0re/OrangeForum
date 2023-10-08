@@ -26,6 +26,7 @@ import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialog
 import ru.be_more.orange_forum.presentation.screens.base.Screen
+import java.lang.IllegalStateException
 
 @Composable
 fun BoardScreen(
@@ -58,13 +59,24 @@ fun BoardScreen(
                     .fillMaxHeight(),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                items(viewModel.items) { listItem ->
-                    OpPostView(
-                        args = listItem,
-                        modifier = Modifier.background(MaterialTheme.colorScheme.primary)
-                    ) { boardId, threadNum ->
-                        onNavigateToThread(boardId, threadNum)
+                items(items) { listItem ->
+                    when (listItem) {
+                        is OpPostInitArgs ->
+                            OpPostView(
+                                args = listItem,
+                                modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                            ) { boardId, threadNum ->
+                                onNavigateToThread(boardId, threadNum)
+                            }
+                        is HiddenOpPostInitArgs ->
+                            OpPostHiddenView(
+                                args = listItem,
+                                modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                            )
+                        else ->
+                            throw IllegalStateException("BoardScreen.items is illegal type")
                     }
+
                 }
             }
 

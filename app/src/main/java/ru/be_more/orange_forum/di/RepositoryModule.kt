@@ -19,6 +19,6 @@ val repositoryModule = module {
         ru.be_more.orange_forum.data.local.repositories.ThreadRepositoryImpl(get(), get())
     }
     single<DbContract.PostRepository> {
-        ru.be_more.orange_forum.data.local.repositories.PostRepositoryImpl(get())
+        ru.be_more.orange_forum.data.local.repositories.PostRepositoryImpl(get(), get())
     }
 }

@@ -1,17 +1,15 @@
 package ru.be_more.orange_forum.presentation.screens.thread
 
-import android.annotation.SuppressLint
-import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.Attachment
-import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.ModalContent
+import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.PostInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 import java.util.*
 
@@ -24,7 +22,84 @@ class ThreadViewModel(
     private val prefs: Preferences
 ) : BaseViewModel() {
 
-    val post = MutableLiveData<Post>()
+    var screenTitle by mutableStateOf("")
+        private set
+
+    var isFavorite by mutableStateOf(false)
+        private set
+
+    var isQueued by mutableStateOf(false)
+        private set
+
+    var isDownloaded by mutableStateOf(false)
+        private set
+
+    var items by mutableStateOf(listOf<PostInitArgs>())
+        private set
+
+    var modalContent by mutableStateOf<ModalContentDialogInitArgs?>(null)
+        private set
+
+    init {
+        threadInteractor
+            .observe(boardId, threadNum)
+            .defaultThreads()
+            .subscribe(
+                { thread ->
+                    screenTitle = thread.title
+                    isFavorite = thread.isFavorite
+                    isQueued = thread.isQueued
+                    isDownloaded = thread.isDownloaded
+                    items = prepareItemList(thread.posts)
+                },
+                { Log.e("ThreadViewModel", "ThreadViewModel.init: \n $it") }
+            )
+            .addToSubscribe()
+    }
+
+    private fun prepareItemList(posts: List<Post>): List<PostInitArgs> =
+        posts.map { post ->
+            PostInitArgs(post, ::onPicClicked)
+        }
+
+    private fun onPicClicked(file: AttachedFile) {
+
+    }
+
+    fun setFavorite() {
+        threadInteractor
+            .markFavorite(boardId, threadNum)
+            .defaultThreads()
+            .subscribe(
+                { },
+                { Log.e("ThreadViewModel","ThreadViewModel.setFavorite: \n $it") }
+            )
+            .addToSubscribe()
+    }
+
+    fun setQueued() {
+        threadInteractor
+            .markQueued(boardId, threadNum)
+            .defaultThreads()
+            .subscribe(
+                { },
+                { Log.e("ThreadViewModel","ThreadViewModel.setQueued: \n $it") }
+            )
+            .addToSubscribe()
+    }
+
+    fun download() {
+        threadInteractor
+            .save(boardId, threadNum)
+            .defaultThreads()
+            .subscribe(
+                { },
+                { Log.e("ThreadViewModel","ThreadViewModel.download: \n $it") }
+            )
+            .addToSubscribe()
+    }
+
+/*    val post = MutableLiveData<Post>()
     val attachment = MutableLiveData<Attachment>()
     val emptyStack = MutableLiveData<Boolean>()
     val thread = MutableLiveData<BoardThread>()
@@ -225,5 +300,5 @@ class ThreadViewModel(
                 { Log.e("M_ThreadPresenter", "get tread in tread presenter error = $it") }
             )
             .addToSubscribe()
-    }
+    }*/
 }

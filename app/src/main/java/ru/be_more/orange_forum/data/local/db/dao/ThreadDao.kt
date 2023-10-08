@@ -4,14 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 
 @Dao
 interface ThreadDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Update(onConflict = OnConflictStrategy.IGNORE)
     fun insert(thread: StoredThread): Completable
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -28,6 +30,18 @@ interface ThreadDao {
 
     @Query("SELECT * FROM threads WHERE isDownloaded = 1 OR isFavorite = 1")
     fun getFavorites(): Observable<List<StoredThread>>
+
+    @Query("SELECT num FROM threads WHERE isFavorite = 1")
+    fun getFavoriteIdsSync(): List<Int>
+
+    @Query("SELECT num FROM threads WHERE isQueued = 1")
+    fun getQueuedIdsSync(): List<Int>
+
+    @Query("SELECT num FROM threads WHERE isDownloaded = 1")
+    fun getDownloadIdsSync(): List<Int>
+
+    @Query("SELECT num FROM threads ")
+    fun getHiddenIdsSync(): List<Int>
 
     @Query("SELECT * FROM threads WHERE isQueued = 1")
     fun getQueue(): Observable<List<StoredThread>>
@@ -47,6 +61,6 @@ interface ThreadDao {
     @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun delete(boardId: String, threadNum: Int): Completable
 
-    @Query("DELETE FROM threads WHERE boardId = :boardId")
+    @Query("DELETE FROM threads WHERE boardId = :boardId AND isFavorite = 0 AND isDownloaded = 0 AND isHidden = 0 AND isQueued = 0")
     fun delete(boardId: String): Completable
 }

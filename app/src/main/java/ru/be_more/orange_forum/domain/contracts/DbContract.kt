@@ -24,7 +24,9 @@ interface DbContract {
         fun observeList(): Observable<List<Board>>
         @Deprecated("why boardId? remove?")
         fun observeCount(boardId: String): Observable<Int>
+        fun delete(boardId: String): Completable
         fun insert(board: Board): Completable
+        fun insert(boards: List<Board>): Completable
         @Deprecated("Delete")
         fun insert(boardId: String, boardName: String, isFavorite: Boolean): Completable
         fun markFavorite(boardId: String, isFavorite: Boolean): Completable
@@ -45,20 +47,22 @@ interface DbContract {
         fun observeFavorite(): Observable<List<BoardThread>>
         fun observeQueued(): Observable<List<BoardThread>>
         fun delete(boardId: String, threadNum: Int): Completable
+        fun delete(boardId: String): Completable
         fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int): Completable
         fun markFavorite(boardId: String, threadNum: Int, isFavorite: Boolean): Completable
         fun markHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable
         fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean): Completable
-        fun delete(boardId: String): Completable
     }
 
     interface PostRepository {
         fun insert(post: Post): Completable
         fun insert(posts: List<Post>): Completable
+        fun save(posts: List<Post>): Single<List<Post>> //insert + save images
         fun insertOp(posts: List<Post>): Completable
         fun observeOp(boardId: String): Observable<List<Post>>
         fun observe(boardId: String, threadNum: Int): Observable<List<Post>>
         fun get(boardId: String, threadNum: Int): Single<List<Post>>
         fun delete(boardId: String, threadNum: Int): Completable
+        fun delete(boardId: String): Completable
     }
 }

@@ -18,10 +18,10 @@ data class StoredThread(
     val newMessageAmount: Int,
     val postCount: Int,
     val fileCount: Int,
-    val isHidden: Boolean = false,
-    val isDownloaded: Boolean = false,
-    val isFavorite: Boolean = false,
-    val isQueued: Boolean = false
+    val isHidden: Boolean,
+    val isDownloaded: Boolean,
+    val isFavorite: Boolean,
+    val isQueued: Boolean,
 ) {
     constructor(thread: BoardThread): this(
         num = thread.num,

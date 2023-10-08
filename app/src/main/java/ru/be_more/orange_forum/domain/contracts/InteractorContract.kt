@@ -8,19 +8,20 @@ import ru.be_more.orange_forum.domain.model.*
 interface InteractorContract {
 
     interface CategoryInteractor {
-        fun get(): Observable<List<Category>>
-        fun setIsExpanded(name: String): Completable
+        fun observe(): Observable<List<Category>>
+        fun toggleExpanded(name: String): Completable
         fun setSearchQuery(query: String)
     }
 
     interface BoardInteractor {
-        fun get(boardId: String): Observable<Board>
+        fun observe(boardId: String): Observable<Board>
         fun markFavorite(boardId: String): Completable
         fun refresh(boardId: String): Completable
     }
 
     interface ThreadInteractor {
-        fun observe(boardId: String, threadNum: Int, ): Observable<BoardThread>
+        fun observe(boardId: String, threadNum: Int): Observable<BoardThread>
+        fun save(boardId: String, threadNum: Int): Completable
         fun markFavorite(boardId: String, threadNum: Int): Completable
         fun markQueued(boardId: String, threadNum: Int): Completable
         fun markHidden(boardId: String, threadNum: Int): Completable

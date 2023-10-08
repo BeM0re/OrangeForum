@@ -19,7 +19,7 @@ class CategoryViewModel(
 
     init {
         interactor
-            .get()
+            .observe()
             .map { prepareList(it)}
             .defaultThreads()
             .subscribe(
@@ -50,7 +50,7 @@ class CategoryViewModel(
         }
 
     private fun setCategoryExpanded(name: String) {
-        interactor.setIsExpanded(name)
+        interactor.toggleExpanded(name)
             .defaultThreads()
             .subscribe(
                 {},

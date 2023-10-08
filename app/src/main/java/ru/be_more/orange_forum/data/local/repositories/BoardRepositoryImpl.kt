@@ -35,6 +35,9 @@ class BoardRepositoryImpl(
     override fun observeCount(boardId: String): Observable<Int> =
         dao.observeCount(boardId)
 
+    override fun delete(boardId: String): Completable =
+        dao.delete(boardId)
+
     fun getBoardsObservable(): Observable<List<Board>> =
         dao.observeList()
             .map { boardList ->
@@ -42,15 +45,28 @@ class BoardRepositoryImpl(
             }
 
     override fun insert(board: Board): Completable =
-        //todo save states
-        dao.insertBoard(
-            StoredBoard(
-                id = board.id,
-                category = "",
-                name = board.name,
-                isFavorite = board.isFavorite
-            )
-        )
+        dao.get(board.id)
+            .map { it.isFavorite }
+            .defaultIfEmpty(false)
+            .flatMapCompletable { isFavorite ->
+                dao.insertBoard(
+                    StoredBoard(
+                        board.copy(isFavorite = isFavorite)
+                    )
+                )
+            }
+
+    override fun insert(boards: List<Board>): Completable =
+        dao.getFavorites()
+            .flatMapCompletable { favorites ->
+                dao.insertBoardList(
+                    boards.map { board ->
+                        StoredBoard(
+                            board.copy(isFavorite = board.id in favorites)
+                        )
+                    }
+                )
+            }
 
     @Deprecated("Delete")
     override fun insert(boardId: String, boardName: String, isFavorite: Boolean) =

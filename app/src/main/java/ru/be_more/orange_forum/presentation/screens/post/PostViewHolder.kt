@@ -85,7 +85,7 @@ class PostViewHolder(itemView: View, private val listener: PicOnClickListener) :
         comment.setListener(listener)
     }
 
-    fun setReplies(replies: Stack<Int>, listener: LinkOnClickListener) {
+    fun setReplies(replies: List<Int>, listener: LinkOnClickListener) {
         replyPosts.text = ""
         var replyResult = ""
 

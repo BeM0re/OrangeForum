@@ -12,13 +12,17 @@ data class ThreadDto(
     val fileCount: Int = 0,
     val title: String = "",
     @SerializedName("threads")
-    val threads: InnerThreadDto
+    val threads: List<InnerThreadDto>
 ) {
     fun toModel(boardId: String) =
         BoardThread(
             boardId = boardId,
             num = num,
-            posts = threads.posts.map { it.toModel(boardId, num) },
+            posts = threads
+                .getOrNull(0)
+                ?.posts
+                ?.map { it.toModel(boardId, num) }
+                ?: emptyList(),
             title = title,
             postCount = postCount,
             fileCount = fileCount,

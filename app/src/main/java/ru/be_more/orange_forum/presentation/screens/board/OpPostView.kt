@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
@@ -22,11 +21,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.presentation.composeViews.CommentTextView
 import ru.be_more.orange_forum.presentation.composeViews.ImageRow
+import ru.be_more.orange_forum.presentation.data.ListItemArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
@@ -49,17 +49,17 @@ fun OpPostView(
             ) {
                 Text(
                     text = post.name,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
                 Text(
                     text = post.dateTimeString,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
                 Text(
                     text = post.id.toString(),
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
             }
@@ -80,11 +80,8 @@ fun OpPostView(
                 onPic = onPick,
             )
 
-            Text(
+            CommentTextView(
                 text = post.comment,
-                fontSize = 13.sp,
-                lineHeight = 16.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp)
             )
 
@@ -102,13 +99,13 @@ fun OpPostView(
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = W600,
                         maxLines = 2,
-                        fontSize = 13.sp,
+                        fontSize = 14.sp,
                         modifier = Modifier
                     )
                     Text(
                         text = stringResource(id = R.string.posts_with_image, post.fileCount),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 13.sp,
+                        fontSize = 14.sp,
                         modifier = Modifier
                     )
                 }
@@ -118,6 +115,7 @@ fun OpPostView(
                     Text(
                         text = stringResource(id = R.string.btn_title_hide),
                         color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 14.sp,
                         fontWeight = W500,
                         modifier = Modifier.wrapContentSize()
                     )
@@ -128,6 +126,7 @@ fun OpPostView(
                     Text(
                         text = stringResource(id = R.string.btn_title_into),
                         color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 14.sp,
                         fontWeight = W500,
                         modifier = Modifier.wrapContentSize()
                     )
@@ -187,7 +186,7 @@ data class OpPostInitArgs(
     val onPick: (AttachedFile) -> Unit,
     val onHide: (String, Int) -> Unit,
     val onQueue: (String, Int) -> Unit,
-)
+) : ListItemArgs
 
 //data class OpPostViewInitArgs(
 //    val boardId: String,
