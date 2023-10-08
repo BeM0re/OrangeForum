@@ -26,37 +26,29 @@ class BoardInteractorImpl(
             }
 
     override fun refresh(boardId: String): Completable =
-        threadRepository.delete(boardId)
+        threadRepository
+            .deleteKeepingState(boardId)
             .andThen(downloadBoard(boardId))
 
     private fun downloadBoard(boardId: String): Completable =
         apiRepository.getBoard(boardId)
             .flatMapCompletable { board ->
-                boardRepository.insert(board)
-                .andThen(
-                    threadRepository.insert(board.threads)
-                )
-                .andThen(
-                    postRepository.insert(
-                        board.threads.mapNotNull {
-                            it.posts.getOrNull(0)
-                        }
+                boardRepository
+                    .deleteKeepingState()
+                    .andThen(
+                        boardRepository.insertKeepingState(board)
                     )
-                )
+                    .andThen(
+                        threadRepository.insertKeepingState(board.threads)
+                    )
+                    .andThen(
+                        postRepository.insert(
+                            board.threads.mapNotNull {
+                                it.posts.getOrNull(0)
+                            }
+                        )
+                    )
             }
-
-
-    /**
-     * delete threads, but save threads with changed status.
-     * delete all posts
-     * */
-    //todo keep my posts
-    private fun clearBoard(boardId: String): Completable =
-        threadRepository.delete(boardId)
-            .andThen(
-                postRepository.delete(boardId)
-            )
-
 
     private fun observeBoard(boardId: String): Observable<Board> =
         Observable.combineLatest(

@@ -23,7 +23,7 @@ class BoardRepositoryImpl(
     override fun observe(boardId: String): Observable<Board> =
         dao.observe(boardId)
             .map { it.toModel() }
-            .doOnError { Log.e("BoardRepositoryImpl","error = $it") }
+            .doOnError { Log.e("BoardRepositoryImpl","BoardRepositoryImpl.observe = $it") }
 
     override fun observeList(): Observable<List<Board>> =
         dao.observeList()
@@ -31,20 +31,7 @@ class BoardRepositoryImpl(
                 boardList.map { it.toModel() }
             }
 
-    @Deprecated("why boardId? remove?")
-    override fun observeCount(boardId: String): Observable<Int> =
-        dao.observeCount(boardId)
-
-    override fun delete(boardId: String): Completable =
-        dao.delete(boardId)
-
-    fun getBoardsObservable(): Observable<List<Board>> =
-        dao.observeList()
-            .map { boardList ->
-                boardList.map { it.toModel() }
-            }
-
-    override fun insert(board: Board): Completable =
+    override fun insertKeepingState(board: Board): Completable =
         dao.get(board.id)
             .map { it.isFavorite }
             .defaultIfEmpty(false)
@@ -56,7 +43,7 @@ class BoardRepositoryImpl(
                 )
             }
 
-    override fun insert(boards: List<Board>): Completable =
+    override fun insertKeepingState(boards: List<Board>): Completable =
         dao.getFavorites()
             .flatMapCompletable { favorites ->
                 dao.insertBoardList(
@@ -67,16 +54,6 @@ class BoardRepositoryImpl(
                     }
                 )
             }
-
-    @Deprecated("Delete")
-    override fun insert(boardId: String, boardName: String, isFavorite: Boolean) =
-        dao.insertBoard(
-            StoredBoard(
-                id = boardId,
-                category = "",
-                name = boardName,
-                isFavorite = isFavorite)
-        )
 
     override fun markFavorite(
         boardId: String,
@@ -91,19 +68,23 @@ class BoardRepositoryImpl(
         count: Int
     ): Completable =
         Completable.complete()
-        /* dao.get(boardId)
-            .map { board ->
-                val index = board.threads.indexOfFirst{ it.num == threadNum}
-                if (index > -1)
-                    board.copy(
-                        threads = board.threads.toMutableList().apply {
-                            set(index, get(index).copy(newMessageAmount = count))
-                        }
-                    )
-                else
-                    board
-            }
-            .doOnSuccess { dao.insertBoard(it) }
-            .ignoreElement()*/
+    /* dao.get(boardId)
+        .map { board ->
+            val index = board.threads.indexOfFirst{ it.num == threadNum}
+            if (index > -1)
+                board.copy(
+                    threads = board.threads.toMutableList().apply {
+                        set(index, get(index).copy(newMessageAmount = count))
+                    }
+                )
+            else
+                board
+        }
+        .doOnSuccess { dao.insertBoard(it) }
+        .ignoreElement()*/
+
+
+    override fun deleteKeepingState(): Completable =
+        dao.deleteKeepingState()
 
 }

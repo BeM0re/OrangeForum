@@ -21,7 +21,7 @@ class ThreadInteractorImpl(
         boardId: String,
         threadNum: Int,
     ): Observable<BoardThread> =
-        getThread(boardId, threadNum, savePics = false)
+        refresh(boardId, threadNum)
             .andThen(
                 Observable.combineLatest(
                     threadRepository.observe(boardId, threadNum),
@@ -32,7 +32,14 @@ class ThreadInteractorImpl(
             )
 
     override fun save(boardId: String, threadNum: Int): Completable =
-        getThread(boardId,threadNum, savePics = true)
+        apiRepository.getThread(boardId, threadNum)
+            .flatMapCompletable { thread ->
+                threadRepository
+                    .insertKeepingState(
+                        listOf(thread.copy(isDownloaded = true))
+                    )
+                    .andThen(postRepository.save(thread.posts))
+            }
 
     override fun markFavorite(boardId: String, threadNum: Int): Completable =
         threadRepository
@@ -55,6 +62,7 @@ class ThreadInteractorImpl(
                 threadRepository.markHidden(boardId, threadNum, !it.isHidden)
             }
 
+    //todo для докачивания постов есть отдельный метод апи
     override fun subToUpdate(boardId: String, threadNum: Int): Completable =
         Observable
             .interval(ThreadUpdateInterval, TimeUnit.SECONDS)
@@ -99,6 +107,16 @@ class ThreadInteractorImpl(
         threadRepository.delete(boardId, threadNum)
             .andThen(postRepository.delete(boardId, threadNum))
 
+    private fun refresh(boardId: String, threadNum: Int): Completable =
+        apiRepository.getThread(boardId, threadNum)
+            .flatMapCompletable { thread ->
+                threadRepository.insertKeepingState(listOf(thread))
+                    .andThen(
+                        postRepository.insertMissing(thread)
+                    )
+            }
+
+    @Deprecated("")
     private fun getThread(
         boardId: String,
         threadNum: Int,
@@ -111,7 +129,7 @@ class ThreadInteractorImpl(
                     threadRepository
                         .insert(thread.copy(isDownloaded = true))
                         .andThen(postRepository.save(thread.posts))
-                        .flatMapCompletable { postRepository.insert(it) }
+
                 else
                     threadRepository
                         .insert(thread)

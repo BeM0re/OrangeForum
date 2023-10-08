@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.entities.StoredPost
@@ -17,6 +18,7 @@ interface PostDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(posts: List<StoredPost>): Completable
 
+
     @Query("SELECT * FROM posts WHERE boardId = :boardId AND isOpPost = 1")
     fun observeOp(boardId: String): Observable<List<StoredPost>>
 
@@ -26,15 +28,10 @@ interface PostDao {
     @Query("SELECT * FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
     fun get(boardId: String, threadNum: Int): Single<List<StoredPost>>
 
-    //todo keep op?
+    @Query("SELECT MAX(number) FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
+    fun getMaxNumber(boardId: String, threadNum: Int): Maybe<Int>
+
+
     @Query("DELETE FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
     fun delete(boardId: String, threadNum: Int): Completable
-
-    //todo keep op?
-    @Query("DELETE FROM posts WHERE boardId = :boardId")
-    fun delete(boardId: String): Completable
-
-/*
-    @Query("DELETE FROM posts WHERE boardId = :boardId AND threadNum NOT IN (SELECT threadNum FROM threads WHERE boardId == :boardId)")
-    fun delete(boardId: String): Completable*/
 }

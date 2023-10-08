@@ -6,7 +6,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.ThreadDao
-import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -31,13 +30,13 @@ class ThreadRepositoryImpl(
             }
 
     override fun observeFavorite(): Observable<List<BoardThread>> =
-        dao.getFavorites()
+        dao.observeFavorites()
             .map { threads ->
                 threads.map { it.toModel() }
             }
 
     override fun observeQueued(): Observable<List<BoardThread>> =
-        dao.getQueue()
+        dao.observeQueue()
             .map { threads ->
                 threads.map { it.toModel() }
             }
@@ -45,7 +44,7 @@ class ThreadRepositoryImpl(
     override fun insert(thread: BoardThread): Completable =
         dao.insert(StoredThread(thread))
 
-    override fun insert(threads: List<BoardThread>): Completable =
+    override fun insertKeepingState(threads: List<BoardThread>): Completable =
         Single
             .fromCallable {
                 val favoriteIds = dao.getFavoriteIdsSync()
@@ -57,7 +56,7 @@ class ThreadRepositoryImpl(
                     thread.copy(
                         isFavorite = thread.num in favoriteIds,
                         isQueued = thread.num in queuedIds,
-                        isDownloaded = thread.num in downloadedIds,
+                        isDownloaded = thread.num in downloadedIds || thread.isDownloaded,
                         isHidden = thread.num in hiddenIds,
                     )
                 }
@@ -88,12 +87,11 @@ class ThreadRepositoryImpl(
         )
     }
 
-    //todo keep hidden?
     override fun delete(boardId: String, threadNum: Int): Completable =
         dao.delete(boardId, threadNum)
 
-    override fun delete(boardId: String): Completable =
-        dao.delete(boardId)
+    override fun deleteKeepingState(boardId: String): Completable =
+        dao.deleteKeepingState(boardId)
 
     override fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int) =
         dao.updateLastPostNum(boardId, threadNum, postNum)

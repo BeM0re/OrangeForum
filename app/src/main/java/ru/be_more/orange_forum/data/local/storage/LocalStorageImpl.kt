@@ -50,7 +50,7 @@ class LocalStorageImpl(
         }
     }
 
-    override fun removeFile(path: String) {
+    override fun delete(path: String) {
         try {
             context.contentResolver.delete(Uri.parse(path), null, null)
         }

@@ -5,7 +5,7 @@ import android.net.Uri
 interface StorageContract {
     interface LocalStorage {
         fun saveFile(url: String): Uri?
-        fun removeFile(path: String)
+        fun delete(path: String)
     }
 
 }

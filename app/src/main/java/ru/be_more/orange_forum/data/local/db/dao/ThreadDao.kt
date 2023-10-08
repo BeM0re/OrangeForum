@@ -8,7 +8,6 @@ import androidx.room.Update
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 
 @Dao
@@ -19,17 +18,22 @@ interface ThreadDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(thread: List<StoredThread>): Completable
 
+
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun observe(boardId: String, threadNum: Int): Observable<StoredThread>
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId")
     fun observeList(boardId: String): Observable<List<StoredThread>>
 
+    @Query("SELECT * FROM threads WHERE isQueued = 1")
+    fun observeQueue(): Observable<List<StoredThread>>
+
+    @Query("SELECT * FROM threads WHERE isDownloaded = 1 OR isFavorite = 1")
+    fun observeFavorites(): Observable<List<StoredThread>>
+
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun get(boardId: String, threadNum: Int): Maybe<StoredThread>
 
-    @Query("SELECT * FROM threads WHERE isDownloaded = 1 OR isFavorite = 1")
-    fun getFavorites(): Observable<List<StoredThread>>
 
     @Query("SELECT num FROM threads WHERE isFavorite = 1")
     fun getFavoriteIdsSync(): List<Int>
@@ -40,11 +44,9 @@ interface ThreadDao {
     @Query("SELECT num FROM threads WHERE isDownloaded = 1")
     fun getDownloadIdsSync(): List<Int>
 
-    @Query("SELECT num FROM threads ")
+    @Query("SELECT num FROM threads WHERE isHidden = 1")
     fun getHiddenIdsSync(): List<Int>
 
-    @Query("SELECT * FROM threads WHERE isQueued = 1")
-    fun getQueue(): Observable<List<StoredThread>>
 
     @Query("UPDATE threads SET isFavorite = :isFavorite WHERE boardId = :boardId AND num = :threadNum")
     fun setIsFavorite(boardId: String, threadNum: Int, isFavorite: Boolean): Completable
@@ -58,9 +60,10 @@ interface ThreadDao {
     @Query("UPDATE threads SET lastPostNumber = :postNum WHERE boardId = :boardId AND num = :threadNum")
     fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int): Completable
 
+
     @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun delete(boardId: String, threadNum: Int): Completable
 
     @Query("DELETE FROM threads WHERE boardId = :boardId AND isFavorite = 0 AND isDownloaded = 0 AND isHidden = 0 AND isQueued = 0")
-    fun delete(boardId: String): Completable
+    fun deleteKeepingState(boardId: String): Completable
 }
