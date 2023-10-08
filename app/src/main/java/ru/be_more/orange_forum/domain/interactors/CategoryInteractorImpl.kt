@@ -4,7 +4,6 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -22,15 +21,18 @@ class CategoryInteractorImpl(
     override fun observe(): Observable<List<Category>> =
         apiRepository.getCategories()
             .flatMapCompletable { categories ->
-                categoryRepository.insert(categories)
+                categoryRepository
+                    .delete()
                     .andThen(
-                        boardRepository.insert(
+                        categoryRepository.insert(categories)
+                    )
+                    .andThen(
+                        boardRepository.insertKeepingState(
                             categories
                                 .map { it.boards }
                                 .flatten()
                         )
                     )
-
             }
             .andThen(
                 Observable.combineLatest(

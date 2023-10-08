@@ -18,17 +18,9 @@ interface BoardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertBoardList(boardList: List<StoredBoard>): Completable
 
-    @Query("SELECT COUNT(id) FROM boards WHERE id = :boardId")
-    fun getCount(boardId: String): Single<Int>
 
-    @Query("SELECT COUNT(id) FROM boards WHERE id = :boardId")
-    fun observeCount(boardId: String): Observable<Int>
-
-    @Query("DELETE FROM boards WHERE id = :boardId")
-    fun delete(boardId: String): Completable
-
-    @Query("SELECT * FROM boards")
-    fun getList(): Single<List<StoredBoard>>
+    @Query("SELECT * FROM boards WHERE id = :boardId")
+    fun observe(boardId: String): Observable<StoredBoard>
 
     @Query("SELECT * FROM boards")
     fun observeList(): Observable<List<StoredBoard>>
@@ -36,12 +28,17 @@ interface BoardDao {
     @Query("SELECT * FROM boards WHERE id = :boardId")
     fun get(boardId: String): Maybe<StoredBoard>
 
+    @Query("SELECT * FROM boards")
+    fun getList(): Single<List<StoredBoard>>
+
     @Query("SELECT id FROM boards WHERE isFavorite = 1")
     fun getFavorites(): Single<List<String>>
 
-    @Query("SELECT * FROM boards WHERE id = :boardId")
-    fun observe(boardId: String): Observable<StoredBoard>
 
     @Query("UPDATE boards SET isFavorite = :isFavorite WHERE id = :boardId")
     fun markFavorite(boardId: String, isFavorite: Boolean): Completable
+
+
+    @Query("DELETE FROM boards WHERE isFavorite = 0")
+    fun deleteKeepingState(): Completable
 }
