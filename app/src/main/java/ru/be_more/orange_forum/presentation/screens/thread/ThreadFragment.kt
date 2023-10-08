@@ -82,7 +82,7 @@ class ThreadFragment :
         downButtonAdded = menu.findItem(R.id.navigation_download_done)
         refreshButton = menu.findItem(R.id.navigation_refresh)
         setToolbarListeners()
-        viewModel.onMenuReady()
+//        viewModel.onMenuReady()
     }
 
     override fun onDestroyView() {
@@ -93,31 +93,31 @@ class ThreadFragment :
 
     private fun setToolbarListeners() {
         favButton?.setOnMenuItemClickListener {
-            viewModel.setFavorite(true)
+//            viewModel.setFavorite(true)
             true
         }
         favButtonAdded?.setOnMenuItemClickListener {
-            viewModel.setFavorite(false)
+//            viewModel.setFavorite(false)
             true
         }
         downButton?.setOnMenuItemClickListener {
-            viewModel.download(true)
+//            viewModel.download(true)
             true
         }
         downButtonAdded?.setOnMenuItemClickListener {
-            viewModel.download(false)
+//            viewModel.download(false)
             true
         }
         queueButton?.setOnMenuItemClickListener {
-            viewModel.addToQueue(false)
+//            viewModel.addToQueue(false)
             true
         }
         queueButtonAdded?.setOnMenuItemClickListener {
-            viewModel.addToQueue(true)
+//            viewModel.addToQueue(true)
             true
         }
         refreshButton?.setOnMenuItemClickListener {
-            viewModel.onRefresh()
+//            viewModel.onRefresh()
             true
         }
         refreshButton?.isVisible = true
@@ -132,7 +132,7 @@ class ThreadFragment :
         binding.strPostList.setColorSchemeColors(getColor(requireContext(), R.color.color_accent))
 
         binding.strPostList.setOnRefreshListener {
-            viewModel.onRefresh()
+//            viewModel.onRefresh()
         }
 
         binding.rvPostList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -154,26 +154,26 @@ class ThreadFragment :
         val boardId = requireArguments().getString(NAVIGATION_BOARD_ID)?:""
         val boardName = requireArguments().getString(NAVIGATION_BOARD_NAME)?:""
         val threadNum = requireArguments().getInt(NAVIGATION_THREAD_NUM)
-        viewModel.init(boardId, threadNum, boardName)
+//        viewModel.init(boardId, threadNum, boardName)
     }
 
     private fun subscribe() {
         with(viewModel){
-            observe(thread, ::loadThread)
-            observe(post, ::showPost)
-            observe(attachment, ::showPost)
-            observe(emptyStack) { hideModal() }
-            observe(savedPosition, ::setPosition)
-            observe(isFavorite, ::setFavoriteMark)
-            observe(isQueued, ::setQueueMark)
-            observe(isDownload, ::setDownloadMark)
-            observe(isRefreshing, ::setRefresh)
+//            observe(thread, ::loadThread)
+//            observe(post, ::showPost)
+//            observe(attachment, ::showPost)
+//            observe(emptyStack) { hideModal() }
+//            observe(savedPosition, ::setPosition)
+//            observe(isFavorite, ::setFavoriteMark)
+//            observe(isQueued, ::setQueueMark)
+//            observe(isDownload, ::setDownloadMark)
+//            observe(isRefreshing, ::setRefresh)
         }
     }
 
     override fun onBackPressed(): Boolean {
         return if (binding.flThreadPost.visibility != View.GONE){
-            viewModel.onBackPressed()
+//            viewModel.onBackPressed()
             false
         }
         else
@@ -278,15 +278,15 @@ class ThreadFragment :
     }
 
     override fun onThumbnailListener(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
-        viewModel.prepareModal(fullPicUrl, duration, fullPicUri)
+//        viewModel.prepareModal(fullPicUrl, duration, fullPicUri)
     }
 
     override fun onLinkClick(chanLink: Triple<String, Int, Int>?) {
-        viewModel.getPost(chanLink)
+//        viewModel.getPost(chanLink)
     }
 
     override fun onLinkClick(postNum: Int) {
-        viewModel.getPost(postNum)
+//        viewModel.getPost(postNum)
     }
 
     override fun onLinkClick(externalLink: String?) {
@@ -297,6 +297,6 @@ class ThreadFragment :
     }
 
     override fun onCloseModalListener(){
-        viewModel.closeModal()
+//        viewModel.closeModal()
     }
 }

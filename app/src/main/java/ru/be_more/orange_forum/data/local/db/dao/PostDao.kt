@@ -29,4 +29,12 @@ interface PostDao {
     //todo keep op?
     @Query("DELETE FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
     fun delete(boardId: String, threadNum: Int): Completable
+
+    //todo keep op?
+    @Query("DELETE FROM posts WHERE boardId = :boardId")
+    fun delete(boardId: String): Completable
+
+/*
+    @Query("DELETE FROM posts WHERE boardId = :boardId AND threadNum NOT IN (SELECT threadNum FROM threads WHERE boardId == :boardId)")
+    fun delete(boardId: String): Completable*/
 }

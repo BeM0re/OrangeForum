@@ -19,16 +19,16 @@ class CategoryRepositoryImpl(
             .insert(
                 categories.map { StoredCategory(it) }
             )
-            .andThen(
+ /*           .andThen(
                 boardDao.insertBoardList(
                     categories
                         .map { it.boards }
                         .flatten()
                         .map {StoredBoard(it) }
                 )
-            )
+            )*/
 
-    override fun observe(): Observable<List<Category>> =
+/*    override fun observe(): Observable<List<Category>> =
         Observable.combineLatest(
             categoryDao
                 .observeCategories()
@@ -45,7 +45,14 @@ class CategoryRepositoryImpl(
             categoryList.map { category ->
                 category.copy(boards = boardMap.getOrDefault(category.name, listOf()))
             }
-        }
+        }*/
+
+    override fun observe(): Observable<List<Category>> =
+        categoryDao
+            .observeCategories()
+            .map {  list ->
+                list.map { it.toModel() }
+            }
 
 
     override fun getEmpty(name: String): Single<Category> =

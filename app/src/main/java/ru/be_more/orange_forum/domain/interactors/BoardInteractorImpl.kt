@@ -14,8 +14,8 @@ class BoardInteractorImpl(
     private val postRepository: DbContract.PostRepository,
 ): InteractorContract.BoardInteractor {
 
-    override fun get(boardId: String): Observable<Board> =
-        downloadBoard(boardId)
+    override fun observe(boardId: String): Observable<Board> =
+        refresh(boardId)
             .andThen(observeBoard(boardId))
 
     override fun markFavorite(boardId: String): Completable =
@@ -33,17 +33,30 @@ class BoardInteractorImpl(
         apiRepository.getBoard(boardId)
             .flatMapCompletable { board ->
                 boardRepository.insert(board)
-                    .andThen(
-                        threadRepository.insert(board.threads)
+                .andThen(
+                    threadRepository.insert(board.threads)
+                )
+                .andThen(
+                    postRepository.insert(
+                        board.threads.mapNotNull {
+                            it.posts.getOrNull(0)
+                        }
                     )
-                    .andThen(
-                        postRepository.insert(
-                            board.threads.mapNotNull {
-                                it.posts.getOrNull(0)
-                            }
-                        )
-                    )
+                )
             }
+
+
+    /**
+     * delete threads, but save threads with changed status.
+     * delete all posts
+     * */
+    //todo keep my posts
+    private fun clearBoard(boardId: String): Completable =
+        threadRepository.delete(boardId)
+            .andThen(
+                postRepository.delete(boardId)
+            )
+
 
     private fun observeBoard(boardId: String): Observable<Board> =
         Observable.combineLatest(

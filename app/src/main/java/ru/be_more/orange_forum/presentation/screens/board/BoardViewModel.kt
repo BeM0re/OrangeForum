@@ -10,6 +10,7 @@ import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
+import ru.be_more.orange_forum.presentation.data.ListItemArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 import java.util.*
 
@@ -23,7 +24,7 @@ class BoardViewModel(
 
     private val modalStack: Stack<ModalContent> = Stack()
 
-    var items by mutableStateOf(listOf<OpPostInitArgs>())
+    var items by mutableStateOf(listOf<ListItemArgs>())
         private set
 
     var screenTitle by mutableStateOf("")
@@ -37,31 +38,35 @@ class BoardViewModel(
 
     init {
         boardInteractor
-            .get(boardId)
+            .observe(boardId)
             .defaultThreads()
             .subscribe(
                 { board ->
                     screenTitle = board.name
                     isFavorite = board.isFavorite
-                    items = prepareItemList(
-                        board.threads
-                    )
+                    items = prepareItemList(board.threads)
                 },
                 { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
             )
             .addToSubscribe()
     }
 
-    private fun prepareItemList(threads: List<BoardThread>): List<OpPostInitArgs> =
+    private fun prepareItemList(threads: List<BoardThread>): List<ListItemArgs> =
         threads.mapNotNull { thread ->
             val post = thread.posts.getOrNull(0) ?: return@mapNotNull null
 
-            OpPostInitArgs(
-                post = post,
-                onHide = ::hideThread,
-                onQueue = ::addToQueue,
-                onPick = ::onPick
-            )
+            if (thread.isHidden)
+                HiddenOpPostInitArgs(
+                    post = post,
+                    onClick = ::hideThread
+                )
+            else
+                OpPostInitArgs(
+                    post = post,
+                    onHide = ::hideThread,
+                    onQueue = ::addToQueue,
+                    onPick = ::onPick
+                )
         }
 
     private fun addToQueue(boardId: String, threadNum: Int) {
@@ -94,6 +99,11 @@ class BoardViewModel(
         )
     }
 
+    private fun closeModal() {
+        //todo add stack into super
+        modalContent = null
+    }
+
     fun setFavorite() {
         boardInteractor
             .markFavorite(boardId)
@@ -103,11 +113,6 @@ class BoardViewModel(
                 { Log.e("BoardViewModel","BoardViewModel.setFavorite: \n $it") }
             )
             .addToSubscribe()
-    }
-
-    fun closeModal() {
-        //todo add stack into super
-        modalContent = null
     }
 
 /*    fun init(boardId: String?, boardName: String?){

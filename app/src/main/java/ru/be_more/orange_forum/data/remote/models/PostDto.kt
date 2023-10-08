@@ -10,12 +10,12 @@ data class PostDto(
     val comment: String,
     val date: String,
     val email: String,
-    val files: List<FileDto>,
+    val files: List<FileDto>? = null,
     @SerializedName("files_count")
-    val filesCount: Int,
+    val filesCount: Int? = null,
     val op: Int,
     @SerializedName("posts_count")
-    val postsCount: Int,
+    val postsCount: Int? = null,
     val subject: String,
     val timestamp: Long,
     val number: Int //order number 0 - 500(1000)
@@ -30,10 +30,10 @@ data class PostDto(
             isOpPost = threadNum == num,
             date = date,
             email = email,
-            files = files.map { it.toModel() },
-            fileCount = filesCount,
+            files = files?.map { it.toModel() } ?: emptyList(),
+            fileCount = filesCount ?: files?.size ?: 0,
             isAuthorOp = op == 1,
-            postCount = postsCount,
+            postCount = postsCount ?: 1,
             subject = subject,
             timestamp = timestamp,
             number = number
@@ -45,7 +45,7 @@ data class PostDto(
             num = num,
             posts = listOf(toModel(boardId, num)),
             title = subject,
-            postCount = postsCount,
-            fileCount = filesCount,
+            postCount = postsCount ?: 1,
+            fileCount = filesCount ?: files?.size ?: 0,
         )
 }

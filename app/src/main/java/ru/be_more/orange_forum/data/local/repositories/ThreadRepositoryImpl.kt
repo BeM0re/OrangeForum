@@ -3,8 +3,10 @@ package ru.be_more.orange_forum.data.local.repositories
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.ThreadDao
+import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.orange_forum.domain.model.BoardThread
@@ -28,7 +30,6 @@ class ThreadRepositoryImpl(
                 threads.map { it.toModel() }
             }
 
-    //todo obaservable or single?
     override fun observeFavorite(): Observable<List<BoardThread>> =
         dao.getFavorites()
             .map { threads ->
@@ -45,9 +46,27 @@ class ThreadRepositoryImpl(
         dao.insert(StoredThread(thread))
 
     override fun insert(threads: List<BoardThread>): Completable =
-        dao.insert(
-            threads.map { StoredThread(it) }
-        )
+        Single
+            .fromCallable {
+                val favoriteIds = dao.getFavoriteIdsSync()
+                val queuedIds = dao.getQueuedIdsSync()
+                val downloadedIds = dao.getDownloadIdsSync()
+                val hiddenIds = dao.getHiddenIdsSync()
+
+                threads.map { thread ->
+                    thread.copy(
+                        isFavorite = thread.num in favoriteIds,
+                        isQueued = thread.num in queuedIds,
+                        isDownloaded = thread.num in downloadedIds,
+                        isHidden = thread.num in hiddenIds,
+                    )
+                }
+            }
+            .flatMapCompletable { editedThreads ->
+                dao.insert(
+                    editedThreads.map { StoredThread(it) }
+                )
+            }
 
     override fun save(thread: BoardThread, boardId: String): Completable {
         return dao.insert(
@@ -73,7 +92,7 @@ class ThreadRepositoryImpl(
     override fun delete(boardId: String, threadNum: Int): Completable =
         dao.delete(boardId, threadNum)
 
-    override fun delete(boardId: String): Completable=
+    override fun delete(boardId: String): Completable =
         dao.delete(boardId)
 
     override fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int) =

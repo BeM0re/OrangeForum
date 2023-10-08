@@ -6,7 +6,7 @@ import ru.be_more.orange_forum.domain.interactors.*
 
 @JvmField
 val interactorModule = module {
-    single<InteractorContract.CategoryInteractor> { CategoryInteractorImpl(get(),get()) }
+    single<InteractorContract.CategoryInteractor> { CategoryInteractorImpl(get(),get(),get()) }
     single<InteractorContract.BoardInteractor> { BoardInteractorImpl(get(),get(),get(),get()) }
     single<InteractorContract.ThreadInteractor> { ThreadInteractorImpl(get(),get(),get(),get()) }
     single<InteractorContract.PostInteractor> { PostInteractorImpl() }

@@ -50,7 +50,7 @@ class ApiRepositoryImpl(
             Single.just(lastThread)
         else
             dvachApi.getThread(boardId, threadNum, COOKIE)
-                .doOnError { throwable -> Log.e("DvachApiRepository", "get thread via api error = $throwable") }
+                .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getThread = \n$throwable") }
 //                .onErrorReturn { ThreadDto() } //todo ?
                 .map { it.toModel(boardId) }
                 .map { findResponses(it) }
@@ -131,18 +131,21 @@ class ApiRepositoryImpl(
     }
 
     private fun findResponses(board: BoardThread): BoardThread {
-        board.posts.forEach { post ->
-            //replies - на какие посты ответы
-            val replies = ParseHtml.findReply(post.comment)
-
-            //пост с номером post.num отвечает на пост с номером reply
-            //reply сохраняет, что на него ссылается post.num
-            replies.forEach { reply ->
-                board.posts.find { it.id == reply }
-                    ?.replies?.add(post.id)
+        val replies = board.posts
+            .map { post ->
+                ParseHtml.findReply(post.id, post.comment)
             }
-        }
+            .flatten()
+            .groupBy { it.to }
 
-        return board
+        return board.copy(
+            posts = board.posts.map { post ->
+                post.copy(
+                    replies = replies
+                        .getOrDefault(post.id, emptyList())
+                        .map { it.to }
+                )
+            }
+        )
     }
 }
