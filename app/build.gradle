@@ -70,7 +70,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.10.0'
     implementation "androidx.preference:preference-ktx:1.2.1"
     implementation 'com.thoughtbot:expandablerecyclerview:1.4' //todo remove
     implementation 'com.thoughtbot:expandablecheckrecyclerview:1.4' //todo remove
@@ -81,7 +81,10 @@ dependencies {
     implementation composeBom
     androidTestImplementation composeBom
     implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material:1.5.3'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
+    //swipe
+    implementation "me.saket.swipe:swipe:1.1.1"
     // Android Studio Preview support
     implementation 'androidx.compose.ui:ui-tooling-preview'
     debugImplementation 'androidx.compose.ui:ui-tooling'

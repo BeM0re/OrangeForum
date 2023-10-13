@@ -1,7 +1,12 @@
 package ru.be_more.orange_forum.presentation.screens.board
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.DraggableState
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +19,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.font.FontWeight.Companion.W600
@@ -24,22 +30,37 @@ import androidx.compose.ui.unit.sp
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.composeViews.CommentTextView
+import ru.be_more.orange_forum.presentation.composeViews.ExpandableTextVew
+import ru.be_more.orange_forum.presentation.composeViews.ParsedTextView
 import ru.be_more.orange_forum.presentation.composeViews.ImageRow
 import ru.be_more.orange_forum.presentation.data.ListItemArgs
+import ru.be_more.orange_forum.presentation.data.TextLinkArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OpPostView(
     args: OpPostInitArgs,
     modifier: Modifier = Modifier,
     onViewThread: (String, Int) -> Unit,
 ) {
+
+    val width = 96.dp
+    val squareSize = 48.dp
+
+    var swipeableState = rememberDraggableState {
+
+    }
+    val sizePx = with(LocalDensity.current) { squareSize.toPx() }
+    val anchors = mapOf(0f to 0, sizePx to 1) // Maps anchor points (in px) to states
+
     with(args) {
+
         Column(
             modifier
                 .fillMaxWidth()
                 .padding(0.dp, 0.dp, 0.dp, 8.dp)
+                .clickable { onViewThread(post.boardId, post.threadNum) }
         ) {
             Row(
                 modifier = modifier
@@ -64,7 +85,7 @@ fun OpPostView(
                 )
             }
 
-            if (post.subject.isNotEmpty()) Text(
+            if (post.subject.isNotEmpty()) ParsedTextView(
                 text = post.subject,
                 fontSize = 16.sp,
                 maxLines = 2,
@@ -72,17 +93,26 @@ fun OpPostView(
                 lineHeight = 18.sp,
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = W600,
-                modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp)
+                onTextClick = onTextLinkClick,
+                modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp),
             )
 
             if (post.files.isNotEmpty()) ImageRow(
                 files = post.files,
-                onPic = onPick,
+                onPic = onPic,
             )
 
-            CommentTextView(
+            ParsedTextView(
                 text = post.comment,
-                modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp)
+                onTextClick = onTextLinkClick,
+                maxLines = 3,
+                isExpandable = true,
+                modifier = Modifier
+                    .padding(16.dp, 8.dp, 16.dp, 0.dp)
+                    .combinedClickable(
+                        onClick = { onViewThread(post.boardId, post.threadNum) },
+                        onLongClick = { onHide(post.boardId, post.threadNum) },
+                    ),
             )
 
             Row(
@@ -175,7 +205,8 @@ fun OpPostViewPreview() {
                 ),
                 onHide = {_, _, -> },
                 onQueue = {_, _, -> },
-                onPick = { }
+                onPic = { },
+                onTextLinkClick = { },
             )
         )
     }
@@ -183,21 +214,8 @@ fun OpPostViewPreview() {
 
 data class OpPostInitArgs(
     val post: Post,
-    val onPick: (AttachedFile) -> Unit,
+    val onPic: (AttachedFile) -> Unit,
     val onHide: (String, Int) -> Unit,
     val onQueue: (String, Int) -> Unit,
+    val onTextLinkClick: (TextLinkArgs) -> Unit,
 ) : ListItemArgs
-
-//data class OpPostViewInitArgs(
-//    val boardId: String,
-//    val id: Int,
-//    val text: String,
-//    val name: String,
-//    val dateTime: String,
-//    val subject: String? = null,
-//    val postCount: Int,
-//    val imageCount: Int,
-//    val images: List<AttachedFile> = emptyList(),
-//    val onHide: (String, Int) -> Unit,
-//    val onQueue: (String, Int) -> Unit,
-//)

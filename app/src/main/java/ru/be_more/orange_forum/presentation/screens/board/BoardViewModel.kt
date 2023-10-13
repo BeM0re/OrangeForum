@@ -6,23 +6,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.ModalContent
-import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
 import ru.be_more.orange_forum.presentation.data.ListItemArgs
-import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
-import java.util.*
+import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
 
 class BoardViewModel(
-    private val boardId: String,
-    private val boardInteractor : InteractorContract.BoardInteractor,
-    private val threadInteractor : InteractorContract.ThreadInteractor,
-    private val postInteractor : InteractorContract.PostInteractor,
+    override val boardId: String,
+    private val boardInteractor: InteractorContract.BoardInteractor,
+    private val threadInteractor: InteractorContract.ThreadInteractor,
+    override val postInteractor: InteractorContract.PostInteractor,
     private val prefs: Preferences,
-): BaseViewModel() {
-
-    private val modalStack: Stack<ModalContent> = Stack()
+): BaseModalContentViewModel(
+    boardId = boardId,
+    postInteractor = postInteractor,
+) {
 
     var items by mutableStateOf(listOf<ListItemArgs>())
         private set
@@ -33,18 +30,20 @@ class BoardViewModel(
     var isFavorite by mutableStateOf(false)
         private set
 
-    var modalContent by mutableStateOf<ModalContentDialogInitArgs?>(null)
+    var isLoading by mutableStateOf(false)
         private set
 
     init {
         boardInteractor
             .observe(boardId)
             .defaultThreads()
+            .doOnSubscribe { isLoading = true }
             .subscribe(
                 { board ->
                     screenTitle = board.name
                     isFavorite = board.isFavorite
                     items = prepareItemList(board.threads)
+                    isLoading = false
                 },
                 { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
             )
@@ -65,7 +64,8 @@ class BoardViewModel(
                     post = post,
                     onHide = ::hideThread,
                     onQueue = ::addToQueue,
-                    onPick = ::onPick
+                    onPic = ::onPicClicked,
+                    onTextLinkClick = ::onTextLinkClicked,
                 )
         }
 
@@ -91,19 +91,6 @@ class BoardViewModel(
             .addToSubscribe()
     }
 
-    private fun onPick(file: AttachedFile) {
-        modalContent = ModalContentDialogInitArgs(
-            content = file,
-            onPicClick = ::onPick,
-            onDismiss = ::closeModal
-        )
-    }
-
-    private fun closeModal() {
-        //todo add stack into super
-        modalContent = null
-    }
-
     fun setFavorite() {
         boardInteractor
             .markFavorite(boardId)
@@ -115,100 +102,14 @@ class BoardViewModel(
             .addToSubscribe()
     }
 
-/*    fun init(boardId: String?, boardName: String?){
-
-//        EventBus.getDefault().post(BoardToBeOpened)
-        if (board.value == null || (board.value?.id != boardId && !boardId.isNullOrEmpty())){
-            EventBus.getDefault().post(ThreadToBeClosed)
-            if (!boardId.isNullOrEmpty() && !boardName.isNullOrEmpty())
-                boardInteractor.get(boardId)
-                    .defaultThreads()
-                    .subscribe(
-                        { board ->
-                            this.board.postValue(board)
-                            isFavorite.postValue(board.isFavorite)
-                        },
-                        { Log.e("M_BoardViewModel", "Getting board error = $it") }
-                    )
-                    .addToSubscribe()
-        }
-        else{
-            board.postValue(board.value)
-            isFavorite.postValue(isFavorite.value)
-            savedPosition.postValue(savedPosition.value)
-        }
-    }
-
-    fun clearStack() {
-        this.modalStack.clear()
-        emptyStack.postValue(true)
-    }
-
-    fun putContentInStack(modal: ModalContent) {
-        this.modalStack.push(modal)
-    }
-
-    fun onBackPressed() {
-        modalStack.pop()
-        if (!modalStack.empty()) {
-            when (val content = modalStack.peek()) {
-                is Attachment -> attachment.postValue(content)
-                is Post -> post.postValue(content)
-            }
-        } else
-            emptyStack.postValue(true)
-    }
-
-    fun getSinglePost(postNum: Int) {
-        getSinglePost(board.value?.id?:"", postNum)
-    }
-
-    fun getSinglePost(boardId: String, postNum: Int) {
-        postInteractor.getPost(boardId, postNum)
-            .defaultThreads()
+    fun refresh() {
+        boardInteractor
+            .refresh(boardId)
+            .doOnSubscribe { isLoading = true }
             .subscribe(
-                {
-//                        this.putContentInStack(it) //todo
-//                        post.postValue(it)
-                },
-                { error.postValue("Пост не найден") }
+                { isLoading = false },
+                { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
             )
             .addToSubscribe()
     }
-
-    fun setBoardMarks(){
-        isFavorite.postValue(board.value?.isFavorite)
-    }
-
-     fun getBoardId() =
-        board.value?.id
-
-     fun savePosition(pos: Int){
-        savedPosition.postValue(pos)
-    }
-
-
-
-     fun getBoardName(): String =
-        board.value?.name?:""
-
-     fun onMenuReady() {
-        isFavorite.postValue(isFavorite.value)
-    }
-
-     fun prepareModal(fullPicUrl: String?, duration: String?, fullPicUri: Uri?) {
-        if (!fullPicUrl.isNullOrEmpty() || fullPicUri != null)
-            Attachment(fullPicUrl, duration, fullPicUri).also {
-                putContentInStack(it)
-                attachment.postValue(it)
-            }
-    }
-
-     fun linkClicked(chanLink: Triple<String, Int, Int>?) {
-        if (chanLink?.first.isNullOrEmpty() || chanLink?.third == null)
-            error.postValue("Пост не найден")
-        else
-            getSinglePost(chanLink.first, chanLink.third)
-    }
-    */
 }

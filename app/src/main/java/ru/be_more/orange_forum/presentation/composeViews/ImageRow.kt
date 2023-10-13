@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -21,12 +22,13 @@ fun ImageRow(
     files: List<AttachedFile>,
     onPic: (AttachedFile) -> Unit,
     modifier: Modifier = Modifier,
+    height: Dp = 120.dp,
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(height)
             .padding(16.dp, 8.dp, 16.dp, 0.dp)
 
     ) {

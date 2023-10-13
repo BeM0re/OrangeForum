@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.data.local.repositories
 
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.dao.PostDao
@@ -68,14 +69,18 @@ class PostRepositoryImpl(
                 posts.map { it.toModel() }
             }
 
-    override fun get(boardId: String, threadNum: Int): Single<List<Post>> =
-        dao.get(boardId, threadNum)
+    override fun get(boardId: String, post: Int): Maybe<Post> =
+        dao.get(boardId, post)
+            .map { it.toModel() }
+
+    override fun getThreadPosts(boardId: String, threadNum: Int): Single<List<Post>> =
+        dao.getThreadPosts(boardId, threadNum)
             .map { posts ->
                 posts.map { it.toModel() }
             }
 
     override fun delete(boardId: String, threadNum: Int): Completable =
-        dao.get(boardId, threadNum)
+        dao.getThreadPosts(boardId, threadNum)
             .flatMapCompletable { posts ->
                 Completable.fromCallable {
                     posts

@@ -1,74 +1,94 @@
 package ru.be_more.orange_forum.presentation.composeViews
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.AttachedFile
-import ru.be_more.orange_forum.domain.model.Attachment
-import ru.be_more.orange_forum.domain.model.ModalContent
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.presentation.data.ImageInitArgs
+import ru.be_more.orange_forum.presentation.data.ModalContentArgs
+import ru.be_more.orange_forum.presentation.data.PostInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
 fun ModalContentDialog(args: ModalContentDialogInitArgs, modifier: Modifier = Modifier) {
-    Dialog(
-        onDismissRequest = { args.onDismiss() },
-    ) {
-        when (args.content) {
-            is AttachedFile -> PicDialog(file = args.content)
-            is Post -> PostDialog(post = args.content, onPicClick = args.onPicClick)
-            is Attachment -> { /*todo delete*/ }
+    with(args) {
+
+        Dialog(
+            onDismissRequest = { onClose() },
+        ) {
+            BackPressHandler(
+                onBackPressed = { onBack() }
+            )
+            when (modalArgs) {
+                is ImageInitArgs -> PicDialog(
+                    args = modalArgs,
+                    modifier = modifier,
+                )
+                is PostInitArgs -> PostDialog(
+                    args = modalArgs,
+                    modifier = modifier,
+                )
+            }
         }
     }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun PicDialog(file: AttachedFile) {
+fun PicDialog(
+    args: ImageInitArgs,
+    modifier: Modifier = Modifier,
+) {
     val scale = remember { mutableFloatStateOf(1f) }
+    val translationY = remember { mutableFloatStateOf(1f) }
+    val translationX = remember { mutableFloatStateOf(1f) }
 
     Box(
-        Modifier
-            .clip(RectangleShape)
+        modifier
             .fillMaxSize()
+            .clip(RectangleShape)
             .background(MaterialTheme.colorScheme.primary)
-            .padding(8.dp)
+            .padding(8.dp, 24.dp)
             .pointerInput(Unit) {
-                detectTransformGestures { _, _, zoom, _ ->
+                detectTransformGestures { _, pan, zoom, _ ->
                     scale.floatValue *= zoom
+                    translationX.floatValue += pan.x
+                    translationY.floatValue += pan.y
                 }
             }
     ) {
         GlideImage(
             contentScale = ContentScale.FillWidth,
-            model = file.getLink(isThumbnail = false),
+            model = args.file.getLink(isThumbnail = false),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth(1f)
@@ -76,11 +96,13 @@ fun PicDialog(file: AttachedFile) {
                 .graphicsLayer(
                     scaleX = maxOf(1f, minOf(3f, scale.floatValue)),
                     scaleY = maxOf(1f, minOf(3f, scale.floatValue)),
+                    translationX = translationX.floatValue,
+                    translationY = translationY.floatValue,
                 ),
         )
 
         Text(
-            text = file.displayName,
+            text = args.file.displayName,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
@@ -88,21 +110,20 @@ fun PicDialog(file: AttachedFile) {
 
 @Composable
 fun PostDialog(
-    post: Post,
-    onPicClick: (AttachedFile) -> Unit,
+    args: PostInitArgs,
+    modifier: Modifier = Modifier,
 ) {
     Box(
-        Modifier
-            .clip(RectangleShape)
-            .padding(24.dp)
+        modifier
             .fillMaxWidth()
+            .clip(RectangleShape)
             .background(MaterialTheme.colorScheme.primary)
-            .padding(16.dp)
+            .padding(0.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        PostView(args = PostInitArgs(
-            post = post,
-            onPicClick = onPicClick,
-        ))
+        PostView(
+            args = args
+        )
     }
 }
 
@@ -121,36 +142,35 @@ fun ModalContentDialogPreview() {
     DvachTheme(dynamicColor = false) {
         ModalContentDialog(
             ModalContentDialogInitArgs(
-                /*content = AttachedFile(
-                    displayName = "name.jpg",
-                    thumbnail = "https://2ch.hk/diy/thumb/734711/16909098338470s.jpg",
-                    path = "https://2ch.hk/diy/thumb/734711/16909098338470s.jpg",
-                    duration = ""
-                )*/
-                content = Post(
-                    boardId = "",
-                    threadNum = 1,
-                    id = 123,
-                    name = "Anon",
-                    comment = "text text",
-                    isOpPost = true,
-                    date = "21.21.21",
-                    email = "",
-                    fileCount = 0,
-                    isAuthorOp = true,
-                    postCount = 32,
-                    subject = "Subject",
-                    timestamp = 2312342232,
-                    number = 312,
+                modalArgs = PostInitArgs(
+                    post = Post(
+                        boardId = "",
+                        threadNum = 1,
+                        id = 123,
+                        name = "Anon",
+                        comment = "text text",
+                        isOpPost = true,
+                        date = "21.21.21",
+                        email = "",
+                        fileCount = 0,
+                        isAuthorOp = true,
+                        postCount = 32,
+                        subject = "Subject",
+                        timestamp = 2312342232,
+                        number = 312,
+                    ),
+                    onTextLinkClick = { },
+                    onPicClick = { }
                 ),
-                onDismiss = {},
+                onBack = { },
+                onClose = { },
             )
         )
     }
 }
 
 data class ModalContentDialogInitArgs(
-    val content: ModalContent,
-    val onPicClick: (AttachedFile) -> Unit = { },
-    val onDismiss: () -> Unit,
+    val modalArgs: ModalContentArgs,
+    val onBack: () -> Unit,
+    val onClose: () -> Unit,
 )

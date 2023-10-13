@@ -20,9 +20,9 @@ data class Post(
     val subject: String,
     val timestamp: Long,
     val number: Int, //Порядковый номер в треде
-    val replies: List<Int> = Stack()
+    val replies: List<Int> = emptyList()
 ) : ModalContent {
     val dateTimeString =
-        if (Build.VERSION.SDK_INT >= 26) Instant.ofEpochSecond(timestamp.toLong()).toString()
+        if (Build.VERSION.SDK_INT >= 26) Instant.ofEpochSecond(timestamp).toString()
         else "todo" //todo
 }

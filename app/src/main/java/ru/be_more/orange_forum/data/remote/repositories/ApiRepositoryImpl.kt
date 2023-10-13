@@ -21,10 +21,6 @@ class ApiRepositoryImpl(
     private val dvachApi : DvachApi
 ) : RemoteContract.ApiRepository{
 
-    private var lastThread: BoardThread? = null //todo delete
-    private var lastThreadBoard = ""
-    private var lastBoard: Board? = null
-
     override fun getCategories(): Single<List<Category>> =
         dvachApi.getBoardList()
             .map { dto ->
@@ -46,41 +42,20 @@ class ApiRepositoryImpl(
 //            .map { it } //без мапа почему то свитч проходит в ?, а не !
 
     override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
-        if (boardId == lastThreadBoard && threadNum == lastThread?.num && !forceUpdate)
-            Single.just(lastThread)
-        else
-            dvachApi.getThread(boardId, threadNum, COOKIE)
-                .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getThread = \n$throwable") }
+        dvachApi.getThread(boardId, threadNum, COOKIE)
+            .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getThread = \n$throwable") }
 //                .onErrorReturn { ThreadDto() } //todo ?
-                .map { it.toModel(boardId) }
-                .map { findResponses(it) }
-                .doAfterSuccess {
-                    lastThread = it
-                    lastThreadBoard = boardId
-                }
-
-    override fun getThreadShort(boardId: String, threadNum: Int): Single<BoardThread> =
-        when {
-            boardId == lastBoard?.id -> {
-                lastBoard?.threads
-                    ?.firstOrNull { it.num == threadNum }
-                    ?.let { return Single.just(it) }
-                getThread(boardId, threadNum)
-            }
-            boardId == lastThreadBoard && threadNum == lastThread?.num ->
-                Single.just(lastThread)
-            else ->
-                getThread(boardId, threadNum)
-        }
+            .map { it.toModel(boardId) }
+            .map { findResponses(it) }
 
     override fun getPost(
         boardId: String,
+        threadNum: Int,
         postNum: Int,
-        cookie: String
     ): Single<Post> =
         dvachApi.getPost(boardId, postNum, COOKIE)
-            .doOnError { throwable -> Log.e("MvachApiRepository", "ApiRepositoryImpl.getPost = \n$throwable") }
-            .map { it.post.toModel(boardId, postNum) } //todo postNum ok?
+            .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getPost = \n$throwable") }
+            .map { it.post.toModel(boardId, threadNum) }
 
     override fun postResponse(
         boardId: String,
@@ -143,7 +118,7 @@ class ApiRepositoryImpl(
                 post.copy(
                     replies = replies
                         .getOrDefault(post.id, emptyList())
-                        .map { it.to }
+                        .map { it.from }
                 )
             }
         )

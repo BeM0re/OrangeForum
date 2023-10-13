@@ -26,7 +26,10 @@ interface PostDao {
     fun observe(boardId: String, threadNum: Int): Observable<List<StoredPost>>
 
     @Query("SELECT * FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
-    fun get(boardId: String, threadNum: Int): Single<List<StoredPost>>
+    fun getThreadPosts(boardId: String, threadNum: Int): Single<List<StoredPost>>
+
+    @Query("SELECT * FROM posts WHERE boardId = :boardId AND id = :postId")
+    fun get(boardId: String, postId: Int): Maybe<StoredPost>
 
     @Query("SELECT MAX(number) FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
     fun getMaxNumber(boardId: String, threadNum: Int): Maybe<Int>

@@ -6,21 +6,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.PostInitArgs
-import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
+import ru.be_more.orange_forum.presentation.data.PostInitArgs
+import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
 import java.util.*
 
 //TODO прятать fab при нажатии на ответ
 class ThreadViewModel(
-    private val boardId: String,
+    override val boardId: String,
     private val threadNum: Int,
     private val threadInteractor: InteractorContract.ThreadInteractor,
-    private val postInteractor: InteractorContract.PostInteractor,
+    override val postInteractor: InteractorContract.PostInteractor,
     private val prefs: Preferences
-) : BaseViewModel() {
+) : BaseModalContentViewModel(
+    boardId = boardId,
+    postInteractor = postInteractor,
+) {
 
     var screenTitle by mutableStateOf("")
         private set
@@ -35,9 +36,6 @@ class ThreadViewModel(
         private set
 
     var items by mutableStateOf(listOf<PostInitArgs>())
-        private set
-
-    var modalContent by mutableStateOf<ModalContentDialogInitArgs?>(null)
         private set
 
     init {
@@ -59,12 +57,12 @@ class ThreadViewModel(
 
     private fun prepareItemList(posts: List<Post>): List<PostInitArgs> =
         posts.map { post ->
-            PostInitArgs(post, ::onPicClicked)
+            PostInitArgs(
+                post = post,
+                onPicClick = ::onPicClicked,
+                onTextLinkClick = ::onTextLinkClicked,
+            )
         }
-
-    private fun onPicClicked(file: AttachedFile) {
-
-    }
 
     fun setFavorite() {
         threadInteractor
