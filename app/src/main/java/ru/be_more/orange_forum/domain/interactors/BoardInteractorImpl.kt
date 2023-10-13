@@ -6,6 +6,7 @@ import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
+import java.util.concurrent.TimeUnit
 
 class BoardInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
@@ -28,6 +29,7 @@ class BoardInteractorImpl(
     override fun refresh(boardId: String): Completable =
         threadRepository
             .deleteKeepingState(boardId)
+            .andThen(Completable.timer(1, TimeUnit.SECONDS))
             .andThen(downloadBoard(boardId))
 
     private fun downloadBoard(boardId: String): Completable =

@@ -61,7 +61,8 @@ interface DbContract {
         fun insertOp(posts: List<Post>): Completable
         fun observeOp(boardId: String): Observable<List<Post>>
         fun observe(boardId: String, threadNum: Int): Observable<List<Post>>
-        fun get(boardId: String, threadNum: Int): Single<List<Post>>
+        fun get(boardId: String, post: Int): Maybe<Post>
+        fun getThreadPosts(boardId: String, threadNum: Int): Single<List<Post>>
         fun delete(boardId: String, threadNum: Int): Completable
     }
 }

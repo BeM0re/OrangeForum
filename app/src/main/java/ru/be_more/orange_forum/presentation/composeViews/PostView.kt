@@ -20,6 +20,9 @@ import androidx.compose.ui.unit.sp
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.orange_forum.presentation.data.ModalContentArgs
+import ru.be_more.orange_forum.presentation.data.PostInitArgs
+import ru.be_more.orange_forum.presentation.data.TextLinkArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
@@ -51,7 +54,7 @@ fun PostView(args: PostInitArgs, modifier: Modifier = Modifier) {
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
                 Text(
-                    text = post.dateTimeString,
+                    text = post.date,
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
@@ -80,21 +83,17 @@ fun PostView(args: PostInitArgs, modifier: Modifier = Modifier) {
                     .fillMaxWidth()
             )
 
-            CommentTextView(
+            ParsedTextView(
                 text = post.comment,
-                modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp)
+                modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp),
+                onTextClick = onTextLinkClick,
             )
 
-            Text(
-                text = post.replies.mapIndexed { index, num ->
-                    if (index == 0) ">>$num" else " >>$num" }
-                    .toString()
-                    .let {
-                        it.substring(1, it.length - 1)
-                    },
+            ReplyTextView(
+                post = post,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
-                color = MaterialTheme.colorScheme.tertiary,
+                onTextClick = onTextLinkClick,
                 modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp)
             )
         }
@@ -136,15 +135,10 @@ fun PostViewPreview() {
                     number = 1233,
                     replies = listOf(12321, 32123),
                 ),
-                onPicClick = {},
+                onPicClick = { },
+                onTextLinkClick = { },
             )
         )
     }
 }
 
-
-
-data class PostInitArgs(
-    val post: Post,
-    val onPicClick: (AttachedFile) -> Unit,
-)

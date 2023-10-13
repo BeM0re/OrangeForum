@@ -14,8 +14,11 @@ interface RemoteContract {
         fun getCategories(): Single<List<Category>>
         fun getBoard(boardId: String): Single<Board>
         fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean = false): Single<BoardThread>
-        fun getThreadShort(boardId: String, threadNum: Int): Single<BoardThread>
-        fun getPost(boardId: String, postNum: Int, cookie: String): Single<Post>
+        fun getPost(
+            boardId: String,
+            threadNum: Int,
+            postNum: Int,
+        ): Single<Post>
         fun postResponse(
             boardId: String,
             threadNum: Int,

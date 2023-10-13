@@ -36,8 +36,11 @@ interface InteractorContract {
     }
 
     interface PostInteractor {
-        @Deprecated("Maybe delete")
-        fun getPost(boardId: String, postNum: Int): Single<Int>
+        fun getPost(
+            boardId: String,
+            threadNum: Int,
+            postNum: Int
+        ): Single<Post>
     }
 
     interface ResponseInteractor {
