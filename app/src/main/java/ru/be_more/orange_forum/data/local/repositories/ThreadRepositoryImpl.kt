@@ -87,12 +87,6 @@ class ThreadRepositoryImpl(
         )
     }
 
-    override fun delete(boardId: String, threadNum: Int): Completable =
-        dao.delete(boardId, threadNum)
-
-    override fun deleteKeepingState(boardId: String): Completable =
-        dao.deleteKeepingState(boardId)
-
     override fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int) =
         dao.updateLastPostNum(boardId, threadNum, postNum)
 
@@ -104,4 +98,13 @@ class ThreadRepositoryImpl(
 
     override fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean): Completable =
         dao.setIsQueue(boardId, threadNum, isQueued)
+
+    override fun delete(boardId: String, threadNum: Int): Completable =
+        dao.delete(boardId, threadNum)
+
+    override fun deleteKeepingState(boardId: String): Completable =
+        dao.deleteKeepingState(boardId)
+
+    override fun deleteExceptGiven(boardId: String, liveThreadNumList: List<Int>): Completable =
+        dao.deleteExceptGiven(boardId, liveThreadNumList)
 }

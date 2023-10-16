@@ -66,4 +66,7 @@ interface ThreadDao {
 
     @Query("DELETE FROM threads WHERE boardId = :boardId AND isFavorite = 0 AND isDownloaded = 0 AND isHidden = 0 AND isQueued = 0")
     fun deleteKeepingState(boardId: String): Completable
+
+    @Query("DELETE FROM threads WHERE boardId = :boardId AND num NOT IN (:threadNumList)")
+    fun deleteExceptGiven(boardId: String, threadNumList: List<Int>): Completable
 }

@@ -44,12 +44,13 @@ interface DbContract {
         fun observeList(boardId: String): Observable<List<BoardThread>>
         fun observeFavorite(): Observable<List<BoardThread>>
         fun observeQueued(): Observable<List<BoardThread>>
-        fun delete(boardId: String, threadNum: Int): Completable
-        fun deleteKeepingState(boardId: String): Completable
         fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int): Completable
         fun markFavorite(boardId: String, threadNum: Int, isFavorite: Boolean): Completable
         fun markHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable
         fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean): Completable
+        fun delete(boardId: String, threadNum: Int): Completable
+        fun deleteKeepingState(boardId: String): Completable
+        fun deleteExceptGiven(boardId: String, liveThreadNumList: List<Int>): Completable
     }
 
     interface PostRepository {
