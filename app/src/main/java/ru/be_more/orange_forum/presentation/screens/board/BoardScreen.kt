@@ -21,6 +21,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.getKoin
+import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
@@ -91,26 +93,6 @@ fun BoardScreen(
             }
 
         }
-    }
-}
-
-fun NavGraphBuilder.boardScreen(onNavigateToThread: (String, Int) -> Unit) {
-    composable(
-        route = Screen.Board.route + "?boardId={boardId}",
-        arguments = listOf(
-            navArgument(name = "boardId") {
-                type = NavType.StringType
-                nullable = true
-            },
-        )
-    ) { entry ->
-        val id = entry.arguments?.getString("boardId") ?: return@composable
-        BoardScreen(
-            viewModel = koinViewModel(
-                parameters = { parametersOf(id) }
-            ),
-            onNavigateToThread = onNavigateToThread,
-        )
     }
 }
 
