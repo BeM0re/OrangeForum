@@ -49,6 +49,12 @@ class BoardInteractorImpl(
                             }
                         )
                     )
+                    .andThen(
+                        threadRepository.deleteExceptGiven(
+                            boardId = board.id,
+                            liveThreadNumList = board.threads.map { it.num }
+                        )
+                    )
             }
 
     private fun observeBoard(boardId: String): Observable<Board> =

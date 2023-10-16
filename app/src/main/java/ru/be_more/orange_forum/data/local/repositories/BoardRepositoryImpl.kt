@@ -86,5 +86,4 @@ class BoardRepositoryImpl(
 
     override fun deleteKeepingState(): Completable =
         dao.deleteKeepingState()
-
 }
