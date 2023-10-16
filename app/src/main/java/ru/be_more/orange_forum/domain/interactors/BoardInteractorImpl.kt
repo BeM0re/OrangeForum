@@ -29,7 +29,6 @@ class BoardInteractorImpl(
     override fun refresh(boardId: String): Completable =
         threadRepository
             .deleteKeepingState(boardId)
-            .andThen(Completable.timer(1, TimeUnit.SECONDS))
             .andThen(downloadBoard(boardId))
 
     private fun downloadBoard(boardId: String): Completable =

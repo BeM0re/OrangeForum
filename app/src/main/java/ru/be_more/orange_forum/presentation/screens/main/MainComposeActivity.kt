@@ -2,7 +2,6 @@ package ru.be_more.orange_forum.presentation.screens.main
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -28,23 +27,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.GlobalContext.startKoin
-import ru.be_more.orange_forum.di.*
+import androidx.navigation.navArgument
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.presentation.screens.base.Screen
-import ru.be_more.orange_forum.presentation.screens.board.boardScreen
+import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
+import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 import ru.be_more.orange_forum.presentation.screens.category.categoryScreen
 import ru.be_more.orange_forum.presentation.screens.favorite.favoriteScreen
 import ru.be_more.orange_forum.presentation.screens.queue.queueScreen
-import ru.be_more.orange_forum.presentation.screens.thread.threadScreen
+import ru.be_more.orange_forum.presentation.screens.thread.ThreadScreen
+import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModel
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 class MainActivity : ComponentActivity() {
+
+    private var boardViewModel: BoardViewModel? = null
+    private var threadViewModel: ThreadViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,17 +111,26 @@ class MainActivity : ComponentActivity() {
                     selected = currentDestination?.hierarchy
                         ?.any { it.route?.contains(menuItem.route) == true } == true,
                     onClick = {
-                        Toast.makeText(
-                            this@MainActivity,
-                            this@MainActivity.resources.getString(menuItem.title),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        navController.navigate(menuItem.route) {
-                            /*popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }*/
-                            launchSingleTop = true
-                            restoreState = true
+                        when (menuItem) {
+                            is Screen.Board -> {
+                                navController.navigate(
+                                    route = Screen.Board.route + "?boardId=",
+                                ) {
+                                    launchSingleTop = true
+                                }
+                            }
+                            is Screen.Thread -> {
+                                navController.navigate(
+                                    route = Screen.Board.route + "?boardId=" + "?threadNum=",
+                                ) {
+                                    launchSingleTop = true
+                                }
+                            }
+                            else -> {
+                                navController.navigate(menuItem.route) {
+                                    launchSingleTop = true
+                                }
+                            }
                         }
                     },
                     icon = {
@@ -147,6 +162,7 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.padding(innerPadding)
         ) {
             categoryScreen { boardId ->
+                boardViewModel = null
                 navController.navigate(
                     route = Screen.Board.route + "?boardId=$boardId"
                 ) {
@@ -154,15 +170,60 @@ class MainActivity : ComponentActivity() {
                     restoreState = true
                 }
             }
-            boardScreen { boardId, threadNum ->
-                navController.navigate(
-                    route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
-                ) {
-                    launchSingleTop = true
-                    restoreState = true
+
+            composable(
+                route = Screen.Board.route + "?boardId={boardId}",
+                arguments = listOf(
+                    navArgument(name = "boardId") {
+                        type = NavType.StringType
+                        nullable = true
+                    },
+                )
+            ) { entry ->
+                val id = entry.arguments?.getString("boardId") ?: return@composable
+                (boardViewModel ?: koinViewModel(
+                    parameters = { parametersOf(id) }
+                )).let { vmValue ->
+                    boardViewModel = vmValue
+                    BoardScreen(
+                        viewModel = vmValue,
+                        onNavigateToThread = { boardId, threadNum ->
+                            threadViewModel = null
+                            navController.navigate(
+                                route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                            ) {
+                                launchSingleTop = true
+                                restoreState = false
+                            }
+                        },
+                    )
                 }
             }
-            threadScreen()
+
+            composable(
+                route = Screen.Thread.route + "?boardId={boardId}" + "?threadNum={threadNum}",
+                arguments = listOf(
+                    navArgument(name = "boardId") {
+                        type = NavType.StringType
+                        nullable = true
+                    },
+                    navArgument(name = "threadNum") {
+                        type = NavType.IntType
+                        nullable = false
+                    },
+                )
+            ) { entry ->
+                val boardId = entry.arguments?.getString("boardId") ?: ""
+                val threadNum = entry.arguments?.getInt("threadNum") ?: 0
+
+                (threadViewModel ?: koinViewModel(
+                    parameters = { parametersOf(boardId, threadNum) }
+                )).let { vmValue ->
+                    threadViewModel = vmValue
+                    ThreadScreen(vmValue)
+                }
+            }
+
             queueScreen()
             favoriteScreen()
             //todo setting
