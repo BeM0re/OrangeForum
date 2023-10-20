@@ -27,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -35,22 +34,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
+import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
-import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 import ru.be_more.orange_forum.presentation.screens.category.categoryScreen
 import ru.be_more.orange_forum.presentation.screens.favorite.favoriteScreen
 import ru.be_more.orange_forum.presentation.screens.queue.queueScreen
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadScreen
-import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModel
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
+import ru.be_more.orange_forum.utils.ViewModelProvider
 
 class MainActivity : ComponentActivity() {
 
-    private var boardViewModel: BoardViewModel? = null
-    private var threadViewModel: ThreadViewModel? = null
+    private val vmProvider: ViewModelProvider by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,7 +140,6 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.padding(innerPadding)
         ) {
             categoryScreen { boardId ->
-                boardViewModel = null
                 navController.navigate(
                     route = Screen.Board.route + "?boardId=$boardId"
                 ) {
@@ -159,28 +154,22 @@ class MainActivity : ComponentActivity() {
                 arguments = listOf(
                     navArgument(name = "boardId") {
                         type = NavType.StringType
-                        nullable = true
+                        nullable = false
                     },
                 )
             ) { entry ->
                 val id = entry.arguments?.getString("boardId") ?: return@composable
-                (boardViewModel ?: koinViewModel(
-                    parameters = { parametersOf(id) }
-                )).let { vmValue ->
-                    boardViewModel = vmValue
-                    BoardScreen(
-                        viewModel = vmValue,
-                        onNavigateToThread = { boardId, threadNum ->
-                            threadViewModel = null
-                            navController.navigate(
-                                route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
-                            ) {
-                                launchSingleTop = true
-                                restoreState = false
-                            }
-                        },
-                    )
-                }
+                BoardScreen(
+                    viewModel = vmProvider.getVM(id),
+                    onNavigateToThread = { boardId, threadNum ->
+                        navController.navigate(
+                            route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
+                )
             }
 
             //board w/o params
@@ -188,9 +177,8 @@ class MainActivity : ComponentActivity() {
                 route = Screen.Board.route,
             ) {
                 BoardScreen(
-                    viewModel = requireNotNull(boardViewModel),
+                    viewModel = vmProvider.getVM(),
                     onNavigateToThread = { boardId, threadNum ->
-                        threadViewModel = null
                         navController.navigate(
                             route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
                         ) {
@@ -207,7 +195,7 @@ class MainActivity : ComponentActivity() {
                 arguments = listOf(
                     navArgument(name = "boardId") {
                         type = NavType.StringType
-                        nullable = true
+                        nullable = false
                     },
                     navArgument(name = "threadNum") {
                         type = NavType.IntType
@@ -218,24 +206,18 @@ class MainActivity : ComponentActivity() {
                 val boardId = entry.arguments?.getString("boardId") ?: ""
                 val threadNum = entry.arguments?.getInt("threadNum") ?: 0
 
-                (threadViewModel ?: koinViewModel(
-                    parameters = { parametersOf(boardId, threadNum) }
-                )).let { vmValue ->
-                    threadViewModel = vmValue
-                    ThreadScreen(vmValue)
-                }
+                ThreadScreen(vmProvider.getVM(boardId, threadNum))
             }
 
             //thread w/o params
             composable(
                 route = Screen.Thread.route,
             ) {
-                ThreadScreen(requireNotNull(threadViewModel))
+                ThreadScreen(vmProvider.getVM())
             }
 
             queueScreen(
                 onNavigateToBoard = { boardId ->
-                    boardViewModel = null
                     navController.navigate(
                         route = Screen.Board.route + "?boardId=$boardId"
                     ) {
@@ -244,7 +226,6 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 onNavigateToThread = { boardId, threadNum ->
-                    threadViewModel = null
                     navController.navigate(
                         route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
                     ) {
@@ -256,7 +237,6 @@ class MainActivity : ComponentActivity() {
 
             favoriteScreen(
                 onNavigateToBoard = { boardId ->
-                    boardViewModel = null
                     navController.navigate(
                         route = Screen.Board.route + "?boardId=$boardId"
                     ) {
@@ -265,7 +245,6 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 onNavigateToThread = { boardId, threadNum ->
-                    threadViewModel = null
                     navController.navigate(
                         route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
                     ) {
