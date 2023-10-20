@@ -62,6 +62,7 @@ class BoardViewModel(
             else
                 OpPostInitArgs(
                     post = post,
+                    isQueued = thread.isQueued,
                     onHide = ::hideThread,
                     onQueue = ::addToQueue,
                     onPic = ::onPicClicked,

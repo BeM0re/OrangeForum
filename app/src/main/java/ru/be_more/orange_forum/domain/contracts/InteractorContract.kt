@@ -54,6 +54,7 @@ interface InteractorContract {
 
     interface QueueInteractor {
         fun observe(): Observable<List<Board>>
+        fun clear(): Completable
         //todo добавить какой-то запрос на обновление новых сообщений?
     }
 

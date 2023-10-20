@@ -111,26 +111,8 @@ class MainActivity : ComponentActivity() {
                     selected = currentDestination?.hierarchy
                         ?.any { it.route?.contains(menuItem.route) == true } == true,
                     onClick = {
-                        when (menuItem) {
-                            is Screen.Board -> {
-                                navController.navigate(
-                                    route = Screen.Board.route + "?boardId=",
-                                ) {
-                                    launchSingleTop = true
-                                }
-                            }
-                            is Screen.Thread -> {
-                                navController.navigate(
-                                    route = Screen.Board.route + "?boardId=" + "?threadNum=",
-                                ) {
-                                    launchSingleTop = true
-                                }
-                            }
-                            else -> {
-                                navController.navigate(menuItem.route) {
-                                    launchSingleTop = true
-                                }
-                            }
+                        navController.navigate(menuItem.route) {
+                            launchSingleTop = true
                         }
                     },
                     icon = {
@@ -171,6 +153,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            //board with params
             composable(
                 route = Screen.Board.route + "?boardId={boardId}",
                 arguments = listOf(
@@ -200,6 +183,25 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            //board w/o params
+            composable(
+                route = Screen.Board.route,
+            ) {
+                BoardScreen(
+                    viewModel = requireNotNull(boardViewModel),
+                    onNavigateToThread = { boardId, threadNum ->
+                        threadViewModel = null
+                        navController.navigate(
+                            route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
+                )
+            }
+
+            //thread with params
             composable(
                 route = Screen.Thread.route + "?boardId={boardId}" + "?threadNum={threadNum}",
                 arguments = listOf(
@@ -224,8 +226,54 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            queueScreen()
-            favoriteScreen()
+            //thread w/o params
+            composable(
+                route = Screen.Thread.route,
+            ) {
+                ThreadScreen(requireNotNull(threadViewModel))
+            }
+
+            queueScreen(
+                onNavigateToBoard = { boardId ->
+                    boardViewModel = null
+                    navController.navigate(
+                        route = Screen.Board.route + "?boardId=$boardId"
+                    ) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onNavigateToThread = { boardId, threadNum ->
+                    threadViewModel = null
+                    navController.navigate(
+                        route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                    ) {
+                        launchSingleTop = true
+                        restoreState = false
+                    }
+                }
+            )
+
+            favoriteScreen(
+                onNavigateToBoard = { boardId ->
+                    boardViewModel = null
+                    navController.navigate(
+                        route = Screen.Board.route + "?boardId=$boardId"
+                    ) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onNavigateToThread = { boardId, threadNum ->
+                    threadViewModel = null
+                    navController.navigate(
+                        route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                    ) {
+                        launchSingleTop = true
+                        restoreState = false
+                    }
+                }
+            )
             //todo setting
         }
     }

@@ -11,7 +11,6 @@ import ru.be_more.orange_forum.presentation.data.PostInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
 import java.util.*
 
-//TODO прятать fab при нажатии на ответ
 class ThreadViewModel(
     override val boardId: String,
     private val threadNum: Int,

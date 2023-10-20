@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.domain.interactors
 
+import io.reactivex.Completable
 import io.reactivex.Observable
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -24,4 +25,8 @@ class QueueInteractorImpl(
                 }
                 .filter { it.threads.isNotEmpty() }
         }
+
+    override fun clear(): Completable =
+        threadRepository.markQueuedAll(isQueued = false)
+
 }
