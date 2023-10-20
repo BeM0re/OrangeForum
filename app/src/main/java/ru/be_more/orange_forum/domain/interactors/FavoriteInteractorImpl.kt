@@ -23,7 +23,7 @@ class FavoriteInteractorImpl(
                 .map { (board, threads) ->
                     board.copy(threads = threads)
                 }
-                .filter { it.threads.isNotEmpty() }
+                .filter { it.threads.isNotEmpty() || it.isFavorite }
         }
 
 /*    fun getDownFavs(): Observable<List<Board>> =

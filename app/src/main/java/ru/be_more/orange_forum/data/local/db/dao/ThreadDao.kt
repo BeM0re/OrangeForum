@@ -54,6 +54,9 @@ interface ThreadDao {
     @Query("UPDATE threads SET isQueued = :isQueued WHERE boardId = :boardId AND num = :threadNum")
     fun setIsQueue(boardId: String, threadNum: Int, isQueued: Boolean): Completable
 
+    @Query("UPDATE threads SET isQueued = :isQueued")
+    fun setIsQueueForAll(isQueued: Boolean): Completable
+
     @Query("UPDATE threads SET isHidden = :isHidden WHERE boardId = :boardId AND num = :threadNum")
     fun setIsHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable
 

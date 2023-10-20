@@ -73,7 +73,7 @@ fun CategoryScreen(
     }
 }
 
-fun NavGraphBuilder.categoryScreen(onNavigateToBoard: (String) -> Unit){
+fun NavGraphBuilder.categoryScreen(onNavigateToBoard: (String) -> Unit) {
     composable(route = Screen.Category.route) {
         CategoryScreen(
             viewModel = koinViewModel(),

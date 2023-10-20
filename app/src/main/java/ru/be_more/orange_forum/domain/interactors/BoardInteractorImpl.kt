@@ -35,10 +35,11 @@ class BoardInteractorImpl(
         apiRepository.getBoard(boardId)
             .flatMapCompletable { board ->
                 boardRepository
-                    .deleteKeepingState()
-                    .andThen(
-                        boardRepository.insertKeepingState(board)
-                    )
+                    .insertKeepingState(board)
+//                    .deleteKeepingState()
+//                    .andThen(
+//                        boardRepository.insertKeepingState(board)
+//                    )
                     .andThen(
                         threadRepository.insertKeepingState(board.threads)
                     )

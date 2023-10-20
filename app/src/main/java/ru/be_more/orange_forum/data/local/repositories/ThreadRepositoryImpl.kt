@@ -99,6 +99,9 @@ class ThreadRepositoryImpl(
     override fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean): Completable =
         dao.setIsQueue(boardId, threadNum, isQueued)
 
+    override fun markQueuedAll(isQueued: Boolean): Completable =
+        dao.setIsQueueForAll(isQueued)
+
     override fun delete(boardId: String, threadNum: Int): Completable =
         dao.delete(boardId, threadNum)
 

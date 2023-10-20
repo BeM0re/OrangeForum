@@ -34,7 +34,7 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
 
         init(view)
         subscribe()
-        viewModel.init()
+//        viewModel.init()
     }
 
     override fun onDestroyView() {
@@ -47,7 +47,7 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
     }
 
     fun subscribe(){
-        observe(viewModel.boards, ::loadQueue)
+//        observe(viewModel.boards, ::loadQueue)
     }
 
     override fun onBackPressed() : Boolean{
@@ -97,6 +97,6 @@ class QueueFragment : BaseFragment<FragmentQueueBinding>(), DownFavListener{
     }
 
     override fun onRemoveClick(boardId: String, threadNum: Int) {
-        viewModel.removeThread(boardId, threadNum)
+//        viewModel.removeThread(boardId, threadNum)
     }
 }
