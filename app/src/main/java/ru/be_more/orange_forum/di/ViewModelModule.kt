@@ -8,9 +8,11 @@ import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteViewModel
 import ru.be_more.orange_forum.presentation.screens.queue.QueueViewModel
 import ru.be_more.orange_forum.presentation.screens.response.ResponseViewModel
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModel
+import ru.be_more.orange_forum.utils.ViewModelProvider
 
 @JvmField
 val viewModelModule = module {
+    single { ViewModelProvider() }
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { BoardViewModel(get(), get(), get(), get(), get()) }
     viewModel { ThreadViewModel(get(), get(), get(), get(), get()) }
