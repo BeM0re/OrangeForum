@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import ru.be_more.orange_forum.domain.model.AttachedFile
+import ru.be_more.orange_forum.utils.GlideCookiedUrl
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -33,9 +34,14 @@ fun ImageRow(
 
     ) {
         items(files) { file ->
+
+            val url = GlideCookiedUrl.getGlideUrl(
+                file.getLink(isThumbnail = true)
+            )
+
             GlideImage(
                 contentScale = ContentScale.FillWidth,
-                model = file.getLink(isThumbnail = true),
+                model = url,
                 contentDescription = null,
                 modifier = Modifier
                     .height(120.dp)

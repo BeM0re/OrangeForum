@@ -22,6 +22,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
+import ru.be_more.orange_forum.utils.GlideCookiedUrl
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -33,8 +34,10 @@ fun OpPostShortView(args: OpPostShortInitArgs, modifier: Modifier = Modifier) {
         ) {
             Box(Modifier.size(72.dp)) {
                 thumbnailUrl?.let {
+                    val url = GlideCookiedUrl.getGlideUrl(thumbnailUrl)
+
                     GlideImage(
-                        model = thumbnailUrl,
+                        model = url,
                         contentDescription = null,
                         modifier = Modifier
                             .clickable { onPic(picUrl) }
