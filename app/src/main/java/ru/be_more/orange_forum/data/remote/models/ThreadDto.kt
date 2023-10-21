@@ -26,6 +26,8 @@ data class ThreadDto(
             title = title,
             postCount = postCount,
             fileCount = fileCount,
+            isPinned = (threads.getOrNull(0)?.posts?.getOrNull(0)?.sticky ?: 0) > 0,
+            lasthit = threads.getOrNull(0)?.posts?.getOrNull(0)?.lasthit ?: 0,
         )
 
     data class InnerThreadDto(

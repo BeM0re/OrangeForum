@@ -18,7 +18,7 @@ import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
         StoredThread::class,
         StoredPost::class,
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 

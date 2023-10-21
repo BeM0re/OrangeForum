@@ -18,7 +18,9 @@ data class PostDto(
     val postsCount: Int? = null,
     val subject: String,
     val timestamp: Long,
-    val number: Int //order number 0 - 500(1000)
+    val number: Int, //order number 0 - 500(1000)
+    val sticky: Int,
+    val lasthit: Long,
 ) {
     fun toModel(boardId: String, threadNum: Int) =
         Post(
@@ -47,5 +49,7 @@ data class PostDto(
             title = subject.ifEmpty { comment },
             postCount = postsCount ?: 1,
             fileCount = filesCount ?: files?.size ?: 0,
+            isPinned = sticky > 0,
+            lasthit = lasthit,
         )
 }
