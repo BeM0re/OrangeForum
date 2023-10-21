@@ -44,7 +44,7 @@ data class PostDto(
             boardId = boardId,
             num = num,
             posts = listOf(toModel(boardId, num)),
-            title = subject,
+            title = subject.ifEmpty { comment },
             postCount = postsCount ?: 1,
             fileCount = filesCount ?: files?.size ?: 0,
         )

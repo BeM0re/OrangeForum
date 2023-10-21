@@ -60,5 +60,5 @@ class CategoryViewModel(
     }
 
     fun search(query: String) =
-        interactor.setSearchQuery(query)
+        interactor.search(query)
 }

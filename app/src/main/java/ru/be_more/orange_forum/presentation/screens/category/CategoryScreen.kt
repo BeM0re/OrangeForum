@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import org.koin.androidx.compose.koinViewModel
@@ -41,13 +42,15 @@ fun CategoryScreen(
             ) {
                 DvachIcon(
                     painter = painterResource(id = R.drawable.ic_settings_accent_24dp),
-                    modifier = Modifier.clickable {
-                        Toast.makeText(
-                            context.get(),
-                            "Will be later",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    modifier = Modifier
+                        .clickable {
+                            Toast.makeText(
+                                context.get(),
+                                "Will be later",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        .padding(8.dp)
                 )
             }
         },

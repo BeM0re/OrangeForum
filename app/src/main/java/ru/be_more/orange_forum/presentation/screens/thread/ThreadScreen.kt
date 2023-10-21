@@ -41,21 +41,27 @@ fun ThreadScreen(
                                 if (isFavorite) R.drawable.ic_favorite_accent_24dp
                                 else R.drawable.ic_favorite_border_accent_24dp
                             ),
-                            Modifier.clickable { setFavorite() }
+                            Modifier
+                                .clickable { setFavorite() }
+                                .padding(8.dp)
                         )
                         DvachIcon(
                             painter = painterResource(
                                 if (isQueued) R.drawable.ic_queue_added_accent_24
                                 else R.drawable.ic_queue_add_accent_24
                             ),
-                            Modifier.clickable { setQueued() }
+                            Modifier
+                                .clickable { setQueued() }
+                                .padding(8.dp)
                         )
                         DvachIcon(
                             painter = painterResource(
                                 if (isDownloaded) R.drawable.ic_cloud_done_black_24dp
                                 else R.drawable.ic_cloud_download_accent_24dp
                             ),
-                            Modifier.clickable { download() }
+                            Modifier
+                                .clickable { download() }
+                                .padding(8.dp)
                         )
                     }
                 }

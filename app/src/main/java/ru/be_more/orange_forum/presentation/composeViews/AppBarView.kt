@@ -77,6 +77,10 @@ fun AppBarView(
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onPrimary
         )
+
+        if (!isSearchFieldVisible)
+            iconListComposable()
+
         if (isSearchVisible)
             DvachIcon(
                 painter = painterResource(id = R.drawable.ic_search),
@@ -84,7 +88,6 @@ fun AppBarView(
                     .clickable { isSearchFieldVisible = !isSearchFieldVisible }
                     .padding(8.dp)
             )
-        iconListComposable()
     }
 }
 

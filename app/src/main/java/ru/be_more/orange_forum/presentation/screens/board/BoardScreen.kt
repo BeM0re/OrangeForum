@@ -38,14 +38,17 @@ fun BoardScreen(
             topBar = {
                 AppBarView(
                     text = screenTitle,
-                    isSearchVisible = false,
+                    isSearchVisible = true,
+                    onSearch = { search(it) }
                 ) {
                     DvachIcon(
                         painter = painterResource(
                             if (isFavorite) R.drawable.ic_favorite_accent_24dp
                             else R.drawable.ic_favorite_border_accent_24dp
                         ),
-                        Modifier.clickable { setFavorite() }
+                        Modifier
+                            .clickable { setFavorite() }
+                            .padding(8.dp)
                     )
                 }
             },
