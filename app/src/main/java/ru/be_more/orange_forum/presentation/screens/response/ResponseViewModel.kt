@@ -3,7 +3,6 @@ package ru.be_more.orange_forum.presentation.screens.response
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.presentation.PresentationContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 
 class ResponseViewModel (
