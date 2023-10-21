@@ -19,7 +19,10 @@ const val DVACH_ROOT_URL = "https://2ch.hk"
 
     //FIXME
 //temp cookie for 18+ access
-const val COOKIE = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
+//const val COOKIE = "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; _ga=GA1.2.57010468.1498700728; ageallow=1; _gid=GA1.2.1910512907.1585793763; _gat=1"
+
+const val COOKIE = "_ga=GA1.2.191888855.1677251490; _gid=GA1.2.1275785988.1677251490; usercode_auth=e29b3bb66af1f3d861f4f65d40f235c1; ageallow=1; _csrf=s%3AyLbpAWDgsiF0DkWetCuIdIiR.YOIJ94PeD7Vl%2F76QFvoFh9PEnmrtsBcPIRuoF73eIC4; cf_clearance=t.jhYOj5uTNL4bz8aln1kTy3XymGdT1H1BO9cXkDnPk-1697612559-0-1-d90339e1.ccda1edc.6e3502af-0.2.1697612559; _ga_7NPYTX0FY3=GS1.2.1697835378.1144.1.1697835386.0.0.0"
+
 
 //todo to prefs when settings
 const val ThreadUpdateInterval = 30L

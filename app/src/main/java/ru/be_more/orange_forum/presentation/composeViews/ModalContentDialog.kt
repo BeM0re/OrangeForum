@@ -37,6 +37,7 @@ import ru.be_more.orange_forum.presentation.data.ImageInitArgs
 import ru.be_more.orange_forum.presentation.data.ModalContentArgs
 import ru.be_more.orange_forum.presentation.data.PostInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
+import ru.be_more.orange_forum.utils.GlideCookiedUrl
 
 @Composable
 fun ModalContentDialog(args: ModalContentDialogInitArgs, modifier: Modifier = Modifier) {
@@ -86,9 +87,13 @@ fun PicDialog(
                 }
             }
     ) {
+        val url = GlideCookiedUrl.getGlideUrl(
+            args.file.getLink(isThumbnail = false)
+        )
+
         GlideImage(
             contentScale = ContentScale.FillWidth,
-            model = args.file.getLink(isThumbnail = false),
+            model = url,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth(1f)
