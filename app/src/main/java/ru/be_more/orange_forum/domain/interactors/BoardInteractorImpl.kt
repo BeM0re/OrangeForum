@@ -7,6 +7,7 @@ import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.BoardThread
 import java.util.concurrent.TimeUnit
 
 class BoardInteractorImpl(
@@ -66,14 +67,20 @@ class BoardInteractorImpl(
             searchQuery
         ) { board, threads, posts, searchQuery ->
             board.copy(
-                threads = threads.map { thread ->
-                    thread.copy(
-                        posts = posts.filter { post ->
-                            post.threadNum == thread.num
-                                && (post.subject.contains(searchQuery) || post.comment.contains(searchQuery))
-                        }
+                threads = threads
+                    .map { thread ->
+                        thread.copy(
+                            posts = posts.filter { post ->
+                                post.threadNum == thread.num
+                                    && (post.subject.contains(searchQuery) || post.comment.contains(searchQuery))
+                            }
+                        )
+                    }
+                    .filter { it.posts.isNotEmpty() }
+                    .sortedWith(
+                        compareByDescending<BoardThread> { it.isPinned }
+                            .thenByDescending { it.lasthit }
                     )
-                }.filter { it.posts.isNotEmpty() }
             )
         }
 

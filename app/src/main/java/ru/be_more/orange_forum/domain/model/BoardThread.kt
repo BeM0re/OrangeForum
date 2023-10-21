@@ -9,6 +9,8 @@ data class BoardThread(
     val newMessageAmount: Int = 0,
     val postCount: Int,
     val fileCount: Int,
+    val lasthit: Long, //timestamp последнего поста
+    val isPinned: Boolean,
     val isHidden: Boolean = false,
     val isDownloaded: Boolean = false,
     val isFavorite: Boolean = false,

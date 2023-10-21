@@ -33,7 +33,7 @@ fun BoardShortListItem(
             .clickable { onClick(id) }
         ) {
             Text(
-                text = title,
+                text = "/$id/ - $title",
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSecondary,
