@@ -28,12 +28,6 @@ interface InteractorContract {
         fun markHidden(boardId: String, threadNum: Int): Completable
         fun subToUpdate(boardId: String, threadNum: Int): Completable
         fun delete(boardId: String, threadNum: Int): Completable
-        @Deprecated("Maybe delete")
-        fun updateNewMessages(boardId: String, threadNum: Int): Completable
-        @Deprecated("Maybe delete")
-        fun updateNewMessages(boardId: String, threadNum: Int, newMessageCount: Int): Completable
-        @Deprecated("Maybe delete")
-        fun updateLastPostNum(boardId: String, threadNum: Int, lastPostNum: Int): Completable
     }
 
     interface PostInteractor {
@@ -60,11 +54,7 @@ interface InteractorContract {
 
     interface FavoriteInteractor {
         fun observe(): Observable<List<Board>>
-        @Deprecated("Maybe delete")
-        fun getFavoritesOnly(): Single<List<Board>>
-        @Deprecated("Maybe delete")
-        fun updateNewMessageCount(boardId: String, threadNum: Int, count: Int): Completable
-        //todo добавить какой-то запрос на обновление новых сообщений?
+        fun observeNewMessage(): Completable
     }
 
 }

@@ -23,7 +23,7 @@ class ThreadRepositoryImpl(
         dao.get(boardId, threadNum)
             .map { it.toModel() }
 
-    override fun getFavorite(): Single<List<BoardThread>> =
+    override fun getFavorites(): Single<List<BoardThread>> =
         dao.getFavorites()
             .map { threads ->
                 threads.map { it.toModel() }
@@ -99,8 +99,14 @@ class ThreadRepositoryImpl(
         )
     }
 
-    override fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int) =
-        dao.updateLastPostNum(boardId, threadNum, postNum)
+    override fun setPostCount(boardId: String, threadNum: Int, postNum: Int) =
+        dao.setPostCount(boardId, threadNum, postNum)
+
+    override fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean): Completable =
+        dao.setHasNewPost(boardId, threadNum, hasNewPost)
+
+    override fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean): Completable =
+        dao.setIsDrown(boardId, threadNum, isDrown)
 
     override fun markFavorite(boardId: String, threadNum: Int, isFavorite: Boolean): Completable =
         dao.setIsFavorite(boardId, threadNum, isFavorite)

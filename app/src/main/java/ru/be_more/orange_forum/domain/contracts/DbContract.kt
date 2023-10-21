@@ -41,12 +41,14 @@ interface DbContract {
         fun save(thread: BoardThread, boardId: String): Completable
         fun observe(boardId: String, threadNum: Int): Observable<BoardThread>
         fun get(boardId: String, threadNum: Int): Maybe<BoardThread>
-        fun getFavorite(): Single<List<BoardThread>>
+        fun getFavorites(): Single<List<BoardThread>>
         fun getQueued(): Single<List<BoardThread>>
         fun observeList(boardId: String): Observable<List<BoardThread>>
         fun observeFavorite(): Observable<List<BoardThread>>
         fun observeQueued(): Observable<List<BoardThread>>
-        fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int): Completable
+        fun setPostCount(boardId: String, threadNum: Int, postNum: Int): Completable
+        fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean): Completable
+        fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean): Completable
         fun markFavorite(boardId: String, threadNum: Int, isFavorite: Boolean): Completable
         fun markHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable
         fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean): Completable

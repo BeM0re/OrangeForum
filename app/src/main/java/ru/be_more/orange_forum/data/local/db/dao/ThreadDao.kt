@@ -67,8 +67,14 @@ interface ThreadDao {
     @Query("UPDATE threads SET isHidden = :isHidden WHERE boardId = :boardId AND num = :threadNum")
     fun setIsHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable
 
-    @Query("UPDATE threads SET lastPostNumber = :postNum WHERE boardId = :boardId AND num = :threadNum")
-    fun updateLastPostNum(boardId: String, threadNum: Int, postNum: Int): Completable
+    @Query("UPDATE threads SET postCount = :postCount WHERE boardId = :boardId AND num = :threadNum")
+    fun setPostCount(boardId: String, threadNum: Int, postCount: Int): Completable
+
+    @Query("UPDATE threads SET hasNewMessages = :hasNewPost WHERE boardId = :boardId AND num = :threadNum")
+    fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean): Completable
+
+    @Query("UPDATE threads SET isDrown = :isDrown WHERE boardId = :boardId AND num = :threadNum")
+    fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean): Completable
 
 
     @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum")

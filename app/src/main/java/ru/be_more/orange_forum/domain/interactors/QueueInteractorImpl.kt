@@ -38,11 +38,10 @@ class QueueInteractorImpl(
         threadRepository.getQueued()
             .flatMapObservable { Observable.fromIterable(it) }
             .flatMapCompletable { thread ->
-                apiRepository.isThreadAlive(thread.boardId, thread.num)
-                    .filter { !it }
+                apiRepository.getThreadInfo(thread.boardId, thread.num)
+                    .map { !it.isAlive }
                     .flatMapCompletable {
                         threadRepository.delete(thread.boardId, thread.num)
                     }
             }
-
 }

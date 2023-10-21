@@ -12,4 +12,6 @@ data class ShortThreadInitArgs(
     val boardId: String,
     val threadNum: Int,
     val title: String,
+    val isDrown: Boolean,
+    val hasNewMessage: Boolean,
 ) : QueueItem

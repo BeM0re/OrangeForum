@@ -45,6 +45,8 @@ class QueueViewModel(
                         boardId = board.id,
                         threadNum = thread.num,
                         title = thread.title,
+                        isDrown = false,
+                        hasNewMessage = false,
                     ).also { add(it) }
                 }
             }
