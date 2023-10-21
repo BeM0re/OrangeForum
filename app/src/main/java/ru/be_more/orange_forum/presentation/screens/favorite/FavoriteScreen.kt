@@ -43,7 +43,7 @@ fun FavoriteScreen(
                 .fillMaxHeight(),
             topBar = {
                 AppBarView(
-                    text = stringResource(id = R.string.navigation_queue),
+                    text = stringResource(id = R.string.navigation_favorites),
                     isSearchVisible = false,
                 ) { }
             }

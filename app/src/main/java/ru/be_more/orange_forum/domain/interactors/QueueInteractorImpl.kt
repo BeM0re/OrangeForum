@@ -14,7 +14,7 @@ class QueueInteractorImpl(
 ): InteractorContract.QueueInteractor{
 
     override fun observe(): Observable<List<Board>> =
-        deleteDrawnThreads()
+        deleteDrownThreads()
             .andThen(
                 Observable.combineLatest(
                     boardRepository.observeList(),
@@ -34,14 +34,14 @@ class QueueInteractorImpl(
     override fun clear(): Completable =
         threadRepository.markQueuedAll(isQueued = false)
 
-    private fun deleteDrawnThreads() =
+    private fun deleteDrownThreads() =
         threadRepository.getQueued()
             .flatMapObservable { Observable.fromIterable(it) }
             .flatMapCompletable { thread ->
                 apiRepository.getThreadInfo(thread.boardId, thread.num)
-                    .map { !it.isAlive }
+                    .filter { !it.isAlive }
                     .flatMapCompletable {
-                        threadRepository.delete(thread.boardId, thread.num)
+                        threadRepository.delete(it.boardId, it.threadNum)
                     }
             }
 }
