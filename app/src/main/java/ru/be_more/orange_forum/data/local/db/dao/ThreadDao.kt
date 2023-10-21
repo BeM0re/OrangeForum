@@ -8,6 +8,7 @@ import androidx.room.Update
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Single
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 
 @Dao
@@ -33,6 +34,12 @@ interface ThreadDao {
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
     fun get(boardId: String, threadNum: Int): Maybe<StoredThread>
+
+    @Query("SELECT * FROM threads WHERE isDownloaded = 1 OR isFavorite = 1")
+    fun getFavorites(): Single<List<StoredThread>>
+
+    @Query("SELECT * FROM threads WHERE isQueued = 1")
+    fun getQueued(): Single<List<StoredThread>>
 
 
     @Query("SELECT num FROM threads WHERE isFavorite = 1")

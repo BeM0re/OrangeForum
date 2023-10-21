@@ -27,9 +27,9 @@ interface DvachApi{
     @GET("/api/mobile/v2/info/{board}/{thread}")
     fun getThreadInfo(
         @Path("board") boardId: String,
-        @Query("thread") thread: Int,
+        @Path("thread") thread: Int,
         @Header("Cookie") cookie: String
-    ): Single<List<PostDto>>
+    ): Single<ThreadInfoDto>
 
     @GET("/api/mobile/v2/post/{board}/{id}")
     fun getPost(

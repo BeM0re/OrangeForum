@@ -12,5 +12,5 @@ val interactorModule = module {
     single<InteractorContract.PostInteractor> { PostInteractorImpl(get(),get()) }
     single<InteractorContract.ResponseInteractor> { ResponseInteractorImpl(get()) }
     single<InteractorContract.FavoriteInteractor> { FavoriteInteractorImpl(get(),get()) }
-    single<InteractorContract.QueueInteractor> { QueueInteractorImpl(get(),get()) }
+    single<InteractorContract.QueueInteractor> { QueueInteractorImpl(get(),get(),get()) }
 }

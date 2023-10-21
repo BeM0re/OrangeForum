@@ -56,7 +56,6 @@ interface InteractorContract {
     interface QueueInteractor {
         fun observe(): Observable<List<Board>>
         fun clear(): Completable
-        //todo добавить какой-то запрос на обновление новых сообщений?
     }
 
     interface FavoriteInteractor {
@@ -65,6 +64,7 @@ interface InteractorContract {
         fun getFavoritesOnly(): Single<List<Board>>
         @Deprecated("Maybe delete")
         fun updateNewMessageCount(boardId: String, threadNum: Int, count: Int): Completable
+        //todo добавить какой-то запрос на обновление новых сообщений?
     }
 
 }
