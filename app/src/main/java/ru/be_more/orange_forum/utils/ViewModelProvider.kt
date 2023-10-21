@@ -13,7 +13,9 @@ class ViewModelProvider {
         if (args.isEmpty())
             viewModelList
                 .filterIsInstance<T>()
-                .first()
+                .firstOrNull() ?:
+                koinViewModel<T>()
+                    .also { viewModelList.add(it) }
         else
             koinViewModel<T>(parameters = { parametersOf(*args) })
                 .also { viewModelList.removeIf { it is T } }

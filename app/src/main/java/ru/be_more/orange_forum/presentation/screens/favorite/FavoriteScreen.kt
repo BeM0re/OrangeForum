@@ -67,17 +67,3 @@ fun FavoriteScreen(
         }
     }
 }
-
-fun NavGraphBuilder.favoriteScreen(
-    onNavigateToBoard: (String) -> Unit,
-    onNavigateToThread: (String, Int) -> Unit,
-) {
-    composable(route = Screen.Favorite.route) {
-        FavoriteScreen(
-            onNavigateToBoard = onNavigateToBoard,
-            onNavigateToThread = onNavigateToThread,
-            viewModel = koinViewModel()
-        )
-    }
-}
-
