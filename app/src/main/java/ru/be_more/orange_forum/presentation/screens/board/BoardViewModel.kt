@@ -113,4 +113,7 @@ class BoardViewModel(
             )
             .addToSubscribe()
     }
+
+    fun search(query: String) =
+        boardInteractor.search(query)
 }

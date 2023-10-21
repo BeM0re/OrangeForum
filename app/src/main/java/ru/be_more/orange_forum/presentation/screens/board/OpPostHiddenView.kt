@@ -27,7 +27,7 @@ fun OpPostHiddenView(
 ) {
     with(args) {
         Text(
-            text = post.comment,
+            text = post.subject.ifEmpty { post.comment },
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
             fontSize = 14.sp,
@@ -87,17 +87,3 @@ data class HiddenOpPostInitArgs(
     val post: Post,
     val onClick: (String, Int) -> Unit,
 ) : ListItemArgs
-
-//data class OpPostViewInitArgs(
-//    val boardId: String,
-//    val id: Int,
-//    val text: String,
-//    val name: String,
-//    val dateTime: String,
-//    val subject: String? = null,
-//    val postCount: Int,
-//    val imageCount: Int,
-//    val images: List<AttachedFile> = emptyList(),
-//    val onHide: (String, Int) -> Unit,
-//    val onQueue: (String, Int) -> Unit,
-//)

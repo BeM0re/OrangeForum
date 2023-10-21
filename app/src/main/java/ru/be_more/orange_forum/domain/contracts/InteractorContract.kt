@@ -10,13 +10,14 @@ interface InteractorContract {
     interface CategoryInteractor {
         fun observe(): Observable<List<Category>>
         fun toggleExpanded(name: String): Completable
-        fun setSearchQuery(query: String)
+        fun search(query: String)
     }
 
     interface BoardInteractor {
         fun observe(boardId: String): Observable<Board>
         fun markFavorite(boardId: String): Completable
         fun refresh(boardId: String): Completable
+        fun search(query: String)
     }
 
     interface ThreadInteractor {

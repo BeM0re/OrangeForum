@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.domain.interactors
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -14,6 +15,9 @@ class BoardInteractorImpl(
     private val threadRepository: DbContract.ThreadRepository,
     private val postRepository: DbContract.PostRepository,
 ): InteractorContract.BoardInteractor {
+
+    private val searchQuery = BehaviorSubject
+        .createDefault("")
 
     override fun observe(boardId: String): Observable<Board> =
         refresh(boardId)
@@ -36,10 +40,6 @@ class BoardInteractorImpl(
             .flatMapCompletable { board ->
                 boardRepository
                     .insertKeepingState(board)
-//                    .deleteKeepingState()
-//                    .andThen(
-//                        boardRepository.insertKeepingState(board)
-//                    )
                     .andThen(
                         threadRepository.insertKeepingState(board.threads)
                     )
@@ -62,14 +62,21 @@ class BoardInteractorImpl(
         Observable.combineLatest(
             boardRepository.observe(boardId),
             threadRepository.observeList(boardId),
-            postRepository.observeOp(boardId)
-        ) { board, threads, posts ->
+            postRepository.observeOp(boardId),
+            searchQuery
+        ) { board, threads, posts, searchQuery ->
             board.copy(
                 threads = threads.map { thread ->
                     thread.copy(
-                        posts = posts.filter { it.threadNum == thread.num }
+                        posts = posts.filter { post ->
+                            post.threadNum == thread.num
+                                && (post.subject.contains(searchQuery) || post.comment.contains(searchQuery))
+                        }
                     )
-                }
+                }.filter { it.posts.isNotEmpty() }
             )
         }
+
+    override fun search(query: String) =
+        searchQuery.onNext(query)
 }

@@ -41,10 +41,6 @@ class CategoryInteractorImpl(
                 ) { query, categories ->
                     if (query.isEmpty()) categories
                     else categories
-//                        .filter { category ->
-//                        category.name.contains(query)
-//                                || category.boards.any { it.name.contains(query) }
-//                    }
                         .map { category ->
                             category.copy(
                                 boards = category.boards
@@ -62,7 +58,7 @@ class CategoryInteractorImpl(
                 categoryRepository.setIsExpanded(name, !it.isExpanded)
             }
 
-    override fun setSearchQuery(query: String) =
+    override fun search(query: String) =
         searchQuery.onNext(query)
 
     private fun observeCategories(): Observable<List<Category>> =
