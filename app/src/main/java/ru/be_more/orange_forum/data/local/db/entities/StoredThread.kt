@@ -22,6 +22,8 @@ data class StoredThread(
     val isDownloaded: Boolean,
     val isFavorite: Boolean,
     val isQueued: Boolean,
+    val isDrown: Boolean,
+    val hasNewMessages: Boolean,
 ) {
     constructor(thread: BoardThread): this(
         num = thread.num,
@@ -35,6 +37,8 @@ data class StoredThread(
         isDownloaded = thread.isDownloaded,
         isFavorite = thread.isFavorite,
         isQueued = thread.isQueued,
+        isDrown = thread.isDrown,
+        hasNewMessages = thread.hasNewMessages,
     )
 
     fun toModel() =
@@ -51,5 +55,7 @@ data class StoredThread(
             isDownloaded = isDownloaded,
             isFavorite = isFavorite,
             isQueued = isQueued,
+            isDrown = isDrown,
+            hasNewMessages = hasNewMessages,
         )
 }

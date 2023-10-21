@@ -68,41 +68,6 @@ class ThreadInteractorImpl(
             .interval(ThreadUpdateInterval, TimeUnit.SECONDS)
             .flatMapCompletable { getThread(boardId, threadNum, savePics = false) }
 
-    @Deprecated("Maybe delete")
-    override fun updateNewMessages(boardId: String, threadNum: Int): Completable =
-        Single
-            .zip(
-                threadRepository.get(boardId, threadNum)
-                    .switchIfEmpty(
-                        Single.error(Throwable("ThreadInteractorImpl: trying to update null thread"))
-                    ),
-                apiRepository.getThread(boardId, threadNum, true)
-            ) { local, web ->
-                web.posts.filter { it.id > local.lastPostNumber }.size
-            }
-            .flatMapCompletable {
-                boardRepository.updateThreadNewMessageCounter(boardId, threadNum, it)
-            }
-
-    @Deprecated("Maybe delete")
-    override fun updateNewMessages(
-        boardId: String,
-        threadNum: Int,
-        newMessageCount: Int
-    ): Completable =
-        boardRepository.updateThreadNewMessageCounter(boardId, threadNum, newMessageCount)
-
-    @Deprecated("Maybe delete")
-    override fun updateLastPostNum(
-        boardId: String,
-        threadNum: Int,
-        lastPostNum: Int
-    ): Completable {
-        return Completable.fromCallable {
-            threadRepository.updateLastPostNum(boardId, threadNum, lastPostNum)
-        }
-    }
-
     override fun delete(boardId: String, threadNum: Int): Completable =
         threadRepository.delete(boardId, threadNum)
             .andThen(postRepository.delete(boardId, threadNum))

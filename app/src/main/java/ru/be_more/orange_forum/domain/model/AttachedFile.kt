@@ -13,7 +13,7 @@ data class AttachedFile(
     val duration : String = "",
     val localPath: String? = null,
     val localThumbnail: String? = null,
-) : ModalContent{
+) : ModalContent {
     fun getLink(isThumbnail: Boolean) =
         if (isThumbnail) localPath ?: (DVACH_ROOT_URL + thumbnail)
         else localThumbnail ?: (DVACH_ROOT_URL + path)

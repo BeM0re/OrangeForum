@@ -24,23 +24,24 @@ class FavoriteViewModel (
     var items by mutableStateOf(listOf<QueueItem>())
         private set
 
-     val boards = MutableLiveData<List<Board>>()
-    private var favDisposable: Disposable? = null
-
     init {
         favoriteInteractor
             .observe()
             .defaultThreads()
             .subscribe(
                 { items = prepareItemList(it) },
-                { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }
+                { Log.e("FavoriteViewModel", "FavoriteViewModel.init.observe = $it") }
             )
             .addToSubscribe()
-    }
 
-     fun init(){
-//        subscribe()
-//        checkUpdates()
+        favoriteInteractor
+            .observeNewMessage()
+            .defaultThreads()
+            .subscribe(
+                { },
+                { Log.e("FavoriteViewModel", "FavoriteViewModel.init.observeNewMessage = $it") }
+            )
+            .addToSubscribe()
     }
 
     private fun prepareItemList(boards: List<Board>): List<QueueItem> =
@@ -56,77 +57,19 @@ class FavoriteViewModel (
                         boardId = board.id,
                         threadNum = thread.num,
                         title = thread.title,
+                        isDrown = thread.isDrown,
+                        hasNewMessage = thread.hasNewMessages,
                     ).also { add(it) }
                 }
             }
         }
 
-     override fun onDestroy() {
-        super.onDestroy()
-
-        favDisposable?.dispose()
-        favDisposable = null
-    }
-
-     fun removeThread(boardId: String, threadNum: Int) {
-        threadInteractor
-            .delete(boardId, threadNum)
+     fun removeThread(boardId: String, threadNum: Int) =
+        threadInteractor.markFavorite(boardId, threadNum)
             .defaultThreads()
             .subscribe(
                 {  },
                 { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
             )
             .addToSubscribe()
-
-        threadInteractor
-            .markFavorite(
-                boardId = boardId,
-                threadNum = threadNum,
-            )
-            .defaultThreads()
-            .subscribe(
-                {  },
-                { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
-            )
-            .addToSubscribe()
-    }
-
-    fun clear() {
-
-    }
-
-/*    private fun subscribe(){
-        favDisposable?.dispose()
-        favDisposable = favoriteInteractor
-            .observe()
-            .defaultThreads()
-            .subscribe(
-                { boards -> this.boards.postValue(boards) },
-                { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }
-            )
-    }
-
-    private fun checkUpdates(){
-        favoriteInteractor
-            .observe()
-            .flatMap { boards ->
-                Observable.fromIterable(
-                    boards.map { board ->
-                        board.threads.map { thread ->
-                            board.id to thread.num
-                        }
-                    }.flatten()
-                )
-            }
-            .flatMapCompletable { (boardId, threadNum) ->
-                threadInteractor.updateNewMessages(boardId, threadNum)
-            }
-            .defaultThreads()
-            .subscribe(
-                { },
-                { Log.e("M_DownFavViewModelImpl", "Presenter on first view attach error = $it") }
-            )
-            .addToSubscribe()
-    }*/
-
 }

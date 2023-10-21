@@ -10,10 +10,9 @@ data class BoardThread(
     val postCount: Int,
     val fileCount: Int,
     val isHidden: Boolean = false,
-    val isDownloaded: Boolean = false, //todo delete?
-    val isFavorite: Boolean = false, //todo save on re-download
-    val isQueued: Boolean = false
-) {
-    fun isEmpty(): Boolean =
-        num == -1
-}
+    val isDownloaded: Boolean = false,
+    val isFavorite: Boolean = false,
+    val isQueued: Boolean = false,
+    val isDrown: Boolean = false,
+    val hasNewMessages: Boolean = false,
+)

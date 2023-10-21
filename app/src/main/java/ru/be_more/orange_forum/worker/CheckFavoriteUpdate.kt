@@ -1,5 +1,6 @@
 package ru.be_more.orange_forum.worker
 
+import android.Manifest
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -12,8 +13,11 @@ import ru.be_more.orange_forum.consts.CHANNEL_ID
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import io.reactivex.Completable
 
 class CheckFavoriteUpdateWorker(
     private val appContext: Context,
@@ -26,7 +30,8 @@ class CheckFavoriteUpdateWorker(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun createWork(): Single<Result> {
-        return favoriteInteractor.getFavoritesOnly()
+        return Single.just(Result.success())
+/*        return favoriteInteractor.getFavoritesOnly()
             .map { boardList ->
                 boardList.map { board ->
                     board.threads.map { thread ->
@@ -38,7 +43,8 @@ class CheckFavoriteUpdateWorker(
                 Observable.fromIterable(it)
             }
             .flatMapCompletable { (board, thread) ->
-                threadInteractor.updateNewMessages(board, thread)
+//                threadInteractor.updateNewMessages(board, thread)
+                Completable.complete()
             }
             .andThen(favoriteInteractor.getFavoritesOnly())
             .doOnSuccess { boardList ->
@@ -50,12 +56,12 @@ class CheckFavoriteUpdateWorker(
                 }
             }
             .map { Result.success() }
-            .onErrorReturn { Result.failure() }
+            .onErrorReturn { Result.failure() }*/
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun showPush(notificationId: Int, newPosts: Int, threadTitle: String){
-        val name: CharSequence = "2ch New Messages"
+/*        val name: CharSequence = "2ch New Messages"
         val importance = NotificationManager.IMPORTANCE_LOW
 
         val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
@@ -77,8 +83,22 @@ class CheckFavoriteUpdateWorker(
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         NotificationManagerCompat
             .from(appContext)
-            .notify(notificationId, notification)
+            .notify(notificationId, notification)*/
     }
 }
