@@ -105,6 +105,12 @@ class ApiRepositoryImpl(
             .map { it.toModel() }
     }
 
+    override fun isThreadAlive(boardId: String, threadNum: Int): Single<Boolean> =
+        dvachApi
+            .getThreadInfo(boardId, threadNum, COOKIE)
+            .map { it.result > 0 }
+            .onErrorReturn { false }
+
     private fun findResponses(board: BoardThread): BoardThread {
         val replies = board.posts
             .map { post ->

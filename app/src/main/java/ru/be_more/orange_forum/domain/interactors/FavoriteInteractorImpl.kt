@@ -26,16 +26,6 @@ class FavoriteInteractorImpl(
                 .filter { it.threads.isNotEmpty() || it.isFavorite }
         }
 
-/*    fun getDownFavs(): Observable<List<Board>> =
-        boardRepository.getBoardsObservable()
-            .map { boardList ->
-                boardList
-                    .map { board ->
-                        board.copy(threads = board.threads.filter { it.isDownloaded || it.isFavorite })
-                    }
-                    .filter { it.threads.isNotEmpty() }
-            }*/
-
     @Deprecated("Maybe delete")
     override fun getFavoritesOnly(): Single<List<Board>> =
         boardRepository.observeList()

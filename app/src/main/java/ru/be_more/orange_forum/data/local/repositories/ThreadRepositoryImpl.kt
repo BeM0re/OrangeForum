@@ -23,6 +23,18 @@ class ThreadRepositoryImpl(
         dao.get(boardId, threadNum)
             .map { it.toModel() }
 
+    override fun getFavorite(): Single<List<BoardThread>> =
+        dao.getFavorites()
+            .map { threads ->
+                threads.map { it.toModel() }
+            }
+
+    override fun getQueued(): Single<List<BoardThread>> =
+        dao.getQueued()
+            .map { threads ->
+                threads.map { it.toModel() }
+            }
+
     override fun observeList(boardId: String): Observable<List<BoardThread>> =
         dao.observeList(boardId)
             .map { threads ->

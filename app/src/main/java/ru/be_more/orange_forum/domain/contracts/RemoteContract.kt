@@ -28,5 +28,9 @@ interface RemoteContract {
             chaptcha_id : String,
             files : List<File>
         ): Single<PostResponse>
+        fun isThreadAlive(
+            boardId: String,
+            threadNum: Int
+        ): Single<Boolean>
     }
 }
