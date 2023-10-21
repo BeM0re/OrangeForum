@@ -73,15 +73,6 @@ fun CategoryScreen(
     }
 }
 
-fun NavGraphBuilder.categoryScreen(onNavigateToBoard: (String) -> Unit) {
-    composable(route = Screen.Category.route) {
-        CategoryScreen(
-            viewModel = koinViewModel(),
-            onNavigateToBoard = onNavigateToBoard
-        )
-    }
-}
-
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     name = "Light Mode"

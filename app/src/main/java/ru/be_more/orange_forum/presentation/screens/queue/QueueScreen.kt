@@ -70,16 +70,3 @@ fun QueueScreen(
         }
     }
 }
-
-fun NavGraphBuilder.queueScreen(
-    onNavigateToBoard: (String) -> Unit,
-    onNavigateToThread: (String, Int) -> Unit,
-) {
-    composable(route = Screen.Queue.route) {
-        QueueScreen(
-            onNavigateToBoard = onNavigateToBoard,
-            onNavigateToThread = onNavigateToThread,
-            viewModel = koinViewModel()
-        )
-    }
-}

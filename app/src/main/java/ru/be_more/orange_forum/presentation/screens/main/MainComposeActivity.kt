@@ -37,9 +37,9 @@ import androidx.navigation.navArgument
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
-import ru.be_more.orange_forum.presentation.screens.category.categoryScreen
-import ru.be_more.orange_forum.presentation.screens.favorite.favoriteScreen
-import ru.be_more.orange_forum.presentation.screens.queue.queueScreen
+import ru.be_more.orange_forum.presentation.screens.category.CategoryScreen
+import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteScreen
+import ru.be_more.orange_forum.presentation.screens.queue.QueueScreen
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadScreen
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 import ru.be_more.orange_forum.utils.ViewModelProvider
@@ -139,13 +139,18 @@ class MainActivity : ComponentActivity() {
             startDestination = Screen.Category.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            categoryScreen { boardId ->
-                navController.navigate(
-                    route = Screen.Board.route + "?boardId=$boardId"
-                ) {
-                    launchSingleTop = true
-                    restoreState = true
-                }
+            composable(route = Screen.Category.route) {
+                CategoryScreen(
+                    viewModel = vmProvider.getVM(),
+                    onNavigateToBoard = { boardId ->
+                        navController.navigate(
+                            route = Screen.Board.route + "?boardId=$boardId"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
             }
 
             //board with params
@@ -216,43 +221,52 @@ class MainActivity : ComponentActivity() {
                 ThreadScreen(vmProvider.getVM())
             }
 
-            queueScreen(
-                onNavigateToBoard = { boardId ->
-                    navController.navigate(
-                        route = Screen.Board.route + "?boardId=$boardId"
-                    ) {
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                onNavigateToThread = { boardId, threadNum ->
-                    navController.navigate(
-                        route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
-                    ) {
-                        launchSingleTop = true
-                        restoreState = false
-                    }
-                }
-            )
+            //Queue
+            composable(route = Screen.Queue.route) {
+                QueueScreen(
+                    onNavigateToBoard = { boardId ->
+                        navController.navigate(
+                            route = Screen.Board.route + "?boardId=$boardId"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onNavigateToThread = { boardId, threadNum ->
+                        navController.navigate(
+                            route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
+                    viewModel = vmProvider.getVM()
+                )
+            }
 
-            favoriteScreen(
-                onNavigateToBoard = { boardId ->
-                    navController.navigate(
-                        route = Screen.Board.route + "?boardId=$boardId"
-                    ) {
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                onNavigateToThread = { boardId, threadNum ->
-                    navController.navigate(
-                        route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
-                    ) {
-                        launchSingleTop = true
-                        restoreState = false
-                    }
-                }
-            )
+            //favorite
+            composable(route = Screen.Favorite.route) {
+                FavoriteScreen(
+                    onNavigateToBoard = { boardId ->
+                        navController.navigate(
+                            route = Screen.Board.route + "?boardId=$boardId"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onNavigateToThread = { boardId, threadNum ->
+                        navController.navigate(
+                            route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
+                    viewModel = vmProvider.getVM()
+                )
+            }
+
             //todo setting
         }
     }
