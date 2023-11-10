@@ -1,9 +1,11 @@
 package ru.be_more.orange_forum.presentation.screens.main
 
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,6 +50,7 @@ class MainActivity : ComponentActivity() {
 
     private val vmProvider: ViewModelProvider by inject()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -69,6 +72,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun Ui() {
         val navController = rememberNavController()
@@ -132,6 +136,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun Host(navController: NavHostController, innerPadding: PaddingValues) {
         NavHost(
@@ -271,6 +276,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Preview(
         uiMode = Configuration.UI_MODE_NIGHT_NO,
         name = "Light Mode"

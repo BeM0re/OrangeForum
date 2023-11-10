@@ -69,11 +69,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.10.0'
     implementation "androidx.preference:preference-ktx:1.2.1"
-    implementation 'com.thoughtbot:expandablerecyclerview:1.4' //todo remove
-    implementation 'com.thoughtbot:expandablecheckrecyclerview:1.4' //todo remove
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
 
     //Compose
@@ -121,9 +118,6 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.11.0"
     implementation "com.squareup.okhttp3:logging-interceptor:3.12.1"
 
-    //Google captcha
-    implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
-
     //junit
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -145,9 +139,6 @@ dependencies {
     implementation "io.insert-koin:koin-androidx-workmanager:3.4.3"
     implementation "io.insert-koin:koin-androidx-compose:3.4.3"
 
-    //Handler for textView links
-    implementation 'me.saket:better-link-movement-method:2.2.0'
-
     //HTTP error handler
     implementation 'com.github.jeancsanchez:okhttp-rest-error-interceptor:2.1.0'
 
@@ -160,9 +151,6 @@ dependencies {
     //HTTP request traction
     debugImplementation "com.github.chuckerteam.chucker:library:3.5.2"
     releaseImplementation "com.github.chuckerteam.chucker:library-no-op:3.5.2"
-
-    //Event bus
-    implementation 'org.greenrobot:eventbus:3.3.1' //todo delte
 
     //Work Manager
     implementation("androidx.work:work-runtime:2.8.1")

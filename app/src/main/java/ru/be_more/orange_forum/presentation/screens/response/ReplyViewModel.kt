@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 
-class ResponseViewModel (
-    private val interactor : InteractorContract.ResponseInteractor
+class ReplyViewModel (
+    private val interactor : InteractorContract.ReplyInteractor
 ): BaseViewModel(){
 
     val result = MutableLiveData<String>()
 
     fun postResponse(boardId: String, threadNum: Int, comment: String, token:String){
-        interactor.postResponse(
+        interactor.reply(
             boardId = boardId,
             threadNum = threadNum,
             comment = comment,

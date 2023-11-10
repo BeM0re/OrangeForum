@@ -1,8 +1,10 @@
 package ru.be_more.orange_forum.presentation.screens.thread
 
 import android.util.Log
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -16,10 +18,12 @@ class ThreadViewModel(
     private val threadNum: Int,
     private val threadInteractor: InteractorContract.ThreadInteractor,
     override val postInteractor: InteractorContract.PostInteractor,
+    override val replyInteractor: InteractorContract.ReplyInteractor,
     private val prefs: Preferences
 ) : BaseModalContentViewModel(
     boardId = boardId,
     postInteractor = postInteractor,
+    replyInteractor = replyInteractor,
 ) {
 
     var screenTitle by mutableStateOf("")
@@ -53,6 +57,9 @@ class ThreadViewModel(
             )
             .addToSubscribe()
     }
+
+    override fun getCapture() =
+        replyInteractor.getCapture(boardId, threadNum)
 
     private fun prepareItemList(posts: List<Post>): List<PostInitArgs> =
         posts.map { post ->
@@ -95,6 +102,5 @@ class ThreadViewModel(
             )
             .addToSubscribe()
     }
-
     //todo new thread
 }

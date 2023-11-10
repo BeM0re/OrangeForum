@@ -26,15 +26,6 @@ import java.util.regex.Pattern
 
 object ParseHtml{
 
-    fun parse(htmlText: String): String{
-
-        if (htmlText.isEmpty()) return ""
-
-        var doc: Document = Jsoup.parse(htmlText)
-
-        return htmlText
-    }
-
     fun findReply(from: Int, html: String): List<Reply>{
 
         val doc: Document = Jsoup.parse(html)

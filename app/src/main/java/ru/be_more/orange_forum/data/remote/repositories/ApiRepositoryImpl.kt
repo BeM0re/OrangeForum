@@ -8,6 +8,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import ru.be_more.orange_forum.consts.COOKIE
+import ru.be_more.orange_forum.consts.DVACH_ROOT_URL
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.api.DvachApi
 import ru.be_more.orange_forum.domain.model.*
@@ -18,11 +19,11 @@ import java.util.*
 //инфа по обезьяньему апи: https://2ch.hk/abu/res/42375.html
 
 class ApiRepositoryImpl(
-    private val dvachApi : DvachApi
+    private val api : DvachApi
 ) : RemoteContract.ApiRepository{
 
     override fun getCategories(): Single<List<Category>> =
-        dvachApi.getBoardList()
+        api.getBoardList()
             .map { dto ->
                 dto
                     .map { it.toModel() }
@@ -37,12 +38,12 @@ class ApiRepositoryImpl(
             }
 
     override fun getBoard(boardId: String): Single<Board> =
-        dvachApi.getBoard(boardId)
+        api.getBoard(boardId)
             .map { it.toModel(boardId) }
 //            .map { it } //без мапа почему то свитч проходит в ?, а не !
 
     override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
-        dvachApi.getThread(boardId, threadNum, COOKIE)
+        api.getThread(boardId, threadNum, COOKIE)
             .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getThread = \n$throwable") }
 //                .onErrorReturn { ThreadDto() } //todo ?
             .map { it.toModel(boardId) }
@@ -53,9 +54,27 @@ class ApiRepositoryImpl(
         threadNum: Int,
         postNum: Int,
     ): Single<Post> =
-        dvachApi.getPost(boardId, postNum, COOKIE)
+        api.getPost(boardId, postNum, COOKIE)
             .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getPost = \n$throwable") }
             .map { it.post.toModel(boardId, threadNum) }
+
+    override fun getCaptchaUrl(boardId: String, threadNum: Int?): Single<String> =
+        api.getBoardSettings(boardId)
+            .map { it.toModel() }
+            .flatMap { boardSetting ->
+                when (boardSetting.captchaType) {
+                    CaptureType.DvachCaptcha -> {
+                        api.get2chCaptcha(boardId, threadNum)
+                            .map { it.toModel() }
+                            .map { DVACH_ROOT_URL + "/api/captcha/2chcaptcha/show/?id=${ it.id }" }
+                    }
+                    else -> {
+                        Single.error(
+                            Throwable("Capture method ${boardSetting.captchaType} is not yet implemented")
+                        )
+                    }
+                }
+            }
 
     override fun postResponse(
         boardId: String,
@@ -87,7 +106,7 @@ class ApiRepositoryImpl(
             )
         }
 
-        return dvachApi.postThreadResponseRx(
+        return api.postThreadResponseRx(
             cookie = requestCookie,
             task = requestTask ,
             board = requestBoardId,
@@ -106,7 +125,7 @@ class ApiRepositoryImpl(
     }
 
     override fun getThreadInfo(boardId: String, threadNum: Int): Single<ThreadInfo> =
-        dvachApi
+        api
             .getThreadInfo(boardId, threadNum, COOKIE)
             .map { it.toModel(boardId, threadNum) }
             .onErrorReturn {

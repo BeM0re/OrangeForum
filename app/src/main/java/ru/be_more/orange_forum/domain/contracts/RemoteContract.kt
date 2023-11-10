@@ -21,6 +21,7 @@ interface RemoteContract {
             threadNum: Int,
             postNum: Int,
         ): Single<Post>
+        fun getCaptchaUrl(boardId: String, threadNum: Int?): Single<String>
         fun postResponse(
             boardId: String,
             threadNum: Int,

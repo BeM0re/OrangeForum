@@ -38,8 +38,9 @@ interface InteractorContract {
         ): Single<Post>
     }
 
-    interface ResponseInteractor {
-        fun postResponse(
+    interface ReplyInteractor {
+        fun getCapture(boardId: String, threadNum: Int?): Single<String>
+        fun reply(
             boardId: String,
             threadNum: Int,
             comment: String,

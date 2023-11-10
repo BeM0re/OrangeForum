@@ -63,4 +63,15 @@ interface DvachApi{
         @Part files: List<MultipartBody.Part>
     ): Single<ResponseDto>
 
+    @GET("/api/captcha/settings/{id}")
+    fun getBoardSettings(
+        @Path("id") boardId: String,
+    ): Single<BoardSettingDto>
+
+    @GET("/api/captcha/2chcaptcha/id")
+    fun get2chCaptcha(
+        @Query("board") boardId: String,
+        @Query("thread") threadNum: Int?,
+    ): Single<DvachCaptchaDto>
+
 }

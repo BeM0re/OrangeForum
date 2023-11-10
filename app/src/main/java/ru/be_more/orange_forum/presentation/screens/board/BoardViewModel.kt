@@ -15,10 +15,12 @@ class BoardViewModel(
     private val boardInteractor: InteractorContract.BoardInteractor,
     private val threadInteractor: InteractorContract.ThreadInteractor,
     override val postInteractor: InteractorContract.PostInteractor,
+    override val replyInteractor: InteractorContract.ReplyInteractor,
     private val prefs: Preferences,
 ): BaseModalContentViewModel(
     boardId = boardId,
     postInteractor = postInteractor,
+    replyInteractor = replyInteractor,
 ) {
 
     var items by mutableStateOf(listOf<ListItemArgs>())
@@ -49,6 +51,9 @@ class BoardViewModel(
             )
             .addToSubscribe()
     }
+
+    override fun getCapture() =
+        replyInteractor.getCapture(boardId, threadNum = null)
 
     private fun prepareItemList(threads: List<BoardThread>): List<ListItemArgs> =
         threads.mapNotNull { thread ->

@@ -6,17 +6,21 @@ import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.PostResponse
 
-class ResponseInteractorImpl(
-    private val responseRepository: RemoteContract.ApiRepository
-): InteractorContract.ResponseInteractor {
+class ReplyInteractorImpl(
+    private val apiRepository: RemoteContract.ApiRepository
+): InteractorContract.ReplyInteractor {
+
+    override fun getCapture(boardId: String, threadNum: Int?): Single<String> =
+        apiRepository.getCaptchaUrl(boardId, threadNum)
+
     //todo review
-    override fun postResponse(
+    override fun reply(
         boardId: String,
         threadNum: Int,
         comment: String,
         token: String
     ): Single<PostResponse> =
-        responseRepository.postResponse(
+        apiRepository.postResponse(
             boardId = boardId,
             threadNum = threadNum,
             comment = comment,

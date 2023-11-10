@@ -6,7 +6,7 @@ import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 import ru.be_more.orange_forum.presentation.screens.category.CategoryViewModel
 import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteViewModel
 import ru.be_more.orange_forum.presentation.screens.queue.QueueViewModel
-import ru.be_more.orange_forum.presentation.screens.response.ResponseViewModel
+import ru.be_more.orange_forum.presentation.screens.response.ReplyViewModel
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModel
 import ru.be_more.orange_forum.utils.ViewModelProvider
 
@@ -14,9 +14,9 @@ import ru.be_more.orange_forum.utils.ViewModelProvider
 val viewModelModule = module {
     single { ViewModelProvider() }
     viewModel { CategoryViewModel(get(), get()) }
-    viewModel { BoardViewModel(get(), get(), get(), get(), get()) }
-    viewModel { ThreadViewModel(get(), get(), get(), get(), get()) }
-    viewModel { ResponseViewModel(get()) }
+    viewModel { BoardViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { ThreadViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { ReplyViewModel(get()) }
     viewModel { QueueViewModel(get(), get(), get()) }
     viewModel { FavoriteViewModel(get(), get(), get()) }
  }

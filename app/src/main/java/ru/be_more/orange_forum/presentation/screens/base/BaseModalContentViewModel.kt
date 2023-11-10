@@ -4,17 +4,20 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import io.reactivex.Single
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
 import ru.be_more.orange_forum.presentation.data.ImageInitArgs
 import ru.be_more.orange_forum.presentation.data.PostInitArgs
+import ru.be_more.orange_forum.presentation.data.ReplyInitArgs
 import ru.be_more.orange_forum.presentation.data.TextLinkArgs
 import java.util.*
 
 abstract class BaseModalContentViewModel(
     protected open val boardId: String,
-    protected open val postInteractor: InteractorContract.PostInteractor
+    protected open val postInteractor: InteractorContract.PostInteractor,
+    protected open val replyInteractor: InteractorContract.ReplyInteractor,
 ) : BaseViewModel() {
 
     //stack returns exception on empty, therefore using list as stack
@@ -22,6 +25,8 @@ abstract class BaseModalContentViewModel(
 
     var modalContent by mutableStateOf<ModalContentDialogInitArgs?>(null)
         private set
+
+    abstract fun getCapture(): Single<String>
 
     protected fun onPicClicked(file: AttachedFile) =
         pushModelContent(
@@ -73,8 +78,28 @@ abstract class BaseModalContentViewModel(
         modalContent = modalStack.removeFirstOrNull()
     }
 
-    fun clearModal() {
+    private fun clearModal() {
         modalStack.clear()
         modalContent = null
+    }
+
+    fun onReplyClicked() {
+        getCapture()
+            .defaultThreads()
+            .subscribe(
+                { captureUrl ->
+                    pushModelContent(
+                        ModalContentDialogInitArgs(
+                            modalArgs = ReplyInitArgs(captureUrl) { replyText, capture ->
+
+                            },
+                            onBack = ::closeModal,
+                            onClose = ::clearModal,
+                        )
+                    )
+                },
+                { Log.e("BaseModalContentViewModel", "BaseModalContentViewModel.onReplyClicked = \n$it") }
+            )
+            .addToSubscribe()
     }
 }
