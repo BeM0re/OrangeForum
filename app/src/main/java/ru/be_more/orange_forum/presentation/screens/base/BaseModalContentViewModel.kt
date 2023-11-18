@@ -5,12 +5,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.reactivex.Single
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.AttachedFile
+import ru.be_more.orange_forum.domain.model.BoardSetting
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
 import ru.be_more.orange_forum.presentation.data.ImageInitArgs
 import ru.be_more.orange_forum.presentation.data.PostInitArgs
-import ru.be_more.orange_forum.presentation.data.ReplyInitArgs
 import ru.be_more.orange_forum.presentation.data.TextLinkArgs
 import java.util.*
 
@@ -26,7 +27,7 @@ abstract class BaseModalContentViewModel(
     var modalContent by mutableStateOf<ModalContentDialogInitArgs?>(null)
         private set
 
-    abstract fun getCapture(): Single<String>
+    abstract val boardSetting: BoardSetting
 
     protected fun onPicClicked(file: AttachedFile) =
         pushModelContent(
@@ -74,32 +75,12 @@ abstract class BaseModalContentViewModel(
         modalContent = content
     }
 
-    private fun closeModal() {
+    protected fun closeModal() {
         modalContent = modalStack.removeFirstOrNull()
     }
 
     private fun clearModal() {
         modalStack.clear()
         modalContent = null
-    }
-
-    fun onReplyClicked() {
-        getCapture()
-            .defaultThreads()
-            .subscribe(
-                { captureUrl ->
-                    pushModelContent(
-                        ModalContentDialogInitArgs(
-                            modalArgs = ReplyInitArgs(captureUrl) { replyText, capture ->
-
-                            },
-                            onBack = ::closeModal,
-                            onClose = ::clearModal,
-                        )
-                    )
-                },
-                { Log.e("BaseModalContentViewModel", "BaseModalContentViewModel.onReplyClicked = \n$it") }
-            )
-            .addToSubscribe()
     }
 }

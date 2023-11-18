@@ -8,6 +8,7 @@ data class Post(
     val boardId: String,
     val threadNum: Int,
     val id: Int,
+    val isMyPost: Boolean = false,
     val name: String,
     val comment: String,
     val isOpPost: Boolean,

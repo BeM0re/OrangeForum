@@ -7,6 +7,7 @@ import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.data.local.db.entities.StoredFile
 import ru.be_more.orange_forum.data.local.db.entities.StoredPost
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
+import ru.be_more.orange_forum.domain.model.Icon
 
 //todo review and remove redundant
 object JsonRoomConverter {
@@ -103,6 +104,38 @@ object JsonRoomConverter {
             return emptyList()
         }
         val listType = object : TypeToken<List<StoredFile>>() {}.type
+        return Gson().fromJson(json, listType)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun fromStringList(strings: List<String>?): String {
+        return Gson().toJson(strings)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toStringList(json: String?): List<String>? {
+        if (json == null) {
+            return null
+        }
+        val listType = object : TypeToken<List<String>>() {}.type
+        return Gson().fromJson(json, listType)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun fromIcons(strings: List<Icon>?): String {
+        return Gson().toJson(strings)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toIcons(json: String?): List<Icon>? {
+        if (json == null) {
+            return null
+        }
+        val listType = object : TypeToken<List<Icon>>() {}.type
         return Gson().fromJson(json, listType)
     }
 }

@@ -22,7 +22,19 @@ interface RemoteContract {
             postNum: Int,
         ): Single<Post>
         fun getCaptchaUrl(boardId: String, threadNum: Int?): Single<String>
-        fun postResponse(
+        fun postReply(
+            boardId: String,
+            threadNum: Int,
+            comment: String,
+            isOp: Boolean,
+            subject: String,
+            email: String,
+            name: String,
+            tag: String,
+            captchaSolvedString: String?,
+        ): Single<Int>
+
+        fun postResponseOld(
             boardId: String,
             threadNum: Int,
             comment: String,

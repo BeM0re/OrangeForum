@@ -9,12 +9,14 @@ interface InteractorContract {
 
     interface CategoryInteractor {
         fun observe(): Observable<List<Category>>
+        fun refresh(): Completable
         fun toggleExpanded(name: String): Completable
         fun search(query: String)
     }
 
     interface BoardInteractor {
         fun observe(boardId: String): Observable<Board>
+        fun getSingle(boardId: String): Single<Board>
         fun markFavorite(boardId: String): Completable
         fun refresh(boardId: String): Completable
         fun search(query: String)
@@ -34,18 +36,33 @@ interface InteractorContract {
         fun getPost(
             boardId: String,
             threadNum: Int,
-            postNum: Int
+            postNum: Int,
         ): Single<Post>
     }
 
     interface ReplyInteractor {
-        fun getCapture(boardId: String, threadNum: Int?): Single<String>
+        fun getCaptcha(boardId: String, threadNum: Int?): Single<String>
         fun reply(
             boardId: String,
             threadNum: Int,
             comment: String,
-            token:String
-        ): Single<PostResponse>
+            isOp: Boolean,
+            subject: String,
+            email: String,
+            name: String,
+            tag: String,
+            captchaSolvedString: String?,
+        ): Completable
+        fun createThread(
+            boardId: String,
+            comment: String,
+            isOp: Boolean,
+            subject: String,
+            email: String,
+            name: String,
+            tag: String,
+            captchaSolvedString: String?,
+        ): Completable
     }
 
     interface QueueInteractor {

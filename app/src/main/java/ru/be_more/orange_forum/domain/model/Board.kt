@@ -5,6 +5,6 @@ data class Board(
     val id: String,
     val category: String,
     val threads: List<BoardThread> = listOf(),
-    val isFavorite: Boolean = false,
-    val isExpanded: Boolean = false, //todo need this?
+    val isFavorite: Boolean,
+    val boardSetting: BoardSetting,
 )

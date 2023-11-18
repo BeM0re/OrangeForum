@@ -59,11 +59,11 @@ class LocalStorageImpl(
         }
     }
 
-    @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
         val timeStamp = "${System.currentTimeMillis()}"
-        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            ?: throw Throwable("\nLocalStorageImpl.createImageFile: Can get ExternalFilesDir for file saving")
         return File.createTempFile(
             "JPEG_${timeStamp}_", /* prefix */
             ".jpg", /* suffix */

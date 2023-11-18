@@ -1,12 +1,12 @@
-package ru.be_more.orange_forum.domain.model
+package ru.be_more.orange_forum.data.remote.models
 
 enum class CaptureType(
     val value: String,
 ) {
+    DvachCaptcha("2chcaptcha"),
     Recaptcha("recaptcha"),
     InvisibleRecaptcha("invisible_recaptcha"),
     Recaptcha3("recaptcha3"),
-    DvachCaptcha("2chcaptcha"),
     Appid("appid"),
     PassCode("passcode"),
     NoCaptcha("nocaptcha"),
@@ -25,4 +25,4 @@ enum class CaptureType(
         app_response - sha256(app_response_id + '|' + private_key)
         * passcode: cookie passcode_auth
         * nocaptcha: капча не требуется, никакие дополнительные параметры тоже.
-* */
+*/

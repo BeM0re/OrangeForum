@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.domain.interactors
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
@@ -23,6 +24,9 @@ class BoardInteractorImpl(
     override fun observe(boardId: String): Observable<Board> =
         refresh(boardId)
             .andThen(observeBoard(boardId))
+
+    override fun getSingle(boardId: String): Single<Board> =
+        boardRepository.get(boardId)
 
     override fun markFavorite(boardId: String): Completable =
         boardRepository

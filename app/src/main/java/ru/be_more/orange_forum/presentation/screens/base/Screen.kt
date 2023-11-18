@@ -40,6 +40,12 @@ sealed class Screen(
         icon = R.drawable.ic_list_numbered_accent_24dp,
         isAlwaysActive = true,
     )
+    data object Posting : Screen(
+        route = "PostingScreen",
+        title = R.string.navigation_posting,
+        icon = R.drawable.ic_settings_accent_24dp,
+        isAlwaysActive = true,
+    )
     data object Setting : Screen(
         route = "SettingScreen",
         title = R.string.navigation_settings,

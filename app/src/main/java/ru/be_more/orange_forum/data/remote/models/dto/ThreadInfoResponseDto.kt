@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.data.remote.models
+package ru.be_more.orange_forum.data.remote.models.dto
 
 data class ThreadInfoResponseDto(
     val result: Int,

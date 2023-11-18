@@ -5,6 +5,17 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
 import ru.be_more.orange_forum.data.remote.models.*
+import ru.be_more.orange_forum.data.remote.models.dto.BoardDto
+import ru.be_more.orange_forum.data.remote.models.dto.BoardCaptureSettingDto
+import ru.be_more.orange_forum.data.remote.models.dto.BoardShortDto
+import ru.be_more.orange_forum.data.remote.models.dto.DvachCaptchaDto
+import ru.be_more.orange_forum.data.remote.models.dto.PostDto
+import ru.be_more.orange_forum.data.remote.models.dto.PostResponseDto
+import ru.be_more.orange_forum.data.remote.models.dto.ReplyCreatedDto
+import ru.be_more.orange_forum.data.remote.models.dto.ResponseDto
+import ru.be_more.orange_forum.data.remote.models.dto.ThreadCreatedDto
+import ru.be_more.orange_forum.data.remote.models.dto.ThreadDto
+import ru.be_more.orange_forum.data.remote.models.dto.ThreadInfoDto
 
 interface DvachApi{
 
@@ -45,6 +56,7 @@ interface DvachApi{
         @Header("Cookie") cookie: String
     ): Single<ThreadDto>
 
+    //todo delete
     @Multipart
     @POST("/makaba/posting.fcgi?json=1")
     fun postThreadResponseRx(
@@ -58,7 +70,7 @@ interface DvachApi{
         @Part("email") email: RequestBody?, //имейл или сажа
         @Part("subject") subject: RequestBody?,
         @Part("comment") comment: RequestBody,
-        @Part("g-recaptcha-response") gRecaptchaResponse: RequestBody,
+        @Part("g-recaptcha-response")gRecaptchaResponse: RequestBody,
         @Part("2chaptcha_id") chaptchaId: RequestBody,
         @Part files: List<MultipartBody.Part>
     ): Single<ResponseDto>
@@ -66,12 +78,44 @@ interface DvachApi{
     @GET("/api/captcha/settings/{id}")
     fun getBoardSettings(
         @Path("id") boardId: String,
-    ): Single<BoardSettingDto>
+    ): Single<BoardCaptureSettingDto>
 
     @GET("/api/captcha/2chcaptcha/id")
     fun get2chCaptcha(
         @Query("board") boardId: String,
         @Query("thread") threadNum: Int?,
     ): Single<DvachCaptchaDto>
+
+    @Multipart
+    @POST("/user/posting")
+    fun postReply(
+        @Part("captcha_type")   captchaType: RequestBody,
+        @Part("board")          boardId: RequestBody,
+        @Part("thread")         threadName: RequestBody,
+        @Part("name")           name: RequestBody?,
+        @Part("email")          email: RequestBody?,
+        @Part("tags")           tags: RequestBody?,
+        @Part("subject")        subject: RequestBody?,
+        @Part("comment")        comment: RequestBody,
+        @Part("icon")           icon: RequestBody?,
+        @Part("op_mark")        isOp: Boolean?,
+        @Part                   files: List<MultipartBody.Part>,
+        @Part                   captchaFields: List<MultipartBody.Part>?,
+    ): Single<ReplyCreatedDto>
+
+    @POST("/user/posting")
+    fun postNewThread(
+        @Part("captcha_type")   captchaType: RequestBody,
+        @Part("board")          boardId: RequestBody,
+        @Part("name")           name: RequestBody?,
+        @Part("email")          email: RequestBody?,
+        @Part("tags")           tags: RequestBody?,
+        @Part("subject")        subject: RequestBody?,
+        @Part("comment")        comment: RequestBody,
+        @Part("icon")           icon: RequestBody?,
+        @Part("op_mark")        isOp: RequestBody?,
+        @Part                   files: List<MultipartBody.Part>,
+        @Part                   captchaFields: List<MultipartBody.Part>?,
+    ): Single<ThreadCreatedDto>
 
 }

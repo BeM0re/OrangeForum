@@ -1,7 +1,6 @@
 package ru.be_more.orange_forum.presentation.screens.thread
 
 import android.os.Build
-import android.os.SystemClock
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,15 +30,22 @@ import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialog
 import ru.be_more.orange_forum.presentation.composeViews.PostView
+import ru.be_more.orange_forum.presentation.screens.base.NavigateState
 import java.time.Instant
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ThreadScreen(
-    viewModel: ThreadViewModel
+    viewModel: ThreadViewModel,
+    onNavigateToPosting: (NavigateState.NavigateToPosting) -> Unit,
 ) {
     with(viewModel) {
 
+        LaunchedEffect(key1 = true) {
+            navState.collect { navigate ->
+                onNavigateToPosting(navigate)
+            }
+        }
 
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
@@ -89,9 +96,7 @@ fun ThreadScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { onReplyClicked() },
-//                    containerColor = MaterialTheme.colorScheme.tertiary
-
+                    onClick = { onReplyClicked() }
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_create_black_24dp),

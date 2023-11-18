@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.data.remote.models
+package ru.be_more.orange_forum.data.remote.models.dto
 
 import ru.be_more.orange_forum.domain.model.ThreadInfo
 

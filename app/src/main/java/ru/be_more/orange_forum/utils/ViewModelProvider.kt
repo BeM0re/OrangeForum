@@ -9,15 +9,23 @@ class ViewModelProvider {
     val viewModelList = mutableListOf<BaseViewModel>()
 
     @Composable
-    inline fun <reified T: BaseViewModel> getVM(vararg args: Any?): T =
-        if (args.isEmpty())
-            viewModelList
-                .filterIsInstance<T>()
-                .firstOrNull() ?:
+    inline fun <reified T: BaseViewModel> getVM(vararg args: Any?, createNew: Boolean): T =
+        when {
+            !createNew ->
+                viewModelList
+                    .filterIsInstance<T>()
+                    .firstOrNull() ?:
+                koinViewModel<T>(parameters = { parametersOf(*args) })
+                    .also { viewModelList.add(it) }
+            args.isEmpty() ->
+                viewModelList
+                    .filterIsInstance<T>()
+                    .firstOrNull() ?:
                 koinViewModel<T>()
                     .also { viewModelList.add(it) }
-        else
-            koinViewModel<T>(parameters = { parametersOf(*args) })
-                .also { viewModelList.removeIf { it is T } }
-                .also { viewModelList.add(it) }
+            else ->
+                koinViewModel<T>(parameters = { parametersOf(*args) })
+                    .also { viewModelList.removeIf { it is T } }
+                    .also { viewModelList.add(it) }
+        }
 }

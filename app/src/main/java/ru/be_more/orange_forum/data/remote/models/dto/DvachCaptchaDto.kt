@@ -1,6 +1,6 @@
-package ru.be_more.orange_forum.data.remote.models
+package ru.be_more.orange_forum.data.remote.models.dto
 
-import ru.be_more.orange_forum.domain.model.DvachCaptcha
+import ru.be_more.orange_forum.data.remote.models.DvachCaptcha
 
 data class DvachCaptchaDto(
     val id: String,

@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.domain.interactors
 
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import ru.be_more.orange_forum.domain.contracts.DbContract
@@ -19,6 +20,22 @@ class CategoryInteractorImpl(
         .createDefault("")
 
     override fun observe(): Observable<List<Category>> =
+        Flowable.combineLatest(
+            searchQuery.toFlowable(BackpressureStrategy.LATEST),
+            observeCategories().toFlowable(BackpressureStrategy.LATEST)
+        ) { query, categories ->
+            if (query.isEmpty()) categories
+            else categories
+                .map { category ->
+                    category.copy(
+                        boards = category.boards
+                            .filter { it.name.contains(query) || it.id.contains(query) }
+                    )
+                }
+                .filter { it.boards.isNotEmpty() }
+        }.toObservable()
+
+    override fun refresh(): Completable =
         apiRepository.getCategories()
             .flatMapCompletable { categories ->
                 categoryRepository
@@ -34,23 +51,6 @@ class CategoryInteractorImpl(
                         )
                     )
             }
-            .andThen(
-                Observable.combineLatest(
-                    searchQuery.toFlowable(BackpressureStrategy.LATEST).toObservable(),
-                    observeCategories()
-                ) { query, categories ->
-                    if (query.isEmpty()) categories
-                    else categories
-                        .map { category ->
-                            category.copy(
-                                boards = category.boards
-                                    .filter { it.name.contains(query) || it.id.contains(query) }
-                            )
-                        }
-                        .filter { it.boards.isNotEmpty() }
-                }
-
-            )
 
     override fun toggleExpanded(name: String): Completable =
         categoryRepository.getEmpty(name)

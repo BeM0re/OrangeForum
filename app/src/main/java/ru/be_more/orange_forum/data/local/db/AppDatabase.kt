@@ -9,7 +9,7 @@ import ru.be_more.orange_forum.data.local.db.dao.CategoryDao
 import ru.be_more.orange_forum.data.local.db.dao.PostDao
 import ru.be_more.orange_forum.data.local.db.dao.ThreadDao
 import ru.be_more.orange_forum.data.local.db.entities.*
-import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
+import ru.be_more.orange_forum.data.local.db.utils.Converters
 
 @Database(
     entities = [
@@ -18,11 +18,11 @@ import ru.be_more.orange_forum.data.local.db.utils.ReplyConverter
         StoredThread::class,
         StoredPost::class,
     ],
-    version = 10,
+    version = 16,
     exportSchema = false
 )
 
-@TypeConverters(ReplyConverter::class, JsonRoomConverter::class)
+@TypeConverters(Converters::class, JsonRoomConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun boardDao(): BoardDao

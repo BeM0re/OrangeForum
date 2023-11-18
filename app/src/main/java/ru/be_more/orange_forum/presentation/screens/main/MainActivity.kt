@@ -42,6 +42,7 @@ import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
 import ru.be_more.orange_forum.presentation.screens.category.CategoryScreen
 import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteScreen
 import ru.be_more.orange_forum.presentation.screens.queue.QueueScreen
+import ru.be_more.orange_forum.presentation.screens.posting.PostingScreen
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadScreen
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 import ru.be_more.orange_forum.utils.ViewModelProvider
@@ -146,7 +147,7 @@ class MainActivity : ComponentActivity() {
         ) {
             composable(route = Screen.Category.route) {
                 CategoryScreen(
-                    viewModel = vmProvider.getVM(),
+                    viewModel = vmProvider.getVM(createNew = false),
                     onNavigateToBoard = { boardId ->
                         navController.navigate(
                             route = Screen.Board.route + "?boardId=$boardId"
@@ -170,10 +171,18 @@ class MainActivity : ComponentActivity() {
             ) { entry ->
                 val id = entry.arguments?.getString("boardId") ?: return@composable
                 BoardScreen(
-                    viewModel = vmProvider.getVM(id),
+                    viewModel = vmProvider.getVM(id, createNew = true),
                     onNavigateToThread = { boardId, threadNum ->
                         navController.navigate(
                             route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
+                    onNavigateToPosting = { boardId ->
+                        navController.navigate(
+                            route = Screen.Posting.route + "?boardId=$boardId"
                         ) {
                             launchSingleTop = true
                             restoreState = false
@@ -187,10 +196,18 @@ class MainActivity : ComponentActivity() {
                 route = Screen.Board.route,
             ) {
                 BoardScreen(
-                    viewModel = vmProvider.getVM(),
+                    viewModel = vmProvider.getVM(createNew = false),
                     onNavigateToThread = { boardId, threadNum ->
                         navController.navigate(
                             route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
+                    onNavigateToPosting = { boardId ->
+                        navController.navigate(
+                            route = Screen.Posting.route + "?boardId=$boardId"
                         ) {
                             launchSingleTop = true
                             restoreState = false
@@ -216,14 +233,40 @@ class MainActivity : ComponentActivity() {
                 val boardId = entry.arguments?.getString("boardId") ?: ""
                 val threadNum = entry.arguments?.getInt("threadNum") ?: 0
 
-                ThreadScreen(vmProvider.getVM(boardId, threadNum))
+                ThreadScreen(
+                    viewModel = vmProvider.getVM(boardId, threadNum, createNew = true),
+                    onNavigateToPosting = { navigateToPosting ->
+                        navController.navigate(
+                            route = Screen.Posting.route
+                                    + "?boardId=${navigateToPosting.boardId}"
+                                    + "?threadNum=${navigateToPosting.threadNum}"
+                                    + "?additionalString=${navigateToPosting.additionalString}"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
+                )
             }
 
             //thread w/o params
             composable(
                 route = Screen.Thread.route,
             ) {
-                ThreadScreen(vmProvider.getVM())
+                ThreadScreen(
+                    viewModel = vmProvider.getVM(createNew = false),
+                    onNavigateToPosting = { navigateToPosting ->
+                        navController.navigate(
+                            route = Screen.Posting.route
+                                    + "?boardId=${navigateToPosting.boardId}"
+                                    + "?threadNum=${navigateToPosting.threadNum}"
+                                    + "?additionalString=${navigateToPosting.additionalString}"
+                        ) {
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
+                )
             }
 
             //Queue
@@ -245,7 +288,7 @@ class MainActivity : ComponentActivity() {
                             restoreState = false
                         }
                     },
-                    viewModel = vmProvider.getVM()
+                    viewModel = vmProvider.getVM(createNew = false)
                 )
             }
 
@@ -268,7 +311,54 @@ class MainActivity : ComponentActivity() {
                             restoreState = false
                         }
                     },
-                    viewModel = vmProvider.getVM()
+                    viewModel = vmProvider.getVM(createNew = false)
+                )
+            }
+
+            //reply into a thread
+            composable(
+                route = Screen.Posting.route
+                        + "?boardId={boardId}"
+                        + "?threadNum={threadNum}"
+                        + "?additionalString={additionalString}",
+                arguments = listOf(
+                    navArgument(name = "boardId") {
+                        type = NavType.StringType
+                        nullable = false
+                    },
+                    navArgument(name = "threadNum") {
+                        type = NavType.IntType
+                        nullable = false
+                    },
+                    navArgument(name = "additionalString") {
+                        type = NavType.StringType
+                        nullable = false
+                    },
+                )
+            ) { entry ->
+                val boardId = entry.arguments?.getString("boardId") ?: ""
+                val threadNum = entry.arguments?.getInt("threadNum") ?: 0
+                val additionalString = entry.arguments?.getString("additionalString") ?: ""
+
+                PostingScreen(
+                    vmProvider.getVM(boardId, threadNum, additionalString, createNew = false)
+                )
+            }
+
+            //create a new thread
+            composable(
+                route = Screen.Posting.route + "?boardId={boardId}",
+                arguments = listOf(
+                    navArgument(name = "boardId") {
+                        type = NavType.StringType
+                        nullable = false
+                    },
+                )
+            ) { entry ->
+                val boardId = entry.arguments?.getString("boardId") ?: ""
+
+                PostingScreen(
+                    vmProvider.getVM(boardId, -1, createNew = false)
                 )
             }
 

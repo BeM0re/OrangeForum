@@ -10,7 +10,7 @@ val interactorModule = module {
     single<InteractorContract.BoardInteractor> { BoardInteractorImpl(get(),get(),get(),get()) }
     single<InteractorContract.ThreadInteractor> { ThreadInteractorImpl(get(),get(),get(),get()) }
     single<InteractorContract.PostInteractor> { PostInteractorImpl(get(),get()) }
-    single<InteractorContract.ReplyInteractor> { ReplyInteractorImpl(get()) }
+    single<InteractorContract.ReplyInteractor> { ReplyInteractorImpl(get(),get()) }
     single<InteractorContract.FavoriteInteractor> { FavoriteInteractorImpl(get(),get(),get()) }
     single<InteractorContract.QueueInteractor> { QueueInteractorImpl(get(),get(),get()) }
 }

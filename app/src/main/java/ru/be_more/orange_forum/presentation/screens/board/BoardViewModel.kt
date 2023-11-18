@@ -4,8 +4,13 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
+import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.BoardSetting
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.presentation.data.ListItemArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
@@ -22,6 +27,13 @@ class BoardViewModel(
     postInteractor = postInteractor,
     replyInteractor = replyInteractor,
 ) {
+
+    override val boardSetting: BoardSetting
+        get() = board.boardSetting
+
+    private lateinit var board: Board
+
+    var navState = MutableSharedFlow<String>()
 
     var items by mutableStateOf(listOf<ListItemArgs>())
         private set
@@ -42,6 +54,7 @@ class BoardViewModel(
             .doOnSubscribe { isLoading = true }
             .subscribe(
                 { board ->
+                    this.board = board
                     screenTitle = board.name
                     isFavorite = board.isFavorite
                     items = prepareItemList(board.threads)
@@ -51,9 +64,6 @@ class BoardViewModel(
             )
             .addToSubscribe()
     }
-
-    override fun getCapture() =
-        replyInteractor.getCapture(boardId, threadNum = null)
 
     private fun prepareItemList(threads: List<BoardThread>): List<ListItemArgs> =
         threads.mapNotNull { thread ->
@@ -121,4 +131,10 @@ class BoardViewModel(
 
     fun search(query: String) =
         boardInteractor.search(query)
+
+    fun onNewThreadClicked() {
+        viewModelScope.launch {
+            navState.emit(boardId)
+        }
+    }
 }

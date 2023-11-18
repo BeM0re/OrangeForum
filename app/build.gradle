@@ -78,8 +78,9 @@ dependencies {
     implementation composeBom
     androidTestImplementation composeBom
     implementation 'androidx.compose.material3:material3'
-    implementation 'androidx.compose.material:material:1.5.3'
+    implementation 'androidx.compose.material:material:1.5.4'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.2'
     //swipe
     implementation "me.saket.swipe:swipe:1.1.1"
     // Android Studio Preview support
@@ -102,10 +103,10 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     //Room
-    implementation "androidx.room:room-ktx:2.5.2"
-    kapt "androidx.room:room-compiler:2.5.2"
-    implementation "androidx.room:room-runtime:2.5.2"
-    implementation "androidx.room:room-rxjava2:2.5.2"
+    implementation "androidx.room:room-ktx:2.6.0"
+    kapt "androidx.room:room-compiler:2.6.0"
+    implementation "androidx.room:room-runtime:2.6.0"
+    implementation "androidx.room:room-rxjava2:2.6.0"
 
     //Retrofit2
     implementation "com.squareup.retrofit2:retrofit:2.9.0"

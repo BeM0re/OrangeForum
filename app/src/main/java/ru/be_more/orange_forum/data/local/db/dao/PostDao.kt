@@ -35,6 +35,6 @@ interface PostDao {
     fun getMaxNumber(boardId: String, threadNum: Int): Maybe<Int>
 
 
-    @Query("DELETE FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
+    @Query("DELETE FROM posts WHERE boardId = :boardId AND threadNum = :threadNum AND isMyPost = 0")
     fun delete(boardId: String, threadNum: Int): Completable
 }

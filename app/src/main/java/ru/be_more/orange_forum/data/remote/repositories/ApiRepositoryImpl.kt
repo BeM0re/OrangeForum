@@ -11,6 +11,8 @@ import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.consts.DVACH_ROOT_URL
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.api.DvachApi
+import ru.be_more.orange_forum.data.remote.models.Captcha
+import ru.be_more.orange_forum.data.remote.models.CaptureType
 import ru.be_more.orange_forum.domain.model.*
 import ru.be_more.orange_forum.utils.ParseHtml
 import java.io.File
@@ -21,6 +23,8 @@ import java.util.*
 class ApiRepositoryImpl(
     private val api : DvachApi
 ) : RemoteContract.ApiRepository{
+    //todo переделать модель капчи
+    private var captcha: Captcha? = null
 
     override fun getCategories(): Single<List<Category>> =
         api.getBoardList()
@@ -66,8 +70,17 @@ class ApiRepositoryImpl(
                     CaptureType.DvachCaptcha -> {
                         api.get2chCaptcha(boardId, threadNum)
                             .map { it.toModel() }
+                            .doOnSuccess {
+                                captcha = Captcha.DvachCaptcha(id = it.id)
+                            }
                             .map { DVACH_ROOT_URL + "/api/captcha/2chcaptcha/show/?id=${ it.id }" }
                     }
+
+                    CaptureType.NoCaptcha -> {
+                        captcha = Captcha.NoCaptcha()
+                        Single.just("")
+                    }
+
                     else -> {
                         Single.error(
                             Throwable("Capture method ${boardSetting.captchaType} is not yet implemented")
@@ -76,7 +89,55 @@ class ApiRepositoryImpl(
                 }
             }
 
-    override fun postResponse(
+    override fun postReply(
+        boardId: String,
+        threadNum: Int,
+        comment: String,
+        isOp: Boolean,
+        subject: String,
+        email: String,
+        name: String,
+        tag: String,
+        captchaSolvedString: String?
+    ): Single<Int> {
+        captcha?.solveCapture(captchaSolvedString)
+
+        val requestBoardId = boardId.toRequestBody("text/plain".toMediaTypeOrNull())
+        val requestThreadNum = (""+threadNum).toRequestBody("text/plain".toMediaTypeOrNull())
+        val requestComment = comment.toRequestBody("text/plain".toMediaTypeOrNull())
+        val requestCaptchaType = (captcha?.type?.value ?: "").toRequestBody("text/plain".toMediaTypeOrNull())
+        val requestSubject = subject.toRequestBody("text/plain".toMediaTypeOrNull())
+        val requestEmail = email.toRequestBody("text/plain".toMediaTypeOrNull())
+        val requestName = name.toRequestBody("text/plain".toMediaTypeOrNull())
+        val requestTag = tag.toRequestBody("text/plain".toMediaTypeOrNull())
+        val captchaFields = captcha
+            ?.additionalFields
+            ?.map { (name, value) -> MultipartBody.Part.createFormData(name, value) }
+
+        return api
+            .postReply(
+                captchaType = requestCaptchaType,
+                boardId = requestBoardId,
+                threadName = requestThreadNum,
+                comment = requestComment,
+                subject = requestSubject,
+                email = requestEmail,
+                name = requestName,
+                tags = requestTag,
+                icon = null,
+                isOp = isOp,
+                files = emptyList(),
+                captchaFields = captchaFields,
+            )
+            .map { replyDto ->
+                    if (replyDto.error != null && replyDto.error.code != 0)
+                        throw Throwable("Replying error code ${replyDto.error.code}: ${replyDto.error.message}")
+                    else
+                        replyDto.num
+                }
+    }
+
+    override fun postResponseOld(
         boardId: String,
         threadNum: Int,
         comment: String,

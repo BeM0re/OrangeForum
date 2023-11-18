@@ -10,9 +10,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -26,9 +29,16 @@ import java.lang.IllegalStateException
 @Composable
 fun BoardScreen(
     viewModel: BoardViewModel,
-    onNavigateToThread: (String, Int) -> Unit
+    onNavigateToThread: (String, Int) -> Unit,
+    onNavigateToPosting: (String) -> Unit,
 ) {
     with(viewModel) {
+        LaunchedEffect(key1 = true) {
+            navState.collect { navigate ->
+                onNavigateToPosting(navigate)
+            }
+        }
+
         val refreshState = rememberPullRefreshState(isLoading, ::refresh)
         //todo доделать когда будут мануалы
 
@@ -52,6 +62,18 @@ fun BoardScreen(
                     )
                 }
             },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { onNewThreadClicked() }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_create_black_24dp),
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        contentDescription = null,
+                        modifier = Modifier
+                    )
+                }
+            }
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier

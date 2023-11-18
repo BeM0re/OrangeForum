@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.presentation.data
 
 import ru.be_more.orange_forum.domain.model.AttachedFile
+import ru.be_more.orange_forum.domain.model.Icon
 import ru.be_more.orange_forum.domain.model.Post
 
 sealed interface ModalContentArgs
@@ -13,9 +14,4 @@ data class PostInitArgs(
     val post: Post,
     val onPicClick: (AttachedFile) -> Unit,
     val onTextLinkClick: (TextLinkArgs) -> Unit,
-) : ModalContentArgs
-
-data class ReplyInitArgs(
-    val captureUrl: String,
-    val onReply: (comment: String, capture: String) -> Unit,
 ) : ModalContentArgs

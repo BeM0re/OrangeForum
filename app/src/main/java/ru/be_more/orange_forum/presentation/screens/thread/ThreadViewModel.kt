@@ -6,16 +6,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
+import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.orange_forum.domain.model.BoardSetting
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.data.PostInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
+import ru.be_more.orange_forum.presentation.screens.base.NavigateState
 import java.util.*
 
 class ThreadViewModel(
     override val boardId: String,
     private val threadNum: Int,
+    private val boardInteractor: InteractorContract.BoardInteractor,
     private val threadInteractor: InteractorContract.ThreadInteractor,
     override val postInteractor: InteractorContract.PostInteractor,
     override val replyInteractor: InteractorContract.ReplyInteractor,
@@ -25,6 +35,13 @@ class ThreadViewModel(
     postInteractor = postInteractor,
     replyInteractor = replyInteractor,
 ) {
+
+    override val boardSetting: BoardSetting
+        get() = settings
+
+    private lateinit var settings: BoardSetting
+
+    var navState = MutableSharedFlow<NavigateState.NavigateToPosting>()
 
     var screenTitle by mutableStateOf("")
         private set
@@ -42,8 +59,12 @@ class ThreadViewModel(
         private set
 
     init {
-        threadInteractor
-            .observe(boardId, threadNum)
+        boardInteractor
+            .getSingle(boardId)
+            .doOnSuccess { settings = it.boardSetting }
+            .flatMapObservable {
+                threadInteractor.observe(boardId, threadNum)
+            }
             .defaultThreads()
             .subscribe(
                 { thread ->
@@ -57,9 +78,6 @@ class ThreadViewModel(
             )
             .addToSubscribe()
     }
-
-    override fun getCapture() =
-        replyInteractor.getCapture(boardId, threadNum)
 
     private fun prepareItemList(posts: List<Post>): List<PostInitArgs> =
         posts.map { post ->
@@ -102,5 +120,18 @@ class ThreadViewModel(
             )
             .addToSubscribe()
     }
+
+    fun onReplyClicked() {
+        viewModelScope.launch {
+            navState.emit(
+                NavigateState.NavigateToPosting(
+                    boardId = boardId,
+                    threadNum = threadNum,
+                    additionalString = ""/*todo*/,
+                )
+            )
+        }
+    }
+
     //todo new thread
 }

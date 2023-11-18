@@ -27,6 +27,15 @@ class CategoryViewModel(
                 { error.postValue("CategoryViewModel.initViewModel: \n ${it.message}") }
             )
             .addToSubscribe()
+
+        interactor
+            .refresh()
+            .defaultThreads()
+            .subscribe(
+                { },
+                { error.postValue("CategoryViewModel.initViewModel: \n ${it.message}") }
+            )
+            .addToSubscribe()
     }
 
     private fun prepareList(categoryList: List<Category>): List<ListItemArgs> =
