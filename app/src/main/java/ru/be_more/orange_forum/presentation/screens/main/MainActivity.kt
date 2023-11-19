@@ -27,6 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -36,7 +39,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
 import ru.be_more.orange_forum.presentation.screens.category.CategoryScreen
@@ -46,14 +51,28 @@ import ru.be_more.orange_forum.presentation.screens.posting.PostingScreen
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadScreen
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 import ru.be_more.orange_forum.utils.ViewModelProvider
+import ru.be_more.orange_forum.utils.permissions.registerPermissionsLauncher
 
 class MainActivity : ComponentActivity() {
 
     private val vmProvider: ViewModelProvider by inject()
+    private val viewModel: MainViewModel by inject()
+
+    private val permissionsLauncher = registerPermissionsLauncher {
+
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                viewModel.requestPermissionsFlow.collect {
+                    permissionsLauncher.request(it)
+                }
+            }
+        }
 
         setContent {
             DvachTheme {

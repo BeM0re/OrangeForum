@@ -41,4 +41,10 @@
     <string name="select_icon">Select Icon</string>
 
 
+    <string name="permission_camera">Allow camera</string>
+    <string name="permission_media">Allow media</string>
+    <string name="permission_notifications">Allow notifications</string>
+
+
+
 </resources>

@@ -10,6 +10,7 @@ data class BoardThread(
     val postCount: Int,
     val fileCount: Int,
     val lasthit: Long, //timestamp последнего поста
+    val lastPostRead: Int = 0, //порядковый номер поста, который видел пользовать
     val isPinned: Boolean,
     val isHidden: Boolean = false,
     val isDownloaded: Boolean = false,

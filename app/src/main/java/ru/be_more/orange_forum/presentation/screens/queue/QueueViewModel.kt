@@ -52,19 +52,6 @@ class QueueViewModel(
             }
         }
 
-    fun removeThread(boardId: String, threadNum: Int) =
-        threadInteractor
-            .markQueued(
-                boardId = boardId,
-                threadNum = threadNum,
-            )
-            .defaultThreads()
-            .subscribe(
-                { },
-                { Log.e("QueueViewModel", "QueueViewModel.removeThread = $it") }
-            )
-            .addToSubscribe()
-
     fun clear() =
         queueInteractor
             .clear()
