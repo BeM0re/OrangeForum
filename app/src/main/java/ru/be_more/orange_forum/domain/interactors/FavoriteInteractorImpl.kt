@@ -15,33 +15,40 @@ class FavoriteInteractorImpl(
 ): InteractorContract.FavoriteInteractor {
 
     override fun observe(): Observable<List<Board>> =
-        updateThreadInfo()
-            .andThen(
-                Observable.combineLatest(
-                    boardRepository.observeList(),
-                    threadRepository.observeFavorite()
-                ) { boards, threads ->
-                    boards
-                        .map { board ->
-                            board to threads.filter { it.boardId == board.id }
-                        }
-                        .map { (board, threads) ->
-                            board.copy(threads = threads)
-                        }
-                        .filter { it.threads.isNotEmpty() || it.isFavorite }
+        Observable.combineLatest(
+            boardRepository.observeList(),
+            threadRepository.observeFavorite()
+        ) { boards, threads ->
+            boards
+                .map { board ->
+                    board to threads.filter { it.boardId == board.id }
                 }
-            )
+                .map { (board, threads) ->
+                    board.copy(threads = threads)
+                }
+                .filter { it.threads.isNotEmpty() || it.isFavorite }
+        }
 
-    override fun observeNewMessage(): Completable =
-        Observable.interval(1, 1, TimeUnit.MINUTES)
-            .flatMapCompletable { updateThreadInfo() }
 
-    private fun updateThreadInfo() =
+    override fun observeNewMessages(): Observable<Boolean> =
+        observe().map { boards ->
+            boards.any { board ->
+                board.threads.any { thread ->
+                    thread.hasNewMessages
+                }
+            }
+        }
+
+    override fun updatingFavoritesSubscription(): Completable =
+        Observable.interval(0, 1, TimeUnit.MINUTES)
+            .flatMapCompletable { updateFavoriteThreadInfo() }
+
+    override fun updateFavoriteThreadInfo(): Completable =
         threadRepository.getFavorites()
             .flatMapObservable { Observable.fromIterable(it) }
             .flatMapCompletable { thread ->
                 apiRepository.getThreadInfo(thread.boardId, thread.num)
-                    .flatMapCompletable {info ->
+                    .flatMapCompletable { info ->
                         when {
                             !info.isAlive ->
                                 threadRepository.setIsDrown(info.boardId, info.threadNum, isDrown = true)
@@ -53,7 +60,6 @@ class FavoriteInteractorImpl(
                             else ->
                                 Completable.complete()
                         }
-
                     }
             }
 }

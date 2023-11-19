@@ -72,7 +72,10 @@ interface InteractorContract {
 
     interface FavoriteInteractor {
         fun observe(): Observable<List<Board>>
-        fun observeNewMessage(): Completable
+        fun observeNewMessages(): Observable<Boolean>
+        fun updatingFavoritesSubscription(): Completable
+        fun updateFavoriteThreadInfo(): Completable
+
     }
 
 }

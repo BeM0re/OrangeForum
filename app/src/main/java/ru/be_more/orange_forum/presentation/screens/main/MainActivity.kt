@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import ru.be_more.orange_forum.presentation.composeViews.NavigationIcon
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
 import ru.be_more.orange_forum.presentation.screens.category.CategoryScreen
@@ -110,6 +112,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun NavBar(navController: NavController) {
+        val hasNewFavoriteMessage = viewModel.hasFavoriteNewMessageFlow.collectAsState()
+
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
@@ -136,8 +140,10 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     icon = {
-                        Icon(
+                        NavigationIcon(
                             painter = painterResource(id = menuItem.icon),
+                            isMarked = hasNewFavoriteMessage.value
+                                    && menuItem is Screen.Favorite,
                             contentDescription = stringResource(id = menuItem.title),
                         )
                     },

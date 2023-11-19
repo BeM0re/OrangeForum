@@ -4,9 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
@@ -25,21 +22,28 @@ class FavoriteViewModel (
         private set
 
     init {
+        subscribeToData()
+        refresh()
+    }
+
+    private fun refresh() {
+        favoriteInteractor
+            .updateFavoriteThreadInfo()
+            .defaultThreads()
+            .subscribe(
+                { },
+                { Log.e("FavoriteViewModel", "FavoriteViewModel.init.observe = $it") }
+            )
+            .addToSubscribe()
+    }
+
+    private fun subscribeToData() {
         favoriteInteractor
             .observe()
             .defaultThreads()
             .subscribe(
                 { items = prepareItemList(it) },
                 { Log.e("FavoriteViewModel", "FavoriteViewModel.init.observe = $it") }
-            )
-            .addToSubscribe()
-
-        favoriteInteractor
-            .observeNewMessage()
-            .defaultThreads()
-            .subscribe(
-                { },
-                { Log.e("FavoriteViewModel", "FavoriteViewModel.init.observeNewMessage = $it") }
             )
             .addToSubscribe()
     }
@@ -64,7 +68,7 @@ class FavoriteViewModel (
             }
         }
 
-     fun removeThread(boardId: String, threadNum: Int) =
+    fun removeThread(boardId: String, threadNum: Int) =
         threadInteractor.markFavorite(boardId, threadNum)
             .defaultThreads()
             .subscribe(

@@ -15,44 +15,6 @@ class ThreadRepositoryImpl(
     private val storage: StorageContract.LocalStorage
 ) : DbContract.ThreadRepository {
 
-    override fun observe(boardId: String, threadNum: Int): Observable<BoardThread> =
-        dao.observe(boardId, threadNum)
-            .map { it.toModel() }
-
-    override fun get(boardId: String, threadNum: Int): Maybe<BoardThread> =
-        dao.get(boardId, threadNum)
-            .map { it.toModel() }
-
-    override fun getFavorites(): Single<List<BoardThread>> =
-        dao.getFavorites()
-            .map { threads ->
-                threads.map { it.toModel() }
-            }
-
-    override fun getQueued(): Single<List<BoardThread>> =
-        dao.getQueued()
-            .map { threads ->
-                threads.map { it.toModel() }
-            }
-
-    override fun observeList(boardId: String): Observable<List<BoardThread>> =
-        dao.observeList(boardId)
-            .map { threads ->
-                threads.map { it.toModel() }
-            }
-
-    override fun observeFavorite(): Observable<List<BoardThread>> =
-        dao.observeFavorites()
-            .map { threads ->
-                threads.map { it.toModel() }
-            }
-
-    override fun observeQueued(): Observable<List<BoardThread>> =
-        dao.observeQueue()
-            .map { threads ->
-                threads.map { it.toModel() }
-            }
-
     override fun insert(thread: BoardThread): Completable =
         dao.insert(StoredThread(thread))
 
@@ -99,6 +61,46 @@ class ThreadRepositoryImpl(
         )
     }
 
+
+    override fun get(boardId: String, threadNum: Int): Maybe<BoardThread> =
+        dao.get(boardId, threadNum)
+            .map { it.toModel() }
+
+    override fun getFavorites(): Single<List<BoardThread>> =
+        dao.getFavorites()
+            .map { threads ->
+                threads.map { it.toModel() }
+            }
+
+    override fun getQueued(): Single<List<BoardThread>> =
+        dao.getQueued()
+            .map { threads ->
+                threads.map { it.toModel() }
+            }
+
+    override fun observe(boardId: String, threadNum: Int): Observable<BoardThread> =
+        dao.observe(boardId, threadNum)
+            .map { it.toModel() }
+
+    override fun observeList(boardId: String): Observable<List<BoardThread>> =
+        dao.observeList(boardId)
+            .map { threads ->
+                threads.map { it.toModel() }
+            }
+
+    override fun observeFavorite(): Observable<List<BoardThread>> =
+        dao.observeFavorites()
+            .map { threads ->
+                threads.map { it.toModel() }
+            }
+
+    override fun observeQueued(): Observable<List<BoardThread>> =
+        dao.observeQueue()
+            .map { threads ->
+                threads.map { it.toModel() }
+            }
+
+
     override fun setPostCount(boardId: String, threadNum: Int, postNum: Int) =
         dao.setPostCount(boardId, threadNum, postNum)
 
@@ -119,6 +121,7 @@ class ThreadRepositoryImpl(
 
     override fun markQueuedAll(isQueued: Boolean): Completable =
         dao.setIsQueueForAll(isQueued)
+
 
     override fun delete(boardId: String, threadNum: Int): Completable =
         dao.delete(boardId, threadNum)
