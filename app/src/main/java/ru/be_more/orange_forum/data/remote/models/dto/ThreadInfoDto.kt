@@ -4,7 +4,8 @@ import ru.be_more.orange_forum.domain.model.ThreadInfo
 
 data class ThreadInfoDto(
     val result: Int = 0,
-    val thread: ThreadInfoInnerDto? = null
+    val thread: ThreadInfoInnerDto? = null,
+    val error: ThreadInfoErrorDto? = null,
 ) {
 
     fun toModel(boardId: String, threadNum: Int): ThreadInfo =
@@ -12,7 +13,7 @@ data class ThreadInfoDto(
             boardId = boardId,
             threadNum = threadNum,
             postCount = thread?.posts ?: 0,
-            timestamp = thread?.timestamp,
+            timestamp = thread?.timestamp ?: 0,
             isAlive = result > 0,
         )
 
@@ -20,5 +21,11 @@ data class ThreadInfoDto(
         val num: Int,
         val posts: Int,
         val timestamp: Long,
+    )
+
+    //todo unify with other error dto?
+    data class ThreadInfoErrorDto(
+        val code: Int?,
+        val message: String?,
     )
 }

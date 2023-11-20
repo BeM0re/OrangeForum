@@ -62,9 +62,12 @@ class ThreadViewModel(
         boardInteractor
             .getSingle(boardId)
             .doOnSuccess { settings = it.boardSetting }
-            .flatMapObservable {
-                threadInteractor.observe(boardId, threadNum)
+            .flatMapCompletable {
+                threadInteractor.refresh(boardId, threadNum)
             }
+            .andThen(
+                threadInteractor.observe(boardId, threadNum)
+            )
             .defaultThreads()
             .subscribe(
                 { thread ->

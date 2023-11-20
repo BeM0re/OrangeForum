@@ -52,8 +52,11 @@ class FavoriteInteractorImpl(
                         when {
                             !info.isAlive ->
                                 threadRepository.setIsDrown(info.boardId, info.threadNum, isDrown = true)
-                            info.postCount > thread.postCount ->
+                            info.timestamp > thread.lasthit ->
                                 threadRepository.setPostCount(info.boardId, info.threadNum, info.postCount)
+                                    .andThen(
+                                        threadRepository.setLasthit(info.boardId, info.threadNum, info.timestamp)
+                                    )
                                     .andThen(
                                         threadRepository.setHasNewPost(info.boardId, info.threadNum, hasNewPost = true)
                                     )

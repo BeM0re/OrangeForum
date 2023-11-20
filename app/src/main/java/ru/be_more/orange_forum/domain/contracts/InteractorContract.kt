@@ -23,6 +23,7 @@ interface InteractorContract {
     }
 
     interface ThreadInteractor {
+        fun refresh(boardId: String, threadNum: Int): Completable
         fun observe(boardId: String, threadNum: Int): Observable<BoardThread>
         fun save(boardId: String, threadNum: Int): Completable
         fun markFavorite(boardId: String, threadNum: Int): Completable

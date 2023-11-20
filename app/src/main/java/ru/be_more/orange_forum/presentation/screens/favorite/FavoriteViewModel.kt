@@ -56,15 +56,15 @@ class FavoriteViewModel (
                     boardName = board.name,
                 ).also { add(it) }
 
-                board.threads.forEach { thread ->
+                board.threads.map { thread ->
                     ShortThreadInitArgs(
                         boardId = board.id,
                         threadNum = thread.num,
                         title = thread.title,
                         isDrown = thread.isDrown,
                         hasNewMessage = thread.hasNewMessages,
-                    ).also { add(it) }
-                }
+                    )
+                }.also { addAll(it) }
             }
         }
 

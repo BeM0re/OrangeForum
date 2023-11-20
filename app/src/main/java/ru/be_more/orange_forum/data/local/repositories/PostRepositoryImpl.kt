@@ -25,13 +25,13 @@ class PostRepositoryImpl(
         )
 
     override fun insertMissing(thread: BoardThread): Completable =
-        dao.getMaxNumber(thread.boardId, thread.num)
+        dao.getLatestPostId(thread.boardId, thread.num)
             .defaultIfEmpty(-1)
-            .flatMapCompletable { maxNumber ->
+            .flatMapCompletable { latestPostId ->
                 dao.insert(
                     thread
                         .posts
-                        .filter { it.number > maxNumber }
+                        .filter { it.id > latestPostId }
                         .map { StoredPost(it) }
                 )
             }

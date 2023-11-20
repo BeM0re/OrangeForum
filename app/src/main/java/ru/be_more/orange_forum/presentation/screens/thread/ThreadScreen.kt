@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +52,7 @@ fun ThreadScreen(
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
         var firstVisibleItemIndex = 0
+        val listFirstVisibleItemState = remember { derivedStateOf { listState.firstVisibleItemIndex } }
         var timestamp = Instant.now().toEpochMilli()
         var icon: @Composable BoxScope.() -> Unit = {}
 
@@ -127,48 +130,35 @@ fun ThreadScreen(
                     }
                 }
 
-                when {
-                    firstVisibleItemIndex < listState.firstVisibleItemIndex -> {
-                        firstVisibleItemIndex = listState.firstVisibleItemIndex
-                        timestamp = Instant.now().toEpochMilli()
-                        icon = {
-                            DvachIcon(
-                                painter = painterResource(id = R.drawable.ic_keyboard_arrow_down_white_24dp),
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .padding(8.dp)
-                                    .clickable {
-                                        coroutineScope.launch {
-                                            listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
-                                        }
-                                    }
-                                    .padding(8.dp)
-                            )
-                        }
-                    }
-                    firstVisibleItemIndex > listState.firstVisibleItemIndex -> {
-                        firstVisibleItemIndex = listState.firstVisibleItemIndex
-                        timestamp = Instant.now().toEpochMilli()
-                        icon = {
-                            DvachIcon(
-                                painter = painterResource(id = R.drawable.ic_keyboard_arrow_up_white_24dp),
-                                modifier = Modifier
-                                    .align(Alignment.CenterEnd)
-                                    .padding(8.dp)
-                                    .clickable {
-                                        coroutineScope.launch {
-                                            listState.scrollToItem(0)
-                                        }
-                                    }
-                                    .padding(8.dp)
-                            )
-                        }
-                    }
-                    Instant.now().toEpochMilli() - timestamp < 1000 -> { /*keep icon*/ }
-                    else -> icon = { /*hide icon*/ }
+                if (firstVisibleItemIndex < listFirstVisibleItemState.value) {
+                    firstVisibleItemIndex = listFirstVisibleItemState.value
+                    DvachIcon(
+                        painter = painterResource(id = R.drawable.ic_keyboard_arrow_down_white_24dp),
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(8.dp)
+                            .clickable {
+                                coroutineScope.launch {
+                                    listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
+                                }
+                            }
+                            .padding(8.dp)
+                    )
+                } else {
+                    firstVisibleItemIndex = listFirstVisibleItemState.value
+                    DvachIcon(
+                        painter = painterResource(id = R.drawable.ic_keyboard_arrow_up_white_24dp),
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(8.dp)
+                            .clickable {
+                                coroutineScope.launch {
+                                    listState.scrollToItem(0)
+                                }
+                            }
+                            .padding(8.dp)
+                    )
                 }
-
-                icon.invoke(this)
             }
 
             modalContent?.let {

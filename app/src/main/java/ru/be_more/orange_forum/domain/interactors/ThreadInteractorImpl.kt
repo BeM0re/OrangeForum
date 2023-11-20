@@ -21,15 +21,12 @@ class ThreadInteractorImpl(
         boardId: String,
         threadNum: Int,
     ): Observable<BoardThread> =
-        refresh(boardId, threadNum)
-            .andThen(
-                Observable.combineLatest(
-                    threadRepository.observe(boardId, threadNum),
-                    postRepository.observe(boardId, threadNum)
-                ) { thread, posts ->
-                    thread.copy(posts = posts)
-                }
-            )
+        Observable.combineLatest(
+            threadRepository.observe(boardId, threadNum),
+            postRepository.observe(boardId, threadNum)
+        ) { thread, posts ->
+            thread.copy(posts = posts)
+        }
 
     override fun save(boardId: String, threadNum: Int): Completable =
         apiRepository.getThread(boardId, threadNum)
@@ -72,7 +69,7 @@ class ThreadInteractorImpl(
         threadRepository.delete(boardId, threadNum)
             .andThen(postRepository.delete(boardId, threadNum))
 
-    private fun refresh(boardId: String, threadNum: Int): Completable =
+    override fun refresh(boardId: String, threadNum: Int): Completable =
         apiRepository.getThread(boardId, threadNum)
             .flatMapCompletable { thread ->
                 threadRepository.insertKeepingState(listOf(thread))

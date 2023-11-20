@@ -31,8 +31,8 @@ interface PostDao {
     @Query("SELECT * FROM posts WHERE boardId = :boardId AND id = :postId")
     fun get(boardId: String, postId: Int): Maybe<StoredPost>
 
-    @Query("SELECT MAX(number) FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
-    fun getMaxNumber(boardId: String, threadNum: Int): Maybe<Int>
+    @Query("SELECT MAX(id) FROM posts WHERE boardId = :boardId AND threadNum = :threadNum")
+    fun getLatestPostId(boardId: String, threadNum: Int): Maybe<Int>
 
 
     @Query("DELETE FROM posts WHERE boardId = :boardId AND threadNum = :threadNum AND isMyPost = 0")

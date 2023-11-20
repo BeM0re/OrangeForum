@@ -70,6 +70,9 @@ interface ThreadDao {
     @Query("UPDATE threads SET postCount = :postCount WHERE boardId = :boardId AND num = :threadNum")
     fun setPostCount(boardId: String, threadNum: Int, postCount: Int): Completable
 
+    @Query("UPDATE threads SET lasthit = :lasthit WHERE boardId = :boardId AND num = :threadNum")
+    fun setLasthit(boardId: String, threadNum: Int, lasthit: Long): Completable
+
     @Query("UPDATE threads SET hasNewMessages = :hasNewPost WHERE boardId = :boardId AND num = :threadNum")
     fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean): Completable
 

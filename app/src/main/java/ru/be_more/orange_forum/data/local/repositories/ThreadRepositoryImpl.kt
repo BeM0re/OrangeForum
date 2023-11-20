@@ -104,6 +104,9 @@ class ThreadRepositoryImpl(
     override fun setPostCount(boardId: String, threadNum: Int, postNum: Int) =
         dao.setPostCount(boardId, threadNum, postNum)
 
+    override fun setLasthit(boardId: String, threadNum: Int, lasthit: Long): Completable =
+        dao.setLasthit(boardId, threadNum, lasthit)
+
     override fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean): Completable =
         dao.setHasNewPost(boardId, threadNum, hasNewPost)
 
