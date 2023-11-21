@@ -3,11 +3,16 @@ package ru.be_more.orange_forum.presentation.screens.category
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Category
-import ru.be_more.orange_forum.presentation.data.ListItemArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.BoardShortListItemViewInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ListItemArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
+import ru.be_more.orange_forum.presentation.screens.base.NavigationState
 
 class CategoryViewModel(
     private val interactor : InteractorContract.CategoryInteractor,
@@ -42,9 +47,10 @@ class CategoryViewModel(
         mutableListOf<ListItemArgs>().apply {
             categoryList.forEach { category ->
                 add(
-                    CategoryListItemViewInitArgs(category.name) {
-                        setCategoryExpanded(it)
-                    }
+                    CategoryListItemViewInitArgs(
+                        title = category.name,
+                        onClick = ::setCategoryExpanded
+                    )
                 )
                 if (category.isExpanded)
                     category.boards.forEach { board ->
@@ -52,6 +58,7 @@ class CategoryViewModel(
                             BoardShortListItemViewInitArgs(
                                 id = board.id,
                                 title = board.name,
+                                onClick = ::navigateToBoard
                             )
                         )
                     }

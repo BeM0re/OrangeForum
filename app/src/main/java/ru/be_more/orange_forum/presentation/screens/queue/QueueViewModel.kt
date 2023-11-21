@@ -7,9 +7,9 @@ import androidx.compose.runtime.setValue
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.presentation.data.QueueItem
-import ru.be_more.orange_forum.presentation.data.ShortBoardInitArgs
-import ru.be_more.orange_forum.presentation.data.ShortThreadInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.QueueItem
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 
 class QueueViewModel(
@@ -38,6 +38,7 @@ class QueueViewModel(
                 ShortBoardInitArgs(
                     boardId = board.id,
                     boardName = board.name,
+                    onClick = ::navigateToBoard
                 ).also { add(it) }
 
                 board.threads.forEach { thread ->
@@ -47,6 +48,7 @@ class QueueViewModel(
                         title = thread.title,
                         isDrown = false,
                         hasNewMessage = false,
+                        onClick = ::navigateToThread
                     ).also { add(it) }
                 }
             }

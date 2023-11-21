@@ -13,14 +13,13 @@ import androidx.compose.ui.unit.dp
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.screens.board.OpPostInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.OpPostInitArgs
 import ru.be_more.orange_forum.presentation.screens.board.OpPostView
 
 @Composable
 fun SwipableOpPost(
     args: OpPostInitArgs,
     modifier: Modifier = Modifier,
-    onViewThread: (String, Int) -> Unit,
 ) {
     with(args) {
         val hide = SwipeAction(
@@ -54,10 +53,7 @@ fun SwipableOpPost(
             endActions = listOf(queue),
             modifier = modifier,
         ) {
-            OpPostView(
-                args = args,
-                onViewThread = onViewThread,
-            )
+            OpPostView(args)
         }
     }
 }

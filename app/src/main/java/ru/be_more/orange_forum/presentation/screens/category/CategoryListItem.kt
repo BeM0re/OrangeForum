@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.be_more.orange_forum.presentation.data.ListItemArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
@@ -54,7 +54,3 @@ fun CategoryListItemViewPreview() {
     }
 }
 
-data class CategoryListItemViewInitArgs(
-    val title: String,
-    val onClick: (String) -> Unit,
-) : ListItemArgs

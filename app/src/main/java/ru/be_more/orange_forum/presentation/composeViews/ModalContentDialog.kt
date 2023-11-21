@@ -28,9 +28,9 @@ import androidx.compose.ui.window.Dialog
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.data.ImageInitArgs
-import ru.be_more.orange_forum.presentation.data.ModalContentArgs
-import ru.be_more.orange_forum.presentation.data.PostInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ImageInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ModalContentArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 import ru.be_more.orange_forum.utils.GlideCookiedUrl
 

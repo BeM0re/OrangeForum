@@ -22,13 +22,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.be_more.orange_forum.presentation.data.ShortThreadInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
 fun ShortThreadItemView(
-    args: ShortThreadInitArgs,
-    onClick: (String, Int) -> Unit
+    args: ShortThreadInitArgs
 ) {
     with(args) {
         Row(
@@ -85,8 +84,8 @@ fun ShortThreadItemViewPreview() {
                 title = "Hfpyjt",
                 isDrown = true,
                 hasNewMessage = true,
+                onClick = { _, _ -> },
             ),
-            onClick = { _, _ -> },
         )
     }
 }

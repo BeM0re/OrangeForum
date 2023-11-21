@@ -17,14 +17,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.data.ListItemArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.BoardShortListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
 fun BoardShortListItem(
     args: BoardShortListItemViewInitArgs,
     modifier: Modifier = Modifier,
-    onClick: (String) -> Unit,
 ) {
     with (args) {
         Row(modifier
@@ -71,12 +70,9 @@ fun BoardShortListItemViewPreview() {
             args = BoardShortListItemViewInitArgs(
                 id = "diy",
                 title = "diy",
+                onClick = {}
             )
-        ) {}
+        )
     }
 }
 
-data class BoardShortListItemViewInitArgs(
-    val id: String,
-    val title: String,
-) : ListItemArgs

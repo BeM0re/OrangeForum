@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import ru.be_more.orange_forum.presentation.data.TextLinkArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.TextLinkArgs
 
 @Composable
 fun ExpandableTextVew(

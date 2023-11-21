@@ -1,7 +1,6 @@
-package ru.be_more.orange_forum.presentation.data
+package ru.be_more.orange_forum.presentation.composeViews.initArgs
 
 import ru.be_more.orange_forum.domain.model.AttachedFile
-import ru.be_more.orange_forum.domain.model.Icon
 import ru.be_more.orange_forum.domain.model.Post
 
 sealed interface ModalContentArgs

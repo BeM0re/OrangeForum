@@ -20,7 +20,7 @@ import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.domesticPostId
 import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.domesticThreadNum
 import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.externalUrl
 import ru.be_more.orange_forum.presentation.data.TextColors
-import ru.be_more.orange_forum.presentation.data.TextLinkArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.TextLinkArgs
 import ru.be_more.orange_forum.presentation.theme.greenText
 import ru.be_more.orange_forum.utils.ParseHtml
 import ru.be_more.orange_forum.utils.ParseHtml.processHtmlTrash

@@ -1,0 +1,3 @@
+package ru.be_more.orange_forum.presentation.composeViews.initArgs
+
+interface ListItemArgs

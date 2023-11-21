@@ -9,12 +9,10 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,8 +34,7 @@ import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.ParsedTextView
 import ru.be_more.orange_forum.presentation.composeViews.ImageRow
-import ru.be_more.orange_forum.presentation.data.ListItemArgs
-import ru.be_more.orange_forum.presentation.data.TextLinkArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.OpPostInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -45,7 +42,6 @@ import ru.be_more.orange_forum.presentation.theme.DvachTheme
 fun OpPostView(
     args: OpPostInitArgs,
     modifier: Modifier = Modifier,
-    onViewThread: (String, Int) -> Unit,
 ) {
 
     val width = 96.dp
@@ -63,7 +59,7 @@ fun OpPostView(
             modifier
                 .fillMaxWidth()
                 .padding(0.dp, 0.dp, 0.dp, 8.dp)
-                .clickable { onViewThread(post.boardId, post.threadNum) }
+                .clickable { onClick(post.boardId, post.threadNum) }
         ) {
             Row(
                 modifier = modifier
@@ -132,7 +128,7 @@ fun OpPostView(
                 modifier = Modifier
                     .padding(16.dp, 8.dp, 16.dp, 0.dp)
                     .combinedClickable(
-                        onClick = { onViewThread(post.boardId, post.threadNum) },
+                        onClick = { onClick(post.boardId, post.threadNum) },
                         onLongClick = { onHide(post.boardId, post.threadNum) },
                     ),
             )
@@ -173,7 +169,7 @@ fun OpPostView(
                     )
                 }
                 TextButton(
-                    onClick = { onViewThread(post.boardId, post.threadNum) }
+                    onClick = { onClick(post.boardId, post.threadNum) }
                 ) {
                     Text(
                         text = stringResource(id = R.string.btn_title_into),
@@ -203,7 +199,6 @@ fun OpPostViewPreview() {
     DvachTheme(dynamicColor = false) {
         OpPostView(
             modifier = Modifier.background(MaterialTheme.colorScheme.primary),
-            onViewThread = {_, _ -> },
             args = OpPostInitArgs(
                 post = Post(
                     boardId = "diy",
@@ -230,17 +225,10 @@ fun OpPostViewPreview() {
                 onHide = {_, _, -> },
                 onQueue = {_, _, -> },
                 onPic = { },
+                onClick = { _, _ -> },
                 onTextLinkClick = { },
             )
         )
     }
 }
 
-data class OpPostInitArgs(
-    val post: Post,
-    val isQueued: Boolean,
-    val onPic: (AttachedFile) -> Unit,
-    val onHide: (String, Int) -> Unit,
-    val onQueue: (String, Int) -> Unit,
-    val onTextLinkClick: (TextLinkArgs) -> Unit,
-) : ListItemArgs

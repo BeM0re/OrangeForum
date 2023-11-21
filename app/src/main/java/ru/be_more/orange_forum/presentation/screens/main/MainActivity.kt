@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -42,8 +41,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import ru.be_more.orange_forum.presentation.composeViews.NavigationIcon
+import ru.be_more.orange_forum.presentation.screens.base.NavigationState
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
 import ru.be_more.orange_forum.presentation.screens.category.CategoryScreen
@@ -194,14 +193,7 @@ class MainActivity : ComponentActivity() {
             composable(route = Screen.Category.route) {
                 CategoryScreen(
                     viewModel = vmProvider.getVM(createNew = false),
-                    onNavigateToBoard = { boardId ->
-                        navController.navigate(
-                            route = Screen.Board.route + "?boardId=$boardId"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
+                    onNavigate = { navigate(navController, it) }
                 )
             }
 
@@ -218,22 +210,7 @@ class MainActivity : ComponentActivity() {
                 val id = entry.arguments?.getString("boardId") ?: return@composable
                 BoardScreen(
                     viewModel = vmProvider.getVM(id, createNew = true),
-                    onNavigateToThread = { boardId, threadNum ->
-                        navController.navigate(
-                            route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    },
-                    onNavigateToPosting = { boardId ->
-                        navController.navigate(
-                            route = Screen.Posting.route + "?boardId=$boardId"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    },
+                    onNavigate = { navigate(navController, it) }
                 )
             }
 
@@ -243,22 +220,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 BoardScreen(
                     viewModel = vmProvider.getVM(createNew = false),
-                    onNavigateToThread = { boardId, threadNum ->
-                        navController.navigate(
-                            route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    },
-                    onNavigateToPosting = { boardId ->
-                        navController.navigate(
-                            route = Screen.Posting.route + "?boardId=$boardId"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    },
+                    onNavigate = { navigate(navController, it) }
                 )
             }
 
@@ -281,17 +243,7 @@ class MainActivity : ComponentActivity() {
 
                 ThreadScreen(
                     viewModel = vmProvider.getVM(boardId, threadNum, createNew = true),
-                    onNavigateToPosting = { navigateToPosting ->
-                        navController.navigate(
-                            route = Screen.Posting.route
-                                    + "?boardId=${navigateToPosting.boardId}"
-                                    + "?threadNum=${navigateToPosting.threadNum}"
-                                    + "?additionalString=${navigateToPosting.additionalString}"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    },
+                    onNavigate = { navigate(navController, it) }
                 )
             }
 
@@ -301,63 +253,23 @@ class MainActivity : ComponentActivity() {
             ) {
                 ThreadScreen(
                     viewModel = vmProvider.getVM(createNew = false),
-                    onNavigateToPosting = { navigateToPosting ->
-                        navController.navigate(
-                            route = Screen.Posting.route
-                                    + "?boardId=${navigateToPosting.boardId}"
-                                    + "?threadNum=${navigateToPosting.threadNum}"
-                                    + "?additionalString=${navigateToPosting.additionalString}"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    },
+                    onNavigate = { navigate(navController, it) }
                 )
             }
 
             //Queue
             composable(route = Screen.Queue.route) {
                 QueueScreen(
-                    onNavigateToBoard = { boardId ->
-                        navController.navigate(
-                            route = Screen.Board.route + "?boardId=$boardId"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    onNavigateToThread = { boardId, threadNum ->
-                        navController.navigate(
-                            route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    },
-                    viewModel = vmProvider.getVM(createNew = false)
+                    viewModel = vmProvider.getVM(createNew = false),
+                    onNavigate = { navigate(navController, it) }
                 )
             }
 
             //favorite
             composable(route = Screen.Favorite.route) {
                 FavoriteScreen(
-                    onNavigateToBoard = { boardId ->
-                        navController.navigate(
-                            route = Screen.Board.route + "?boardId=$boardId"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    onNavigateToThread = { boardId, threadNum ->
-                        navController.navigate(
-                            route = Screen.Thread.route + "?boardId=$boardId" + "?threadNum=$threadNum"
-                        ) {
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    },
-                    viewModel = vmProvider.getVM(createNew = false)
+                    viewModel = vmProvider.getVM(createNew = false),
+                    onNavigate = { navigate(navController, it) }
                 )
             }
 
@@ -411,6 +323,51 @@ class MainActivity : ComponentActivity() {
             //todo setting
         }
     }
+
+    //todo move into VM and pass params as InitArgs : Parselable
+    private fun navigate(navController: NavHostController, navState: NavigationState) =
+        when (navState) {
+            is NavigationState.NavigateToBoard -> {
+                navController.navigate(
+                    route = Screen.Board.route + "?boardId=${navState.boardId}"
+                ) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+
+            is NavigationState.NavigateToThread -> {
+                navController.navigate(
+                    route = Screen.Thread.route
+                            + "?boardId=${navState.boardId}"
+                            + "?threadNum=${navState.threadNum}"
+                ) {
+                    launchSingleTop = true
+                    restoreState = false
+                }
+            }
+
+            is NavigationState.NavigateToThreadCreating -> {
+                navController.navigate(
+                    route = Screen.Posting.route + "?boardId=${navState.boardId}"
+                ) {
+                    launchSingleTop = true
+                    restoreState = false
+                }
+            }
+
+            is NavigationState.NavigateToReply -> {
+                navController.navigate(
+                    route = Screen.Posting.route
+                            + "?boardId=${navState.boardId}"
+                            + "?threadNum=${navState.threadNum}"
+                            + "?additionalString=${navState.additionalString}"
+                ) {
+                    launchSingleTop = true
+                    restoreState = false
+                }
+            }
+        }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Preview(

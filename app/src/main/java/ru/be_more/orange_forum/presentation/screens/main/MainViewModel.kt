@@ -4,7 +4,6 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

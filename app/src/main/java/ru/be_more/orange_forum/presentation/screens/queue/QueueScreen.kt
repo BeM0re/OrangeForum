@@ -11,29 +11,33 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
-import org.koin.androidx.compose.koinViewModel
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.ShortBoardItemView
 import ru.be_more.orange_forum.presentation.composeViews.ShortThreadItemView
-import ru.be_more.orange_forum.presentation.data.ShortBoardInitArgs
-import ru.be_more.orange_forum.presentation.data.ShortThreadInitArgs
-import ru.be_more.orange_forum.presentation.screens.base.Screen
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
+import ru.be_more.orange_forum.presentation.screens.base.NavigationState
 
 @Composable
 fun QueueScreen(
     viewModel: QueueViewModel,
-    onNavigateToBoard: (String) -> Unit,
-    onNavigateToThread: (String, Int) -> Unit,
+    onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {
+
+        LaunchedEffect(key1 = true) {
+            navState.collect { navigate ->
+                onNavigate(navigate)
+            }
+        }
+
         Scaffold(
             modifier = Modifier
                 .fillMaxHeight(),
@@ -61,9 +65,9 @@ fun QueueScreen(
                 items(items) { listItem ->
                     when (listItem) {
                         is ShortBoardInitArgs ->
-                            ShortBoardItemView(listItem, onNavigateToBoard)
+                            ShortBoardItemView(listItem)
                         is ShortThreadInitArgs ->
-                            ShortThreadItemView(listItem, onNavigateToThread)
+                            ShortThreadItemView(listItem)
                     }
                 }
             }

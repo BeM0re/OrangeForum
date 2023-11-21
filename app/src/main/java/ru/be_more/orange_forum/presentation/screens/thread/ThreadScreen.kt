@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -32,29 +31,26 @@ import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialog
 import ru.be_more.orange_forum.presentation.composeViews.PostView
-import ru.be_more.orange_forum.presentation.screens.base.NavigateState
-import java.time.Instant
+import ru.be_more.orange_forum.presentation.screens.base.NavigationState
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ThreadScreen(
     viewModel: ThreadViewModel,
-    onNavigateToPosting: (NavigateState.NavigateToPosting) -> Unit,
+    onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {
-
-        LaunchedEffect(key1 = true) {
-            navState.collect { navigate ->
-                onNavigateToPosting(navigate)
-            }
-        }
 
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
         var firstVisibleItemIndex = 0
         val listFirstVisibleItemState = remember { derivedStateOf { listState.firstVisibleItemIndex } }
-        var timestamp = Instant.now().toEpochMilli()
-        var icon: @Composable BoxScope.() -> Unit = {}
+
+        LaunchedEffect(key1 = true) {
+            navState.collect { navigate ->
+                onNavigate(navigate)
+            }
+        }
 
         Scaffold(
             modifier = Modifier

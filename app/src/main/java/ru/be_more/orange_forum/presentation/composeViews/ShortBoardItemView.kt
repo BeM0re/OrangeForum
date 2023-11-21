@@ -15,13 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.be_more.orange_forum.presentation.data.ShortBoardInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
 fun ShortBoardItemView(
     args: ShortBoardInitArgs,
-    onClick: (String) -> Unit
 ) {
     with(args) {
         Row(
@@ -64,8 +63,8 @@ fun ShortBoardItemViewPreview() {
             args = ShortBoardInitArgs(
                 boardId = "b",
                 boardName = "Hfpyjt",
+                onClick = { _ -> },
             ),
-            onClick = { _ -> },
         )
     }
 }

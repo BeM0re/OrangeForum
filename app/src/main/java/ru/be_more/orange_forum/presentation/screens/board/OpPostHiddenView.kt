@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.data.ListItemArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.HiddenOpPostInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 
 @Composable
@@ -83,7 +83,3 @@ fun OpPostHiddenViewPreview() {
     }
 }
 
-data class HiddenOpPostInitArgs(
-    val post: Post,
-    val onClick: (String, Int) -> Unit,
-) : ListItemArgs

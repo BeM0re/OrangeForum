@@ -4,15 +4,13 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import io.reactivex.Single
-import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.BoardSetting
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
-import ru.be_more.orange_forum.presentation.data.ImageInitArgs
-import ru.be_more.orange_forum.presentation.data.PostInitArgs
-import ru.be_more.orange_forum.presentation.data.TextLinkArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ImageInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.TextLinkArgs
 import java.util.*
 
 abstract class BaseModalContentViewModel(

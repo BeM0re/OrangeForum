@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.data
+package ru.be_more.orange_forum.presentation.composeViews.initArgs
 
 
 sealed interface QueueItem
@@ -6,6 +6,7 @@ sealed interface QueueItem
 data class ShortBoardInitArgs(
     val boardId: String,
     val boardName: String,
+    val onClick: (String) -> Unit,
 ) : QueueItem
 
 data class ShortThreadInitArgs(
@@ -14,4 +15,5 @@ data class ShortThreadInitArgs(
     val title: String,
     val isDrown: Boolean,
     val hasNewMessage: Boolean,
+    val onClick: (String, Int) -> Unit,
 ) : QueueItem

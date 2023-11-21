@@ -23,19 +23,21 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialog
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.HiddenOpPostInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.OpPostInitArgs
+import ru.be_more.orange_forum.presentation.screens.base.NavigationState
 import java.lang.IllegalStateException
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BoardScreen(
     viewModel: BoardViewModel,
-    onNavigateToThread: (String, Int) -> Unit,
-    onNavigateToPosting: (String) -> Unit,
+    onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {
         LaunchedEffect(key1 = true) {
             navState.collect { navigate ->
-                onNavigateToPosting(navigate)
+                onNavigate(navigate)
             }
         }
 
@@ -89,15 +91,14 @@ fun BoardScreen(
                             OpPostView(
                                 args = listItem,
                                 modifier = Modifier.background(MaterialTheme.colorScheme.primary)
-                            ) { boardId, threadNum ->
-                                onNavigateToThread(boardId, threadNum)
-                            }
+                            )
                         is HiddenOpPostInitArgs ->
                             OpPostHiddenView(
                                 args = listItem,
                                 modifier = Modifier.background(MaterialTheme.colorScheme.primary)
                             )
                         else ->
+                            //todo выделить отдельный супер-подкласс
                             throw IllegalStateException("BoardScreen.items is illegal type")
                     }
                 }

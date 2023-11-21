@@ -5,14 +5,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardSetting
 import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.presentation.data.ListItemArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.HiddenOpPostInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.OpPostInitArgs
+import ru.be_more.orange_forum.presentation.composeViews.initArgs.ListItemArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
 
 class BoardViewModel(
@@ -32,8 +33,6 @@ class BoardViewModel(
         get() = board.boardSetting
 
     private lateinit var board: Board
-
-    var navState = MutableSharedFlow<String>()
 
     var items by mutableStateOf(listOf<ListItemArgs>())
         private set
@@ -82,6 +81,7 @@ class BoardViewModel(
                     onQueue = ::addToQueue,
                     onPic = ::onPicClicked,
                     onTextLinkClick = ::onTextLinkClicked,
+                    onClick = ::navigateToThread
                 )
         }
 
@@ -132,9 +132,6 @@ class BoardViewModel(
     fun search(query: String) =
         boardInteractor.search(query)
 
-    fun onNewThreadClicked() {
-        viewModelScope.launch {
-            navState.emit(boardId)
-        }
-    }
+    fun onNewThreadClicked() =
+        navigateToThreadCreating(boardId)
 }
