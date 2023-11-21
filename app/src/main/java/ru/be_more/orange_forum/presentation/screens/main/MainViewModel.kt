@@ -3,6 +3,8 @@ package ru.be_more.orange_forum.presentation.screens.main
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +19,8 @@ class MainViewModel(
     private val favoriteInteractor: InteractorContract.FavoriteInteractor,
 ) : BaseViewModel() {
 
+    private var favoriteUpdateSubscription = CompositeDisposable()
+
     private val requestPermissionsChannel = Channel<PermissionsRequest>()
     val requestPermissionsFlow = requestPermissionsChannel.receiveAsFlow()
 
@@ -25,8 +29,6 @@ class MainViewModel(
 
     init {
         requestNotificationPermission()
-        subscribeToFavoriteNewMessages()
-        subscribeToFavoriteUpdates()
     }
 
     private fun requestNotificationPermission() {
@@ -51,6 +53,7 @@ class MainViewModel(
                 { hasFavoriteNewMessage.value = it },
                 { Log.e("MainViewModel", "MainViewModel.subscribeToFavoriteNewMessages: \n$it") }
             )
+            .also { favoriteUpdateSubscription.add(it) }
             .addToSubscribe()
     }
 
@@ -59,9 +62,19 @@ class MainViewModel(
             .updatingFavoritesSubscription()
             .defaultThreads()
             .subscribe(
-                {},
+                { },
                 { Log.e("MainViewModel", "MainViewModel.subscribeToFavoriteNewMessages: \n$it") }
             )
+            .also { favoriteUpdateSubscription.add(it) }
             .addToSubscribe()
+    }
+
+    fun onPause() {
+        favoriteUpdateSubscription.clear()
+    }
+
+    fun onResume() {
+        subscribeToFavoriteNewMessages()
+        subscribeToFavoriteUpdates()
     }
 }

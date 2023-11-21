@@ -13,20 +13,17 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 abstract class BaseViewModel : ViewModel() {
-    private var privateDisposables: CompositeDisposable? = CompositeDisposable()
-
-    protected val disposables
-        get() = this.privateDisposables
+    private var disposables = CompositeDisposable()
 
     val  error = MutableLiveData<String>()
 
     open fun onDestroy(){
-        privateDisposables?.dispose()
-        privateDisposables = null
+        disposables.dispose()
+        disposables.clear()
     }
 
     fun Disposable.addToSubscribe(){
-        disposables?.add(this)
+        disposables.add(this)
     }
 
     fun <T> Single<T>.defaultThreads(): Single<T> {
@@ -58,6 +55,4 @@ abstract class BaseViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
-
-
 }

@@ -44,12 +44,14 @@ class ApiRepositoryImpl(
     override fun getBoard(boardId: String): Single<Board> =
         api.getBoard(boardId)
             .map { it.toModel(boardId) }
-//            .map { it } //без мапа почему то свитч проходит в ?, а не !
 
-    override fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean): Single<BoardThread> =
+    override fun getEmptyThread(boardId: String, threadNum: Int): Single<BoardThread> =
+        api.getPost(boardId, threadNum, COOKIE)
+            .map { it.post.toThread(boardId) }
+
+    override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
         api.getThread(boardId, threadNum, COOKIE)
             .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getThread = \n$throwable") }
-//                .onErrorReturn { ThreadDto() } //todo ?
             .map { it.toModel(boardId) }
             .map { findResponses(it) }
 

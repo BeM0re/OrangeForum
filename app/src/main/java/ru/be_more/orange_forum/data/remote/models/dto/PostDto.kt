@@ -51,5 +51,7 @@ data class PostDto(
             fileCount = filesCount ?: files?.size ?: 0,
             isPinned = sticky > 0,
             lasthit = lasthit,
+            newMessageAmount = 0,
+            lastPostNumber = 0,
         )
 }

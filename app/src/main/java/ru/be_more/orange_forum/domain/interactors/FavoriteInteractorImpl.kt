@@ -49,20 +49,20 @@ class FavoriteInteractorImpl(
             .flatMapCompletable { thread ->
                 apiRepository.getThreadInfo(thread.boardId, thread.num)
                     .flatMapCompletable { info ->
-                        when {
-                            !info.isAlive ->
-                                threadRepository.setIsDrown(info.boardId, info.threadNum, isDrown = true)
-                            info.timestamp > thread.lasthit ->
-                                threadRepository.setPostCount(info.boardId, info.threadNum, info.postCount)
-                                    .andThen(
+                        if (!info.isAlive)
+                            threadRepository.setIsDrown(info.boardId, info.threadNum, isDrown = true)
+                        else
+                            apiRepository.getEmptyThread(info.boardId, info.threadNum,)
+                                .flatMapCompletable { updatedThread ->
+                                    if (updatedThread.lasthit > thread.lasthit)
                                         threadRepository.setLasthit(info.boardId, info.threadNum, info.timestamp)
-                                    )
-                                    .andThen(
-                                        threadRepository.setHasNewPost(info.boardId, info.threadNum, hasNewPost = true)
-                                    )
-                            else ->
-                                Completable.complete()
-                        }
+                                            .andThen(
+                                                threadRepository.setHasNewPost(info.boardId, info.threadNum, hasNewPost = true)
+                                            )
+                                    else
+                                        Completable.complete()
+                                }
                     }
             }
 }
+

@@ -14,7 +14,9 @@ interface RemoteContract {
     interface ApiRepository {
         fun getCategories(): Single<List<Category>>
         fun getBoard(boardId: String): Single<Board>
-        fun getThread(boardId: String, threadNum: Int, forceUpdate: Boolean = false): Single<BoardThread>
+        /** Thread without posts, only OP post*/
+        fun getEmptyThread(boardId: String, threadNum: Int): Single<BoardThread>
+        fun getThread(boardId: String, threadNum: Int): Single<BoardThread>
         fun getThreadInfo(boardId: String, threadNum: Int): Single<ThreadInfo>
         fun getPost(
             boardId: String,

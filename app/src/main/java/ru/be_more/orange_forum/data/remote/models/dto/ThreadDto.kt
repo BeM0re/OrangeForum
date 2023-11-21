@@ -8,6 +8,8 @@ data class ThreadDto(
     val num: Int,
     @SerializedName("posts_count")
     val postCount: Int = 0,
+    @SerializedName("max_mun")
+    val lastPostNumber: Int = 0,
     @SerializedName("files_count")
     val fileCount: Int = 0,
     val title: String = "",
@@ -26,6 +28,8 @@ data class ThreadDto(
             title = title,
             postCount = postCount,
             fileCount = fileCount,
+            lastPostNumber = lastPostNumber,
+            newMessageAmount = 0,
             isPinned = (threads.getOrNull(0)?.posts?.getOrNull(0)?.sticky ?: 0) > 0,
             lasthit = threads.getOrNull(0)?.posts?.getOrNull(0)?.lasthit ?: 0,
         )

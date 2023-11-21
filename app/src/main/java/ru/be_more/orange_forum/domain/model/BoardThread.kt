@@ -5,8 +5,8 @@ data class BoardThread(
     val posts: List<Post> = listOf(),
     val title: String = "",
     val boardId: String,
-    val lastPostNumber: Int = 0,
-    val newMessageAmount: Int = 0,
+    val lastPostNumber: Int,
+    val newMessageAmount: Int,
     val postCount: Int,
     val fileCount: Int,
     val lasthit: Long, //timestamp последнего поста

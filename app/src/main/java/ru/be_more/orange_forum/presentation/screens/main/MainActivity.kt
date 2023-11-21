@@ -64,6 +64,21 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.onDestroy()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,12 +155,18 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     icon = {
-                        NavigationIcon(
-                            painter = painterResource(id = menuItem.icon),
-                            isMarked = hasNewFavoriteMessage.value
-                                    && menuItem is Screen.Favorite,
-                            contentDescription = stringResource(id = menuItem.title),
-                        )
+                        if (hasNewFavoriteMessage.value)
+                            NavigationIcon(
+                                painter = painterResource(id = menuItem.icon),
+                                isMarked = menuItem is Screen.Favorite,
+                                contentDescription = stringResource(id = menuItem.title),
+                            )
+                        else
+                            NavigationIcon(
+                                painter = painterResource(id = menuItem.icon),
+                                isMarked = false,
+                                contentDescription = stringResource(id = menuItem.title),
+                            )
                     },
                     label = {
                         Text(text = stringResource(id = menuItem.title))
