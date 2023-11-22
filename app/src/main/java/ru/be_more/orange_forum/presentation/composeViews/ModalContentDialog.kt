@@ -155,7 +155,8 @@ fun ModalContentDialogPreview() {
                         number = 312,
                     ),
                     onTextLinkClick = { },
-                    onPicClick = { }
+                    onPicClick = { },
+                    onPostNumClick = {  }
                 ),
                 onBack = { },
                 onClose = { },

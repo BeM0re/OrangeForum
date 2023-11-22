@@ -1,7 +1,9 @@
 package ru.be_more.orange_forum.presentation.composeViews
 
 import android.content.res.Configuration
+import android.os.Build
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +23,7 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
+import java.time.Instant
 
 @Composable
 fun PostView(args: PostInitArgs, modifier: Modifier = Modifier) {
@@ -50,15 +53,22 @@ fun PostView(args: PostInitArgs, modifier: Modifier = Modifier) {
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
-                Text(
-                    text = post.date,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    FormattedDateTime(
+                        instant =  Instant.ofEpochSecond(post.timestamp)
+                    )
+                else
+                    Text(
+                        text = post.date,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+
                 Text(
                     text = post.id.toString(),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.clickable { onPostNumClick(post) }
                 )
             }
 
@@ -128,12 +138,13 @@ fun PostViewPreview() {
                     isAuthorOp = true,
                     postCount = 1,
                     subject = "Topic",
-                    timestamp = 12312312,
+                    timestamp = 1700619604,
                     number = 1233,
                     replies = listOf(12321, 32123),
                 ),
                 onPicClick = { },
                 onTextLinkClick = { },
+                onPostNumClick = { },
             )
         )
     }

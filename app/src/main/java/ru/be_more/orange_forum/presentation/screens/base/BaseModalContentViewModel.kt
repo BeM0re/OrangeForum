@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.BoardSetting
+import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ImageInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
@@ -41,7 +42,7 @@ abstract class BaseModalContentViewModel(
             is TextLinkArgs.DomesticPostLink ->
                 showPostModel(boardId, linkArgs.threadNum, linkArgs.postId)
 
-            is TextLinkArgs.ExternalLink -> { /*todo*/ }
+            is TextLinkArgs.ExternalLink -> { /* todo */ }
         }
     }
 
@@ -56,6 +57,7 @@ abstract class BaseModalContentViewModel(
                                 post = post,
                                 onPicClick = ::onPicClicked,
                                 onTextLinkClick = ::onTextLinkClicked,
+                                onPostNumClick = ::replyToPost
                             ),
                             onBack = ::closeModal,
                             onClose = ::clearModal,
@@ -65,7 +67,6 @@ abstract class BaseModalContentViewModel(
                 { Log.e("BaseModalContentViewModel", "BaseModalContentViewModel.showPostModel = \n$it") }
             )
             .addToSubscribe()
-
     }
 
     private fun pushModelContent(content: ModalContentDialogInitArgs) {
@@ -80,5 +81,13 @@ abstract class BaseModalContentViewModel(
     private fun clearModal() {
         modalStack.clear()
         modalContent = null
+    }
+
+    protected fun replyToPost(post: Post) {
+        navigateToReply(
+            boardId = post.boardId,
+            threadNum = post.threadNum,
+            additionalString = ">>${post.id}",
+        )
     }
 }

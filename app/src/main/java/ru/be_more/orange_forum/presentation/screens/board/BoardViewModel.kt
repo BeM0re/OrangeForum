@@ -81,7 +81,8 @@ class BoardViewModel(
                     onQueue = ::addToQueue,
                     onPic = ::onPicClicked,
                     onTextLinkClick = ::onTextLinkClicked,
-                    onClick = ::navigateToThread
+                    onClick = ::navigateToThread,
+                    onPostNumClick = ::replyToPost
                 )
         }
 

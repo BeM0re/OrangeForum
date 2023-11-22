@@ -78,6 +78,7 @@ class ThreadViewModel(
                 post = post,
                 onPicClick = ::onPicClicked,
                 onTextLinkClick = ::onTextLinkClicked,
+                onPostNumClick = ::replyToPost
             )
         }
 
@@ -115,6 +116,6 @@ class ThreadViewModel(
         navigateToReply(
             boardId = boardId,
             threadNum = threadNum,
-            additionalString = ""/*todo*/,
+            additionalString = "",
         )
 }

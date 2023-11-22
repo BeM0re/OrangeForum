@@ -58,7 +58,7 @@ object ParseHtml{
             .replace("&#47;", "/")
             .replace("&gt;", ">")
             .replace("&#37;", "%")
-            .replace("&quot", "\"")
+            .replace("&quot;", "\"")
 
     const val REGEX_PLAIN_TEXT = "([\\s\\S]+?)"
 

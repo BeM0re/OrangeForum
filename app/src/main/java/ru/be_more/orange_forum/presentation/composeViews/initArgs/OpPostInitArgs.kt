@@ -11,4 +11,5 @@ data class OpPostInitArgs(
     val onQueue: (String, Int) -> Unit,
     val onTextLinkClick: (TextLinkArgs) -> Unit,
     val onClick: (String, Int) -> Unit,
+    val onPostNumClick: (Post) -> Unit,
 ) : ListItemArgs

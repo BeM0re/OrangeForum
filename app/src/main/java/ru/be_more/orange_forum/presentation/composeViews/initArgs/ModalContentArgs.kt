@@ -13,4 +13,5 @@ data class PostInitArgs(
     val post: Post,
     val onPicClick: (AttachedFile) -> Unit,
     val onTextLinkClick: (TextLinkArgs) -> Unit,
+    val onPostNumClick: (Post) -> Unit,
 ) : ModalContentArgs

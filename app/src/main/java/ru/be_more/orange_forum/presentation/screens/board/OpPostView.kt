@@ -1,6 +1,7 @@
 package ru.be_more.orange_forum.presentation.screens.board
 
 import android.content.res.Configuration
+import android.os.Build
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,10 +33,12 @@ import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
+import ru.be_more.orange_forum.presentation.composeViews.FormattedDateTime
 import ru.be_more.orange_forum.presentation.composeViews.ParsedTextView
 import ru.be_more.orange_forum.presentation.composeViews.ImageRow
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.OpPostInitArgs
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
+import java.time.Instant
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -72,15 +75,21 @@ fun OpPostView(
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
-                Text(
-                    text = post.dateTimeString,
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    FormattedDateTime(
+                        instant =  Instant.ofEpochSecond(post.timestamp)
+                    )
+                else
+                    Text(
+                        text = post.date,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
                 Text(
                     text = post.id.toString(),
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.clickable { onPostNumClick(post) }
                 )
             }
 
@@ -227,6 +236,7 @@ fun OpPostViewPreview() {
                 onPic = { },
                 onClick = { _, _ -> },
                 onTextLinkClick = { },
+                onPostNumClick = { },
             )
         )
     }
