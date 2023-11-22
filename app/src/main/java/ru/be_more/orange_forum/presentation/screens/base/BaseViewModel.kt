@@ -13,14 +13,21 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import ru.be_more.orange_forum.presentation.model.ContentState
+import ru.be_more.orange_forum.presentation.model.NavigationState
 
 abstract class BaseViewModel : ViewModel() {
     private var disposables = CompositeDisposable()
 
     private val navMutableState = MutableSharedFlow<NavigationState>()
     open val navState = navMutableState.asSharedFlow()
+
+    protected val contentMutableState = MutableStateFlow<ContentState>(ContentState.Loading)
+    open val contentState = contentMutableState.asStateFlow()
 
     val error = MutableLiveData<String>()
 
@@ -94,4 +101,29 @@ abstract class BaseViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
+
+    protected fun showContent() {
+        viewModelScope.launch {
+            contentMutableState.emit(
+                ContentState.Content
+            )
+        }
+    }
+
+    protected fun showLoading() {
+        viewModelScope.launch {
+            contentMutableState.emit(
+                ContentState.Loading
+            )
+        }
+    }
+
+    protected fun showError(message: String) {
+        viewModelScope.launch {
+            contentMutableState.emit(
+                ContentState.Error(message)
+            )
+        }
+    }
+
 }

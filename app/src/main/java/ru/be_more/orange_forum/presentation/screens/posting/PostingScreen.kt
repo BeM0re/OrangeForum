@@ -43,6 +43,7 @@ import androidx.compose.ui.window.Dialog
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import ru.be_more.orange_forum.R
+import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
 import ru.be_more.orange_forum.presentation.composeViews.IconPickerView
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -50,6 +51,8 @@ import ru.be_more.orange_forum.presentation.composeViews.IconPickerView
 fun PostingScreen(
     viewModel: PostingViewModel,
 ) {
+    val state = viewModel.contentState.collectAsState()
+
     val isOpSelected by viewModel.isOpSelected.collectAsState()
 
     val isSubjectEnabled by viewModel.isSubjectEnabled.collectAsState()
@@ -282,11 +285,15 @@ fun PostingScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            GlideImage(
-                contentScale = ContentScale.FillWidth,
-                model = captchaUrl,
-                contentDescription = null
-            )
+            ContentStateView(state = state.value) {
+                GlideImage(
+                    contentScale = ContentScale.FillWidth,
+                    model = captchaUrl,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .clickable { viewModel.onCaptchaClick() }
+                )
+            }
 
             TextField(
                 value = captcha,

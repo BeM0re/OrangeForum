@@ -23,7 +23,7 @@ import ru.be_more.orange_forum.presentation.composeViews.ShortBoardItemView
 import ru.be_more.orange_forum.presentation.composeViews.ShortThreadItemView
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
-import ru.be_more.orange_forum.presentation.screens.base.NavigationState
+import ru.be_more.orange_forum.presentation.model.NavigationState
 
 @Composable
 fun QueueScreen(

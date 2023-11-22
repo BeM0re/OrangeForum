@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.dmytroshuba.dailytags.core.simple.SimpleMarkupParser
 import com.dmytroshuba.dailytags.core.simple.render
-import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.domesticPostId
-import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.domesticThreadNum
-import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.externalUrl
-import ru.be_more.orange_forum.presentation.data.TextColors
+import ru.be_more.orange_forum.presentation.model.AnnotatedTextTag.domesticPostId
+import ru.be_more.orange_forum.presentation.model.AnnotatedTextTag.domesticThreadNum
+import ru.be_more.orange_forum.presentation.model.AnnotatedTextTag.externalUrl
+import ru.be_more.orange_forum.presentation.model.TextColors
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.TextLinkArgs
 import ru.be_more.orange_forum.presentation.theme.greenText
 import ru.be_more.orange_forum.utils.ParseHtml

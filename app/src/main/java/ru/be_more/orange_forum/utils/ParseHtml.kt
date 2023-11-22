@@ -17,10 +17,10 @@ import com.dmytroshuba.dailytags.markdown.rules.PATTERN_TEXT
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import ru.be_more.orange_forum.domain.model.Reply
-import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.domesticPostId
-import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.domesticThreadNum
-import ru.be_more.orange_forum.presentation.data.AnnotatedTextTag.externalUrl
-import ru.be_more.orange_forum.presentation.data.TextColors
+import ru.be_more.orange_forum.presentation.model.AnnotatedTextTag.domesticPostId
+import ru.be_more.orange_forum.presentation.model.AnnotatedTextTag.domesticThreadNum
+import ru.be_more.orange_forum.presentation.model.AnnotatedTextTag.externalUrl
+import ru.be_more.orange_forum.presentation.model.TextColors
 import java.util.*
 import java.util.regex.Pattern
 

@@ -16,16 +16,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
+import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialog
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.HiddenOpPostInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.OpPostInitArgs
-import ru.be_more.orange_forum.presentation.screens.base.NavigationState
+import ru.be_more.orange_forum.presentation.model.ContentState
+import ru.be_more.orange_forum.presentation.model.NavigationState
 import java.lang.IllegalStateException
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -35,6 +38,8 @@ fun BoardScreen(
     onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {
+        val state = contentState.collectAsState()
+
         LaunchedEffect(key1 = true) {
             navState.collect { navigate ->
                 onNavigate(navigate)
@@ -65,49 +70,53 @@ fun BoardScreen(
                 }
             },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { onNewThreadClicked() }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_create_black_24dp),
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        contentDescription = null,
-                        modifier = Modifier
-                    )
-                }
+                if (state.value == ContentState.Content)
+                    FloatingActionButton(
+                        onClick = { onNewThreadClicked() }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_create_black_24dp),
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            contentDescription = null,
+                            modifier = Modifier
+                        )
+                    }
             }
         ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.secondary)
-                    .fillMaxHeight()
-                    .pullRefresh(refreshState, enabled = true),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                items(items) { listItem ->
-                    when (listItem) {
-                        is OpPostInitArgs ->
-                            OpPostView(
-                                args = listItem,
-                                modifier = Modifier.background(MaterialTheme.colorScheme.primary)
-                            )
-                        is HiddenOpPostInitArgs ->
-                            OpPostHiddenView(
-                                args = listItem,
-                                modifier = Modifier.background(MaterialTheme.colorScheme.primary)
-                            )
-                        else ->
-                            //todo выделить отдельный супер-подкласс
-                            throw IllegalStateException("BoardScreen.items is illegal type")
+            ContentStateView(state = state.value) {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .background(MaterialTheme.colorScheme.secondary)
+                        .fillMaxHeight()
+                        .pullRefresh(refreshState, enabled = true),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    items(items) { listItem ->
+                        when (listItem) {
+                            is OpPostInitArgs ->
+                                OpPostView(
+                                    args = listItem,
+                                    modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                                )
+
+                            is HiddenOpPostInitArgs ->
+                                OpPostHiddenView(
+                                    args = listItem,
+                                    modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                                )
+
+                            else ->
+                                //todo выделить отдельный супер-подкласс
+                                throw IllegalStateException("BoardScreen.items is illegal type")
+                        }
                     }
                 }
-            }
 
-            modalContent?.let {
-                ModalContentDialog(args = it)
+                modalContent?.let {
+                    ModalContentDialog(args = it)
+                }
             }
-
         }
     }
 }

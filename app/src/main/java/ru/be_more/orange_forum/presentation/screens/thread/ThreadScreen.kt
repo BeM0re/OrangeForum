@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,10 +29,12 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
+import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialog
 import ru.be_more.orange_forum.presentation.composeViews.PostView
-import ru.be_more.orange_forum.presentation.screens.base.NavigationState
+import ru.be_more.orange_forum.presentation.model.ContentState
+import ru.be_more.orange_forum.presentation.model.NavigationState
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -45,6 +48,7 @@ fun ThreadScreen(
         val coroutineScope = rememberCoroutineScope()
         var firstVisibleItemIndex = 0
         val listFirstVisibleItemState = remember { derivedStateOf { listState.firstVisibleItemIndex } }
+        val state = contentState.collectAsState()
 
         LaunchedEffect(key1 = true) {
             navState.collect { navigate ->
@@ -94,69 +98,71 @@ fun ThreadScreen(
                 }
             },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { onReplyClicked() }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_create_black_24dp),
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        contentDescription = null,
-                        modifier = Modifier
-                    )
-                }
+                if (state.value == ContentState.Content)
+                    FloatingActionButton(
+                        onClick = { onReplyClicked() }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_create_black_24dp),
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            contentDescription = null,
+                            modifier = Modifier
+                        )
+                    }
             }
         ) { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxHeight()
-            ) {
-                LazyColumn(
-                    state = listState,
+            ContentStateView(state = state.value) {
+                Box(
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.secondary)
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                        .padding(paddingValues)
+                        .fillMaxHeight()
                 ) {
-                    items(items) { listItem ->
-                        PostView(
-                            args = listItem,
-                            modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.secondary)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        items(items) { listItem ->
+                            PostView(
+                                args = listItem,
+                                modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+                            )
+                        }
+                    }
+
+                    if (firstVisibleItemIndex < listFirstVisibleItemState.value) {
+                        firstVisibleItemIndex = listFirstVisibleItemState.value
+                        DvachIcon(
+                            painter = painterResource(id = R.drawable.ic_keyboard_arrow_down_white_24dp),
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(8.dp)
+                                .clickable {
+                                    coroutineScope.launch {
+                                        listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
+                                    }
+                                }
+                                .padding(8.dp)
+                        )
+                    } else {
+                        firstVisibleItemIndex = listFirstVisibleItemState.value
+                        DvachIcon(
+                            painter = painterResource(id = R.drawable.ic_keyboard_arrow_up_white_24dp),
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(8.dp)
+                                .clickable {
+                                    coroutineScope.launch {
+                                        listState.scrollToItem(0)
+                                    }
+                                }
+                                .padding(8.dp)
                         )
                     }
                 }
-
-                if (firstVisibleItemIndex < listFirstVisibleItemState.value) {
-                    firstVisibleItemIndex = listFirstVisibleItemState.value
-                    DvachIcon(
-                        painter = painterResource(id = R.drawable.ic_keyboard_arrow_down_white_24dp),
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(8.dp)
-                            .clickable {
-                                coroutineScope.launch {
-                                    listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
-                                }
-                            }
-                            .padding(8.dp)
-                    )
-                } else {
-                    firstVisibleItemIndex = listFirstVisibleItemState.value
-                    DvachIcon(
-                        painter = painterResource(id = R.drawable.ic_keyboard_arrow_up_white_24dp),
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(8.dp)
-                            .clickable {
-                                coroutineScope.launch {
-                                    listState.scrollToItem(0)
-                                }
-                            }
-                            .padding(8.dp)
-                    )
-                }
             }
-
             modalContent?.let {
                 ModalContentDialog(args = it)
             }

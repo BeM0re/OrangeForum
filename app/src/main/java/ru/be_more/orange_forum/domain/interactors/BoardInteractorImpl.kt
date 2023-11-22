@@ -22,8 +22,7 @@ class BoardInteractorImpl(
         .createDefault("")
 
     override fun observe(boardId: String): Observable<Board> =
-        refresh(boardId)
-            .andThen(observeBoard(boardId))
+        observeBoard(boardId)
 
     override fun getSingle(boardId: String): Single<Board> =
         boardRepository.get(boardId)

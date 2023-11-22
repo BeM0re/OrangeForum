@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.screens.base
+package ru.be_more.orange_forum.presentation.model
 
 sealed interface NavigationState {
     data class NavigateToBoard(

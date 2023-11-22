@@ -54,8 +54,10 @@ class PostingViewModel(
             .flatMap { boardInteractor.getSingle(boardId) }
             .map { it.boardSetting }
             .defaultThreads()
+            .doOnSubscribe{ showLoading() }
             .subscribe(
                 { boardSettings ->
+                    showContent()
                     isSubjectEnabled.value = boardSettings.isSubjectEnabled
                     isSageEnabled.value = boardSettings.isSageEnabled
                     isNameEnabled.value = boardSettings.isNameEnabled
@@ -191,6 +193,19 @@ class PostingViewModel(
     fun onIconDismiss() {
         isIconListVisible.value = false
     }
+
+    fun onCaptchaClick() =
+        replyInteractor.getCaptcha(boardId, threadNum)
+            .defaultThreads()
+            .doOnSubscribe{ showLoading() }
+            .subscribe(
+                {
+                    captchaUrl.value = it
+                    showContent()
+                },
+                { }
+            )
+            .addToSubscribe()
 
     data class IconListItem(
         val icon: Icon,

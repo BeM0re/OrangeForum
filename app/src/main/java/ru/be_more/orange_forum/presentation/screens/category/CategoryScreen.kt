@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -20,10 +21,11 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
+import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.BoardShortListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
-import ru.be_more.orange_forum.presentation.screens.base.NavigationState
+import ru.be_more.orange_forum.presentation.model.NavigationState
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
 import java.lang.ref.WeakReference
 
@@ -35,6 +37,8 @@ fun CategoryScreen(
     val context = WeakReference(LocalContext.current)
 
     with(viewModel) {
+
+        val state = contentState.collectAsState()
 
         LaunchedEffect(key1 = true) {
             navState.collect { navigate ->
@@ -53,11 +57,13 @@ fun CategoryScreen(
                         painter = painterResource(id = R.drawable.ic_settings_accent_24dp),
                         modifier = Modifier
                             .clickable {
-                                Toast.makeText(
-                                    context.get(),
-                                    "Will be later",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast
+                                    .makeText(
+                                        context.get(),
+                                        "Will be later",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                             }
                             .padding(8.dp)
                     )
@@ -65,20 +71,24 @@ fun CategoryScreen(
             },
             modifier = Modifier.background(MaterialTheme.colorScheme.primary),
         ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .padding(paddingValues)
-            ) {
-                items(items) { listItem ->
-                    when (listItem) {
-                        is CategoryListItemViewInitArgs ->
-                            CategoryListItem(listItem)
 
-                        is BoardShortListItemViewInitArgs ->
-                            BoardShortListItem(listItem)
+            ContentStateView(state = state.value) {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                ) {
+                    items(items) { listItem ->
+                        when (listItem) {
+                            is CategoryListItemViewInitArgs ->
+                                CategoryListItem(listItem)
+
+                            is BoardShortListItemViewInitArgs ->
+                                BoardShortListItem(listItem)
+                        }
                     }
                 }
             }
+
 
         }
     }

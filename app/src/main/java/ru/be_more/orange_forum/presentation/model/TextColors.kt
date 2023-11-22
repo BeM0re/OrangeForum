@@ -1,4 +1,4 @@
-package ru.be_more.orange_forum.presentation.data
+package ru.be_more.orange_forum.presentation.model
 
 import androidx.compose.ui.graphics.Color
 

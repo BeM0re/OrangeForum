@@ -11,8 +11,8 @@ import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.BoardShortListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ListItemArgs
+import ru.be_more.orange_forum.presentation.model.ContentState
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
-import ru.be_more.orange_forum.presentation.screens.base.NavigationState
 
 class CategoryViewModel(
     private val interactor : InteractorContract.CategoryInteractor,
@@ -23,6 +23,8 @@ class CategoryViewModel(
         private set
 
     init {
+        showLoading()
+
         interactor
             .observe()
             .map { prepareList(it)}
@@ -37,7 +39,7 @@ class CategoryViewModel(
             .refresh()
             .defaultThreads()
             .subscribe(
-                { },
+                { showContent() },
                 { error.postValue("CategoryViewModel.initViewModel: \n ${it.message}") }
             )
             .addToSubscribe()

@@ -62,6 +62,19 @@ class BoardViewModel(
                 { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
             )
             .addToSubscribe()
+
+        boardInteractor
+            .refresh(boardId)
+            .defaultThreads()
+            .doOnSubscribe {
+                isLoading = true
+                showLoading()
+            }
+            .subscribe(
+                { showContent() },
+                { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
+            )
+            .addToSubscribe()
     }
 
     private fun prepareItemList(threads: List<BoardThread>): List<ListItemArgs> =

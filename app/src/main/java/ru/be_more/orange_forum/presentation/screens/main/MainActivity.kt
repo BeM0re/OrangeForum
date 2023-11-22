@@ -42,7 +42,7 @@ import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import ru.be_more.orange_forum.presentation.composeViews.NavigationIcon
-import ru.be_more.orange_forum.presentation.screens.base.NavigationState
+import ru.be_more.orange_forum.presentation.model.NavigationState
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
 import ru.be_more.orange_forum.presentation.screens.category.CategoryScreen

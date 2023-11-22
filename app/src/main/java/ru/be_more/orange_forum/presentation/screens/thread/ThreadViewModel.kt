@@ -4,15 +4,12 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.BoardSetting
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
-import ru.be_more.orange_forum.presentation.screens.base.NavigationState
 
 class ThreadViewModel(
     override val boardId: String,
@@ -59,8 +56,10 @@ class ThreadViewModel(
                 threadInteractor.observe(boardId, threadNum)
             )
             .defaultThreads()
+            .doOnSubscribe { showLoading() }
             .subscribe(
                 { thread ->
+                    showContent()
                     screenTitle = thread.title
                     isFavorite = thread.isFavorite
                     isQueued = thread.isQueued
