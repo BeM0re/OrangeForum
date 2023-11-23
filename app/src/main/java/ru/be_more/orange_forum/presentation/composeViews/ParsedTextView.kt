@@ -74,13 +74,12 @@ fun ParsedTextView(
 
 
     CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-        SelectionContainer {
+        SelectionContainer(modifier = modifier) {
             ClickableText(
                 text = content,
                 style = textStyle,
                 maxLines = currentLines,
                 overflow = overflow,
-                modifier = modifier
             ) { charPos ->
                 val annotation = content.getStringAnnotations(charPos, charPos)
                 val url = annotation.firstOrNull { it.tag == externalUrl }?.item
