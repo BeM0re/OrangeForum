@@ -18,12 +18,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.asIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -49,6 +56,27 @@ fun ThreadScreen(
         var firstVisibleItemIndex = 0
         val listFirstVisibleItemState = remember { derivedStateOf { listState.firstVisibleItemIndex } }
         val state = contentState.collectAsState()
+
+        val nestedScrollConnection = remember {
+            object : NestedScrollConnection {
+                override fun onPostScroll(
+                    consumed: Offset,
+                    available: Offset,
+                    source: NestedScrollSource
+                ): Offset {
+                    lastPostViewed(listState.firstVisibleItemIndex)
+
+                    // called when you scroll the content
+                    return Offset.Zero
+                }
+            }
+        }
+
+        LaunchedEffect(key1 = true) {
+            scrollToItemNumFlow.collect { index ->
+                listState.scrollToItem(index)
+            }
+        }
 
         LaunchedEffect(key1 = true) {
             navState.collect { navigate ->
@@ -121,7 +149,8 @@ fun ThreadScreen(
                         state = listState,
                         modifier = Modifier
                             .background(MaterialTheme.colorScheme.secondary)
-                            .fillMaxHeight(),
+                            .fillMaxHeight()
+                            .nestedScroll(nestedScrollConnection),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         items(items) { listItem ->
@@ -132,21 +161,7 @@ fun ThreadScreen(
                         }
                     }
 
-                    if (firstVisibleItemIndex < listFirstVisibleItemState.value) {
-                        firstVisibleItemIndex = listFirstVisibleItemState.value
-                        DvachIcon(
-                            painter = painterResource(id = R.drawable.ic_keyboard_arrow_down_white_24dp),
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .padding(8.dp)
-                                .clickable {
-                                    coroutineScope.launch {
-                                        listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
-                                    }
-                                }
-                                .padding(8.dp)
-                        )
-                    } else {
+                    if (firstVisibleItemIndex > listFirstVisibleItemState.value) {
                         firstVisibleItemIndex = listFirstVisibleItemState.value
                         DvachIcon(
                             painter = painterResource(id = R.drawable.ic_keyboard_arrow_up_white_24dp),
@@ -156,6 +171,20 @@ fun ThreadScreen(
                                 .clickable {
                                     coroutineScope.launch {
                                         listState.scrollToItem(0)
+                                    }
+                                }
+                                .padding(8.dp)
+                        )
+                    } else {
+                        firstVisibleItemIndex = listFirstVisibleItemState.value
+                        DvachIcon(
+                            painter = painterResource(id = R.drawable.ic_keyboard_arrow_down_white_24dp),
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(8.dp)
+                                .clickable {
+                                    coroutineScope.launch {
+                                        listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
                                     }
                                 }
                                 .padding(8.dp)

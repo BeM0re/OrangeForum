@@ -25,11 +25,12 @@ interface InteractorContract {
     interface ThreadInteractor {
         fun refresh(boardId: String, threadNum: Int): Completable
         fun observe(boardId: String, threadNum: Int): Observable<BoardThread>
+        fun subToUpdate(boardId: String, threadNum: Int): Completable
         fun save(boardId: String, threadNum: Int): Completable
         fun markFavorite(boardId: String, threadNum: Int): Completable
         fun markQueued(boardId: String, threadNum: Int): Completable
         fun markHidden(boardId: String, threadNum: Int): Completable
-        fun subToUpdate(boardId: String, threadNum: Int): Completable
+        fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable
         fun delete(boardId: String, threadNum: Int): Completable
     }
 

@@ -54,6 +54,7 @@ interface DbContract {
         fun markHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable
         fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean): Completable
         fun markQueuedAll(isQueued: Boolean): Completable
+        fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable
         fun delete(boardId: String, threadNum: Int): Completable
         fun deleteKeepingState(boardId: String): Completable
         fun deleteExceptGiven(boardId: String, liveThreadNumList: List<Int>): Completable

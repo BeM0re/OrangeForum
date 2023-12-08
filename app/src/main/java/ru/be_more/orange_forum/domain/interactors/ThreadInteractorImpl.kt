@@ -59,6 +59,9 @@ class ThreadInteractorImpl(
                 threadRepository.markHidden(boardId, threadNum, !it.isHidden)
             }
 
+    override fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable =
+        threadRepository.updateLastPostViewed(boardId, threadNum, postNum)
+
     //todo для докачивания постов есть отдельный метод апи
     override fun subToUpdate(boardId: String, threadNum: Int): Completable =
         Observable

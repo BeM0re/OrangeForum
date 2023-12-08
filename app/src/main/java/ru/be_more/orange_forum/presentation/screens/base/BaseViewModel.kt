@@ -26,7 +26,7 @@ abstract class BaseViewModel : ViewModel() {
     private val navMutableState = MutableSharedFlow<NavigationState>()
     open val navState = navMutableState.asSharedFlow()
 
-    protected val contentMutableState = MutableStateFlow<ContentState>(ContentState.Loading)
+    private val contentMutableState = MutableStateFlow<ContentState>(ContentState.Loading)
     open val contentState = contentMutableState.asStateFlow()
 
     val error = MutableLiveData<String>()

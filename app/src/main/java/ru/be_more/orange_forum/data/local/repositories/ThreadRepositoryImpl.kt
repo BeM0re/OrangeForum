@@ -25,6 +25,7 @@ class ThreadRepositoryImpl(
                 val queuedIds = dao.getQueuedIdsSync()
                 val downloadedIds = dao.getDownloadIdsSync()
                 val hiddenIds = dao.getHiddenIdsSync()
+                val lastReadPostMap = dao.getLastReadPost()
 
                 threads.map { thread ->
                     thread.copy(
@@ -32,6 +33,7 @@ class ThreadRepositoryImpl(
                         isQueued = thread.num in queuedIds,
                         isDownloaded = thread.num in downloadedIds || thread.isDownloaded,
                         isHidden = thread.num in hiddenIds,
+                        lastPostRead = lastReadPostMap.getOrDefault(thread.num, 0)
                     )
                 }
             }
@@ -124,6 +126,9 @@ class ThreadRepositoryImpl(
 
     override fun markQueuedAll(isQueued: Boolean): Completable =
         dao.setIsQueueForAll(isQueued)
+
+    override fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable =
+        dao.updateLastPostViewed(boardId, threadNum, postNum)
 
 
     override fun delete(boardId: String, threadNum: Int): Completable =

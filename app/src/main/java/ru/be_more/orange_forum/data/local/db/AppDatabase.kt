@@ -18,7 +18,7 @@ import ru.be_more.orange_forum.data.local.db.utils.Converters
         StoredThread::class,
         StoredPost::class,
     ],
-    version = 16,
+    version = 17,
     exportSchema = false
 )
 

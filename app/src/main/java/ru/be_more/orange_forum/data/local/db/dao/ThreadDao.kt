@@ -41,7 +41,6 @@ interface ThreadDao {
     @Query("SELECT * FROM threads WHERE isQueued = 1")
     fun getQueued(): Single<List<StoredThread>>
 
-
     @Query("SELECT num FROM threads WHERE isFavorite = 1")
     fun getFavoriteIdsSync(): List<Int>
 
@@ -53,6 +52,14 @@ interface ThreadDao {
 
     @Query("SELECT num FROM threads WHERE isHidden = 1")
     fun getHiddenIdsSync(): List<Int>
+
+    @Query("SELECT * FROM threads WHERE NOT lastPostRead = 0")
+    fun getLastReadPosts(): List<StoredThread>
+
+    fun getLastReadPost(): Map<Int, Int> =
+        getLastReadPosts()
+            .associateBy { it.num }
+            .mapValues { it.value.lastPostRead }
 
 
     @Query("UPDATE threads SET isFavorite = :isFavorite WHERE boardId = :boardId AND num = :threadNum")
@@ -78,6 +85,9 @@ interface ThreadDao {
 
     @Query("UPDATE threads SET isDrown = :isDrown WHERE boardId = :boardId AND num = :threadNum")
     fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean): Completable
+
+    @Query("UPDATE threads SET lastPostRead = :postNum WHERE boardId = :boardId AND num = :threadNum AND lastPostRead < :postNum")
+    fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable
 
 
     @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum")
