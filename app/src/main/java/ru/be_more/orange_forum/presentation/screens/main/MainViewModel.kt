@@ -1,9 +1,8 @@
 package ru.be_more.orange_forum.presentation.screens.main
 
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.viewModelScope
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +17,7 @@ class MainViewModel(
     private val favoriteInteractor: InteractorContract.FavoriteInteractor,
 ) : BaseViewModel() {
 
-    private var favoriteUpdateSubscription = CompositeDisposable()
+    private var favoriteUpdateSubscription = mutableListOf<Job>()
 
     private val requestPermissionsChannel = Channel<PermissionsRequest>()
     val requestPermissionsFlow = requestPermissionsChannel.receiveAsFlow()
@@ -44,32 +43,24 @@ class MainViewModel(
         }
     }
 
-    private fun subscribeToFavoriteNewMessages() {
-        favoriteInteractor
-            .observeNewMessages()
-            .defaultThreads()
-            .subscribe(
-                { hasFavoriteNewMessage.value = it },
-                { Log.e("MainViewModel", "MainViewModel.subscribeToFavoriteNewMessages: \n$it") }
-            )
-            .also { favoriteUpdateSubscription.add(it) }
-            .addToSubscribe()
-    }
+    private fun subscribeToFavoriteNewMessages() =
+        runOnIo("subscribeToFavoriteNewMessages") {
+            favoriteInteractor
+                .getFlow()
+                .collect {
+                    hasFavoriteNewMessage.value = it
+                }
+        }.also { favoriteUpdateSubscription.add(it)  }
 
-    private fun subscribeToFavoriteUpdates() {
-        favoriteInteractor
-            .updatingFavoritesSubscription()
-            .defaultThreads()
-            .subscribe(
-                { },
-                { Log.e("MainViewModel", "MainViewModel.subscribeToFavoriteNewMessages: \n$it") }
-            )
-            .also { favoriteUpdateSubscription.add(it) }
-            .addToSubscribe()
-    }
+
+    private fun subscribeToFavoriteUpdates() =
+        runOnIo("subscribeToFavoriteNewMessages") {
+            favoriteInteractor
+                .updatingFavoritesSubscription()
+        }.also { favoriteUpdateSubscription.add(it)  }
 
     fun onPause() {
-        favoriteUpdateSubscription.clear()
+        favoriteUpdateSubscription.forEach { it.cancel() }
     }
 
     fun onResume() {

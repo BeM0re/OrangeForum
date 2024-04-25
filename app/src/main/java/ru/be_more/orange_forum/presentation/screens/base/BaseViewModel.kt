@@ -1,39 +1,47 @@
 package ru.be_more.orange_forum.presentation.screens.base
 
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.be_more.orange_forum.presentation.model.ContentState
 import ru.be_more.orange_forum.presentation.model.NavigationState
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel : ViewModel() {
-    private var disposables = CompositeDisposable()
 
     private val navMutableState = MutableSharedFlow<NavigationState>()
     open val navState = navMutableState.asSharedFlow()
 
-    private val contentMutableState = MutableStateFlow<ContentState>(ContentState.Loading)
-    open val contentState = contentMutableState.asStateFlow()
+    private val contentStateMutableState = MutableStateFlow<ContentState>(ContentState.Loading)
+    open val contentState = contentStateMutableState.asStateFlow()
 
-    val error = MutableLiveData<String>()
+    protected fun exceptionHandler(methodName: String = ""): CoroutineExceptionHandler =
+        object : AbstractCoroutineContextElement(CoroutineExceptionHandler), CoroutineExceptionHandler {
+            override fun handleException(context: CoroutineContext, exception: Throwable) {
+                Log.e(
+                    this@BaseViewModel::class.java.name,
+                    this@BaseViewModel::class.java.name
+                            + ("methodName: $methodName \n".takeIf { methodName.isNotEmpty() } ?: "")
+                            + exception.message
+                )
+            }
+        }
 
-    open fun onDestroy(){
-        disposables.dispose()
-        disposables.clear()
+    protected fun <T> runOnIo(methodName: String = "", block: suspend CoroutineScope.() -> T): Job {
+        return viewModelScope.launch(exceptionHandler(methodName)) {
+            withContext (Dispatchers.IO, block)
+        }
     }
 
     protected fun navigateToBoard(boardId: String) {
@@ -68,43 +76,9 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
-    protected fun Disposable.addToSubscribe(){
-        disposables.add(this)
-    }
-
-    protected fun <T> Single<T>.defaultThreads(): Single<T> {
-        return this
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    protected fun <T> Observable<T>.defaultThreads(): Observable<T> {
-        return this
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    protected fun <T> Flowable<T>.defaultThreads(): Flowable<T> {
-        return this
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    protected fun <T> Maybe<T>.defaultThreads(): Maybe<T> {
-        return this
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    protected fun Completable.defaultThreads(): Completable {
-        return this
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
     protected fun showContent() {
         viewModelScope.launch {
-            contentMutableState.emit(
+            contentStateMutableState.emit(
                 ContentState.Content
             )
         }
@@ -112,7 +86,7 @@ abstract class BaseViewModel : ViewModel() {
 
     protected fun showLoading() {
         viewModelScope.launch {
-            contentMutableState.emit(
+            contentStateMutableState.emit(
                 ContentState.Loading
             )
         }
@@ -120,7 +94,7 @@ abstract class BaseViewModel : ViewModel() {
 
     protected fun showError(message: String) {
         viewModelScope.launch {
-            contentMutableState.emit(
+            contentStateMutableState.emit(
                 ContentState.Error(message)
             )
         }

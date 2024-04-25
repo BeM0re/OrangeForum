@@ -1,9 +1,7 @@
 package ru.be_more.orange_forum.data.local.repositories
 
-import android.util.Log
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.BoardDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
@@ -13,29 +11,24 @@ class BoardRepositoryImpl(
     private val dao: BoardDao
 ) : DbContract.BoardRepository {
 
-    override fun get(boardId: String): Single<Board> =
+    override suspend fun get(boardId: String): Board? =
         dao.get(boardId)
-            .switchIfEmpty (
-                Single.error(Throwable("No board found"))
-            )
+            ?.toModel()
+
+    override fun getFlow(boardId: String): Flow<Board> =
+        dao.getFlow(boardId)
             .map { it.toModel() }
 
-    override fun observe(boardId: String): Observable<Board> =
-        dao.observe(boardId)
-            .map { it.toModel() }
-            .doOnError { Log.e("BoardRepositoryImpl","BoardRepositoryImpl.observe = $it") }
-
-    override fun observeList(): Observable<List<Board>> =
-        dao.observeList()
+    override fun getListFlow(): Flow<List<Board>> =
+        dao.getListFlow()
             .map { boardList ->
                 boardList.map { it.toModel() }
             }
 
-    override fun insertKeepingState(board: Board): Completable =
-        dao.get(board.id)
-            .map { it.isFavorite }
-            .defaultIfEmpty(false)
-            .flatMapCompletable { isFavorite ->
+    override suspend fun insertKeepingState(board: Board) =
+        (dao.get(board.id)
+            ?.isFavorite ?: false)
+            .let { isFavorite ->
                 dao.insertBoard(
                     StoredBoard(
                         board.copy(isFavorite = isFavorite)
@@ -43,9 +36,9 @@ class BoardRepositoryImpl(
                 )
             }
 
-    override fun insertKeepingState(boards: List<Board>): Completable =
+    override suspend fun insertKeepingState(boards: List<Board>) =
         dao.getFavorites()
-            .flatMapCompletable { favorites ->
+            .let { favorites ->
                 dao.insertBoardList(
                     boards.map { board ->
                         StoredBoard(
@@ -55,19 +48,15 @@ class BoardRepositoryImpl(
                 )
             }
 
-    override fun markFavorite(
-        boardId: String,
-        isFavorite: Boolean
-    ): Completable =
+    override suspend fun markFavorite(boardId: String, isFavorite: Boolean) =
         dao.markFavorite(boardId, isFavorite)
 
     @Deprecated("Delete")
-    override fun updateThreadNewMessageCounter(
+    override suspend fun updateThreadNewMessageCounter(
         boardId: String,
         threadNum: Int,
         count: Int
-    ): Completable =
-        Completable.complete()
+    ): Unit { }
     /* dao.get(boardId)
         .map { board ->
             val index = board.threads.indexOfFirst{ it.num == threadNum}
@@ -84,6 +73,6 @@ class BoardRepositoryImpl(
         .ignoreElement()*/
 
 
-    override fun deleteKeepingState(): Completable =
+    override suspend fun deleteKeepingState() =
         dao.deleteKeepingState()
 }

@@ -1,50 +1,48 @@
 package ru.be_more.orange_forum.domain.contracts
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.be_more.orange_forum.domain.model.*
 
 interface InteractorContract {
 
     interface CategoryInteractor {
-        fun observe(): Observable<List<Category>>
-        fun refresh(): Completable
-        fun toggleExpanded(name: String): Completable
-        fun search(query: String)
+        fun getCategoryListFlow(): Flow<List<Category>>
+        suspend fun refresh()
+        suspend fun toggleExpanded(name: String)
+        suspend fun search(query: String)
     }
 
     interface BoardInteractor {
-        fun observe(boardId: String): Observable<Board>
-        fun getSingle(boardId: String): Single<Board>
-        fun markFavorite(boardId: String): Completable
-        fun refresh(boardId: String): Completable
-        fun search(query: String)
+        fun getFlow(boardId: String): Flow<Board>
+        suspend fun getBoard(boardId: String): Board?
+        suspend fun markFavorite(boardId: String)
+        suspend fun refresh(boardId: String)
+        suspend fun search(query: String)
     }
 
     interface ThreadInteractor {
-        fun refresh(boardId: String, threadNum: Int): Completable
-        fun observe(boardId: String, threadNum: Int): Observable<BoardThread>
-        fun subToUpdate(boardId: String, threadNum: Int): Completable
-        fun save(boardId: String, threadNum: Int): Completable
-        fun markFavorite(boardId: String, threadNum: Int): Completable
-        fun markQueued(boardId: String, threadNum: Int): Completable
-        fun markHidden(boardId: String, threadNum: Int): Completable
-        fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable
-        fun delete(boardId: String, threadNum: Int): Completable
+        suspend fun refresh(boardId: String, threadNum: Int)
+        fun getFlow(boardId: String, threadNum: Int): Flow<BoardThread>
+        suspend  fun subToUpdate(boardId: String, threadNum: Int)
+        suspend fun save(boardId: String, threadNum: Int)
+        suspend fun markFavorite(boardId: String, threadNum: Int)
+        suspend fun markQueued(boardId: String, threadNum: Int)
+        suspend fun markHidden(boardId: String, threadNum: Int)
+        suspend fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int)
+        suspend fun delete(boardId: String, threadNum: Int)
     }
 
     interface PostInteractor {
-        fun getPost(
+        suspend fun getPost(
             boardId: String,
             threadNum: Int,
             postNum: Int,
-        ): Single<Post>
+        ): Post
     }
 
     interface ReplyInteractor {
-        fun getCaptcha(boardId: String, threadNum: Int?): Single<String>
-        fun reply(
+        suspend fun getCaptcha(boardId: String, threadNum: Int?): String
+        suspend fun reply(
             boardId: String,
             threadNum: Int,
             comment: String,
@@ -54,8 +52,8 @@ interface InteractorContract {
             name: String,
             tag: String,
             captchaSolvedString: String?,
-        ): Completable
-        fun createThread(
+        )
+        suspend fun createThread(
             boardId: String,
             comment: String,
             isOp: Boolean,
@@ -64,19 +62,19 @@ interface InteractorContract {
             name: String,
             tag: String,
             captchaSolvedString: String?,
-        ): Completable
+        )
     }
 
     interface QueueInteractor {
-        fun observe(): Observable<List<Board>>
-        fun clear(): Completable
+        fun getFlow(): Flow<List<Board>>
+        suspend fun clear()
     }
 
     interface FavoriteInteractor {
-        fun observe(): Observable<List<Board>>
-        fun observeNewMessages(): Observable<Boolean>
-        fun updatingFavoritesSubscription(): Completable
-        fun updateFavoriteThreadInfo(): Completable
+        fun getListFlow(): Flow<List<Board>>
+        fun getFlow(): Flow<Boolean>
+        suspend fun updatingFavoritesSubscription()
+        suspend fun updateFavoriteThreadInfo()
 
     }
 

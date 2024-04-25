@@ -5,97 +5,94 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 
 @Dao
 interface ThreadDao {
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(thread: StoredThread): Completable
+    suspend fun insert(thread: StoredThread)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(thread: List<StoredThread>): Completable
+    suspend fun insert(thread: List<StoredThread>)
 
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
-    fun observe(boardId: String, threadNum: Int): Observable<StoredThread>
+    fun getFlow(boardId: String, threadNum: Int): Flow<StoredThread>
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId")
-    fun observeList(boardId: String): Observable<List<StoredThread>>
+    fun getListFlow(boardId: String): Flow<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE isQueued = 1")
-    fun observeQueue(): Observable<List<StoredThread>>
+    fun getQueuedFlow(): Flow<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE isDownloaded = 1 OR isFavorite = 1")
-    fun observeFavorites(): Observable<List<StoredThread>>
+    fun getFavoriteFlow(): Flow<List<StoredThread>>
 
     @Query("SELECT * FROM threads WHERE boardId = :boardId AND num = :threadNum")
-    fun get(boardId: String, threadNum: Int): Maybe<StoredThread>
+    suspend fun get(boardId: String, threadNum: Int): StoredThread?
 
     @Query("SELECT * FROM threads WHERE isDownloaded = 1 OR isFavorite = 1")
-    fun getFavorites(): Single<List<StoredThread>>
+    suspend fun getFavorites(): List<StoredThread>
 
     @Query("SELECT * FROM threads WHERE isQueued = 1")
-    fun getQueued(): Single<List<StoredThread>>
+    suspend fun getQueued(): List<StoredThread>
 
     @Query("SELECT num FROM threads WHERE isFavorite = 1")
-    fun getFavoriteIdsSync(): List<Int>
+    suspend fun getFavoriteIdsSync(): List<Int>
 
     @Query("SELECT num FROM threads WHERE isQueued = 1")
-    fun getQueuedIdsSync(): List<Int>
+    suspend fun getQueuedIdsSync(): List<Int>
 
     @Query("SELECT num FROM threads WHERE isDownloaded = 1")
-    fun getDownloadIdsSync(): List<Int>
+    suspend fun getDownloadIdsSync(): List<Int>
 
     @Query("SELECT num FROM threads WHERE isHidden = 1")
-    fun getHiddenIdsSync(): List<Int>
+    suspend fun getHiddenIdsSync(): List<Int>
 
     @Query("SELECT * FROM threads WHERE NOT lastPostRead = 0")
-    fun getLastReadPosts(): List<StoredThread>
+    suspend fun getLastReadPosts(): List<StoredThread>
 
-    fun getLastReadPost(): Map<Int, Int> =
+    suspend fun getLastReadPost(): Map<Int, Int> =
         getLastReadPosts()
             .associateBy { it.num }
             .mapValues { it.value.lastPostRead }
 
 
     @Query("UPDATE threads SET isFavorite = :isFavorite WHERE boardId = :boardId AND num = :threadNum")
-    fun setIsFavorite(boardId: String, threadNum: Int, isFavorite: Boolean): Completable
+    suspend fun setIsFavorite(boardId: String, threadNum: Int, isFavorite: Boolean)
 
     @Query("UPDATE threads SET isQueued = :isQueued WHERE boardId = :boardId AND num = :threadNum")
-    fun setIsQueue(boardId: String, threadNum: Int, isQueued: Boolean): Completable
+    suspend fun setIsQueue(boardId: String, threadNum: Int, isQueued: Boolean)
 
     @Query("UPDATE threads SET isQueued = :isQueued")
-    fun setIsQueueForAll(isQueued: Boolean): Completable
+    suspend fun setIsQueueForAll(isQueued: Boolean)
 
     @Query("UPDATE threads SET isHidden = :isHidden WHERE boardId = :boardId AND num = :threadNum")
-    fun setIsHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable
+    suspend fun setIsHidden(boardId: String, threadNum: Int, isHidden: Boolean)
 
     @Query("UPDATE threads SET postCount = :postCount WHERE boardId = :boardId AND num = :threadNum")
-    fun setPostCount(boardId: String, threadNum: Int, postCount: Int): Completable
+    suspend fun setPostCount(boardId: String, threadNum: Int, postCount: Int)
 
     @Query("UPDATE threads SET lasthit = :lasthit WHERE boardId = :boardId AND num = :threadNum")
-    fun setLasthit(boardId: String, threadNum: Int, lasthit: Long): Completable
+    suspend fun setLasthit(boardId: String, threadNum: Int, lasthit: Long)
 
     @Query("UPDATE threads SET hasNewMessages = :hasNewPost WHERE boardId = :boardId AND num = :threadNum")
-    fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean): Completable
+    suspend fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean)
 
     @Query("UPDATE threads SET isDrown = :isDrown WHERE boardId = :boardId AND num = :threadNum")
-    fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean): Completable
+    suspend fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean)
 
     @Query("UPDATE threads SET lastPostRead = :postNum WHERE boardId = :boardId AND num = :threadNum AND lastPostRead < :postNum")
-    fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable
+    suspend fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int)
 
 
     @Query("DELETE FROM threads WHERE boardId = :boardId AND num = :threadNum")
-    fun delete(boardId: String, threadNum: Int): Completable
+    suspend fun delete(boardId: String, threadNum: Int)
 
     @Query("DELETE FROM threads WHERE boardId = :boardId AND isFavorite = 0 AND isDownloaded = 0 AND isHidden = 0 AND isQueued = 0")
-    fun deleteKeepingState(boardId: String): Completable
+    suspend fun deleteKeepingState(boardId: String)
 
     @Query("DELETE FROM threads WHERE boardId = :boardId AND num NOT IN (:threadNumList)")
-    fun deleteExceptGiven(boardId: String, threadNumList: List<Int>): Completable
+    suspend fun deleteExceptGiven(boardId: String, threadNumList: List<Int>)
 }

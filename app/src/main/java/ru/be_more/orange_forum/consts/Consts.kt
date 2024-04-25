@@ -25,7 +25,7 @@ const val COOKIE = "_ga=GA1.2.191888855.1677251490; _gid=GA1.2.1275785988.167725
 
 
 //todo to prefs when settings
-const val ThreadUpdateInterval = 30L
+const val ThreadUpdateInterval = "30s"
 
 //HTML for recaptcha
 const val PAGE_HTML = "<html>\n" +

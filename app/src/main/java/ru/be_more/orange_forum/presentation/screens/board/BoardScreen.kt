@@ -39,6 +39,11 @@ fun BoardScreen(
 ) {
     with(viewModel) {
         val state = contentState.collectAsState()
+        val itemState = items.collectAsState()
+        val titleState = screenTitle.collectAsState()
+        val isLoadingState = isLoading.collectAsState()
+        val isFavoriteState = isFavorite.collectAsState()
+        val modalContentState = modalContent.collectAsState()
 
         LaunchedEffect(key1 = true) {
             navState.collect { navigate ->
@@ -46,7 +51,7 @@ fun BoardScreen(
             }
         }
 
-        val refreshState = rememberPullRefreshState(isLoading, ::refresh)
+        val refreshState = rememberPullRefreshState(isLoadingState.value, ::refresh)
         //todo доделать когда будут мануалы
 
         Scaffold(
@@ -54,13 +59,13 @@ fun BoardScreen(
                 .fillMaxHeight(),
             topBar = {
                 AppBarView(
-                    text = screenTitle,
+                    text = titleState.value,
                     isSearchVisible = true,
                     onSearch = { search(it) }
                 ) {
                     DvachIcon(
                         painter = painterResource(
-                            if (isFavorite) R.drawable.ic_favorite_accent_24dp
+                            if (isFavoriteState.value) R.drawable.ic_favorite_accent_24dp
                             else R.drawable.ic_favorite_border_accent_24dp
                         ),
                         Modifier
@@ -92,7 +97,7 @@ fun BoardScreen(
                         .pullRefresh(refreshState, enabled = true),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    items(items) { listItem ->
+                    items(itemState.value) { listItem ->
                         when (listItem) {
                             is OpPostInitArgs ->
                                 OpPostView(
@@ -113,7 +118,7 @@ fun BoardScreen(
                     }
                 }
 
-                modalContent?.let {
+                modalContentState.value?.let {
                     ModalContentDialog(args = it)
                 }
             }

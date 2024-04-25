@@ -1,9 +1,7 @@
 package ru.be_more.orange_forum.data.local.repositories
 
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.ThreadDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
@@ -15,35 +13,33 @@ class ThreadRepositoryImpl(
     private val storage: StorageContract.LocalStorage
 ) : DbContract.ThreadRepository {
 
-    override fun insert(thread: BoardThread): Completable =
+    override suspend fun insert(thread: BoardThread) =
         dao.insert(StoredThread(thread))
 
-    override fun insertKeepingState(threads: List<BoardThread>): Completable =
-        Single
-            .fromCallable {
-                val favoriteIds = dao.getFavoriteIdsSync()
-                val queuedIds = dao.getQueuedIdsSync()
-                val downloadedIds = dao.getDownloadIdsSync()
-                val hiddenIds = dao.getHiddenIdsSync()
-                val lastReadPostMap = dao.getLastReadPost()
+    override suspend fun insertKeepingState(threads: List<BoardThread>) =
+        run {
+            val favoriteIds = dao.getFavoriteIdsSync()
+            val queuedIds = dao.getQueuedIdsSync()
+            val downloadedIds = dao.getDownloadIdsSync()
+            val hiddenIds = dao.getHiddenIdsSync()
+            val lastReadPostMap = dao.getLastReadPost()
 
-                threads.map { thread ->
-                    thread.copy(
-                        isFavorite = thread.num in favoriteIds,
-                        isQueued = thread.num in queuedIds,
-                        isDownloaded = thread.num in downloadedIds || thread.isDownloaded,
-                        isHidden = thread.num in hiddenIds,
-                        lastPostRead = lastReadPostMap.getOrDefault(thread.num, 0)
-                    )
-                }
-            }
-            .flatMapCompletable { editedThreads ->
-                dao.insert(
-                    editedThreads.map { StoredThread(it) }
+            threads.map { thread ->
+                thread.copy(
+                    isFavorite = thread.num in favoriteIds,
+                    isQueued = thread.num in queuedIds,
+                    isDownloaded = thread.num in downloadedIds || thread.isDownloaded,
+                    isHidden = thread.num in hiddenIds,
+                    lastPostRead = lastReadPostMap.getOrDefault(thread.num, 0)
                 )
             }
+        }.let { editedThreads ->
+            dao.insert(
+                editedThreads.map { StoredThread(it) }
+            )
+        }
 
-    override fun save(thread: BoardThread, boardId: String): Completable {
+    override suspend fun save(thread: BoardThread, boardId: String) {
         return dao.insert(
             StoredThread(
                 thread = thread.copy(
@@ -64,79 +60,75 @@ class ThreadRepositoryImpl(
     }
 
 
-    override fun get(boardId: String, threadNum: Int): Maybe<BoardThread> =
+    override suspend fun get(boardId: String, threadNum: Int): BoardThread? =
         dao.get(boardId, threadNum)
-            .map { it.toModel() }
+            ?.toModel()
 
-    override fun getFavorites(): Single<List<BoardThread>> =
+    override suspend fun getFavorites(): List<BoardThread> =
         dao.getFavorites()
-            .map { threads ->
-                threads.map { it.toModel() }
-            }
-
-    override fun getQueued(): Single<List<BoardThread>> =
-        dao.getQueued()
-            .map { threads ->
-                threads.map { it.toModel() }
-            }
-
-    override fun observe(boardId: String, threadNum: Int): Observable<BoardThread> =
-        dao.observe(boardId, threadNum)
             .map { it.toModel() }
 
-    override fun observeList(boardId: String): Observable<List<BoardThread>> =
-        dao.observeList(boardId)
+    override suspend fun getQueued(): List<BoardThread> =
+        dao.getQueued()
+            .map { it.toModel() }
+
+    override fun getFlow(boardId: String, threadNum: Int): Flow<BoardThread> =
+        dao.getFlow(boardId, threadNum)
+            .map { it.toModel() }
+
+    override  fun getListFlow(boardId: String): Flow<List<BoardThread>> =
+        dao.getListFlow(boardId)
             .map { threads ->
                 threads.map { it.toModel() }
             }
 
-    override fun observeFavorite(): Observable<List<BoardThread>> =
-        dao.observeFavorites()
+    override fun getFavoriteFlow(): Flow<List<BoardThread>> =
+        dao.getFavoriteFlow()
             .map { threads ->
                 threads.map { it.toModel() }
             }
 
-    override fun observeQueued(): Observable<List<BoardThread>> =
-        dao.observeQueue()
+    override fun getQueuedFlow(): Flow<List<BoardThread>> =
+        dao.getQueuedFlow()
             .map { threads ->
                 threads.map { it.toModel() }
             }
 
 
-    override fun setPostCount(boardId: String, threadNum: Int, postNum: Int) =
+    override suspend fun setPostCount(boardId: String, threadNum: Int, postNum: Int) =
         dao.setPostCount(boardId, threadNum, postNum)
 
-    override fun setLasthit(boardId: String, threadNum: Int, lasthit: Long): Completable =
+    override suspend fun setLasthit(boardId: String, threadNum: Int, lasthit: Long) =
         dao.setLasthit(boardId, threadNum, lasthit)
 
-    override fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean): Completable =
+    override suspend fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean) =
         dao.setHasNewPost(boardId, threadNum, hasNewPost)
 
-    override fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean): Completable =
+    override suspend fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean) =
         dao.setIsDrown(boardId, threadNum, isDrown)
 
-    override fun markFavorite(boardId: String, threadNum: Int, isFavorite: Boolean): Completable =
+    override suspend fun markFavorite(boardId: String, threadNum: Int, isFavorite: Boolean) =
         dao.setIsFavorite(boardId, threadNum, isFavorite)
 
-    override fun markHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable =
+    override suspend fun markHidden(boardId: String, threadNum: Int, isHidden: Boolean) =
         dao.setIsHidden(boardId, threadNum, isHidden)
 
-    override fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean): Completable =
+    override suspend fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean) =
         dao.setIsQueue(boardId, threadNum, isQueued)
 
-    override fun markQueuedAll(isQueued: Boolean): Completable =
+    override suspend fun markQueuedAll(isQueued: Boolean) =
         dao.setIsQueueForAll(isQueued)
 
-    override fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable =
+    override suspend fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int) =
         dao.updateLastPostViewed(boardId, threadNum, postNum)
 
 
-    override fun delete(boardId: String, threadNum: Int): Completable =
+    override suspend fun delete(boardId: String, threadNum: Int) =
         dao.delete(boardId, threadNum)
 
-    override fun deleteKeepingState(boardId: String): Completable =
+    override suspend fun deleteKeepingState(boardId: String) =
         dao.deleteKeepingState(boardId)
 
-    override fun deleteExceptGiven(boardId: String, liveThreadNumList: List<Int>): Completable =
+    override suspend fun deleteExceptGiven(boardId: String, liveThreadNumList: List<Int>) =
         dao.deleteExceptGiven(boardId, liveThreadNumList)
 }

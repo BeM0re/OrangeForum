@@ -1,9 +1,7 @@
 package ru.be_more.orange_forum.data.local.repositories
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
-import ru.be_more.orange_forum.data.local.db.dao.BoardDao
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.data.local.db.dao.CategoryDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredCategory
 import ru.be_more.orange_forum.domain.contracts.DbContract
@@ -13,24 +11,24 @@ class CategoryRepositoryImpl(
     private val dao: CategoryDao,
 ) : DbContract.CategoryRepository {
 
-    override fun insert(categories: List<Category>): Completable =
+    override suspend fun insert(categories: List<Category>) =
         dao.insert(
             categories.map { StoredCategory(it) }
         )
 
-    override fun observe(): Observable<List<Category>> =
-        dao.observeCategories()
+    override fun getFlowList(): Flow<List<Category>> =
+        dao.getCategoryListFlow()
             .map { list ->
                 list.map { it.toModel() }
             }
 
-    override fun getEmpty(name: String): Single<Category> =
+    override suspend fun getEmpty(name: String): Category =
         dao.getCategory(name)
-            .map { it.toModel() }
+            .toModel()
 
-    override fun setIsExpanded(name: String, isExpanded: Boolean): Completable =
+    override suspend fun setIsExpanded(name: String, isExpanded: Boolean) =
         dao.setIsExpanded(name, isExpanded)
 
-    override fun delete(): Completable =
+    override suspend fun delete() =
         dao.delete()
 }

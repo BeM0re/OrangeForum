@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,6 +32,7 @@ fun QueueScreen(
     onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {
+        val itemState = items.collectAsState()
 
         LaunchedEffect(key1 = true) {
             navState.collect { navigate ->
@@ -62,7 +64,7 @@ fun QueueScreen(
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                items(items) { listItem ->
+                items(itemState.value) { listItem ->
                     when (listItem) {
                         is ShortBoardInitArgs ->
                             ShortBoardItemView(listItem)

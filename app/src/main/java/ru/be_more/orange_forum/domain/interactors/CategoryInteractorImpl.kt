@@ -1,10 +1,8 @@
 package ru.be_more.orange_forum.domain.interactors
 
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -16,13 +14,12 @@ class CategoryInteractorImpl(
     private val boardRepository: DbContract.BoardRepository,
 ): InteractorContract.CategoryInteractor {
 
-    private val searchQuery = BehaviorSubject
-        .createDefault("")
+    private val searchQuery = MutableStateFlow("")
 
-    override fun observe(): Observable<List<Category>> =
-        Flowable.combineLatest(
-            searchQuery.toFlowable(BackpressureStrategy.LATEST),
-            observeCategories().toFlowable(BackpressureStrategy.LATEST)
+    override fun getCategoryListFlow(): Flow<List<Category>> =
+        combine(
+            searchQuery,
+            getCategoryFlow()
         ) { query, categories ->
             if (query.isEmpty()) categories
             else categories
@@ -33,38 +30,33 @@ class CategoryInteractorImpl(
                     )
                 }
                 .filter { it.boards.isNotEmpty() }
-        }.toObservable()
+        }
 
-    override fun refresh(): Completable =
+    override suspend fun refresh() =
         apiRepository.getCategories()
-            .flatMapCompletable { categories ->
-                categoryRepository
-                    .delete()
-                    .andThen(
-                        categoryRepository.insert(categories)
-                    )
-                    .andThen(
-                        boardRepository.insertKeepingState(
-                            categories
-                                .map { it.boards }
-                                .flatten()
-                        )
-                    )
+            .let { categories ->
+                categoryRepository.delete()
+                categoryRepository.insert(categories)
+                boardRepository.insertKeepingState(
+                    categories
+                        .map { it.boards }
+                        .flatten()
+                )
             }
 
-    override fun toggleExpanded(name: String): Completable =
+    override suspend fun toggleExpanded(name: String) =
         categoryRepository.getEmpty(name)
-            .flatMapCompletable {
-                categoryRepository.setIsExpanded(name, !it.isExpanded)
+            .let { category ->
+                categoryRepository.setIsExpanded(name, !category.isExpanded)
             }
 
-    override fun search(query: String) =
-        searchQuery.onNext(query)
+    override suspend fun search(query: String) =
+        searchQuery.emit(query)
 
-    private fun observeCategories(): Observable<List<Category>> =
-        Observable.combineLatest(
-            categoryRepository.observe(),
-            boardRepository.observeList()
+    private fun getCategoryFlow(): Flow<List<Category>> =
+        combine(
+            categoryRepository.getFlowList(),
+            boardRepository.getListFlow()
         ) { categoryList, boardList ->
             val boardMap = boardList.groupBy { it.category }
             categoryList.map { category ->

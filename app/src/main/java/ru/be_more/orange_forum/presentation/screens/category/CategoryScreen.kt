@@ -34,9 +34,9 @@ fun CategoryScreen(
     viewModel: CategoryViewModel,
     onNavigate: (NavigationState) -> Unit,
 ) {
-    val context = WeakReference(LocalContext.current)
-
     with(viewModel) {
+    val context = WeakReference(LocalContext.current)
+    val itemState = items.collectAsState()
 
         val state = contentState.collectAsState()
 
@@ -77,7 +77,7 @@ fun CategoryScreen(
                     modifier = Modifier
                         .padding(paddingValues)
                 ) {
-                    items(items) { listItem ->
+                    items(itemState.value) { listItem ->
                         when (listItem) {
                             is CategoryListItemViewInitArgs ->
                                 CategoryListItem(listItem)

@@ -1,11 +1,9 @@
 package ru.be_more.orange_forum.presentation.screens.board
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
@@ -34,47 +32,30 @@ class BoardViewModel(
 
     private lateinit var board: Board
 
-    var items by mutableStateOf(listOf<ListItemArgs>())
-        private set
+    var items = MutableStateFlow(listOf<ListItemArgs>())
 
-    var screenTitle by mutableStateOf("")
-        private set
+    var screenTitle = MutableStateFlow("")
 
-    var isFavorite by mutableStateOf(false)
-        private set
+    var isFavorite = MutableStateFlow(false)
 
-    var isLoading by mutableStateOf(false)
-        private set
+    var isLoading = MutableStateFlow(false)
 
     init {
-        boardInteractor
-            .observe(boardId)
-            .defaultThreads()
-            .doOnSubscribe { isLoading = true }
-            .subscribe(
-                { board ->
-                    this.board = board
-                    screenTitle = board.name
-                    isFavorite = board.isFavorite
-                    items = prepareItemList(board.threads)
-                    isLoading = false
-                },
-                { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
-            )
-            .addToSubscribe()
+        runOnIo("init.getFlow") {
+            isLoading.emit(true)
 
-        boardInteractor
-            .refresh(boardId)
-            .defaultThreads()
-            .doOnSubscribe {
-                isLoading = true
-                showLoading()
-            }
-            .subscribe(
-                { showContent() },
-                { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
-            )
-            .addToSubscribe()
+            boardInteractor
+                .getFlow(boardId)
+                .collect {board ->
+                    this@BoardViewModel.board = board
+                    screenTitle.emit(board.name)
+                    isFavorite.emit(board.isFavorite)
+                    items.emit(prepareItemList(board.threads))
+                    isLoading.emit(false)
+                }
+        }
+
+        refresh()
     }
 
     private fun prepareItemList(threads: List<BoardThread>): List<ListItemArgs> =
@@ -99,52 +80,35 @@ class BoardViewModel(
                 )
         }
 
-    private fun addToQueue(boardId: String, threadNum: Int) {
-        threadInteractor
-            .markQueued(boardId, threadNum)
-            .defaultThreads()
-            .subscribe(
-                { prefs.queueToUpdate = true },
-                { Log.e("BoardViewModel","BoardViewModel.addToQueue: \n $it") }
-            )
-            .addToSubscribe()
-    }
+    private fun addToQueue(boardId: String, threadNum: Int) =
+        runOnIo {
+            threadInteractor.markQueued(boardId, threadNum)
+        }
 
-    private fun hideThread(boardId: String, threadNum: Int) {
-        threadInteractor
-            .markHidden(boardId, threadNum)
-            .defaultThreads()
-            .subscribe(
-                { },
-                { Log.e("BoardViewModel","BoardViewModel.hideThread: \n $it") }
-            )
-            .addToSubscribe()
-    }
 
-    fun setFavorite() {
-        boardInteractor
-            .markFavorite(boardId)
-            .defaultThreads()
-            .subscribe(
-                { },
-                { Log.e("BoardViewModel","BoardViewModel.setFavorite: \n $it") }
-            )
-            .addToSubscribe()
-    }
+    private fun hideThread(boardId: String, threadNum: Int) =
+        runOnIo {
+            threadInteractor.markHidden(boardId, threadNum)
+        }
 
-    fun refresh() {
-        boardInteractor
-            .refresh(boardId)
-            .doOnSubscribe { isLoading = true }
-            .subscribe(
-                { isLoading = false },
-                { Log.e("BoardViewModel", "BoardViewModel.init: \n $it") }
-            )
-            .addToSubscribe()
-    }
+    fun setFavorite() =
+        runOnIo {
+            boardInteractor.markFavorite(boardId)
+        }
+
+    fun refresh() =
+        runOnIo("refresh") {
+            isLoading.emit(true)
+            showLoading()
+            boardInteractor.refresh(boardId)
+            isLoading.emit(false)
+            showContent()
+        }
 
     fun search(query: String) =
-        boardInteractor.search(query)
+        runOnIo {
+            boardInteractor.search(query)
+        }
 
     fun onNewThreadClicked() =
         navigateToThreadCreating(boardId)

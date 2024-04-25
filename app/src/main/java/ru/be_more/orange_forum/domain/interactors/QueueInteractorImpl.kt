@@ -1,7 +1,7 @@
 package ru.be_more.orange_forum.domain.interactors
 
-import io.reactivex.Completable
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
@@ -13,35 +13,33 @@ class QueueInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
 ): InteractorContract.QueueInteractor{
 
-    override fun observe(): Observable<List<Board>> =
-        deleteDrownThreads()
-            .andThen(
-                Observable.combineLatest(
-                    boardRepository.observeList(),
-                    threadRepository.observeQueued()
-                ) { boards, threads ->
-                    boards
-                        .map { board ->
-                            board to threads.filter { it.boardId == board.id }
-                        }
-                        .map { (board, threads) ->
-                            board.copy(threads = threads)
-                        }
-                        .filter { it.threads.isNotEmpty() }
-                }
-            )
+    override fun getFlow(): Flow<List<Board>> =
+        run {
+            combine(
+                boardRepository.getListFlow(),
+                threadRepository.getQueuedFlow()
+            ) { boards, threads ->
+                boards
+                    .map { board ->
+                        board to threads.filter { it.boardId == board.id }
+                    }
+                    .map { (board, threads) ->
+                        board.copy(threads = threads)
+                    }
+                    .filter { it.threads.isNotEmpty() }
+            }
+        }
 
-    override fun clear(): Completable =
+    override suspend fun clear() =
         threadRepository.markQueuedAll(isQueued = false)
 
-    private fun deleteDrownThreads() =
+    private suspend fun deleteDrownThreads() =
         threadRepository.getQueued()
-            .flatMapObservable { Observable.fromIterable(it) }
-            .flatMapCompletable { thread ->
+            .forEach { thread ->
                 apiRepository.getThreadInfo(thread.boardId, thread.num)
-                    .filter { !it.isAlive }
-                    .flatMapCompletable {
-                        threadRepository.delete(it.boardId, it.threadNum)
+                    .also {
+                        if (!it.isAlive)
+                            threadRepository.delete(it.boardId, it.threadNum)
                     }
             }
 }

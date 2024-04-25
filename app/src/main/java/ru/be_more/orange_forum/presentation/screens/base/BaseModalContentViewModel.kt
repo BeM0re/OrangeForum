@@ -1,9 +1,6 @@
 package ru.be_more.orange_forum.presentation.screens.base
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.AttachedFile
 import ru.be_more.orange_forum.domain.model.BoardSetting
@@ -23,8 +20,7 @@ abstract class BaseModalContentViewModel(
     //stack returns exception on empty, therefore using list as stack
     private val modalStack: LinkedList<ModalContentDialogInitArgs> = LinkedList()
 
-    var modalContent by mutableStateOf<ModalContentDialogInitArgs?>(null)
-        private set
+    var modalContent = MutableStateFlow<ModalContentDialogInitArgs?>(null)
 
     abstract val boardSetting: BoardSetting
 
@@ -46,42 +42,38 @@ abstract class BaseModalContentViewModel(
         }
     }
 
-    private fun showPostModel(boardId: String, threadNum: Int, postId: Int) {
-        postInteractor.getPost(boardId, threadNum, postId)
-            .defaultThreads()
-            .subscribe(
-                { post ->
-                    pushModelContent(
-                        ModalContentDialogInitArgs(
-                            modalArgs = PostInitArgs(
-                                post = post,
-                                onPicClick = ::onPicClicked,
-                                onTextLinkClick = ::onTextLinkClicked,
-                                onPostNumClick = ::replyToPost
-                            ),
-                            onBack = ::closeModal,
-                            onClose = ::clearModal,
-                        )
-                    )
-                },
-                { Log.e("BaseModalContentViewModel", "BaseModalContentViewModel.showPostModel = \n$it") }
+    private fun showPostModel(boardId: String, threadNum: Int, postId: Int) =
+        runOnIo("showPostModel") {
+            pushModelContent(
+                ModalContentDialogInitArgs(
+                    modalArgs = PostInitArgs(
+                        post = postInteractor.getPost(boardId, threadNum, postId),
+                        onPicClick = ::onPicClicked,
+                        onTextLinkClick = ::onTextLinkClicked,
+                        onPostNumClick = ::replyToPost
+                    ),
+                    onBack = ::closeModal,
+                    onClose = ::clearModal,
+                )
             )
-            .addToSubscribe()
-    }
+        }
 
-    private fun pushModelContent(content: ModalContentDialogInitArgs) {
-        modalContent?.let { modalStack.push(it) }
-        modalContent = content
-    }
+    private fun pushModelContent(content: ModalContentDialogInitArgs) =
+        runOnIo("pushModelContent") {
+            modalContent.let { modalStack.push(it.value) }
+            modalContent.emit(content)
+        }
 
-    protected fun closeModal() {
-        modalContent = modalStack.removeFirstOrNull()
-    }
+    private fun closeModal() =
+        runOnIo("closeModal") {
+            modalContent.emit(modalStack.removeFirstOrNull())
+        }
 
-    private fun clearModal() {
-        modalStack.clear()
-        modalContent = null
-    }
+    private fun clearModal() =
+        runOnIo("clearModal") {
+            modalStack.clear()
+            modalContent.emit(null)
+        }
 
     protected fun replyToPost(post: Post) {
         navigateToReply(

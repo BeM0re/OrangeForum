@@ -1,9 +1,6 @@
 package ru.be_more.orange_forum.domain.contracts
 
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
 import ru.be_more.orange_forum.domain.model.Category
@@ -12,65 +9,65 @@ import ru.be_more.orange_forum.domain.model.Post
 interface DbContract {
 
     interface CategoryRepository {
-        fun insert(categories: List<Category>): Completable
-        fun observe(): Observable<List<Category>>
+        suspend fun insert(categories: List<Category>)
+        fun getFlowList(): Flow<List<Category>>
         /**empty = empty board list*/
-        fun getEmpty(name: String): Single<Category>
-        fun setIsExpanded(name: String, isExpanded: Boolean): Completable
-        fun delete(): Completable
+        suspend fun getEmpty(name: String): Category
+        suspend fun setIsExpanded(name: String, isExpanded: Boolean)
+        suspend fun delete()
     }
 
     interface BoardRepository {
-        fun get(boardId: String): Single<Board>
-        fun observe(boardId: String): Observable<Board>
-        fun observeList(): Observable<List<Board>>
-        fun insertKeepingState(board: Board): Completable
-        fun insertKeepingState(boards: List<Board>): Completable
-        fun markFavorite(boardId: String, isFavorite: Boolean): Completable
+        suspend fun get(boardId: String): Board?
+        fun getFlow(boardId: String): Flow<Board>
+        fun getListFlow(): Flow<List<Board>>
+        suspend fun insertKeepingState(board: Board)
+        suspend fun insertKeepingState(boards: List<Board>)
+        suspend fun markFavorite(boardId: String, isFavorite: Boolean)
         @Deprecated("Delete")
-        fun updateThreadNewMessageCounter(boardId: String, threadNum: Int, count: Int):Completable
-        fun deleteKeepingState(): Completable
+        suspend fun updateThreadNewMessageCounter(boardId: String, threadNum: Int, count: Int)
+        suspend fun deleteKeepingState()
     }
 
     interface ThreadRepository {
         /**Save thread w/o pictures*/
-        fun insert(thread: BoardThread): Completable
+        suspend fun insert(thread: BoardThread)
         /**Save thread w/o pictures*/
-        fun insertKeepingState(threads: List<BoardThread>): Completable
+        suspend fun insertKeepingState(threads: List<BoardThread>)
         /**Save thread with pictures*/
-        fun save(thread: BoardThread, boardId: String): Completable
-        fun observe(boardId: String, threadNum: Int): Observable<BoardThread>
-        fun get(boardId: String, threadNum: Int): Maybe<BoardThread>
-        fun getFavorites(): Single<List<BoardThread>>
-        fun getQueued(): Single<List<BoardThread>>
-        fun observeList(boardId: String): Observable<List<BoardThread>>
-        fun observeFavorite(): Observable<List<BoardThread>>
-        fun observeQueued(): Observable<List<BoardThread>>
-        fun setPostCount(boardId: String, threadNum: Int, postNum: Int): Completable
-        fun setLasthit(boardId: String, threadNum: Int, lasthit: Long): Completable
-        fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean): Completable
-        fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean): Completable
-        fun markFavorite(boardId: String, threadNum: Int, isFavorite: Boolean): Completable
-        fun markHidden(boardId: String, threadNum: Int, isHidden: Boolean): Completable
-        fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean): Completable
-        fun markQueuedAll(isQueued: Boolean): Completable
-        fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable
-        fun delete(boardId: String, threadNum: Int): Completable
-        fun deleteKeepingState(boardId: String): Completable
-        fun deleteExceptGiven(boardId: String, liveThreadNumList: List<Int>): Completable
+        suspend fun save(thread: BoardThread, boardId: String)
+         fun getFlow(boardId: String, threadNum: Int): Flow<BoardThread>
+        suspend fun get(boardId: String, threadNum: Int): BoardThread?
+        suspend fun getFavorites(): List<BoardThread>
+        suspend fun getQueued(): List<BoardThread>
+        fun getListFlow(boardId: String): Flow<List<BoardThread>>
+        fun getFavoriteFlow(): Flow<List<BoardThread>>
+        fun getQueuedFlow(): Flow<List<BoardThread>>
+        suspend fun setPostCount(boardId: String, threadNum: Int, postNum: Int)
+        suspend fun setLasthit(boardId: String, threadNum: Int, lasthit: Long)
+        suspend fun setHasNewPost(boardId: String, threadNum: Int, hasNewPost: Boolean)
+        suspend fun setIsDrown(boardId: String, threadNum: Int, isDrown: Boolean)
+        suspend fun markFavorite(boardId: String, threadNum: Int, isFavorite: Boolean)
+        suspend fun markHidden(boardId: String, threadNum: Int, isHidden: Boolean)
+        suspend fun markQueued(boardId: String, threadNum: Int, isQueued: Boolean)
+        suspend fun markQueuedAll(isQueued: Boolean)
+        suspend fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int)
+        suspend fun delete(boardId: String, threadNum: Int)
+        suspend fun deleteKeepingState(boardId: String)
+        suspend fun deleteExceptGiven(boardId: String, liveThreadNumList: List<Int>)
     }
 
     interface PostRepository {
-        fun insert(post: Post): Completable
-        fun insert(posts: List<Post>): Completable
-        fun insertMissing(thread: BoardThread): Completable
+        suspend fun insert(post: Post)
+        suspend fun insert(posts: List<Post>)
+        suspend fun insertMissing(thread: BoardThread)
         /** save = insert + save images*/
-        fun save(posts: List<Post>): Completable
-        fun insertOp(posts: List<Post>): Completable
-        fun observeOp(boardId: String): Observable<List<Post>>
-        fun observe(boardId: String, threadNum: Int): Observable<List<Post>>
-        fun get(boardId: String, post: Int): Maybe<Post>
-        fun getThreadPosts(boardId: String, threadNum: Int): Single<List<Post>>
-        fun delete(boardId: String, threadNum: Int): Completable
+        suspend fun save(posts: List<Post>)
+        suspend fun insertOp(posts: List<Post>)
+        fun getOpListFlow(boardId: String): Flow<List<Post>>
+        fun getListFlow(boardId: String, threadNum: Int): Flow<List<Post>>
+        suspend fun get(boardId: String, post: Int): Post?
+        suspend fun getThreadPosts(boardId: String, threadNum: Int): List<Post>
+        suspend fun delete(boardId: String, threadNum: Int)
     }
 }

@@ -1,9 +1,6 @@
 package ru.be_more.orange_forum.presentation.screens.queue
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
@@ -18,18 +15,13 @@ class QueueViewModel(
     private val prefs: Preferences
 ) : BaseViewModel() {
 
-    var items by mutableStateOf(listOf<QueueItem>())
-        private set
+    var items = MutableStateFlow(listOf<QueueItem>())
 
     init {
-        queueInteractor
-            .observe()
-            .defaultThreads()
-            .subscribe(
-                { items = prepareItemList(it) },
-                { Log.e("QueueViewModel", "QueueViewModel = $it") }
-            )
-            .addToSubscribe()
+        runOnIo("init") {
+            queueInteractor.getFlow()
+                .collect { items.emit(prepareItemList(it)) }
+        }
     }
 
     private fun prepareItemList(boards: List<Board>): List<QueueItem> =
@@ -55,12 +47,7 @@ class QueueViewModel(
         }
 
     fun clear() =
-        queueInteractor
-            .clear()
-            .defaultThreads()
-            .subscribe(
-                { },
-                { Log.e("QueueViewModel", "QueueViewModel.clear = $it") }
-            )
-            .addToSubscribe()
+        runOnIo("clear") {
+            queueInteractor.clear()
+        }
 }

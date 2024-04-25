@@ -1,15 +1,13 @@
 package ru.be_more.orange_forum.domain.interactors
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
-import java.util.concurrent.TimeUnit
 
 class BoardInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
@@ -18,55 +16,13 @@ class BoardInteractorImpl(
     private val postRepository: DbContract.PostRepository,
 ): InteractorContract.BoardInteractor {
 
-    private val searchQuery = BehaviorSubject
-        .createDefault("")
+    private val searchQuery = MutableStateFlow("")
 
-    override fun observe(boardId: String): Observable<Board> =
-        observeBoard(boardId)
-
-    override fun getSingle(boardId: String): Single<Board> =
-        boardRepository.get(boardId)
-
-    override fun markFavorite(boardId: String): Completable =
-        boardRepository
-            .get(boardId)
-            .flatMapCompletable {
-                boardRepository.markFavorite(boardId, !it.isFavorite)
-            }
-
-    override fun refresh(boardId: String): Completable =
-        threadRepository
-            .deleteKeepingState(boardId)
-            .andThen(downloadBoard(boardId))
-
-    private fun downloadBoard(boardId: String): Completable =
-        apiRepository.getBoard(boardId)
-            .flatMapCompletable { board ->
-                boardRepository
-                    .insertKeepingState(board)
-                    .andThen(
-                        threadRepository.insertKeepingState(board.threads)
-                    )
-                    .andThen(
-                        postRepository.insert(
-                            board.threads.mapNotNull {
-                                it.posts.getOrNull(0)
-                            }
-                        )
-                    )
-                    .andThen(
-                        threadRepository.deleteExceptGiven(
-                            boardId = board.id,
-                            liveThreadNumList = board.threads.map { it.num }
-                        )
-                    )
-            }
-
-    private fun observeBoard(boardId: String): Observable<Board> =
-        Observable.combineLatest(
-            boardRepository.observe(boardId),
-            threadRepository.observeList(boardId),
-            postRepository.observeOp(boardId),
+    override fun getFlow(boardId: String): Flow<Board> =
+        combine(
+            boardRepository.getFlow(boardId),
+            threadRepository.getListFlow(boardId),
+            postRepository.getOpListFlow(boardId),
             searchQuery
         ) { board, threads, posts, searchQuery ->
             board.copy(
@@ -75,7 +31,7 @@ class BoardInteractorImpl(
                         thread.copy(
                             posts = posts.filter { post ->
                                 post.threadNum == thread.num
-                                    && (post.subject.contains(searchQuery) || post.comment.contains(searchQuery))
+                                        && (post.subject.contains(searchQuery) || post.comment.contains(searchQuery))
                             }
                         )
                     }
@@ -87,6 +43,42 @@ class BoardInteractorImpl(
             )
         }
 
-    override fun search(query: String) =
-        searchQuery.onNext(query)
+    override suspend fun getBoard(boardId: String): Board? =
+        boardRepository.get(boardId)
+
+    override suspend fun markFavorite(boardId: String) =
+        boardRepository
+            .get(boardId)
+            .let {
+                boardRepository.markFavorite(boardId, it?.isFavorite == true)
+            }
+
+    override suspend fun refresh(boardId: String) =
+        threadRepository
+            .deleteKeepingState(boardId)
+            .also { downloadBoard(boardId) }
+
+    override suspend fun search(query: String) =
+        searchQuery.emit(query)
+
+    private suspend fun downloadBoard(boardId: String) =
+        apiRepository.getBoard(boardId)
+            .let { board ->
+                boardRepository
+                    .insertKeepingState(board)
+                    .also { threadRepository.insertKeepingState(board.threads) }
+                    .also {
+                        postRepository.insert(
+                            board.threads.mapNotNull {
+                                it.posts.getOrNull(0)
+                            }
+                        )
+                    }
+                    .also {
+                        threadRepository.deleteExceptGiven(
+                            boardId = board.id,
+                            liveThreadNumList = board.threads.map { it.num }
+                        )
+                    }
+            }
 }

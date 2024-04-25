@@ -1,9 +1,11 @@
 package ru.be_more.orange_forum.presentation.screens.category
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -11,7 +13,6 @@ import ru.be_more.orange_forum.domain.model.Category
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.BoardShortListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ListItemArgs
-import ru.be_more.orange_forum.presentation.model.ContentState
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 
 class CategoryViewModel(
@@ -19,30 +20,26 @@ class CategoryViewModel(
     private val prefs: Preferences
 ): BaseViewModel() {
 
-    var items by mutableStateOf(listOf<ListItemArgs>())
+    var items = MutableStateFlow(listOf<ListItemArgs>())
         private set
 
     init {
         showLoading()
 
-        interactor
-            .observe()
-            .map { prepareList(it)}
-            .defaultThreads()
-            .subscribe(
-                { items = it },
-                { error.postValue("CategoryViewModel.initViewModel: \n ${it.message}") }
-            )
-            .addToSubscribe()
+        viewModelScope.launch(CoroutineExceptionHandler{_, _ -> }){}
 
-        interactor
-            .refresh()
-            .defaultThreads()
-            .subscribe(
-                { showContent() },
-                { error.postValue("CategoryViewModel.initViewModel: \n ${it.message}") }
-            )
-            .addToSubscribe()
+        runOnIo("init.getListFlow") {
+            interactor
+                .getCategoryListFlow()
+                .map { prepareList(it)}
+                .flowOn(Dispatchers.IO)
+                .collect { items.emit(it) }
+        }
+
+        runOnIo("init.refresh") {
+            interactor.refresh()
+            showContent()
+        }
     }
 
     private fun prepareList(categoryList: List<Category>): List<ListItemArgs> =
@@ -67,16 +64,13 @@ class CategoryViewModel(
             }
         }
 
-    private fun setCategoryExpanded(name: String) {
-        interactor.toggleExpanded(name)
-            .defaultThreads()
-            .subscribe(
-                {},
-                { error.postValue("CategoryViewModel.setCategoryExpanded: \n ${it.message}") }
-            )
-            .addToSubscribe()
-    }
+    private fun setCategoryExpanded(name: String) =
+        runOnIo("init.refresh") {
+            interactor.toggleExpanded(name)
+        }
 
     fun search(query: String) =
-        interactor.search(query)
+        viewModelScope.launch {
+            interactor.search(query)
+        }
 }

@@ -1,9 +1,6 @@
 package ru.be_more.orange_forum.presentation.screens.favorite
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
@@ -18,7 +15,7 @@ class FavoriteViewModel (
     private val prefs: Preferences
 ): BaseViewModel() {
 
-    var items by mutableStateOf(listOf<QueueItem>())
+    var items = MutableStateFlow(listOf<QueueItem>())
         private set
 
     init {
@@ -26,27 +23,17 @@ class FavoriteViewModel (
         refresh()
     }
 
-    private fun refresh() {
-        favoriteInteractor
-            .updateFavoriteThreadInfo()
-            .defaultThreads()
-            .subscribe(
-                { },
-                { Log.e("FavoriteViewModel", "FavoriteViewModel.init.observe = $it") }
-            )
-            .addToSubscribe()
-    }
+    private fun refresh() =
+        runOnIo("refresh") {
+            favoriteInteractor.updateFavoriteThreadInfo()
+        }
 
-    private fun subscribeToData() {
-        favoriteInteractor
-            .observe()
-            .defaultThreads()
-            .subscribe(
-                { items = prepareItemList(it) },
-                { Log.e("FavoriteViewModel", "FavoriteViewModel.init.observe = $it") }
-            )
-            .addToSubscribe()
-    }
+    private fun subscribeToData() =
+        runOnIo("subscribeToData") {
+            favoriteInteractor
+                .getListFlow()
+                .collect{ items.emit(prepareItemList(it)) }
+        }
 
     private fun prepareItemList(boards: List<Board>): List<QueueItem> =
         buildList {
@@ -71,11 +58,7 @@ class FavoriteViewModel (
         }
 
     fun removeThread(boardId: String, threadNum: Int) =
-        threadInteractor.markFavorite(boardId, threadNum)
-            .defaultThreads()
-            .subscribe(
-                {  },
-                { Log.e("M_DownFavViewModelImpl","removing from queue error = $it")}
-            )
-            .addToSubscribe()
+        runOnIo("removeThread") {
+            threadInteractor.markFavorite(boardId, threadNum)
+        }
 }

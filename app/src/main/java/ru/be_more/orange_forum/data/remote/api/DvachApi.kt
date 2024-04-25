@@ -20,46 +20,46 @@ import ru.be_more.orange_forum.data.remote.models.dto.ThreadInfoDto
 interface DvachApi{
 
     @GET("/api/mobile/v2/boards")
-    fun getBoardList(): Single<List<BoardShortDto>>
+    suspend fun getBoardList(): List<BoardShortDto>
 
     @GET("/{board}/catalog.json")
-    fun getBoard(@Path("board") boardId: String): Single<BoardDto>
+    suspend fun getBoard(@Path("board") boardId: String): BoardDto
 
     //todo получать новые посты
     @GET("/api/mobile/v2/after/{board}/{thread}/{num}")
-    fun getPostsAfter(
+    suspend fun getPostsAfter(
         @Path("board") boardId: String,
         @Query("thread") thread: Int,
         @Query("num") num: Int,
         @Header("Cookie") cookie: String
-    ): Single<List<PostDto>>
+    ): List<PostDto>
 
     //todo получать инфо о треде, если ли новые сообщения, наверное.
     @GET("/api/mobile/v2/info/{board}/{thread}")
-    fun getThreadInfo(
+    suspend fun getThreadInfo(
         @Path("board") boardId: String,
         @Path("thread") thread: Int,
         @Header("Cookie") cookie: String
-    ): Single<ThreadInfoDto>
+    ): ThreadInfoDto
 
     @GET("/api/mobile/v2/post/{board}/{id}")
-    fun getPost(
+    suspend fun getPost(
         @Path("board") boardId: String,
         @Path("id") postId: Int,
         @Header("Cookie") cookie: String
-    ): Single<PostResponseDto>
+    ): PostResponseDto
 
     @GET("/{board}/res/{id}.json")
-    fun getThread(
+    suspend fun getThread(
         @Path("board") boardId: String,
         @Path("id") postId: Int,
         @Header("Cookie") cookie: String
-    ): Single<ThreadDto>
+    ): ThreadDto
 
     //todo delete
     @Multipart
     @POST("/makaba/posting.fcgi?json=1")
-    fun postThreadResponseRx(
+    suspend fun postThreadResponseRx(
         @Header("Cookie") cookie: RequestBody,
         @Part("task") task: RequestBody,
         @Part("board") board: RequestBody,
@@ -73,22 +73,22 @@ interface DvachApi{
         @Part("g-recaptcha-response")gRecaptchaResponse: RequestBody,
         @Part("2chaptcha_id") chaptchaId: RequestBody,
         @Part files: List<MultipartBody.Part>
-    ): Single<ResponseDto>
+    ): ResponseDto
 
     @GET("/api/captcha/settings/{id}")
-    fun getBoardSettings(
+    suspend fun getBoardSettings(
         @Path("id") boardId: String,
-    ): Single<BoardCaptureSettingDto>
+    ): BoardCaptureSettingDto
 
     @GET("/api/captcha/2chcaptcha/id")
-    fun get2chCaptcha(
+    suspend fun get2chCaptcha(
         @Query("board") boardId: String,
         @Query("thread") threadNum: Int?,
-    ): Single<DvachCaptchaDto>
+    ): DvachCaptchaDto
 
     @Multipart
     @POST("/user/posting")
-    fun postReply(
+    suspend fun postReply(
         @Part("captcha_type")   captchaType: RequestBody,
         @Part("board")          boardId: RequestBody,
         @Part("thread")         threadName: RequestBody,
@@ -101,10 +101,10 @@ interface DvachApi{
         @Part("op_mark")        isOp: Boolean?,
         @Part                   files: List<MultipartBody.Part>,
         @Part                   captchaFields: List<MultipartBody.Part>?,
-    ): Single<ReplyCreatedDto>
+    ): ReplyCreatedDto
 
     @POST("/user/posting")
-    fun postNewThread(
+    suspend fun postNewThread(
         @Part("captcha_type")   captchaType: RequestBody,
         @Part("board")          boardId: RequestBody,
         @Part("name")           name: RequestBody?,
@@ -116,6 +116,6 @@ interface DvachApi{
         @Part("op_mark")        isOp: RequestBody?,
         @Part                   files: List<MultipartBody.Part>,
         @Part                   captchaFields: List<MultipartBody.Part>?,
-    ): Single<ThreadCreatedDto>
+    ): ThreadCreatedDto
 
 }

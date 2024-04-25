@@ -1,12 +1,15 @@
 package ru.be_more.orange_forum.domain.interactors
 
-import io.reactivex.Completable
-import io.reactivex.Observable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.model.Board
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
 class FavoriteInteractorImpl(
     private val boardRepository: DbContract.BoardRepository,
@@ -14,10 +17,10 @@ class FavoriteInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
 ): InteractorContract.FavoriteInteractor {
 
-    override fun observe(): Observable<List<Board>> =
-        Observable.combineLatest(
-            boardRepository.observeList(),
-            threadRepository.observeFavorite()
+    override fun getListFlow(): Flow<List<Board>> =
+        combine(
+            boardRepository.getListFlow(),
+            threadRepository.getFavoriteFlow()
         ) { boards, threads ->
             boards
                 .map { board ->
@@ -29,9 +32,8 @@ class FavoriteInteractorImpl(
                 .filter { it.threads.isNotEmpty() || it.isFavorite }
         }
 
-
-    override fun observeNewMessages(): Observable<Boolean> =
-        observe().map { boards ->
+    override fun getFlow(): Flow<Boolean> =
+        getListFlow().map { boards ->
             boards.any { board ->
                 board.threads.any { thread ->
                     thread.hasNewMessages
@@ -39,30 +41,33 @@ class FavoriteInteractorImpl(
             }
         }
 
-    override fun updatingFavoritesSubscription(): Completable =
-        Observable.interval(0, 1, TimeUnit.MINUTES)
-            .flatMapCompletable { updateFavoriteThreadInfo() }
+    override suspend fun updatingFavoritesSubscription() =
+        flow {
+            while (true) {
+                delay(Duration.parse("1m"))
+                emit(Unit)
+            }
+        }.collect { updateFavoriteThreadInfo() }
 
-    override fun updateFavoriteThreadInfo(): Completable =
+    override suspend fun updateFavoriteThreadInfo() =
         threadRepository.getFavorites()
-            .flatMapObservable { Observable.fromIterable(it) }
-            .flatMapCompletable { thread ->
+            .forEach { thread ->
                 apiRepository.getThreadInfo(thread.boardId, thread.num)
-                    .flatMapCompletable { info ->
+                    .also {
+                            info ->
                         if (!info.isAlive)
                             threadRepository.setIsDrown(info.boardId, info.threadNum, isDrown = true)
                         else
                             apiRepository.getEmptyThread(info.boardId, info.threadNum,)
-                                .flatMapCompletable { updatedThread ->
+                                .also { updatedThread ->
                                     if (updatedThread.lasthit > thread.lasthit)
                                         threadRepository.setLasthit(info.boardId, info.threadNum, info.timestamp)
-                                            .andThen(
+                                            .also {
                                                 threadRepository.setHasNewPost(info.boardId, info.threadNum, hasNewPost = true)
-                                            )
-                                    else
-                                        Completable.complete()
+                                            }
                                 }
                     }
             }
+
 }
 

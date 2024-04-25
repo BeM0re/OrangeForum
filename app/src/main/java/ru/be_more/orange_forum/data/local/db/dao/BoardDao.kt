@@ -4,41 +4,37 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 
 @Dao
 interface BoardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertBoard(board: StoredBoard): Completable
+    suspend fun insertBoard(board: StoredBoard)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertBoardList(boardList: List<StoredBoard>): Completable
-
-
-    @Query("SELECT * FROM boards WHERE id = :boardId")
-    fun observe(boardId: String): Observable<StoredBoard>
-
-    @Query("SELECT * FROM boards")
-    fun observeList(): Observable<List<StoredBoard>>
+    suspend fun insertBoardList(boardList: List<StoredBoard>)
 
     @Query("SELECT * FROM boards WHERE id = :boardId")
-    fun get(boardId: String): Maybe<StoredBoard>
+    fun getFlow(boardId: String): Flow<StoredBoard>
 
     @Query("SELECT * FROM boards")
-    fun getList(): Single<List<StoredBoard>>
+    fun getListFlow(): Flow<List<StoredBoard>>
+
+    @Query("SELECT * FROM boards WHERE id = :boardId")
+    suspend fun get(boardId: String): StoredBoard?
+
+    @Query("SELECT * FROM boards")
+    suspend fun getList(): List<StoredBoard>
 
     @Query("SELECT id FROM boards WHERE isFavorite = 1")
-    fun getFavorites(): Single<List<String>>
+    suspend fun getFavorites(): List<String>
 
 
     @Query("UPDATE boards SET isFavorite = :isFavorite WHERE id = :boardId")
-    fun markFavorite(boardId: String, isFavorite: Boolean): Completable
+    suspend fun markFavorite(boardId: String, isFavorite: Boolean)
 
 
     @Query("DELETE FROM boards WHERE isFavorite = 0")
-    fun deleteKeepingState(): Completable
+    suspend fun deleteKeepingState()
 }

@@ -1,14 +1,15 @@
 package ru.be_more.orange_forum.domain.interactors
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import ru.be_more.orange_forum.consts.ThreadUpdateInterval
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.BoardThread
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
 
 class ThreadInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
@@ -17,88 +18,86 @@ class ThreadInteractorImpl(
     private val postRepository: DbContract.PostRepository
 ): InteractorContract.ThreadInteractor {
 
-    override fun observe(
+    override fun getFlow(
         boardId: String,
         threadNum: Int,
-    ): Observable<BoardThread> =
-        Observable.combineLatest(
-            threadRepository.observe(boardId, threadNum),
-            postRepository.observe(boardId, threadNum)
+    ): Flow<BoardThread> =
+        combine(
+            threadRepository.getFlow(boardId, threadNum),
+            postRepository.getListFlow(boardId, threadNum)
         ) { thread, posts ->
             thread.copy(posts = posts)
         }
 
-    override fun save(boardId: String, threadNum: Int): Completable =
+    override suspend fun save(boardId: String, threadNum: Int) =
         apiRepository.getThread(boardId, threadNum)
-            .flatMapCompletable { thread ->
-                threadRepository
-                    .insertKeepingState(
-                        listOf(thread.copy(isDownloaded = true))
-                    )
-                    .andThen(postRepository.save(thread.posts))
+            .let { thread ->
+                threadRepository.insertKeepingState(
+                    listOf(thread.copy(isDownloaded = true))
+                )
+                postRepository.save(thread.posts)
             }
 
-    override fun markFavorite(boardId: String, threadNum: Int): Completable =
+    override suspend fun markFavorite(boardId: String, threadNum: Int) =
         threadRepository
             .get(boardId, threadNum)
-            .flatMapCompletable {
-                threadRepository.markFavorite(boardId, threadNum, !it.isFavorite)
+            .let {
+                threadRepository.markFavorite(boardId, threadNum, it?.isFavorite == false)
             }
 
-    override fun markQueued(boardId: String, threadNum: Int): Completable =
+    override suspend fun markQueued(boardId: String, threadNum: Int) =
         threadRepository
             .get(boardId, threadNum)
-            .flatMapCompletable {
-                threadRepository.markQueued(boardId, threadNum, !it.isQueued)
+            .let {
+                threadRepository.markQueued(boardId, threadNum, it?.isQueued == false)
             }
 
-    override fun markHidden(boardId: String, threadNum: Int): Completable =
+    override suspend fun markHidden(boardId: String, threadNum: Int) =
         threadRepository
             .get(boardId, threadNum)
-            .flatMapCompletable {
-                threadRepository.markHidden(boardId, threadNum, !it.isHidden)
+            .let {
+                threadRepository.markHidden(boardId, threadNum, it?.isHidden == false)
             }
 
-    override fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int): Completable =
+    override suspend fun updateLastPostViewed(boardId: String, threadNum: Int, postNum: Int) =
         threadRepository.updateLastPostViewed(boardId, threadNum, postNum)
 
     //todo для докачивания постов есть отдельный метод апи
-    override fun subToUpdate(boardId: String, threadNum: Int): Completable =
-        Observable
-            .interval(ThreadUpdateInterval, TimeUnit.SECONDS)
-            .flatMapCompletable { getThread(boardId, threadNum, savePics = false) }
+    override suspend fun subToUpdate(boardId: String, threadNum: Int) =
+        flow {
+            while (true) {
+                emit(Unit)
+                delay(Duration.parse(ThreadUpdateInterval))
+            }
+        }.collect { getThread(boardId, threadNum, savePics = false) }
 
-    override fun delete(boardId: String, threadNum: Int): Completable =
+    override suspend fun delete(boardId: String, threadNum: Int) {
         threadRepository.delete(boardId, threadNum)
-            .andThen(postRepository.delete(boardId, threadNum))
+        postRepository.delete(boardId, threadNum)
+    }
 
-    override fun refresh(boardId: String, threadNum: Int): Completable =
+    override suspend fun refresh(boardId: String, threadNum: Int) =
         apiRepository.getThread(boardId, threadNum)
-            .flatMapCompletable { thread ->
+            .let { thread ->
                 threadRepository.insertKeepingState(listOf(thread))
-                    .andThen(
-                        postRepository.insertMissing(thread)
-                    )
+                postRepository.insertMissing(thread)
             }
 
     @Deprecated("")
-    private fun getThread(
+    private suspend fun getThread(
         boardId: String,
         threadNum: Int,
         savePics: Boolean,
-    ): Completable =
+    ) =
         apiRepository.getThread(boardId, threadNum)
-            .flatMapCompletable { thread ->
+            .let { thread ->
                 //todo save states
-                if (savePics)
-                    threadRepository
-                        .insert(thread.copy(isDownloaded = true))
-                        .andThen(postRepository.save(thread.posts))
-
-                else
-                    threadRepository
-                        .insert(thread)
-                        .andThen(postRepository.insert(thread.posts))
+                if (savePics) {
+                    threadRepository.insert(thread.copy(isDownloaded = true))
+                    postRepository.save(thread.posts)
+                } else {
+                    threadRepository.insert(thread)
+                    postRepository.insert(thread.posts)
+                }
             }
-
 }

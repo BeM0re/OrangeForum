@@ -16,6 +16,8 @@ import ru.be_more.orange_forum.data.remote.models.CaptureType
 import ru.be_more.orange_forum.domain.model.*
 import ru.be_more.orange_forum.utils.ParseHtml
 import java.io.File
+import java.lang.Exception
+import java.net.ConnectException
 import java.util.*
 
 //инфа по обезьяньему апи: https://2ch.hk/abu/res/42375.html
@@ -26,72 +28,65 @@ class ApiRepositoryImpl(
     //todo переделать модель капчи
     private var captcha: Captcha? = null
 
-    override fun getCategories(): Single<List<Category>> =
+    override suspend fun getCategories(): List<Category> =
         api.getBoardList()
-            .map { dto ->
-                dto
-                    .map { it.toModel() }
-                    .groupBy { it.category }
-                    .map { (category, boards) ->
-                        Category(
-                            name = category,
-                            boards = boards,
-                            isExpanded = false
-                        )
-                    }
+            .map { it.toModel() }
+            .groupBy { it.category }
+            .map { (category, boards) ->
+                Category(
+                    name = category,
+                    boards = boards,
+                    isExpanded = false
+                )
             }
 
-    override fun getBoard(boardId: String): Single<Board> =
+    override suspend fun getBoard(boardId: String): Board =
         api.getBoard(boardId)
-            .map { it.toModel(boardId) }
+            .toModel(boardId)
 
-    override fun getEmptyThread(boardId: String, threadNum: Int): Single<BoardThread> =
+    override suspend fun getEmptyThread(boardId: String, threadNum: Int): BoardThread =
         api.getPost(boardId, threadNum, COOKIE)
-            .map { it.post.toThread(boardId) }
+            .post
+            .toThread(boardId)
 
-    override fun getThread(boardId: String, threadNum: Int): Single<BoardThread> =
+    override suspend fun getThread(boardId: String, threadNum: Int): BoardThread =
         api.getThread(boardId, threadNum, COOKIE)
-            .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getThread = \n$throwable") }
-            .map { it.toModel(boardId) }
-            .map { findResponses(it) }
+            .toModel(boardId)
+            .let { findResponses(it) }
 
-    override fun getPost(
+    override suspend fun getPost(
         boardId: String,
         threadNum: Int,
         postNum: Int,
-    ): Single<Post> =
+    ): Post =
         api.getPost(boardId, postNum, COOKIE)
-            .doOnError { throwable -> Log.e("DvachApiRepository", "ApiRepositoryImpl.getPost = \n$throwable") }
-            .map { it.post.toModel(boardId, threadNum) }
+            .post
+            .toModel(boardId, threadNum)
 
-    override fun getCaptchaUrl(boardId: String, threadNum: Int?): Single<String> =
+    override suspend fun getCaptchaUrl(boardId: String, threadNum: Int?): String =
         api.getBoardSettings(boardId)
-            .map { it.toModel() }
-            .flatMap { boardSetting ->
+            .toModel()
+            .let { boardSetting ->
                 when (boardSetting.captchaType) {
                     CaptureType.DvachCaptcha -> {
                         api.get2chCaptcha(boardId, threadNum)
-                            .map { it.toModel() }
-                            .doOnSuccess {
-                                captcha = Captcha.DvachCaptcha(id = it.id)
-                            }
-                            .map { DVACH_ROOT_URL + "/api/captcha/2chcaptcha/show/?id=${ it.id }" }
+                            .toModel()
+                            .also { captcha = Captcha.DvachCaptcha(id = it.id) }
+                            .let { DVACH_ROOT_URL + "/api/captcha/2chcaptcha/show/?id=${ it.id }"  }
                     }
 
                     CaptureType.NoCaptcha -> {
                         captcha = Captcha.NoCaptcha()
-                        Single.just("")
+                        ""
                     }
 
                     else -> {
-                        Single.error(
-                            Throwable("Capture method ${boardSetting.captchaType} is not yet implemented")
-                        )
+                        throw Throwable("Capture method ${boardSetting.captchaType} is not yet implemented")
                     }
                 }
             }
 
-    override fun postReply(
+    override suspend fun postReply(
         boardId: String,
         threadNum: Int,
         comment: String,
@@ -101,7 +96,7 @@ class ApiRepositoryImpl(
         name: String,
         tag: String,
         captchaSolvedString: String?
-    ): Single<Int> {
+    ): Int {
         captcha?.solveCapture(captchaSolvedString)
 
         val requestBoardId = boardId.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -131,15 +126,16 @@ class ApiRepositoryImpl(
                 files = emptyList(),
                 captchaFields = captchaFields,
             )
-            .map { replyDto ->
+            .let { replyDto ->
                     if (replyDto.error != null && replyDto.error.code != 0)
                         throw Throwable("Replying error code ${replyDto.error.code}: ${replyDto.error.message}")
                     else
-                        replyDto.num
+                        requireNotNull(replyDto.num)
                 }
     }
 
-    override fun postResponseOld(
+    @Deprecated("delete")
+    override suspend fun postResponseOld(
         boardId: String,
         threadNum: Int,
         comment: String,
@@ -147,7 +143,7 @@ class ApiRepositoryImpl(
         g_recaptcha_response: String,
         chaptcha_id: String,
         files: List<File>
-    ): Single<PostResponse> {
+    ): PostResponse {
 
         //todo redo for new capture
         val requestTask = "post".toRequestBody("text/plain".toMediaTypeOrNull())
@@ -183,21 +179,27 @@ class ApiRepositoryImpl(
             gRecaptchaResponse = requestGRecaptchaResponse,
             chaptchaId = requestChaptchaId,
             files = requestFiles
-        )
-            .map { it.toModel() }
+        ).toModel()
     }
 
-    override fun getThreadInfo(boardId: String, threadNum: Int): Single<ThreadInfo> =
-        api
-            .getThreadInfo(boardId, threadNum, COOKIE)
-            .map { it.toModel(boardId, threadNum) }
-            .onErrorReturn {
-                ThreadInfo(
-                    boardId = boardId,
-                    threadNum = threadNum,
-                    isAlive = false,
-                )
-            }
+    override suspend fun getThreadInfo(boardId: String, threadNum: Int): ThreadInfo =
+        try {
+            api
+                .getThreadInfo(boardId, threadNum, COOKIE)
+                .toModel(boardId, threadNum)
+        } catch (e: Exception) {
+            //todo посмотреть апи, возможно есть более адекватный ответ сервера для утонувших
+            if (e is ConnectException)
+                throw e
+
+            ThreadInfo(
+                boardId = boardId,
+                threadNum = threadNum,
+                isAlive = false,
+            )
+        }
+
+
 
     private fun findResponses(board: BoardThread): BoardThread {
         val replies = board.posts

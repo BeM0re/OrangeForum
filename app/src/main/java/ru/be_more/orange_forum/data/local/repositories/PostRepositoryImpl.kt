@@ -1,9 +1,7 @@
 package ru.be_more.orange_forum.data.local.repositories
 
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.data.local.db.dao.PostDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredPost
 import ru.be_more.orange_forum.domain.contracts.DbContract
@@ -16,18 +14,17 @@ class PostRepositoryImpl(
     private val storage: StorageContract.LocalStorage,
 ) : DbContract.PostRepository {
 
-    override fun insert(post: Post): Completable =
+    override suspend fun insert(post: Post) =
         dao.insert(StoredPost(post))
 
-    override fun insert(posts: List<Post>): Completable =
+    override suspend fun insert(posts: List<Post>) =
         dao.insert(
             posts.map { StoredPost(it) }
         )
 
-    override fun insertMissing(thread: BoardThread): Completable =
-        dao.getLatestPostId(thread.boardId, thread.num)
-            .defaultIfEmpty(-1)
-            .flatMapCompletable { latestPostId ->
+    override suspend fun insertMissing(thread: BoardThread) =
+        (dao.getLatestPostId(thread.boardId, thread.num) ?: -1)
+            .let { latestPostId ->
                 dao.insert(
                     thread
                         .posts
@@ -36,10 +33,8 @@ class PostRepositoryImpl(
                 )
             }
 
-    override fun save(posts: List<Post>): Completable =
-        Observable
-            .fromIterable(posts)
-            .map { post ->
+    override suspend fun save(posts: List<Post>) =
+        posts.map { post ->
                 post.copy(
                     files = post.files.map { file ->
                         file.copy(
@@ -49,52 +44,45 @@ class PostRepositoryImpl(
                     }
                 )
             }
-            .toList()
-            .flatMapCompletable { insert(it) }
+            .let { insert(it) }
 
-    override fun insertOp(posts: List<Post>): Completable =
+    override suspend fun insertOp(posts: List<Post>) =
         dao.insert(
             posts.map { StoredPost(it) }
         )
 
-    override fun observeOp(boardId: String): Observable<List<Post>> =
-        dao.observeOp(boardId)
+    override fun getOpListFlow(boardId: String): Flow<List<Post>> =
+        dao.getOpListFlow(boardId)
             .map { posts ->
                 posts.map { it.toModel() }
             }
 
-    override fun observe(boardId: String, threadNum: Int): Observable<List<Post>> =
-        dao.observe(boardId, threadNum)
+    override fun getListFlow(boardId: String, threadNum: Int): Flow<List<Post>> =
+        dao.getListFlow(boardId, threadNum)
             .map { posts ->
                 posts.map { it.toModel() }
             }
 
-    override fun get(boardId: String, post: Int): Maybe<Post> =
+    override suspend fun get(boardId: String, post: Int): Post? =
         dao.get(boardId, post)
+            ?.toModel()
+
+    override suspend fun getThreadPosts(boardId: String, threadNum: Int): List<Post> =
+        dao.getThreadPosts(boardId, threadNum)
             .map { it.toModel() }
 
-    override fun getThreadPosts(boardId: String, threadNum: Int): Single<List<Post>> =
+    override suspend fun delete(boardId: String, threadNum: Int) =
         dao.getThreadPosts(boardId, threadNum)
-            .map { posts ->
-                posts.map { it.toModel() }
+            .let { posts ->
+                posts
+                    .asSequence()
+                    .map { it.files }
+                    .flatten()
+                    .map { listOf(it.localPath, it.localThumbnail) }
+                    .flatten()
+                    .filterNotNull()
+                    .toList()
+                    .forEach { storage.delete(it) }
             }
-
-    override fun delete(boardId: String, threadNum: Int): Completable =
-        dao.getThreadPosts(boardId, threadNum)
-            .flatMapCompletable { posts ->
-                Completable.fromCallable {
-                    posts
-                        .asSequence()
-                        .map { it.files }
-                        .flatten()
-                        .map { listOf(it.localPath, it.localThumbnail) }
-                        .flatten()
-                        .filterNotNull()
-                        .toList()
-                        .forEach { storage.delete(it) }
-                }
-            }
-            .andThen(
-                dao.delete(boardId, threadNum)
-            )
+            .also { dao.delete(boardId, threadNum) }
 }

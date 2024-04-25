@@ -56,6 +56,12 @@ fun ThreadScreen(
         var firstVisibleItemIndex = 0
         val listFirstVisibleItemState = remember { derivedStateOf { listState.firstVisibleItemIndex } }
         val state = contentState.collectAsState()
+        val screenTitleState = screenTitle.collectAsState()
+        val isFavoriteState = isFavorite.collectAsState()
+        val isQueuedState = isQueued.collectAsState()
+        val isDownloadedState = isDownloaded.collectAsState()
+        val itemsState = items.collectAsState()
+        val modalContentState = modalContent.collectAsState()
 
         val nestedScrollConnection = remember {
             object : NestedScrollConnection {
@@ -89,7 +95,7 @@ fun ThreadScreen(
                 .fillMaxHeight(),
             topBar = {
                 AppBarView(
-                    text = screenTitle,
+                    text = screenTitleState.value,
                     isSearchVisible = false,
                 ) {
                     Row(
@@ -97,7 +103,7 @@ fun ThreadScreen(
                     ) {
                         DvachIcon(
                             painter = painterResource(
-                                if (isFavorite) R.drawable.ic_favorite_accent_24dp
+                                if (isFavoriteState.value) R.drawable.ic_favorite_accent_24dp
                                 else R.drawable.ic_favorite_border_accent_24dp
                             ),
                             Modifier
@@ -106,7 +112,7 @@ fun ThreadScreen(
                         )
                         DvachIcon(
                             painter = painterResource(
-                                if (isQueued) R.drawable.ic_queue_added_accent_24
+                                if (isQueuedState.value) R.drawable.ic_queue_added_accent_24
                                 else R.drawable.ic_queue_add_accent_24
                             ),
                             Modifier
@@ -115,7 +121,7 @@ fun ThreadScreen(
                         )
                         DvachIcon(
                             painter = painterResource(
-                                if (isDownloaded) R.drawable.ic_cloud_done_black_24dp
+                                if (isDownloadedState.value) R.drawable.ic_cloud_done_black_24dp
                                 else R.drawable.ic_cloud_download_accent_24dp
                             ),
                             Modifier
@@ -153,7 +159,7 @@ fun ThreadScreen(
                             .nestedScroll(nestedScrollConnection),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        items(items) { listItem ->
+                        items(itemsState.value) { listItem ->
                             PostView(
                                 args = listItem,
                                 modifier = Modifier.background(MaterialTheme.colorScheme.primary)
@@ -192,7 +198,7 @@ fun ThreadScreen(
                     }
                 }
             }
-            modalContent?.let {
+            modalContentState.value?.let {
                 ModalContentDialog(args = it)
             }
         }

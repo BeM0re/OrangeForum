@@ -1,6 +1,8 @@
 package ru.be_more.orange_forum.presentation.screens.posting
 
 import android.util.Log
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Icon
@@ -49,14 +51,12 @@ class PostingViewModel(
     var isIconListVisible = MutableStateFlow(false)
 
     init {
-        replyInteractor.getCaptcha(boardId, threadNum)
-            .doOnSuccess { captchaUrl.value = it }
-            .flatMap { boardInteractor.getSingle(boardId) }
-            .map { it.boardSetting }
-            .defaultThreads()
-            .doOnSubscribe{ showLoading() }
-            .subscribe(
-                { boardSettings ->
+        runOnIo {
+            captchaUrl.value = getCaptcha().await()
+            boardInteractor
+                .getBoard(boardId)
+                ?.boardSetting
+                ?.let { boardSettings ->
                     showContent()
                     isSubjectEnabled.value = boardSettings.isSubjectEnabled
                     isSageEnabled.value = boardSettings.isSageEnabled
@@ -69,10 +69,8 @@ class PostingViewModel(
                             onClick = ::onIconClicked
                         )
                     } ?: emptyList()
-                },
-                { Log.e("ReplyViewModel","ReplyViewModel.init: \n$it") }
-            )
-            .addToSubscribe()
+                }
+        }
     }
 
     private fun onIconClicked(icon: Icon) {
@@ -81,6 +79,11 @@ class PostingViewModel(
         iconUrl.value = icon.url
         isIconListVisible.value = false
     }
+
+    private fun getCaptcha() =
+        viewModelScope.async {
+            replyInteractor.getCaptcha(boardId, threadNum)
+        }
 
     fun onSageClick() {
         isSageSelected.value = !isSageSelected.value
@@ -145,44 +148,35 @@ class PostingViewModel(
     }
 
     fun onSendClicked() {
-        val threadNum = threadNum
-        if (threadNum > 0)
-            replyInteractor
-                .reply(
-                    boardId = boardId,
-                    threadNum = threadNum,
-                    comment = comment.value,
-                    isOp = isOpSelected.value,
-                    subject = subject.value,
-                    email = email.value,
-                    name = name.value,
-                    tag = tag.value,
-                    captchaSolvedString = captcha.value,
-                )
-                .defaultThreads()
-                .subscribe(
-                    { /* todo navigate back*/ },
-                    { Log.e("ReplyViewModel","ReplyViewModel.init: \n$it") }
-                )
-                .addToSubscribe()
-        else
-            replyInteractor
-                .createThread(
-                    boardId = boardId,
-                    comment = comment.value,
-                    isOp = isOpSelected.value,
-                    subject = subject.value,
-                    email = email.value,
-                    name = name.value,
-                    tag = tag.value,
-                    captchaSolvedString = captcha.value,
-                )
-            .defaultThreads()
-            .subscribe(
-                { /* todo navigate into thread*/ },
-                { Log.e("ReplyViewModel","ReplyViewModel.init: \n$it") }
-            )
-            .addToSubscribe()
+        runOnIo {
+            if (threadNum > 0)
+                replyInteractor
+                    .reply(
+                        boardId = boardId,
+                        threadNum = threadNum,
+                        comment = comment.value,
+                        isOp = isOpSelected.value,
+                        subject = subject.value,
+                        email = email.value,
+                        name = name.value,
+                        tag = tag.value,
+                        captchaSolvedString = captcha.value,
+                    )
+                /* todo navigate back*/
+            else
+                replyInteractor
+                    .createThread(
+                        boardId = boardId,
+                        comment = comment.value,
+                        isOp = isOpSelected.value,
+                        subject = subject.value,
+                        email = email.value,
+                        name = name.value,
+                        tag = tag.value,
+                        captchaSolvedString = captcha.value,
+                    )
+            /* todo navigate into thread*/
+        }
     }
 
     fun onIconClear() {
@@ -195,17 +189,11 @@ class PostingViewModel(
     }
 
     fun onCaptchaClick() =
-        replyInteractor.getCaptcha(boardId, threadNum)
-            .defaultThreads()
-            .doOnSubscribe{ showLoading() }
-            .subscribe(
-                {
-                    captchaUrl.value = it
-                    showContent()
-                },
-                { }
-            )
-            .addToSubscribe()
+        runOnIo {
+            showLoading()
+            captchaUrl.value = getCaptcha().await()
+            showContent()
+        }
 
     data class IconListItem(
         val icon: Icon,
