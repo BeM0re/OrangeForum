@@ -18,8 +18,8 @@ class QueueViewModel(
     var items = MutableStateFlow(listOf<QueueItem>())
 
     init {
-        runOnIo("init") {
-            queueInteractor.getFlow()
+        runCoroutine("init") {
+            queueInteractor.getBoardListFlow()
                 .collect { items.emit(prepareItemList(it)) }
         }
     }
@@ -47,7 +47,7 @@ class QueueViewModel(
         }
 
     fun clear() =
-        runOnIo("clear") {
+        runCoroutine("clear") {
             queueInteractor.clear()
         }
 }

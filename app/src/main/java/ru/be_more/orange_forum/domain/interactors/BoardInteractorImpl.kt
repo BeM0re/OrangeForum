@@ -18,7 +18,7 @@ class BoardInteractorImpl(
 
     private val searchQuery = MutableStateFlow("")
 
-    override fun getFlow(boardId: String): Flow<Board> =
+    override fun getBoardFlow(boardId: String): Flow<Board> =
         combine(
             boardRepository.getFlow(boardId),
             threadRepository.getListFlow(boardId),

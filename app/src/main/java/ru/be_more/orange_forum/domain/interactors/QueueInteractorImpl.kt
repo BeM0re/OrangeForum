@@ -13,7 +13,7 @@ class QueueInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
 ): InteractorContract.QueueInteractor{
 
-    override fun getFlow(): Flow<List<Board>> =
+    override fun getBoardListFlow(): Flow<List<Board>> =
         run {
             combine(
                 boardRepository.getListFlow(),

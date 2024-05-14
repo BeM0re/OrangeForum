@@ -43,7 +43,7 @@ abstract class BaseModalContentViewModel(
     }
 
     private fun showPostModel(boardId: String, threadNum: Int, postId: Int) =
-        runOnIo("showPostModel") {
+        runCoroutine("showPostModel") {
             pushModelContent(
                 ModalContentDialogInitArgs(
                     modalArgs = PostInitArgs(
@@ -59,18 +59,18 @@ abstract class BaseModalContentViewModel(
         }
 
     private fun pushModelContent(content: ModalContentDialogInitArgs) =
-        runOnIo("pushModelContent") {
+        runCoroutine("pushModelContent") {
             modalContent.let { modalStack.push(it.value) }
             modalContent.emit(content)
         }
 
     private fun closeModal() =
-        runOnIo("closeModal") {
+        runCoroutine("closeModal") {
             modalContent.emit(modalStack.removeFirstOrNull())
         }
 
     private fun clearModal() =
-        runOnIo("clearModal") {
+        runCoroutine("clearModal") {
             modalStack.clear()
             modalContent.emit(null)
         }

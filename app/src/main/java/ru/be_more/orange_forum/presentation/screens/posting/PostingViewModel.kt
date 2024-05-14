@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.presentation.screens.posting
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +50,7 @@ class PostingViewModel(
     var isIconListVisible = MutableStateFlow(false)
 
     init {
-        runOnIo {
+        runCoroutine {
             captchaUrl.value = getCaptcha().await()
             boardInteractor
                 .getBoard(boardId)
@@ -148,7 +147,7 @@ class PostingViewModel(
     }
 
     fun onSendClicked() {
-        runOnIo {
+        runCoroutine {
             if (threadNum > 0)
                 replyInteractor
                     .reply(
@@ -189,7 +188,7 @@ class PostingViewModel(
     }
 
     fun onCaptchaClick() =
-        runOnIo {
+        runCoroutine {
             showLoading()
             captchaUrl.value = getCaptcha().await()
             showContent()

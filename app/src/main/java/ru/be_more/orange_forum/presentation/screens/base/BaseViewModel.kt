@@ -3,6 +3,7 @@ package ru.be_more.orange_forum.presentation.screens.base
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,11 +13,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import okhttp3.internal.parseHexDigit
 import ru.be_more.orange_forum.presentation.model.ContentState
 import ru.be_more.orange_forum.presentation.model.NavigationState
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.abs
 
 abstract class BaseViewModel : ViewModel() {
 
@@ -38,11 +40,17 @@ abstract class BaseViewModel : ViewModel() {
             }
         }
 
-    protected fun <T> runOnIo(methodName: String = "", block: suspend CoroutineScope.() -> T): Job {
-        return viewModelScope.launch(exceptionHandler(methodName)) {
-            withContext (Dispatchers.IO, block)
-        }
-    }
+    protected fun runCoroutine(
+        methodName: String = "",
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        scope: CoroutineScope = viewModelScope,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job =
+        scope.launch(
+            context = dispatcher + exceptionHandler(methodName),
+            block = block
+        )
+
 
     protected fun navigateToBoard(boardId: String) {
         viewModelScope.launch {

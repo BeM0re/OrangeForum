@@ -1,8 +1,5 @@
 package ru.be_more.orange_forum.presentation.screens.board
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.data.local.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
@@ -41,11 +38,11 @@ class BoardViewModel(
     var isLoading = MutableStateFlow(false)
 
     init {
-        runOnIo("init.getFlow") {
+        runCoroutine("init.getFlow") {
             isLoading.emit(true)
 
             boardInteractor
-                .getFlow(boardId)
+                .getBoardFlow(boardId)
                 .collect {board ->
                     this@BoardViewModel.board = board
                     screenTitle.emit(board.name)
@@ -81,23 +78,23 @@ class BoardViewModel(
         }
 
     private fun addToQueue(boardId: String, threadNum: Int) =
-        runOnIo {
+        runCoroutine {
             threadInteractor.markQueued(boardId, threadNum)
         }
 
 
     private fun hideThread(boardId: String, threadNum: Int) =
-        runOnIo {
+        runCoroutine {
             threadInteractor.markHidden(boardId, threadNum)
         }
 
     fun setFavorite() =
-        runOnIo {
+        runCoroutine {
             boardInteractor.markFavorite(boardId)
         }
 
     fun refresh() =
-        runOnIo("refresh") {
+        runCoroutine("refresh") {
             isLoading.emit(true)
             showLoading()
             boardInteractor.refresh(boardId)
@@ -106,7 +103,7 @@ class BoardViewModel(
         }
 
     fun search(query: String) =
-        runOnIo {
+        runCoroutine {
             boardInteractor.search(query)
         }
 

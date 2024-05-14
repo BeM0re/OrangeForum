@@ -13,7 +13,7 @@ interface InteractorContract {
     }
 
     interface BoardInteractor {
-        fun getFlow(boardId: String): Flow<Board>
+        fun getBoardFlow(boardId: String): Flow<Board>
         suspend fun getBoard(boardId: String): Board?
         suspend fun markFavorite(boardId: String)
         suspend fun refresh(boardId: String)
@@ -22,7 +22,7 @@ interface InteractorContract {
 
     interface ThreadInteractor {
         suspend fun refresh(boardId: String, threadNum: Int)
-        fun getFlow(boardId: String, threadNum: Int): Flow<BoardThread>
+        fun getBoardFlow(boardId: String, threadNum: Int): Flow<BoardThread>
         suspend  fun subToUpdate(boardId: String, threadNum: Int)
         suspend fun save(boardId: String, threadNum: Int)
         suspend fun markFavorite(boardId: String, threadNum: Int)
@@ -66,13 +66,13 @@ interface InteractorContract {
     }
 
     interface QueueInteractor {
-        fun getFlow(): Flow<List<Board>>
+        fun getBoardListFlow(): Flow<List<Board>>
         suspend fun clear()
     }
 
     interface FavoriteInteractor {
-        fun getListFlow(): Flow<List<Board>>
-        fun getFlow(): Flow<Boolean>
+        fun getBoardListFlow(): Flow<List<Board>>
+        fun getBoardFlow(): Flow<Boolean>
         suspend fun updatingFavoritesSubscription()
         suspend fun updateFavoriteThreadInfo()
 

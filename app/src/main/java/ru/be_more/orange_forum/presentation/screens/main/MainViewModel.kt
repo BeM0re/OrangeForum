@@ -44,9 +44,9 @@ class MainViewModel(
     }
 
     private fun subscribeToFavoriteNewMessages() =
-        runOnIo("subscribeToFavoriteNewMessages") {
+        runCoroutine("subscribeToFavoriteNewMessages") {
             favoriteInteractor
-                .getFlow()
+                .getBoardFlow()
                 .collect {
                     hasFavoriteNewMessage.value = it
                 }
@@ -54,7 +54,7 @@ class MainViewModel(
 
 
     private fun subscribeToFavoriteUpdates() =
-        runOnIo("subscribeToFavoriteNewMessages") {
+        runCoroutine("subscribeToFavoriteNewMessages") {
             favoriteInteractor
                 .updatingFavoritesSubscription()
         }.also { favoriteUpdateSubscription.add(it)  }

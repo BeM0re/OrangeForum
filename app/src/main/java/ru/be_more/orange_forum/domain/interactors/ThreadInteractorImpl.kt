@@ -18,7 +18,7 @@ class ThreadInteractorImpl(
     private val postRepository: DbContract.PostRepository
 ): InteractorContract.ThreadInteractor {
 
-    override fun getFlow(
+    override fun getBoardFlow(
         boardId: String,
         threadNum: Int,
     ): Flow<BoardThread> =

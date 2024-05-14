@@ -28,7 +28,7 @@ class CategoryViewModel(
 
         viewModelScope.launch(CoroutineExceptionHandler{_, _ -> }){}
 
-        runOnIo("init.getListFlow") {
+        runCoroutine("init.getListFlow") {
             interactor
                 .getCategoryListFlow()
                 .map { prepareList(it)}
@@ -36,7 +36,7 @@ class CategoryViewModel(
                 .collect { items.emit(it) }
         }
 
-        runOnIo("init.refresh") {
+        runCoroutine("init.refresh") {
             interactor.refresh()
             showContent()
         }
@@ -65,7 +65,7 @@ class CategoryViewModel(
         }
 
     private fun setCategoryExpanded(name: String) =
-        runOnIo("init.refresh") {
+        runCoroutine("init.refresh") {
             interactor.toggleExpanded(name)
         }
 

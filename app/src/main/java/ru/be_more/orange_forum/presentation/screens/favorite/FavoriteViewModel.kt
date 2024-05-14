@@ -24,14 +24,14 @@ class FavoriteViewModel (
     }
 
     private fun refresh() =
-        runOnIo("refresh") {
+        runCoroutine("refresh") {
             favoriteInteractor.updateFavoriteThreadInfo()
         }
 
     private fun subscribeToData() =
-        runOnIo("subscribeToData") {
+        runCoroutine("subscribeToData") {
             favoriteInteractor
-                .getListFlow()
+                .getBoardListFlow()
                 .collect{ items.emit(prepareItemList(it)) }
         }
 
@@ -58,7 +58,7 @@ class FavoriteViewModel (
         }
 
     fun removeThread(boardId: String, threadNum: Int) =
-        runOnIo("removeThread") {
+        runCoroutine("removeThread") {
             threadInteractor.markFavorite(boardId, threadNum)
         }
 }

@@ -17,7 +17,7 @@ class FavoriteInteractorImpl(
     private val apiRepository: RemoteContract.ApiRepository,
 ): InteractorContract.FavoriteInteractor {
 
-    override fun getListFlow(): Flow<List<Board>> =
+    override fun getBoardListFlow(): Flow<List<Board>> =
         combine(
             boardRepository.getListFlow(),
             threadRepository.getFavoriteFlow()
@@ -32,8 +32,8 @@ class FavoriteInteractorImpl(
                 .filter { it.threads.isNotEmpty() || it.isFavorite }
         }
 
-    override fun getFlow(): Flow<Boolean> =
-        getListFlow().map { boards ->
+    override fun getBoardFlow(): Flow<Boolean> =
+        getBoardListFlow().map { boards ->
             boards.any { board ->
                 board.threads.any { thread ->
                     thread.hasNewMessages

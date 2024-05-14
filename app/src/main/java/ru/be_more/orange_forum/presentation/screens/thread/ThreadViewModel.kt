@@ -44,13 +44,13 @@ class ThreadViewModel(
     val scrollToItemNumFlow = scrollToItemNumMutableFlow.asSharedFlow()
 
     init {
-        runOnIo("init") {
+        runCoroutine("init") {
             settings = requireNotNull(getBoard().await())
                 .boardSetting
 
             threadInteractor.refresh(boardId, threadNum)
 
-            threadInteractor.getFlow(boardId, threadNum)
+            threadInteractor.getBoardFlow(boardId, threadNum)
                 .collect { thread ->
                     screenTitle.emit(thread.title)
                     isFavorite.emit(thread.isFavorite)
@@ -91,17 +91,17 @@ class ThreadViewModel(
     }
 
     fun setFavorite() =
-        runOnIo("setFavorite") {
+        runCoroutine("setFavorite") {
             threadInteractor.markFavorite(boardId, threadNum)
         }
 
     fun setQueued() =
-        runOnIo("setQueued") {
+        runCoroutine("setQueued") {
             threadInteractor.markQueued(boardId, threadNum)
         }
 
     fun download() =
-        runOnIo("download") {
+        runCoroutine("download") {
             threadInteractor.save(boardId, threadNum)
         }
 
@@ -115,7 +115,7 @@ class ThreadViewModel(
     fun lastPostViewed(postListNum: Int) {
         lastPostViewedJob?.cancel()
         lastPostViewedJob =
-        runOnIo("lastPostViewed") {
+        runCoroutine("lastPostViewed") {
             threadInteractor.updateLastPostViewed(
                 boardId, threadNum, items.value[postListNum].post.id
             )

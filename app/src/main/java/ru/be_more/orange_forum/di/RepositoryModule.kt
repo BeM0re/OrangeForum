@@ -1,6 +1,10 @@
 package ru.be_more.orange_forum.di
 
 import org.koin.dsl.module
+import ru.be_more.orange_forum.data.local.repositories.BoardRepositoryImpl
+import ru.be_more.orange_forum.data.local.repositories.CategoryRepositoryImpl
+import ru.be_more.orange_forum.data.local.repositories.PostRepositoryImpl
+import ru.be_more.orange_forum.data.local.repositories.ThreadRepositoryImpl
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.data.remote.repositories.ApiRepositoryImpl
@@ -10,15 +14,15 @@ val repositoryModule = module {
     single<RemoteContract.ApiRepository> { ApiRepositoryImpl(get()) }
 
     single<DbContract.CategoryRepository> {
-        ru.be_more.orange_forum.data.local.repositories.CategoryRepositoryImpl(get())
+        CategoryRepositoryImpl(get())
     }
     single<DbContract.BoardRepository> {
-        ru.be_more.orange_forum.data.local.repositories.BoardRepositoryImpl(get())
+        BoardRepositoryImpl(get())
     }
     single<DbContract.ThreadRepository> {
-        ru.be_more.orange_forum.data.local.repositories.ThreadRepositoryImpl(get(), get())
+        ThreadRepositoryImpl(get(), get())
     }
     single<DbContract.PostRepository> {
-        ru.be_more.orange_forum.data.local.repositories.PostRepositoryImpl(get(), get())
+        PostRepositoryImpl(get(), get())
     }
 }
