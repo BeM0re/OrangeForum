@@ -23,7 +23,7 @@ interface InteractorContract {
     interface ThreadInteractor {
         suspend fun refresh(boardId: String, threadNum: Int)
         fun getBoardFlow(boardId: String, threadNum: Int): Flow<BoardThread>
-        suspend  fun subToUpdate(boardId: String, threadNum: Int)
+        suspend fun subToUpdate(boardId: String, threadNum: Int)
         suspend fun save(boardId: String, threadNum: Int)
         suspend fun markFavorite(boardId: String, threadNum: Int)
         suspend fun markQueued(boardId: String, threadNum: Int)

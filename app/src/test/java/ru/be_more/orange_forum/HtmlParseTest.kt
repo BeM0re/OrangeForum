@@ -3,11 +3,11 @@ package ru.be_more.orange_forum
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.junit.Test
+import ru.be_more.orange_forum.presentation.model.TextColors
+import ru.be_more.orange_forum.utils.HtmlKsoupParser
 import java.util.logging.Logger
 
 class HtmlParseTest {
-
-
 
     @Test
     fun parseTest() {
@@ -29,6 +29,13 @@ class HtmlParseTest {
 //        ParseHtml.parse(html)
     }
 
+    @Test
+    fun newParseTest() {
+//        val styledHtml = " \"<p>Шаблон анкеты:<br>1. Город/страна.<br><b>2. Возраст, рост, вес, типаж (обычнота/дрищ/кочка/всратан).</b><br>3. Ориентация.<br>4. Роль в постели и фетиши (если имеются).<br>5. Чем занимаешься (работаешь/учишься/сидишь дома/рассуждаешь о цели бесцельной жизни).<br>6. Хобби и увлечения, цели в жизни (если имеются).<br>7. Отношение и пристрастия к алкоголю/табаку/веществам.<br>8. Кого, для чего, зачем и почему ищешь.<br><b>9. Контакты.</b></p><p><b>Тред только для анкет. <span style=\\\"background-color: rgb(255, 0, 0);\\\">Реклама конференций запрещена</span>.\\\\r\\\\n Обсуждения и флуд будут удаляться, а их авторы - <span style=\\\"background-color: rgb(255, 0, 0);\\\">отправляться в \\\\r\\\\nбан</span>. Если вы не указали свой возраст, ваш пост будет удалён, как и \\\\r\\\\nвсе посты без контактов или с отсутствующими пунктами 2 и 9..<br></b></p>\""
+        val styledHtml = " \"Шаблон анкеты:<br>1. Город/страна.<br><b>2. <span style=\"background-color: rgb(255, 0, 0);\">Реклама конференций запрещена</span>"
+        HtmlKsoupParser.parseHtml(styledHtml, TextColors.default)
+
+    }
 
 
     companion object {

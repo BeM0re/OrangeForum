@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mohamedrejeb.ksoup.html.parser.KsoupHtmlHandler
+import com.mohamedrejeb.ksoup.html.parser.KsoupHtmlParser
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
@@ -28,6 +30,23 @@ import java.time.Instant
 @Composable
 fun PostView(args: PostInitArgs, modifier: Modifier = Modifier) {
     with(args) {
+
+        var name = ""
+        val handler = KsoupHtmlHandler
+            .Builder()
+            .onText { name = it }
+            .onAttribute { name, value, quote ->
+                ""
+            }
+            .onOpenTag { name, attributes, isImplied ->
+                ""
+            }
+            .build()
+        val ksoupHtmlParser = KsoupHtmlParser(handler = handler)
+        ksoupHtmlParser.write(post.name)
+        // Close the parser when you are done
+        ksoupHtmlParser.end()
+
         Column(modifier
             .fillMaxWidth()
             .padding(0.dp, 0.dp, 0.dp, 8.dp)
@@ -48,8 +67,9 @@ fun PostView(args: PostInitArgs, modifier: Modifier = Modifier) {
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.tertiary,
                 )
+
                 Text(
-                    text = post.name,
+                    text = name,
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )

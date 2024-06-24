@@ -5,6 +5,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 
+//todo управлять жизнью ВМ через скоупы даггера
 class ViewModelProvider {
     val viewModelList = mutableListOf<BaseViewModel>()
 

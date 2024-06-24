@@ -26,7 +26,7 @@ import java.util.regex.Pattern
 
 object ParseHtml{
 
-    fun findReply(from: Int, html: String): List<Reply>{
+    fun findReply(from: Int, html: String): List<Reply> {
 
         val doc: Document = Jsoup.parse(html)
         val elements = doc.select(".post-reply-link")

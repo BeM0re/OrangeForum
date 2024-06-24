@@ -30,7 +30,7 @@ import ru.be_more.orange_forum.utils.ParseHtml
 import ru.be_more.orange_forum.utils.ParseHtml.processHtmlTrash
 
 @Composable
-fun ParsedTextView(
+fun StylizedTextView(
     text: String,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 14.sp,

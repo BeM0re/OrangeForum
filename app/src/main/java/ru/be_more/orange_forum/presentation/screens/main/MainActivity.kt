@@ -33,12 +33,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -142,7 +140,7 @@ class MainActivity : ComponentActivity() {
             bottomMenuItemList.forEach { menuItem ->
                 NavigationBarItem(
                     enabled = menuItem.isAlwaysActive || navController.currentBackStack.value
-                        .any { it.destination.route?.contains(menuItem.route.toString()) == true },
+                        .any { it.destination.route?.contains(menuItem.route::class.java.toString()) == true },
                     selected = currentDestination?.hierarchy
                         ?.any { it.route?.contains(menuItem.route.toString()) == true } == true,
                     onClick = {
@@ -151,18 +149,11 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     icon = {
-                        if (hasNewFavoriteMessage.value)
-                            NavigationIcon(
-                                painter = painterResource(id = menuItem.icon),
-                                isMarked = menuItem is Screen.Favorite,
-                                contentDescription = stringResource(id = menuItem.title),
-                            )
-                        else
-                            NavigationIcon(
-                                painter = painterResource(id = menuItem.icon),
-                                isMarked = false,
-                                contentDescription = stringResource(id = menuItem.title),
-                            )
+                        NavigationIcon(
+                            painter = painterResource(id = menuItem.icon),
+                            isMarked = menuItem is Screen.Favorite && hasNewFavoriteMessage.value,
+                            contentDescription = stringResource(id = menuItem.title),
+                        )
                     },
                     label = {
                         Text(text = stringResource(id = menuItem.title))

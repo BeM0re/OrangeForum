@@ -137,8 +137,13 @@ dependencies {
 
     //junit
     testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    //concurrency test
+    androidTestImplementation 'org.jetbrains.kotlinx:lincheck:2.32'
+    testImplementation 'org.jetbrains.kotlinx:lincheck:2.32'
 
     //gson
     implementation 'com.google.code.gson:gson:2.10.1'
@@ -190,4 +195,7 @@ dependencies {
     implementation 'io.sanghun:compose-video:1.2.0'
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0-RC")
+
+    // For parsing HTML
+    implementation("com.mohamedrejeb.ksoup:ksoup-html:0.4.0")
 }
