@@ -15,6 +15,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.ShortBoardItemView
@@ -22,10 +24,12 @@ import ru.be_more.orange_forum.presentation.composeViews.ShortThreadItemView
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
 import ru.be_more.orange_forum.presentation.model.NavigationState
+import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModel
 
 @Composable
 fun FavoriteScreen(
-    viewModel: FavoriteViewModel,
+    viewModelFactory: ViewModelProvider.Factory,
+    viewModel: FavoriteViewModel = viewModel(factory = viewModelFactory),
     onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {

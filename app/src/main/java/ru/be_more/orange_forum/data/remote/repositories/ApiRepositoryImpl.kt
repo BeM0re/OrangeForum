@@ -19,10 +19,11 @@ import java.io.File
 import java.lang.Exception
 import java.net.ConnectException
 import java.util.*
+import javax.inject.Inject
 
 //инфа по обезьяньему апи: https://2ch.hk/abu/res/42375.html
 
-class ApiRepositoryImpl(
+class ApiRepositoryImpl @Inject constructor(
     private val api : DvachApi
 ) : RemoteContract.ApiRepository{
     //todo переделать модель капчи

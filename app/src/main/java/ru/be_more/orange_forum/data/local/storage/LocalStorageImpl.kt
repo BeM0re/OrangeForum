@@ -14,10 +14,11 @@ import ru.be_more.orange_forum.domain.contracts.StorageContract
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import javax.inject.Inject
 
-class LocalStorageImpl(
+class LocalStorageImpl @Inject constructor(
     private val context: Context
-) : StorageContract.LocalStorage{
+) : StorageContract.LocalStorage {
 
     override fun saveFile(url: String): Uri? {
         val glideUrl = GlideUrl(

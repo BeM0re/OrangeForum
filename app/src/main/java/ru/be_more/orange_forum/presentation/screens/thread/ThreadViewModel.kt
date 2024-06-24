@@ -1,6 +1,11 @@
 package ru.be_more.orange_forum.presentation.screens.thread
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,15 +18,16 @@ import ru.be_more.orange_forum.domain.model.BoardSetting
 import ru.be_more.orange_forum.domain.model.Post
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
+import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
+import javax.inject.Inject
 
 class ThreadViewModel(
-    override val boardId: String,
+    override var boardId: String,
     private val threadNum: Int,
     private val boardInteractor: InteractorContract.BoardInteractor,
     private val threadInteractor: InteractorContract.ThreadInteractor,
     override val postInteractor: InteractorContract.PostInteractor,
     override val replyInteractor: InteractorContract.ReplyInteractor,
-    private val prefs: Preferences
 ) : BaseModalContentViewModel(
     boardId = boardId,
     postInteractor = postInteractor,
@@ -119,6 +125,38 @@ class ThreadViewModel(
             threadInteractor.updateLastPostViewed(
                 boardId, threadNum, items.value[postListNum].post.id
             )
+        }
+    }
+
+    class Factory @AssistedInject constructor(
+        @Assisted("boardId") val boardId: String,
+        @Assisted("threadNum") val threadNum: Int,
+        private val boardInteractor: InteractorContract.BoardInteractor,
+        private val threadInteractor: InteractorContract.ThreadInteractor,
+        private val postInteractor: InteractorContract.PostInteractor,
+        private val replyInteractor: InteractorContract.ReplyInteractor,
+    ) : ViewModelProvider.Factory {
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            require(modelClass == ThreadViewModel::class.java)
+
+            return ThreadViewModel(
+                boardId = boardId,
+                threadNum = threadNum,
+                boardInteractor = boardInteractor,
+                threadInteractor = threadInteractor,
+                postInteractor = postInteractor,
+                replyInteractor = replyInteractor,
+            ) as T
+        }
+
+        @AssistedFactory
+        interface AFactory {
+            fun create(
+                @Assisted("boardId") boardId: String,
+                @Assisted("threadNum") threadNum: Int,
+            ): Factory
         }
     }
 }

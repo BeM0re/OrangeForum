@@ -1,29 +1,24 @@
 package ru.be_more.orange_forum
 
 import android.app.Application
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
-import ru.be_more.orange_forum.di.*
+import dagger.android.DaggerApplication
+import ru.be_more.orange_forum.di.AppComponent
+import ru.be_more.orange_forum.di.DaggerAppComponent
 
 class App : Application(){
+
+    private var appComponent: AppComponent? = null
 
     override fun onCreate() {
         super.onCreate()
 
-        startKoin {
-            androidContext(this@App)
-            androidLogger()
-            modules(listOf(
-                appModule,
-                viewModelModule,
-                repositoryModule,
-                storageModule,
-                databaseModule,
-                interactorModule,
-                networkModule
-            ))
-        }
+        appComponent = DaggerAppComponent
+            .builder()
+            .context(this)
+            .build()
     }
+
+    fun getAppComponent() =
+        requireNotNull(appComponent) { "App component wasn't initialized" }
 
 }

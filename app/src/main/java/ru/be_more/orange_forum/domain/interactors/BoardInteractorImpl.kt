@@ -8,8 +8,9 @@ import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Board
 import ru.be_more.orange_forum.domain.model.BoardThread
+import javax.inject.Inject
 
-class BoardInteractorImpl(
+class BoardInteractorImpl @Inject constructor(
     private val apiRepository: RemoteContract.ApiRepository,
     private val boardRepository: DbContract.BoardRepository,
     private val threadRepository: DbContract.ThreadRepository,

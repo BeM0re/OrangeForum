@@ -1,6 +1,5 @@
 package ru.be_more.orange_forum.presentation.screens.category
 
-import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
@@ -26,12 +25,12 @@ import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.BoardShortListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
 import ru.be_more.orange_forum.presentation.model.NavigationState
-import ru.be_more.orange_forum.presentation.theme.DvachTheme
 import java.lang.ref.WeakReference
 
 @Composable
 fun CategoryScreen(
-    viewModel: CategoryViewModel,
+    viewModelFactory: ViewModelProvider.Factory,
+    viewModel: CategoryViewModel = viewModel(factory = viewModelFactory),
     onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {
@@ -91,20 +90,5 @@ fun CategoryScreen(
 
 
         }
-    }
-}
-
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "Light Mode"
-)
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    name = "Dark Mode",
-)
-@Composable
-fun MainPreview() {
-    DvachTheme{
-        CategoryScreen(koinViewModel()) {}
     }
 }

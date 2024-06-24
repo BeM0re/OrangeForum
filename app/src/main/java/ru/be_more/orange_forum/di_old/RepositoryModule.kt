@@ -1,5 +1,6 @@
-package ru.be_more.orange_forum.di
+package ru.be_more.orange_forum.di_old
 
+/*
 import org.koin.dsl.module
 import ru.be_more.orange_forum.data.local.repositories.BoardRepositoryImpl
 import ru.be_more.orange_forum.data.local.repositories.CategoryRepositoryImpl
@@ -25,4 +26,4 @@ val repositoryModule = module {
     single<DbContract.PostRepository> {
         PostRepositoryImpl(get(), get())
     }
-}
+}*/

@@ -28,38 +28,56 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
+import ru.be_more.orange_forum.App
 import ru.be_more.orange_forum.presentation.composeViews.NavigationIcon
 import ru.be_more.orange_forum.presentation.model.NavigationState
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.base.ScreenRout
 import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
+import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 import ru.be_more.orange_forum.presentation.screens.category.CategoryScreen
+import ru.be_more.orange_forum.presentation.screens.category.CategoryViewModel
 import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteScreen
+import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteViewModel
 import ru.be_more.orange_forum.presentation.screens.queue.QueueScreen
 import ru.be_more.orange_forum.presentation.screens.posting.PostingScreen
+import ru.be_more.orange_forum.presentation.screens.posting.PostingViewModel
+import ru.be_more.orange_forum.presentation.screens.queue.QueueViewModel
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadScreen
+import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModel
 import ru.be_more.orange_forum.presentation.theme.DvachTheme
-import ru.be_more.orange_forum.utils.ViewModelProvider
 import ru.be_more.orange_forum.utils.permissions.registerPermissionsLauncher
+import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
 
-    private val vmProvider: ViewModelProvider by inject()
-    private val viewModel: MainViewModel by inject()
+    @Inject
+    lateinit var viewModel: MainViewModel
+
+    @Inject
+    lateinit var commonVmFactory: ViewModelProvider.Factory
+
+    @Inject
+    lateinit var boardVmFactory: BoardViewModel.Factory.AFactory
+
+    @Inject
+    lateinit var threadVmFactory: ThreadViewModel.Factory.AFactory
+
+    @Inject
+    lateinit var postVmFactory: PostingViewModel.Factory.AFactory
 
     private val permissionsLauncher = registerPermissionsLauncher {
 
@@ -78,6 +96,10 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        (application as App)
+            .getAppComponent()
+            .inject(this)
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -189,7 +211,7 @@ class MainActivity : ComponentActivity() {
         ) {
             composable<ScreenRout.CategoryScreen> {
                 CategoryScreen(
-                    viewModel = vmProvider.getVM(createNew = false),
+                    viewModelFactory = commonVmFactory,
                     onNavigate = { navigate(navController, it) }
                 )
             }
@@ -198,138 +220,61 @@ class MainActivity : ComponentActivity() {
             composable<ScreenRout.BoardScreen> { entry ->
                 val args = entry.toRoute<ScreenRout.BoardScreen>()
                 BoardScreen(
-                    viewModel = vmProvider.getVM(args.boardId, createNew = true),
+                    viewModelFactory = boardVmFactory.create(args.boardId),
                     onNavigate = { navigate(navController, it) }
                 )
             }
-
 
             //thread with params
             composable<ScreenRout.ThreadScreen> { entry ->
                 val args = entry.toRoute<ScreenRout.ThreadScreen>()
                 ThreadScreen(
-                    viewModel = vmProvider.getVM(args.boardId, args.threadNum, createNew = true),
+                    viewModelFactory = threadVmFactory.create(args.boardId, args.threadNum),
                     onNavigate = { navigate(navController, it) }
                 )
             }
-/*            composable(
-                route = Screen.Thread.route + "?boardId={boardId}" + "?threadNum={threadNum}",
-                arguments = listOf(
-                    navArgument(name = "boardId") {
-                        type = NavType.StringType
-                        nullable = false
-                    },
-                    navArgument(name = "threadNum") {
-                        type = NavType.IntType
-                        nullable = false
-                    },
-                )
-            ) { entry ->
-                val boardId = entry.arguments?.getString("boardId") ?: ""
-                val threadNum = entry.arguments?.getInt("threadNum") ?: 0
-
-                ThreadScreen(
-                    viewModel = vmProvider.getVM(boardId, threadNum, createNew = true),
-                    onNavigate = { navigate(navController, it) }
-                )
-            }
-
-            //thread w/o params
-            composable(
-                route = Screen.Thread.route,
-            ) {
-                ThreadScreen(
-                    viewModel = vmProvider.getVM(createNew = false),
-                    onNavigate = { navigate(navController, it) }
-                )
-            }*/
 
             //Queue
             composable<ScreenRout.QueueScreen> {
                 QueueScreen(
-                    viewModel = vmProvider.getVM(createNew = true),
+                    viewModelFactory = commonVmFactory,
                     onNavigate = { navigate(navController, it) }
                 )
             }
-            /*composable(route = Screen.Queue.route) {
-                QueueScreen(
-                    viewModel = vmProvider.getVM(createNew = false),
-                    onNavigate = { navigate(navController, it) }
-                )
-            }*/
 
             //favorite
             composable<ScreenRout.FavoriteScreen> {
                 FavoriteScreen(
-                    viewModel = vmProvider.getVM(createNew = true),
+                    viewModelFactory = commonVmFactory,
                     onNavigate = { navigate(navController, it) }
                 )
             }
-            /*composable(route = Screen.Favorite.route) {
-                FavoriteScreen(
-                    viewModel = vmProvider.getVM(createNew = false),
-                    onNavigate = { navigate(navController, it) }
-                )
-            }*/
 
             //reply into a thread
             composable<ScreenRout.PostingScreen> { entry ->
                 val args = entry.toRoute<ScreenRout.PostingScreen>()
                 PostingScreen(
-                    viewModel = vmProvider.getVM(args.boardId, args.threadNum, args.additionalString, createNew = true),
+                    viewModelFactory = postVmFactory.create(
+                        boardId = args.boardId,
+                        threadNum = args.threadNum,
+                        additionalString = args.additionalString ?: ""
+                    ),
+                    viewModel = viewModel(modelClass = PostingViewModel::class),
                 )
             }
-/*            composable(
-                route = Screen.Posting.route
-                        + "?boardId={boardId}"
-                        + "?threadNum={threadNum}"
-                        + "?additionalString={additionalString}",
-                arguments = listOf(
-                    navArgument(name = "boardId") {
-                        type = NavType.StringType
-                        nullable = false
-                    },
-                    navArgument(name = "threadNum") {
-                        type = NavType.IntType
-                        nullable = false
-                    },
-                    navArgument(name = "additionalString") {
-                        type = NavType.StringType
-                        nullable = false
-                    },
-                )
-            ) { entry ->
-                val boardId = entry.arguments?.getString("boardId") ?: ""
-                val threadNum = entry.arguments?.getInt("threadNum") ?: 0
-                val additionalString = entry.arguments?.getString("additionalString") ?: ""
-
-                PostingScreen(
-                    vmProvider.getVM(boardId, threadNum, additionalString, createNew = false)
-                )
-            }*/
 
             //create a new thread
             composable<ScreenRout.PostingScreen> { entry ->
                 val args = entry.toRoute<ScreenRout.PostingScreen>()
                 PostingScreen(
-                    viewModel = vmProvider.getVM(args.boardId, -1, createNew = true),
+                    viewModelFactory = postVmFactory.create(
+                        boardId = args.boardId,
+                        threadNum = -1,
+                        additionalString = ""
+                    ),
+                    viewModel = viewModel(modelClass = PostingViewModel::class),
                 )
             }
-/*            composable(
-                route = Screen.Posting.route + "?boardId={boardId}",
-                arguments = listOf(
-                    navArgument(name = "boardId") {
-                        type = NavType.StringType
-                        nullable = false
-                    },
-                )
-            ) { entry ->
-                val boardId = entry.arguments?.getString("boardId") ?: ""
-
-                PostingScreen(
-                    vmProvider.getVM(boardId, -1, createNew = false)
-                )
-            }*/
 
             //todo setting
         }

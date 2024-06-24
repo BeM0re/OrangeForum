@@ -20,6 +20,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
@@ -34,7 +36,8 @@ import java.lang.IllegalStateException
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BoardScreen(
-    viewModel: BoardViewModel,
+    viewModelFactory: ViewModelProvider.Factory,
+    viewModel: BoardViewModel = viewModel(factory = viewModelFactory),
     onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {

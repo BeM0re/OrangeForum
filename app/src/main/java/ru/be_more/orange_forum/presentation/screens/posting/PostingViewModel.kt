@@ -1,11 +1,18 @@
 package ru.be_more.orange_forum.presentation.screens.posting
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.model.Icon
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
+import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
+import javax.inject.Inject
 
 class PostingViewModel(
     val boardId: String,
@@ -198,4 +205,35 @@ class PostingViewModel(
         val icon: Icon,
         val onClick: (Icon) -> Unit,
     )
+
+    class Factory @AssistedInject constructor(
+        @Assisted("boardId") private val boardId: String,
+        @Assisted("threadNum") private val threadNum: Int,
+        @Assisted("additionalString") private val additionalString: String?,
+        private val boardInteractor: InteractorContract.BoardInteractor,
+        private val replyInteractor: InteractorContract.ReplyInteractor,
+    ) : ViewModelProvider.Factory {
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            require(modelClass == PostingViewModel::class.java)
+
+            return PostingViewModel(
+            boardId = boardId,
+            threadNum = threadNum,
+            additionalString = additionalString,
+            boardInteractor = boardInteractor,
+            replyInteractor = replyInteractor,
+            ) as T
+        }
+
+        @AssistedFactory
+        interface AFactory {
+            fun create(
+                @Assisted("boardId") boardId: String,
+                @Assisted("threadNum") threadNum: Int,
+                @Assisted("additionalString") additionalString: String
+            ): Factory
+        }
+    }
 }

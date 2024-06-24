@@ -33,6 +33,8 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
@@ -42,11 +44,13 @@ import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialog
 import ru.be_more.orange_forum.presentation.composeViews.PostView
 import ru.be_more.orange_forum.presentation.model.ContentState
 import ru.be_more.orange_forum.presentation.model.NavigationState
+import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ThreadScreen(
-    viewModel: ThreadViewModel,
+    viewModelFactory: ViewModelProvider.Factory,
+    viewModel: ThreadViewModel = viewModel(factory = viewModelFactory),
     onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {

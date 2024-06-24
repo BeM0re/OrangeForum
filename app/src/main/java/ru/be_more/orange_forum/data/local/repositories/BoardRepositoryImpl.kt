@@ -6,8 +6,9 @@ import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.data.local.db.dao.BoardDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
 import ru.be_more.orange_forum.domain.model.Board
+import javax.inject.Inject
 
-class BoardRepositoryImpl(
+class BoardRepositoryImpl @Inject constructor(
     private val dao: BoardDao
 ) : DbContract.BoardRepository {
 

@@ -40,16 +40,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
 import ru.be_more.orange_forum.presentation.composeViews.IconPickerView
+import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PostingScreen(
-    viewModel: PostingViewModel,
+    viewModelFactory: ViewModelProvider.Factory,
+    viewModel: PostingViewModel = viewModel(factory = viewModelFactory),
 ) {
     val state = viewModel.contentState.collectAsState()
 

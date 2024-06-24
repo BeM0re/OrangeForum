@@ -12,8 +12,9 @@ import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 import ru.be_more.orange_forum.utils.permissions.PermissionSet
 import ru.be_more.orange_forum.utils.permissions.PermissionsRequest
+import javax.inject.Inject
 
-class MainViewModel(
+class MainViewModel @Inject constructor(
     private val favoriteInteractor: InteractorContract.FavoriteInteractor,
 ) : BaseViewModel() {
 

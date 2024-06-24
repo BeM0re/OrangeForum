@@ -7,8 +7,9 @@ import ru.be_more.orange_forum.data.local.db.dao.ThreadDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredThread
 import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.orange_forum.domain.model.BoardThread
+import javax.inject.Inject
 
-class ThreadRepositoryImpl(
+class ThreadRepositoryImpl @Inject constructor(
     private val dao: ThreadDao,
     private val storage: StorageContract.LocalStorage
 ) : DbContract.ThreadRepository {

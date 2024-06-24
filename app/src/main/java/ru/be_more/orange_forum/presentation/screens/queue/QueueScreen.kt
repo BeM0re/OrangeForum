@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.be_more.orange_forum.R
 import ru.be_more.orange_forum.presentation.composeViews.AppBarView
 import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
@@ -25,10 +27,12 @@ import ru.be_more.orange_forum.presentation.composeViews.ShortThreadItemView
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
 import ru.be_more.orange_forum.presentation.model.NavigationState
+import ru.be_more.orange_forum.presentation.screens.category.CategoryViewModel
 
 @Composable
 fun QueueScreen(
-    viewModel: QueueViewModel,
+    viewModelFactory: ViewModelProvider.Factory,
+    viewModel: QueueViewModel = viewModel(factory = viewModelFactory),
     onNavigate: (NavigationState) -> Unit,
 ) {
     with(viewModel) {

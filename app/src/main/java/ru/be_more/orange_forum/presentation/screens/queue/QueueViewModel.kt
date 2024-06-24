@@ -8,11 +8,11 @@ import ru.be_more.orange_forum.presentation.composeViews.initArgs.QueueItem
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
 import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
+import javax.inject.Inject
 
-class QueueViewModel(
+class QueueViewModel @Inject constructor(
     private val queueInteractor: InteractorContract.QueueInteractor,
-    private val threadInteractor: InteractorContract.ThreadInteractor,
-    private val prefs: Preferences
+//    private val prefs: Preferences
 ) : BaseViewModel() {
 
     var items = MutableStateFlow(listOf<QueueItem>())

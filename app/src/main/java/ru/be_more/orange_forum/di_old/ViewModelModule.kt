@@ -1,5 +1,6 @@
-package ru.be_more.orange_forum.di
+package ru.be_more.orange_forum.di_old
 
+/*
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
@@ -22,3 +23,4 @@ val viewModelModule = module {
     viewModel { QueueViewModel(get(), get(), get()) }
     viewModel { FavoriteViewModel(get(), get(), get()) }
  }
+*/

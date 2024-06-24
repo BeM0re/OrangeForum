@@ -6,8 +6,9 @@ import ru.be_more.orange_forum.data.local.db.dao.CategoryDao
 import ru.be_more.orange_forum.data.local.db.entities.StoredCategory
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.model.Category
+import javax.inject.Inject
 
-class CategoryRepositoryImpl(
+class CategoryRepositoryImpl @Inject constructor(
     private val dao: CategoryDao,
 ) : DbContract.CategoryRepository {
 

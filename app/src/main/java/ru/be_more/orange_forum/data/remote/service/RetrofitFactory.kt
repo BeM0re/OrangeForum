@@ -13,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 class RetrofitFactory(
-    sslTrustManager : SSLTrustManager,
+    sslTrustManager: SSLTrustManager,
     context: Context
 ) {
     private val gson: Gson = GsonBuilder()

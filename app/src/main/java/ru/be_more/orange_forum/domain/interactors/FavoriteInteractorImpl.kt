@@ -9,9 +9,10 @@ import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.model.Board
+import javax.inject.Inject
 import kotlin.time.Duration
 
-class FavoriteInteractorImpl(
+class FavoriteInteractorImpl @Inject constructor(
     private val boardRepository: DbContract.BoardRepository,
     private val threadRepository: DbContract.ThreadRepository,
     private val apiRepository: RemoteContract.ApiRepository,

@@ -3,8 +3,9 @@ package ru.be_more.orange_forum.domain.interactors
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
+import javax.inject.Inject
 
-class ReplyInteractorImpl(
+class ReplyInteractorImpl @Inject constructor(
     private val apiRepository: RemoteContract.ApiRepository,
     private val dbRepository: DbContract.PostRepository,
 ): InteractorContract.ReplyInteractor {
