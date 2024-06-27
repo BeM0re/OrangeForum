@@ -9,10 +9,8 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.Icon
+import ru.be_more.model.model.Icon
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
-import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
-import javax.inject.Inject
 
 class PostingViewModel(
     val boardId: String,

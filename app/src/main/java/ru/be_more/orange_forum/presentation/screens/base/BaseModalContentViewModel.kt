@@ -2,13 +2,13 @@ package ru.be_more.orange_forum.presentation.screens.base
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.AttachedFile
-import ru.be_more.orange_forum.domain.model.BoardSetting
-import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialogInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.ImageInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.TextLinkArgs
+import ru.be_more.model.model.AttachedFile
+import ru.be_more.model.model.BoardSetting
+import ru.be_more.model.model.Post
+import ru.be_more.ui.composeViews.ModalContentDialogInitArgs
+import ru.be_more.ui.composeViews.initArgs.ImageInitArgs
+import ru.be_more.ui.composeViews.initArgs.PostInitArgs
+import ru.be_more.ui.composeViews.initArgs.TextLinkArgs
 import java.util.*
 
 abstract class BaseModalContentViewModel(

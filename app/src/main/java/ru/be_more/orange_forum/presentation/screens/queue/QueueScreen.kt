@@ -20,14 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.composeViews.AppBarView
-import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
-import ru.be_more.orange_forum.presentation.composeViews.ShortBoardItemView
-import ru.be_more.orange_forum.presentation.composeViews.ShortThreadItemView
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
-import ru.be_more.orange_forum.presentation.model.NavigationState
-import ru.be_more.orange_forum.presentation.screens.category.CategoryViewModel
+import ru.be_more.ui.composeViews.AppBarView
+import ru.be_more.ui.composeViews.DvachIcon
+import ru.be_more.ui.composeViews.ShortBoardItemView
+import ru.be_more.ui.composeViews.ShortThreadItemView
+import ru.be_more.ui.composeViews.initArgs.ShortBoardInitArgs
+import ru.be_more.ui.composeViews.initArgs.ShortThreadInitArgs
+import ru.be_more.ui.model.NavigationState
 
 @Composable
 fun QueueScreen(

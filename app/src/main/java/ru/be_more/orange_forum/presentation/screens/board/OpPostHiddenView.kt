@@ -15,10 +15,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.domain.model.AttachedFile
-import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.HiddenOpPostInitArgs
-import ru.be_more.orange_forum.presentation.theme.DvachTheme
+import ru.be_more.model.model.AttachedFile
+import ru.be_more.model.model.Post
+import ru.be_more.ui.composeViews.initArgs.HiddenOpPostInitArgs
+import ru.be_more.ui.theme.DvachTheme
 
 @Composable
 fun OpPostHiddenView(

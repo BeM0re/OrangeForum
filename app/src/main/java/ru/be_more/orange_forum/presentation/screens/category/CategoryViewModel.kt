@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.be_more.model.model.Category
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.Category
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.BoardShortListItemViewInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.ListItemArgs
+import ru.be_more.ui.composeViews.initArgs.BoardShortListItemViewInitArgs
+import ru.be_more.ui.composeViews.initArgs.CategoryListItemViewInitArgs
+import ru.be_more.ui.composeViews.initArgs.ListItemArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 import javax.inject.Inject
 

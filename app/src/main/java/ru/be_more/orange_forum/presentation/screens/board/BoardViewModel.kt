@@ -5,17 +5,15 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.multibindings.IntoMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.BoardSetting
-import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.HiddenOpPostInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.OpPostInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.ListItemArgs
+import ru.be_more.model.model.Board
+import ru.be_more.model.model.BoardSetting
+import ru.be_more.model.model.BoardThread
+import ru.be_more.ui.composeViews.initArgs.HiddenOpPostInitArgs
+import ru.be_more.ui.composeViews.initArgs.OpPostInitArgs
+import ru.be_more.ui.composeViews.initArgs.ListItemArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
-import javax.inject.Inject
 
 class BoardViewModel(
     override val boardId: String,

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.combine
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.Category
+import ru.be_more.model.model.Category
 import javax.inject.Inject
 
 class CategoryInteractorImpl @Inject constructor(

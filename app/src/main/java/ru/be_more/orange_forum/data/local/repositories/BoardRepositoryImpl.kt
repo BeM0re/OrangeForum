@@ -3,9 +3,10 @@ package ru.be_more.orange_forum.data.local.repositories
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.domain.contracts.DbContract
-import ru.be_more.orange_forum.data.local.db.dao.BoardDao
-import ru.be_more.orange_forum.data.local.db.entities.StoredBoard
-import ru.be_more.orange_forum.domain.model.Board
+import ru.be_more.database.db.dao.BoardDao
+import ru.be_more.database.db.entities.StoredBoard
+import ru.be_more.orange_forum.data.local.dbConverters.BoardFactory
+import ru.be_more.model.model.Board
 import javax.inject.Inject
 
 class BoardRepositoryImpl @Inject constructor(
@@ -14,16 +15,16 @@ class BoardRepositoryImpl @Inject constructor(
 
     override suspend fun get(boardId: String): Board? =
         dao.get(boardId)
-            ?.toModel()
+            ?.let { BoardFactory.fromEntity(it) }
 
     override fun getFlow(boardId: String): Flow<Board> =
         dao.getFlow(boardId)
-            .map { it.toModel() }
+            .map { BoardFactory.fromEntity(it) }
 
     override fun getListFlow(): Flow<List<Board>> =
         dao.getListFlow()
             .map { boardList ->
-                boardList.map { it.toModel() }
+                boardList.map { BoardFactory.fromEntity(it) }
             }
 
     override suspend fun insertKeepingState(board: Board) =
@@ -31,9 +32,8 @@ class BoardRepositoryImpl @Inject constructor(
             ?.isFavorite ?: false)
             .let { isFavorite ->
                 dao.insertBoard(
-                    StoredBoard(
-                        board.copy(isFavorite = isFavorite)
-                    )
+                    board.copy(isFavorite = isFavorite)
+                        .let { BoardFactory.toEntity(it) }
                 )
             }
 
@@ -42,9 +42,8 @@ class BoardRepositoryImpl @Inject constructor(
             .let { favorites ->
                 dao.insertBoardList(
                     boards.map { board ->
-                        StoredBoard(
-                            board.copy(isFavorite = board.id in favorites)
-                        )
+                        board.copy(isFavorite = board.id in favorites)
+                            .let { BoardFactory.toEntity(it) }
                     }
                 )
             }

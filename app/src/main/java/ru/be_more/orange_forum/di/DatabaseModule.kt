@@ -2,16 +2,13 @@ package ru.be_more.orange_forum.di
 
 import android.content.Context
 import androidx.room.Room
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import ru.be_more.orange_forum.data.local.db.AppDatabase
-import ru.be_more.orange_forum.data.local.db.dao.BoardDao
-import ru.be_more.orange_forum.data.local.db.dao.CategoryDao
-import ru.be_more.orange_forum.data.local.db.dao.PostDao
-import ru.be_more.orange_forum.data.local.db.dao.ThreadDao
-import ru.be_more.orange_forum.data.local.storage.LocalStorageImpl
-import ru.be_more.orange_forum.domain.contracts.StorageContract
+import ru.be_more.database.db.AppDatabase
+import ru.be_more.database.db.dao.BoardDao
+import ru.be_more.database.db.dao.CategoryDao
+import ru.be_more.database.db.dao.PostDao
+import ru.be_more.database.db.dao.ThreadDao
 import javax.inject.Singleton
 
 
@@ -56,11 +53,4 @@ class DatabaseModule {
     fun providePostDao(db: AppDatabase): PostDao {
         return db.postDao()
     }
-}
-
-//todo move
-@Module
-interface StorageModule {
-    @Binds
-    fun bindLocalStorage(localStorage: LocalStorageImpl): StorageContract.LocalStorage
 }

@@ -1,19 +1,17 @@
 package ru.be_more.orange_forum.presentation.screens.favorite
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import ru.be_more.orange_forum.data.local.prefs.Preferences
+import ru.be_more.model.model.Board
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.QueueItem
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortBoardInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.ShortThreadInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
+import ru.be_more.ui.composeViews.initArgs.QueueItem
+import ru.be_more.ui.composeViews.initArgs.ShortBoardInitArgs
+import ru.be_more.ui.composeViews.initArgs.ShortThreadInitArgs
 import javax.inject.Inject
 
 class FavoriteViewModel @Inject constructor(
     private val favoriteInteractor : InteractorContract.FavoriteInteractor,
     private val threadInteractor : InteractorContract.ThreadInteractor,
-//    private val prefs: Preferences
 ): BaseViewModel() {
 
     var items = MutableStateFlow(listOf<QueueItem>())

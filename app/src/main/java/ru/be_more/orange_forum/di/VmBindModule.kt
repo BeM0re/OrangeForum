@@ -5,12 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
-import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 import ru.be_more.orange_forum.presentation.screens.category.CategoryViewModel
 import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteViewModel
-import ru.be_more.orange_forum.presentation.screens.posting.PostingViewModel
 import ru.be_more.orange_forum.presentation.screens.queue.QueueViewModel
-import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModel
 import ru.be_more.orange_forum.utils.DaggerViewModelFactory
 import javax.inject.Singleton
 

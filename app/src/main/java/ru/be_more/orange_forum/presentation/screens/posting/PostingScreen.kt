@@ -45,8 +45,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
-import ru.be_more.orange_forum.presentation.composeViews.IconPickerView
+import ru.be_more.ui.composeViews.ContentStateView
+import ru.be_more.ui.composeViews.IconPickerView
 import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)

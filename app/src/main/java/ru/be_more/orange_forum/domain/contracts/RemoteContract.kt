@@ -1,11 +1,11 @@
 package ru.be_more.orange_forum.domain.contracts
 
-import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.Category
-import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.domain.model.PostResponse
-import ru.be_more.orange_forum.domain.model.ThreadInfo
+import ru.be_more.model.model.Board
+import ru.be_more.model.model.BoardThread
+import ru.be_more.model.model.Category
+import ru.be_more.model.model.Post
+import ru.be_more.model.model.PostResponse
+import ru.be_more.model.model.ThreadInfo
 import java.io.File
 
 interface RemoteContract {

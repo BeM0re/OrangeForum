@@ -37,13 +37,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.composeViews.AppBarView
-import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
-import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
-import ru.be_more.orange_forum.presentation.composeViews.ModalContentDialog
-import ru.be_more.orange_forum.presentation.composeViews.PostView
-import ru.be_more.orange_forum.presentation.model.ContentState
-import ru.be_more.orange_forum.presentation.model.NavigationState
+import ru.be_more.ui.composeViews.AppBarView
+import ru.be_more.ui.composeViews.ContentStateView
+import ru.be_more.ui.composeViews.DvachIcon
+import ru.be_more.ui.composeViews.ModalContentDialog
+import ru.be_more.ui.composeViews.PostView
+import ru.be_more.ui.model.ContentState
+import ru.be_more.ui.model.NavigationState
 import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)

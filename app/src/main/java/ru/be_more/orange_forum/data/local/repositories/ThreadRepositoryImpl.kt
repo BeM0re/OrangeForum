@@ -3,10 +3,11 @@ package ru.be_more.orange_forum.data.local.repositories
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.domain.contracts.DbContract
-import ru.be_more.orange_forum.data.local.db.dao.ThreadDao
-import ru.be_more.orange_forum.data.local.db.entities.StoredThread
+import ru.be_more.database.db.dao.ThreadDao
+import ru.be_more.database.db.entities.StoredThread
+import ru.be_more.orange_forum.data.local.dbConverters.ThreadFactory
 import ru.be_more.orange_forum.domain.contracts.StorageContract
-import ru.be_more.orange_forum.domain.model.BoardThread
+import ru.be_more.model.model.BoardThread
 import javax.inject.Inject
 
 class ThreadRepositoryImpl @Inject constructor(
@@ -15,7 +16,9 @@ class ThreadRepositoryImpl @Inject constructor(
 ) : DbContract.ThreadRepository {
 
     override suspend fun insert(thread: BoardThread) =
-        dao.insert(StoredThread(thread))
+        dao.insert(
+            ThreadFactory.toEntity(thread)
+        )
 
     override suspend fun insertKeepingState(threads: List<BoardThread>) =
         run {
@@ -36,63 +39,61 @@ class ThreadRepositoryImpl @Inject constructor(
             }
         }.let { editedThreads ->
             dao.insert(
-                editedThreads.map { StoredThread(it) }
+                editedThreads.map { ThreadFactory.toEntity(it) }
             )
         }
 
     override suspend fun save(thread: BoardThread, boardId: String) {
         return dao.insert(
-            StoredThread(
-                thread = thread.copy(
-                    boardId = boardId,
-                    posts = thread.posts.map { post ->
-                        post.copy(
-                            files = post.files.map { file ->
-                                file.copy(
-                                    localPath = storage.saveFile(file.path).toString(),
-                                    localThumbnail = storage.saveFile(file.thumbnail).toString()
-                                )
-                            }
-                        )
-                    }
-                ),
-            )
+            thread = thread.copy(
+                boardId = boardId,
+                posts = thread.posts.map { post ->
+                    post.copy(
+                        files = post.files.map { file ->
+                            file.copy(
+                                localPath = storage.saveFile(file.path).toString(),
+                                localThumbnail = storage.saveFile(file.thumbnail).toString()
+                            )
+                        }
+                    )
+                }
+            ).let { ThreadFactory.toEntity(it) }
         )
     }
 
 
     override suspend fun get(boardId: String, threadNum: Int): BoardThread? =
         dao.get(boardId, threadNum)
-            ?.toModel()
+            ?.let { ThreadFactory.fromEntity(it) }
 
     override suspend fun getFavorites(): List<BoardThread> =
         dao.getFavorites()
-            .map { it.toModel() }
+            .map { ThreadFactory.fromEntity(it) }
 
     override suspend fun getQueued(): List<BoardThread> =
         dao.getQueued()
-            .map { it.toModel() }
+            .map { ThreadFactory.fromEntity(it) }
 
     override fun getFlow(boardId: String, threadNum: Int): Flow<BoardThread> =
         dao.getFlow(boardId, threadNum)
-            .map { it.toModel() }
+            .map { ThreadFactory.fromEntity(it) }
 
     override  fun getListFlow(boardId: String): Flow<List<BoardThread>> =
         dao.getListFlow(boardId)
             .map { threads ->
-                threads.map { it.toModel() }
+                threads.map { ThreadFactory.fromEntity(it) }
             }
 
     override fun getFavoriteFlow(): Flow<List<BoardThread>> =
         dao.getFavoriteFlow()
             .map { threads ->
-                threads.map { it.toModel() }
+                threads.map { ThreadFactory.fromEntity(it) }
             }
 
     override fun getQueuedFlow(): Flow<List<BoardThread>> =
         dao.getQueuedFlow()
             .map { threads ->
-                threads.map { it.toModel() }
+                threads.map { ThreadFactory.fromEntity(it) }
             }
 
 

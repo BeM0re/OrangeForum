@@ -19,12 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.be_more.orange_forum.R
-import ru.be_more.orange_forum.presentation.composeViews.AppBarView
-import ru.be_more.orange_forum.presentation.composeViews.ContentStateView
-import ru.be_more.orange_forum.presentation.composeViews.DvachIcon
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.BoardShortListItemViewInitArgs
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
-import ru.be_more.orange_forum.presentation.model.NavigationState
+import ru.be_more.ui.composeViews.AppBarView
+import ru.be_more.ui.composeViews.ContentStateView
+import ru.be_more.ui.composeViews.DvachIcon
+import ru.be_more.ui.composeViews.initArgs.BoardShortListItemViewInitArgs
+import ru.be_more.ui.composeViews.initArgs.CategoryListItemViewInitArgs
+import ru.be_more.ui.model.NavigationState
 import java.lang.ref.WeakReference
 
 @Composable

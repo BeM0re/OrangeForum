@@ -1,9 +1,10 @@
 package ru.be_more.orange_forum
 
 import android.app.Application
-import dagger.android.DaggerApplication
+import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.di.AppComponent
 import ru.be_more.orange_forum.di.DaggerAppComponent
+import ru.be_more.ui.dependencies.UiDepProvider
 
 class App : Application(){
 
@@ -16,9 +17,12 @@ class App : Application(){
             .builder()
             .context(this)
             .build()
+
+        UiDepProvider.cookie = COOKIE
     }
 
     fun getAppComponent() =
         requireNotNull(appComponent) { "App component wasn't initialized" }
+
 
 }

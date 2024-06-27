@@ -2,10 +2,10 @@ package ru.be_more.orange_forum.data.local.repositories
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ru.be_more.orange_forum.data.local.db.dao.CategoryDao
-import ru.be_more.orange_forum.data.local.db.entities.StoredCategory
+import ru.be_more.database.db.dao.CategoryDao
+import ru.be_more.model.model.Category
+import ru.be_more.orange_forum.data.local.dbConverters.CategoryFactory
 import ru.be_more.orange_forum.domain.contracts.DbContract
-import ru.be_more.orange_forum.domain.model.Category
 import javax.inject.Inject
 
 class CategoryRepositoryImpl @Inject constructor(
@@ -14,18 +14,18 @@ class CategoryRepositoryImpl @Inject constructor(
 
     override suspend fun insert(categories: List<Category>) =
         dao.insert(
-            categories.map { StoredCategory(it) }
+            categories.map { CategoryFactory.toEntity(it) }
         )
 
     override fun getFlowList(): Flow<List<Category>> =
         dao.getCategoryListFlow()
             .map { list ->
-                list.map { it.toModel() }
+                list.map { CategoryFactory.fromEntity(it) }
             }
 
     override suspend fun getEmpty(name: String): Category =
         dao.getCategory(name)
-            .toModel()
+            .let { CategoryFactory.fromEntity(it) }
 
     override suspend fun setIsExpanded(name: String, isExpanded: Boolean) =
         dao.setIsExpanded(name, isExpanded)

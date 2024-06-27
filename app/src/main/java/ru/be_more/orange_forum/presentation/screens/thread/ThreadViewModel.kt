@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import ru.be_more.orange_forum.data.local.prefs.Preferences
+import ru.be_more.database.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
-import ru.be_more.orange_forum.domain.model.BoardSetting
-import ru.be_more.orange_forum.domain.model.Post
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.PostInitArgs
+import ru.be_more.model.model.BoardSetting
+import ru.be_more.model.model.Post
+import ru.be_more.ui.composeViews.initArgs.PostInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
 import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 import javax.inject.Inject

@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.internal.parseHexDigit
-import ru.be_more.orange_forum.presentation.model.ContentState
-import ru.be_more.orange_forum.presentation.model.NavigationState
+import ru.be_more.ui.model.ContentState
+import ru.be_more.ui.model.NavigationState
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.abs

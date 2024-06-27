@@ -4,11 +4,13 @@ import android.content.Context
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import ru.be_more.model.model.BaseUrl
 import ru.be_more.orange_forum.consts.DVACH_ROOT_URL
-import ru.be_more.orange_forum.data.remote.api.DvachApi
+import ru.be_more.network.api.DvachApi
 import ru.be_more.orange_forum.data.remote.repositories.ApiRepositoryImpl
-import ru.be_more.orange_forum.data.remote.service.RetrofitFactory
-import ru.be_more.orange_forum.data.remote.service.SSLTrustManager
+import ru.be_more.network.service.RetrofitFactory
+import ru.be_more.network.service.SSLTrustManager
+import ru.be_more.orange_forum.consts.FOURCHAN_ROOT_URL
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 
 @Module
@@ -27,6 +29,18 @@ class NetworkModule {
         return RetrofitFactory(sslTrustManager, context)
             .retrofit(DVACH_ROOT_URL)
             .create(DvachApi::class.java)
+    }
+
+    @Dvach
+    @Provides
+    fun provideDvachBaseUrl() : BaseUrl {
+        return BaseUrl(DVACH_ROOT_URL)
+    }
+
+    @Fourchan
+    @Provides
+    fun provideFourchanBaseUrl() : BaseUrl {
+        return BaseUrl(FOURCHAN_ROOT_URL)
     }
 }
 

@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.be_more.orange_forum.presentation.composeViews.initArgs.CategoryListItemViewInitArgs
-import ru.be_more.orange_forum.presentation.theme.DvachTheme
+import ru.be_more.ui.composeViews.initArgs.CategoryListItemViewInitArgs
+import ru.be_more.ui.theme.DvachTheme
 
 @Composable
 fun CategoryListItem(args: CategoryListItemViewInitArgs, modifier: Modifier = Modifier) {

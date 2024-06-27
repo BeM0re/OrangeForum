@@ -1,10 +1,10 @@
 package ru.be_more.orange_forum.domain.contracts
 
 import kotlinx.coroutines.flow.Flow
-import ru.be_more.orange_forum.domain.model.Board
-import ru.be_more.orange_forum.domain.model.BoardThread
-import ru.be_more.orange_forum.domain.model.Category
-import ru.be_more.orange_forum.domain.model.Post
+import ru.be_more.model.model.Board
+import ru.be_more.model.model.BoardThread
+import ru.be_more.model.model.Category
+import ru.be_more.model.model.Post
 
 interface DbContract {
 

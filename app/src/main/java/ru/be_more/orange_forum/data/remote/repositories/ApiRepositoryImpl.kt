@@ -1,20 +1,26 @@
 package ru.be_more.orange_forum.data.remote.repositories
 
-import android.util.Log
-import io.reactivex.Single
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import ru.be_more.model.model.BaseUrl
+import ru.be_more.model.model.Board
+import ru.be_more.model.model.BoardThread
+import ru.be_more.model.model.Category
+import ru.be_more.model.model.Post
+import ru.be_more.model.model.PostResponse
+import ru.be_more.model.model.ThreadInfo
 import ru.be_more.orange_forum.consts.COOKIE
 import ru.be_more.orange_forum.consts.DVACH_ROOT_URL
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
-import ru.be_more.orange_forum.data.remote.api.DvachApi
-import ru.be_more.orange_forum.data.remote.models.Captcha
-import ru.be_more.orange_forum.data.remote.models.CaptureType
-import ru.be_more.orange_forum.domain.model.*
-import ru.be_more.orange_forum.utils.ParseHtml
+import ru.be_more.network.api.DvachApi
+import ru.be_more.network.models.Captcha
+import ru.be_more.network.models.CaptureType
+import ru.be_more.orange_forum.data.remote.networkConverters.*
+import ru.be_more.orange_forum.di.Dvach
+import ru.be_more.ui.utils.ParseHtml
 import java.io.File
 import java.lang.Exception
 import java.net.ConnectException
@@ -24,14 +30,15 @@ import javax.inject.Inject
 //инфа по обезьяньему апи: https://2ch.hk/abu/res/42375.html
 
 class ApiRepositoryImpl @Inject constructor(
-    private val api : DvachApi
+    private val api: DvachApi,
+    @Dvach private val baseUrl: BaseUrl,
 ) : RemoteContract.ApiRepository{
     //todo переделать модель капчи
     private var captcha: Captcha? = null
 
     override suspend fun getCategories(): List<Category> =
         api.getBoardList()
-            .map { it.toModel() }
+            .map { BoardFactory.fromDto(it) }
             .groupBy { it.category }
             .map { (category, boards) ->
                 Category(
@@ -43,16 +50,16 @@ class ApiRepositoryImpl @Inject constructor(
 
     override suspend fun getBoard(boardId: String): Board =
         api.getBoard(boardId)
-            .toModel(boardId)
+            .let { BoardFactory.fromDto(it, boardId, baseUrl) }
 
     override suspend fun getEmptyThread(boardId: String, threadNum: Int): BoardThread =
         api.getPost(boardId, threadNum, COOKIE)
             .post
-            .toThread(boardId)
+            .let { PostFactory.toThread(it, boardId, baseUrl) }
 
     override suspend fun getThread(boardId: String, threadNum: Int): BoardThread =
         api.getThread(boardId, threadNum, COOKIE)
-            .toModel(boardId)
+            .let { ThreadFactory.fromDto(it, boardId, baseUrl) }
             .let { findResponses(it) }
 
     override suspend fun getPost(
@@ -62,16 +69,16 @@ class ApiRepositoryImpl @Inject constructor(
     ): Post =
         api.getPost(boardId, postNum, COOKIE)
             .post
-            .toModel(boardId, threadNum)
+            .let { PostFactory.fromDto(it, boardId, threadNum, baseUrl) }
 
     override suspend fun getCaptchaUrl(boardId: String, threadNum: Int?): String =
         api.getBoardSettings(boardId)
-            .toModel()
+            .let { BoardFactory.fromDto(it) }
             .let { boardSetting ->
                 when (boardSetting.captchaType) {
                     CaptureType.DvachCaptcha -> {
                         api.get2chCaptcha(boardId, threadNum)
-                            .toModel()
+                            .let { ResponseFactory.fromDto(it) }
                             .also { captcha = Captcha.DvachCaptcha(id = it.id) }
                             .let { DVACH_ROOT_URL + "/api/captcha/2chcaptcha/show/?id=${ it.id }"  }
                     }
@@ -128,8 +135,8 @@ class ApiRepositoryImpl @Inject constructor(
                 captchaFields = captchaFields,
             )
             .let { replyDto ->
-                    if (replyDto.error != null && replyDto.error.code != 0)
-                        throw Throwable("Replying error code ${replyDto.error.code}: ${replyDto.error.message}")
+                    if (replyDto.error != null && replyDto.error?.code != 0)
+                        throw Throwable("Replying error code ${replyDto.error?.code}: ${replyDto.error?.message}")
                     else
                         requireNotNull(replyDto.num)
                 }
@@ -180,14 +187,13 @@ class ApiRepositoryImpl @Inject constructor(
             gRecaptchaResponse = requestGRecaptchaResponse,
             chaptchaId = requestChaptchaId,
             files = requestFiles
-        ).toModel()
+        ).let { ResponseFactory.fromDto(it) }
     }
 
     override suspend fun getThreadInfo(boardId: String, threadNum: Int): ThreadInfo =
         try {
-            api
-                .getThreadInfo(boardId, threadNum, COOKIE)
-                .toModel(boardId, threadNum)
+            api.getThreadInfo(boardId, threadNum, COOKIE)
+                .let { ThreadFactory.fromDto(it, boardId, threadNum) }
         } catch (e: Exception) {
             //todo посмотреть апи, возможно есть более адекватный ответ сервера для утонувших
             if (e is ConnectException)
@@ -199,8 +205,6 @@ class ApiRepositoryImpl @Inject constructor(
                 isAlive = false,
             )
         }
-
-
 
     private fun findResponses(board: BoardThread): BoardThread {
         val replies = board.posts

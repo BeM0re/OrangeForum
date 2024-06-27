@@ -42,23 +42,20 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.coroutines.launch
 import ru.be_more.orange_forum.App
-import ru.be_more.orange_forum.presentation.composeViews.NavigationIcon
-import ru.be_more.orange_forum.presentation.model.NavigationState
+import ru.be_more.ui.composeViews.NavigationIcon
+import ru.be_more.ui.model.NavigationState
 import ru.be_more.orange_forum.presentation.screens.base.Screen
 import ru.be_more.orange_forum.presentation.screens.base.ScreenRout
 import ru.be_more.orange_forum.presentation.screens.board.BoardScreen
 import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
 import ru.be_more.orange_forum.presentation.screens.category.CategoryScreen
-import ru.be_more.orange_forum.presentation.screens.category.CategoryViewModel
 import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteScreen
-import ru.be_more.orange_forum.presentation.screens.favorite.FavoriteViewModel
 import ru.be_more.orange_forum.presentation.screens.queue.QueueScreen
 import ru.be_more.orange_forum.presentation.screens.posting.PostingScreen
 import ru.be_more.orange_forum.presentation.screens.posting.PostingViewModel
-import ru.be_more.orange_forum.presentation.screens.queue.QueueViewModel
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadScreen
 import ru.be_more.orange_forum.presentation.screens.thread.ThreadViewModel
-import ru.be_more.orange_forum.presentation.theme.DvachTheme
+import ru.be_more.ui.theme.DvachTheme
 import ru.be_more.orange_forum.utils.permissions.registerPermissionsLauncher
 import javax.inject.Inject
 
@@ -284,12 +281,6 @@ class MainActivity : ComponentActivity() {
     private fun navigate(navController: NavHostController, navState: NavigationState) =
         when (navState) {
             is NavigationState.NavigateToBoard -> {
-                /*navController.navigate(
-                    route = Screen.Board.route + "?boardId=${navState.boardId}"
-                ) {
-                    launchSingleTop = true
-                    restoreState = true
-                }*/
                 navController.navigate(
                     ScreenRout.BoardScreen(boardId = navState.boardId)
                 )
@@ -299,26 +290,12 @@ class MainActivity : ComponentActivity() {
                 navController.navigate(
                     ScreenRout.ThreadScreen(boardId = navState.boardId, threadNum = navState.threadNum)
                 )
-                /*navController.navigate(
-                    route = Screen.Thread.route
-                            + "?boardId=${navState.boardId}"
-                            + "?threadNum=${navState.threadNum}"
-                ) {
-                    launchSingleTop = true
-                    restoreState = false
-                }*/
             }
 
             is NavigationState.NavigateToThreadCreating -> {
                 navController.navigate(
                     ScreenRout.PostingScreen(boardId = navState.boardId)
                 )
-                /*navController.navigate(
-                    route = Screen.Posting.route + "?boardId=${navState.boardId}"
-                ) {
-                    launchSingleTop = true
-                    restoreState = false
-                }*/
             }
 
             is NavigationState.NavigateToReply -> {
@@ -329,15 +306,6 @@ class MainActivity : ComponentActivity() {
                         additionalString = navState.additionalString
                     )
                 )
-                /*navController.navigate(
-                    route = Screen.Posting.route
-                            + "?boardId=${navState.boardId}"
-                            + "?threadNum=${navState.threadNum}"
-                            + "?additionalString=${navState.additionalString}"
-                ) {
-                    launchSingleTop = true
-                    restoreState = false
-                }*/
             }
         }
 
