@@ -5,5 +5,6 @@ data class ThreadInfo(
     val threadNum: Int,
     val timestamp: Long = 0,
     val postCount: Int = 0,
-    val isAlive: Boolean
+    val isAlive: Boolean,
+    val imageboard: Imageboard,
 )

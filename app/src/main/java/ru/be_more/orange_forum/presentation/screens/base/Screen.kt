@@ -18,15 +18,16 @@ sealed class Screen(
         isAlwaysActive = true,
     )
     data object Board : Screen(
-        route = ScreenRout.BoardScreen(""),
+        route = ScreenRout.BoardScreen("", ""),
         title = R.string.navigation_board,
         icon = R.drawable.ic_dashboard_accent_24dp,
         isAlwaysActive = false,
     )
     data object Thread : Screen(
         route = ScreenRout.ThreadScreen(
+            imageboardType = "",
             boardId = "",
-            threadNum = -1
+            threadNum = -1,
         ),
         title = R.string.navigation_thread,
         icon = R.drawable.ic_chat_accent_24dp,
@@ -45,7 +46,7 @@ sealed class Screen(
         isAlwaysActive = true,
     )
     data object Posting : Screen(
-        route = ScreenRout.PostingScreen(""),
+        route = ScreenRout.PostingScreen("",""),
         title = R.string.navigation_posting,
         icon = R.drawable.ic_settings_accent_24dp,
         isAlwaysActive = true,
@@ -63,11 +64,13 @@ open class ScreenRout {
 
     @Serializable
     data class BoardScreen(
+        val imageboardType: String,
         val boardId: String
     ) : ScreenRout()
 
     @Serializable
     data class ThreadScreen(
+        val imageboardType: String,
         val boardId: String,
         val threadNum: Int,
     ) : ScreenRout()
@@ -80,6 +83,7 @@ open class ScreenRout {
 
     @Serializable
     data class PostingScreen(
+        val imageboardType: String,
         val boardId: String,
         val threadNum: Int = -1,
         val additionalString: String? = null,

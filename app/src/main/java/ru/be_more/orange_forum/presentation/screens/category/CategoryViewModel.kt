@@ -56,7 +56,7 @@ class CategoryViewModel @Inject constructor(
                             BoardShortListItemViewInitArgs(
                                 id = board.id,
                                 title = board.name,
-                                onClick = ::navigateToBoard
+                                onClick = { navigateToBoard(board.imageboard.type, it) }
                             )
                         )
                     }
@@ -64,7 +64,7 @@ class CategoryViewModel @Inject constructor(
         }
 
     private fun setCategoryExpanded(name: String) =
-        runCoroutine("init.refresh") {
+        runCoroutine("setExpanded") {
             interactor.toggleExpanded(name)
         }
 

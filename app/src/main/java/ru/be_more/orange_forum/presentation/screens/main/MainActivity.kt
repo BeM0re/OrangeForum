@@ -217,7 +217,7 @@ class MainActivity : ComponentActivity() {
             composable<ScreenRout.BoardScreen> { entry ->
                 val args = entry.toRoute<ScreenRout.BoardScreen>()
                 BoardScreen(
-                    viewModelFactory = boardVmFactory.create(args.boardId),
+                    viewModelFactory = boardVmFactory.create(args.imageboardType, args.boardId),
                     onNavigate = { navigate(navController, it) }
                 )
             }
@@ -226,7 +226,7 @@ class MainActivity : ComponentActivity() {
             composable<ScreenRout.ThreadScreen> { entry ->
                 val args = entry.toRoute<ScreenRout.ThreadScreen>()
                 ThreadScreen(
-                    viewModelFactory = threadVmFactory.create(args.boardId, args.threadNum),
+                    viewModelFactory = threadVmFactory.create(args.imageboardType, args.boardId, args.threadNum),
                     onNavigate = { navigate(navController, it) }
                 )
             }
@@ -252,6 +252,7 @@ class MainActivity : ComponentActivity() {
                 val args = entry.toRoute<ScreenRout.PostingScreen>()
                 PostingScreen(
                     viewModelFactory = postVmFactory.create(
+                        imageboardType = args.imageboardType,
                         boardId = args.boardId,
                         threadNum = args.threadNum,
                         additionalString = args.additionalString ?: ""
@@ -265,6 +266,7 @@ class MainActivity : ComponentActivity() {
                 val args = entry.toRoute<ScreenRout.PostingScreen>()
                 PostingScreen(
                     viewModelFactory = postVmFactory.create(
+                        imageboardType = args.imageboardType,
                         boardId = args.boardId,
                         threadNum = -1,
                         additionalString = ""
@@ -282,25 +284,36 @@ class MainActivity : ComponentActivity() {
         when (navState) {
             is NavigationState.NavigateToBoard -> {
                 navController.navigate(
-                    ScreenRout.BoardScreen(boardId = navState.boardId)
+                    ScreenRout.BoardScreen(
+                        imageboardType = navState.imageboardType.name,
+                        boardId = navState.boardId
+                    )
                 )
             }
 
             is NavigationState.NavigateToThread -> {
                 navController.navigate(
-                    ScreenRout.ThreadScreen(boardId = navState.boardId, threadNum = navState.threadNum)
+                    ScreenRout.ThreadScreen(
+                        imageboardType = navState.imageboardType.name,
+                        boardId = navState.boardId,
+                        threadNum = navState.threadNum
+                    )
                 )
             }
 
             is NavigationState.NavigateToThreadCreating -> {
                 navController.navigate(
-                    ScreenRout.PostingScreen(boardId = navState.boardId)
+                    ScreenRout.PostingScreen(
+                        imageboardType = navState.imageboardType.name,
+                        boardId = navState.boardId
+                    )
                 )
             }
 
             is NavigationState.NavigateToReply -> {
                 navController.navigate(
                     ScreenRout.PostingScreen(
+                        imageboardType = navState.imageboardType.name,
                         boardId = navState.boardId,
                         threadNum = navState.threadNum,
                         additionalString = navState.additionalString

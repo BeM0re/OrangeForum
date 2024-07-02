@@ -7,4 +7,5 @@ import androidx.room.PrimaryKey
 data class StoredCategory(
     @PrimaryKey val name: String,
     val isExpanded: Boolean,
+    val imageboard: StoredImageboard,
 )

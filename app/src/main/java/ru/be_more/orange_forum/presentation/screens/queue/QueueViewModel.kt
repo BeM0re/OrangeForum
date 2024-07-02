@@ -12,7 +12,6 @@ import javax.inject.Inject
 
 class QueueViewModel @Inject constructor(
     private val queueInteractor: InteractorContract.QueueInteractor,
-//    private val prefs: Preferences
 ) : BaseViewModel() {
 
     var items = MutableStateFlow(listOf<QueueItem>())
@@ -30,7 +29,7 @@ class QueueViewModel @Inject constructor(
                 ShortBoardInitArgs(
                     boardId = board.id,
                     boardName = board.name,
-                    onClick = ::navigateToBoard
+                    onClick = { navigateToBoard(board.imageboard.type, it) }
                 ).also { add(it) }
 
                 board.threads.forEach { thread ->
@@ -40,7 +39,7 @@ class QueueViewModel @Inject constructor(
                         title = thread.title,
                         isDrown = false,
                         hasNewMessage = false,
-                        onClick = ::navigateToThread
+                        onClick = { boardId, threadNum -> navigateToThread(thread.imageboard.type, boardId, threadNum) }
                     ).also { add(it) }
                 }
             }

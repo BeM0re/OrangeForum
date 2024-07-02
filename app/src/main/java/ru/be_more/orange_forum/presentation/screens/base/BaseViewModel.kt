@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.internal.parseHexDigit
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.ui.model.ContentState
 import ru.be_more.ui.model.NavigationState
 import kotlin.coroutines.AbstractCoroutineContextElement
@@ -34,7 +36,7 @@ abstract class BaseViewModel : ViewModel() {
                 Log.e(
                     this@BaseViewModel::class.java.name,
                     this@BaseViewModel::class.java.name
-                            + ("methodName: $methodName \n".takeIf { methodName.isNotEmpty() } ?: "")
+                            + ("\nmethodName: $methodName \n".takeIf { methodName.isNotEmpty() } ?: "")
                             + exception.message
                 )
             }
@@ -52,34 +54,39 @@ abstract class BaseViewModel : ViewModel() {
         )
 
 
-    protected fun navigateToBoard(boardId: String) {
+    protected fun navigateToBoard(imageboardType: ImageboardType, boardId: String) {
         viewModelScope.launch {
             navMutableState.emit(
-                NavigationState.NavigateToBoard(boardId)
+                NavigationState.NavigateToBoard(imageboardType, boardId)
             )
         }
     }
 
-    protected fun navigateToThread(boardId: String, threadNum: Int) {
+    protected fun navigateToThread(imageboardType: ImageboardType, boardId: String, threadNum: Int) {
         viewModelScope.launch {
             navMutableState.emit(
-                NavigationState.NavigateToThread(boardId, threadNum)
+                NavigationState.NavigateToThread(imageboardType, boardId, threadNum)
             )
         }
     }
 
-    protected fun navigateToReply(boardId: String, threadNum: Int, additionalString: String) {
+    protected fun navigateToReply(
+        imageboardType: ImageboardType,
+        boardId: String,
+        threadNum: Int,
+        additionalString: String
+    ) {
         viewModelScope.launch {
             navMutableState.emit(
-                NavigationState.NavigateToReply(boardId, threadNum, additionalString)
+                NavigationState.NavigateToReply(imageboardType, boardId, threadNum, additionalString)
             )
         }
     }
 
-    protected fun navigateToThreadCreating(boardId: String) {
+    protected fun navigateToThreadCreating(imageboardType: ImageboardType, boardId: String) {
         viewModelScope.launch {
             navMutableState.emit(
-                NavigationState.NavigateToThreadCreating(boardId)
+                NavigationState.NavigateToThreadCreating(imageboardType, boardId)
             )
         }
     }

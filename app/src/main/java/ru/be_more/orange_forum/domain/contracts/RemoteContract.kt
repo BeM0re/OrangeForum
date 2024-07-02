@@ -12,7 +12,7 @@ interface RemoteContract {
 
     interface ApiRepository {
         suspend fun getCategories(): List<Category>
-        suspend fun getBoard(boardId: String): Board
+        suspend fun getBoard(boardName: String, boardId: String): Board
         /** Thread without posts, only OP post*/
         suspend fun getEmptyThread(boardId: String, threadNum: Int): BoardThread
         suspend fun getThread(boardId: String, threadNum: Int): BoardThread

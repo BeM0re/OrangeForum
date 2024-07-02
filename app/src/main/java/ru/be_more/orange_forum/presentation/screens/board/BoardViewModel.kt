@@ -10,12 +10,15 @@ import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.model.model.Board
 import ru.be_more.model.model.BoardSetting
 import ru.be_more.model.model.BoardThread
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.ui.composeViews.initArgs.HiddenOpPostInitArgs
 import ru.be_more.ui.composeViews.initArgs.OpPostInitArgs
 import ru.be_more.ui.composeViews.initArgs.ListItemArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
 
 class BoardViewModel(
+    val imageboardType: ImageboardType,
     override val boardId: String,
     private val boardInteractor: InteractorContract.BoardInteractor,
     private val threadInteractor: InteractorContract.ThreadInteractor,
@@ -75,9 +78,9 @@ class BoardViewModel(
                     onHide = ::hideThread,
                     onQueue = ::addToQueue,
                     onPic = ::onPicClicked,
-                    onTextLinkClick = ::onTextLinkClicked,
-                    onClick = ::navigateToThread,
-                    onPostNumClick = ::replyToPost
+                    onTextLinkClick = { onTextLinkClicked(imageboardType, it) },
+                    onClick = { boardId, threadNum -> navigateToThread(imageboardType, boardId, threadNum) },
+                    onPostNumClick = { replyToPost(imageboardType, it) }
                 )
         }
 
@@ -101,7 +104,7 @@ class BoardViewModel(
         runCoroutine("refresh") {
             isLoading.emit(true)
             showLoading()
-            boardInteractor.refresh(boardId)
+            boardInteractor.refresh(imageboardType, boardId)
             isLoading.emit(false)
             showContent()
         }
@@ -112,9 +115,10 @@ class BoardViewModel(
         }
 
     fun onNewThreadClicked() =
-        navigateToThreadCreating(boardId)
+        navigateToThreadCreating(imageboardType, boardId)
 
     class Factory @AssistedInject constructor(
+        @Assisted("imageboard") private val imageboardType: String,
         @Assisted("boardId") private val boardId: String,
         private val boardInteractor: InteractorContract.BoardInteractor,
         private val threadInteractor: InteractorContract.ThreadInteractor,
@@ -127,6 +131,7 @@ class BoardViewModel(
             require(modelClass == BoardViewModel::class.java)
 
             return BoardViewModel(
+                imageboardType = ImageboardType.valueOf(imageboardType),
                 boardId = boardId,
                 boardInteractor = boardInteractor,
                 threadInteractor = threadInteractor,
@@ -137,7 +142,10 @@ class BoardViewModel(
 
         @AssistedFactory
         interface AFactory {
-            fun create(@Assisted("boardId") boardId: String): Factory
+            fun create(
+                @Assisted("imageboard") imageboardType: String,
+                @Assisted("boardId") boardId: String,
+            ): Factory
         }
     }
 }

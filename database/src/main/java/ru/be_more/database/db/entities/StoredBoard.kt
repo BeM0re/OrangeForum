@@ -26,4 +26,5 @@ data class StoredBoard(
     val maxFileSize: Int?,
     val tags: List<String>?,
     val icons: List<StoredIcon>?,
+    val imageboard: StoredImageboard,
 )

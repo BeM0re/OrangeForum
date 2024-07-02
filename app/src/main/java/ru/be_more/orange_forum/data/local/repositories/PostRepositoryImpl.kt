@@ -3,12 +3,12 @@ package ru.be_more.orange_forum.data.local.repositories
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.be_more.database.db.dao.PostDao
-import ru.be_more.database.db.entities.StoredPost
-import ru.be_more.orange_forum.data.local.dbConverters.PostFactory
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.model.model.BoardThread
 import ru.be_more.model.model.Post
+import ru.be_more.orange_forum.data.local.dbConverters.toEntity
+import ru.be_more.orange_forum.data.local.dbConverters.toModel
 import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(
@@ -18,12 +18,12 @@ class PostRepositoryImpl @Inject constructor(
 
     override suspend fun insert(post: Post) =
         dao.insert(
-            PostFactory.toEntity(post)
+            post.toEntity()
         )
 
     override suspend fun insert(posts: List<Post>) =
         dao.insert(
-            posts.map { PostFactory.toEntity(it) }
+            posts.map { it.toEntity() }
         )
 
     override suspend fun insertMissing(thread: BoardThread) =
@@ -33,7 +33,7 @@ class PostRepositoryImpl @Inject constructor(
                     thread
                         .posts
                         .filter { it.id > latestPostId }
-                        .map { PostFactory.toEntity(it) }
+                        .map { it.toEntity() }
                 )
             }
 
@@ -42,8 +42,8 @@ class PostRepositoryImpl @Inject constructor(
                 post.copy(
                     files = post.files.map { file ->
                         file.copy(
-                            localPath = storage.saveFile(file.path).toString(),
-                            localThumbnail = storage.saveFile(file.thumbnail).toString()
+                            localPath = storage.saveFile(file.pathFullLink).toString(),
+                            localThumbnail = storage.saveFile(file.thumbnailFullLink).toString()
                         )
                     }
                 )
@@ -52,28 +52,28 @@ class PostRepositoryImpl @Inject constructor(
 
     override suspend fun insertOp(posts: List<Post>) =
         dao.insert(
-            posts.map { PostFactory.toEntity(it) }
+            posts.map { it.toEntity() }
         )
 
     override fun getOpListFlow(boardId: String): Flow<List<Post>> =
         dao.getOpListFlow(boardId)
             .map { posts ->
-                posts.map { PostFactory.fromEntity(it) }
+                posts.map { it.toModel() }
             }
 
     override fun getListFlow(boardId: String, threadNum: Int): Flow<List<Post>> =
         dao.getListFlow(boardId, threadNum)
             .map { posts ->
-                posts.map { PostFactory.fromEntity(it) }
+                posts.map { it.toModel() }
             }
 
     override suspend fun get(boardId: String, post: Int): Post? =
         dao.get(boardId, post)
-            ?.let { PostFactory.fromEntity(it) }
+            ?.let { it.toModel() }
 
     override suspend fun getThreadPosts(boardId: String, threadNum: Int): List<Post> =
         dao.getThreadPosts(boardId, threadNum)
-            .map { PostFactory.fromEntity(it) }
+            .map { it.toModel() }
 
     override suspend fun delete(boardId: String, threadNum: Int) =
         dao.getThreadPosts(boardId, threadNum)

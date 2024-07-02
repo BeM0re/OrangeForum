@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import ru.be_more.model.model.Board
 import ru.be_more.model.model.BoardThread
 import ru.be_more.model.model.Category
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.model.model.Post
 
 interface InteractorContract {
@@ -19,15 +21,15 @@ interface InteractorContract {
         fun getBoardFlow(boardId: String): Flow<Board>
         suspend fun getBoard(boardId: String): Board?
         suspend fun markFavorite(boardId: String)
-        suspend fun refresh(boardId: String)
+        suspend fun refresh(imageboardType: ImageboardType, boardId: String)
         suspend fun search(query: String)
     }
 
     interface ThreadInteractor {
         suspend fun refresh(boardId: String, threadNum: Int)
-        fun getBoardFlow(boardId: String, threadNum: Int): Flow<BoardThread>
-        suspend  fun subToUpdate(boardId: String, threadNum: Int)
-        suspend fun save(boardId: String, threadNum: Int)
+        fun getThreadFlow(boardId: String, threadNum: Int): Flow<BoardThread>
+        suspend fun subToUpdate(boardId: String, threadNum: Int)
+        suspend fun save(imageboardType: ImageboardType, boardId: String, threadNum: Int)
         suspend fun markFavorite(boardId: String, threadNum: Int)
         suspend fun markQueued(boardId: String, threadNum: Int)
         suspend fun markHidden(boardId: String, threadNum: Int)
@@ -37,6 +39,7 @@ interface InteractorContract {
 
     interface PostInteractor {
         suspend fun getPost(
+            imageboardType: ImageboardType,
             boardId: String,
             threadNum: Int,
             postNum: Int,
@@ -44,8 +47,9 @@ interface InteractorContract {
     }
 
     interface ReplyInteractor {
-        suspend fun getCaptcha(boardId: String, threadNum: Int?): String
+        suspend fun getCaptcha(imageboardType: ImageboardType, boardId: String, threadNum: Int?): String
         suspend fun reply(
+            imageboardType: ImageboardType,
             boardId: String,
             threadNum: Int,
             comment: String,
@@ -57,6 +61,7 @@ interface InteractorContract {
             captchaSolvedString: String?,
         )
         suspend fun createThread(
+            imageboardType: ImageboardType,
             boardId: String,
             comment: String,
             isOp: Boolean,

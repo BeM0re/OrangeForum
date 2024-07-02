@@ -7,4 +7,5 @@ data class Board(
     val threads: List<BoardThread> = listOf(),
     val isFavorite: Boolean,
     val boardSetting: BoardSetting,
+    val imageboard: Imageboard,
 )

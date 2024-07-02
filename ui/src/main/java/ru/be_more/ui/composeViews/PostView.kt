@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.model.model.Post
 import ru.be_more.ui.R
 import ru.be_more.ui.composeViews.initArgs.PostInitArgs
@@ -141,6 +143,12 @@ fun PostViewPreview() {
                     timestamp = 1700619604,
                     number = 1233,
                     replies = listOf(12321, 32123),
+                    imageboard = Imageboard(
+                        baseUrl = "https://2ch.hk",
+                        attachmentUrl = "https://2ch.hk",
+                        staticDataUrl = "https://2ch.hk",
+                        type = ImageboardType.Dvach
+                    )
                 ),
                 onPicClick = { },
                 onTextLinkClick = { },

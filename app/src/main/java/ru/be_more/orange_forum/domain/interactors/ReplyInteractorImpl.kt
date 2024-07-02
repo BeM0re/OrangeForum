@@ -1,19 +1,28 @@
 package ru.be_more.orange_forum.domain.interactors
 
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
 class ReplyInteractorImpl @Inject constructor(
-    private val apiRepository: RemoteContract.ApiRepository,
     private val dbRepository: DbContract.PostRepository,
+    private val apiRepositoryMap: Map<ImageboardType, @JvmSuppressWildcards RemoteContract.ApiRepository>
 ): InteractorContract.ReplyInteractor {
 
-    override suspend fun getCaptcha(boardId: String, threadNum: Int?): String =
-        apiRepository.getCaptchaUrl(boardId, threadNum)
+    override suspend fun getCaptcha(
+        imageboardType: ImageboardType,
+        boardId: String,
+        threadNum: Int?
+    ): String =
+        apiRepositoryMap[imageboardType]?.getCaptchaUrl(boardId, threadNum)
+            ?: throw IllegalStateException("No proper repository found")
 
     override suspend fun reply(
+        imageboardType: ImageboardType,
         boardId: String,
         threadNum: Int,
         comment: String,
@@ -24,8 +33,8 @@ class ReplyInteractorImpl @Inject constructor(
         tag: String,
         captchaSolvedString: String?
     ) =
-        apiRepository
-            .postReply(
+        apiRepositoryMap[imageboardType]
+            ?.postReply(
                 boardId = boardId,
                 threadNum = threadNum,
                 comment = comment,
@@ -36,14 +45,15 @@ class ReplyInteractorImpl @Inject constructor(
                 tag = tag,
                 captchaSolvedString = captchaSolvedString,
             )
-            .let { postNum ->
-                apiRepository.getPost(boardId, threadNum, postNum)
+            ?.let { postNum ->
+                apiRepositoryMap[imageboardType]?.getPost(boardId, threadNum, postNum)
             }
-            .let { post ->
+            ?.let { post ->
                 dbRepository.insert(post.copy(isMyPost = true))
-            }
+            } ?: throw IllegalStateException("No proper repository found")
 
     override suspend fun createThread(
+        imageboardType: ImageboardType,
         boardId: String,
         comment: String,
         isOp: Boolean,

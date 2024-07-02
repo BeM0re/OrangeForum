@@ -4,22 +4,26 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.consts.ThreadUpdateInterval
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.model.model.BoardThread
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import javax.inject.Inject
+import kotlin.reflect.KClass
 import kotlin.time.Duration
 
 class ThreadInteractorImpl @Inject constructor(
-    private val apiRepository: RemoteContract.ApiRepository,
     private val boardRepository: DbContract.BoardRepository,
     private val threadRepository: DbContract.ThreadRepository,
-    private val postRepository: DbContract.PostRepository
+    private val postRepository: DbContract.PostRepository,
+    private val apiRepositoryMap: Map<ImageboardType, @JvmSuppressWildcards RemoteContract.ApiRepository>
 ): InteractorContract.ThreadInteractor {
 
-    override fun getBoardFlow(
+    override fun getThreadFlow(
         boardId: String,
         threadNum: Int,
     ): Flow<BoardThread> =
@@ -30,14 +34,14 @@ class ThreadInteractorImpl @Inject constructor(
             thread.copy(posts = posts)
         }
 
-    override suspend fun save(boardId: String, threadNum: Int) =
-        apiRepository.getThread(boardId, threadNum)
-            .let { thread ->
+    override suspend fun save(imageboardType: ImageboardType, boardId: String, threadNum: Int) =
+        apiRepositoryMap[imageboardType]?.getThread(boardId, threadNum)
+            ?.let { thread ->
                 threadRepository.insertKeepingState(
                     listOf(thread.copy(isDownloaded = true))
                 )
                 postRepository.save(thread.posts)
-            }
+            } ?: throw IllegalStateException("No proper repository found")
 
     override suspend fun markFavorite(boardId: String, threadNum: Int) =
         threadRepository
@@ -70,7 +74,13 @@ class ThreadInteractorImpl @Inject constructor(
                 emit(Unit)
                 delay(Duration.parse(ThreadUpdateInterval))
             }
-        }.collect { getThread(boardId, threadNum, savePics = false) }
+        }
+            .map { threadRepository.getFavorites() }
+            .collect { threadList ->
+                threadList.forEach { thread ->
+                    getThread(thread.imageboard, boardId, threadNum, savePics = false)
+                }
+            }
 
     override suspend fun delete(boardId: String, threadNum: Int) {
         threadRepository.delete(boardId, threadNum)
@@ -78,20 +88,24 @@ class ThreadInteractorImpl @Inject constructor(
     }
 
     override suspend fun refresh(boardId: String, threadNum: Int) =
-        apiRepository.getThread(boardId, threadNum)
-            .let { thread ->
+        threadRepository.get(boardId, threadNum)
+            .let { apiRepositoryMap[it?.imageboard?.type] }
+            ?.getThread(boardId, threadNum)
+            ?.let { thread ->
                 threadRepository.insertKeepingState(listOf(thread))
                 postRepository.insertMissing(thread)
-            }
+            } ?: throw IllegalStateException("No proper repository found")
 
     @Deprecated("")
     private suspend fun getThread(
+        imageboard: Imageboard,
         boardId: String,
         threadNum: Int,
         savePics: Boolean,
     ) =
-        apiRepository.getThread(boardId, threadNum)
-            .let { thread ->
+        apiRepositoryMap[imageboard.type]
+            ?.getThread(boardId, threadNum)
+            ?.let { thread ->
                 //todo save states
                 if (savePics) {
                     threadRepository.insert(thread.copy(isDownloaded = true))

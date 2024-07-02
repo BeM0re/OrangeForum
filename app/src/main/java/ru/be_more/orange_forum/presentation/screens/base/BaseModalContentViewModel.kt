@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.model.model.AttachedFile
 import ru.be_more.model.model.BoardSetting
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.model.model.Post
 import ru.be_more.ui.composeViews.ModalContentDialogInitArgs
 import ru.be_more.ui.composeViews.initArgs.ImageInitArgs
@@ -33,24 +35,24 @@ abstract class BaseModalContentViewModel(
             )
         )
 
-    protected fun onTextLinkClicked(linkArgs: TextLinkArgs) {
+    protected fun onTextLinkClicked(imageboardType: ImageboardType, linkArgs: TextLinkArgs) {
         when (linkArgs) {
             is TextLinkArgs.DomesticPostLink ->
-                showPostModel(boardId, linkArgs.threadNum, linkArgs.postId)
+                showPostModel(imageboardType, boardId, linkArgs.threadNum, linkArgs.postId)
 
             is TextLinkArgs.ExternalLink -> { /* todo */ }
         }
     }
 
-    private fun showPostModel(boardId: String, threadNum: Int, postId: Int) =
+    private fun showPostModel(imageboardType: ImageboardType, boardId: String, threadNum: Int, postId: Int) =
         runCoroutine("showPostModel") {
             pushModelContent(
                 ModalContentDialogInitArgs(
                     modalArgs = PostInitArgs(
-                        post = postInteractor.getPost(boardId, threadNum, postId),
+                        post = postInteractor.getPost(imageboardType, boardId, threadNum, postId),
                         onPicClick = ::onPicClicked,
-                        onTextLinkClick = ::onTextLinkClicked,
-                        onPostNumClick = ::replyToPost
+                        onTextLinkClick = { onTextLinkClicked(imageboardType, it) },
+                        onPostNumClick = { replyToPost(imageboardType, it) }
                     ),
                     onBack = ::closeModal,
                     onClose = ::clearModal,
@@ -75,8 +77,9 @@ abstract class BaseModalContentViewModel(
             modalContent.emit(null)
         }
 
-    protected fun replyToPost(post: Post) {
+    protected fun replyToPost(imageboardType: ImageboardType, post: Post) {
         navigateToReply(
+            imageboardType = imageboardType,
             boardId = post.boardId,
             threadNum = post.threadNum,
             additionalString = ">>${post.id}",

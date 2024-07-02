@@ -3,7 +3,8 @@ package ru.be_more.network.api
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
-import ru.be_more.network.models.dto.*
+import ru.be_more.network.models.dvach.dto.BoardShortDto
+import ru.be_more.network.models.dvach.dto.*
 
 interface DvachApi{
 
@@ -47,7 +48,7 @@ interface DvachApi{
     //todo delete
     @Multipart
     @POST("/makaba/posting.fcgi?json=1")
-    suspend fun postThreadResponseRx(
+    suspend fun postThreadResponse(
         @Header("Cookie") cookie: RequestBody,
         @Part("task") task: RequestBody,
         @Part("board") board: RequestBody,

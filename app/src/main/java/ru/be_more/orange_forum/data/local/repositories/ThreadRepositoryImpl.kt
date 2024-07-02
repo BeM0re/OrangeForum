@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.database.db.dao.ThreadDao
-import ru.be_more.database.db.entities.StoredThread
-import ru.be_more.orange_forum.data.local.dbConverters.ThreadFactory
 import ru.be_more.orange_forum.domain.contracts.StorageContract
 import ru.be_more.model.model.BoardThread
+import ru.be_more.orange_forum.data.local.dbConverters.toEntity
+import ru.be_more.orange_forum.data.local.dbConverters.toModel
 import javax.inject.Inject
 
 class ThreadRepositoryImpl @Inject constructor(
@@ -17,7 +17,7 @@ class ThreadRepositoryImpl @Inject constructor(
 
     override suspend fun insert(thread: BoardThread) =
         dao.insert(
-            ThreadFactory.toEntity(thread)
+            thread.toEntity()
         )
 
     override suspend fun insertKeepingState(threads: List<BoardThread>) =
@@ -39,7 +39,7 @@ class ThreadRepositoryImpl @Inject constructor(
             }
         }.let { editedThreads ->
             dao.insert(
-                editedThreads.map { ThreadFactory.toEntity(it) }
+                editedThreads.map { it.toEntity() }
             )
         }
 
@@ -51,49 +51,49 @@ class ThreadRepositoryImpl @Inject constructor(
                     post.copy(
                         files = post.files.map { file ->
                             file.copy(
-                                localPath = storage.saveFile(file.path).toString(),
-                                localThumbnail = storage.saveFile(file.thumbnail).toString()
+                                localPath = storage.saveFile(file.pathFullLink).toString(),
+                                localThumbnail = storage.saveFile(file.thumbnailFullLink).toString()
                             )
                         }
                     )
                 }
-            ).let { ThreadFactory.toEntity(it) }
+            ).let { it.toEntity() }
         )
     }
 
 
     override suspend fun get(boardId: String, threadNum: Int): BoardThread? =
         dao.get(boardId, threadNum)
-            ?.let { ThreadFactory.fromEntity(it) }
+            ?.let { it.toModel() }
 
     override suspend fun getFavorites(): List<BoardThread> =
         dao.getFavorites()
-            .map { ThreadFactory.fromEntity(it) }
+            .map { it.toModel() }
 
     override suspend fun getQueued(): List<BoardThread> =
         dao.getQueued()
-            .map { ThreadFactory.fromEntity(it) }
+            .map { it.toModel() }
 
     override fun getFlow(boardId: String, threadNum: Int): Flow<BoardThread> =
         dao.getFlow(boardId, threadNum)
-            .map { ThreadFactory.fromEntity(it) }
+            .map { it.toModel() }
 
     override  fun getListFlow(boardId: String): Flow<List<BoardThread>> =
         dao.getListFlow(boardId)
             .map { threads ->
-                threads.map { ThreadFactory.fromEntity(it) }
+                threads.map { it.toModel() }
             }
 
     override fun getFavoriteFlow(): Flow<List<BoardThread>> =
         dao.getFavoriteFlow()
             .map { threads ->
-                threads.map { ThreadFactory.fromEntity(it) }
+                threads.map { it.toModel() }
             }
 
     override fun getQueuedFlow(): Flow<List<BoardThread>> =
         dao.getQueuedFlow()
             .map { threads ->
-                threads.map { ThreadFactory.fromEntity(it) }
+                threads.map { it.toModel() }
             }
 
 

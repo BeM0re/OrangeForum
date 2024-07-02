@@ -10,9 +10,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.model.model.Icon
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.orange_forum.presentation.screens.base.BaseViewModel
 
 class PostingViewModel(
+    val imageboardType: ImageboardType,
     val boardId: String,
     val threadNum: Int,
     private val additionalString: String?,
@@ -86,7 +88,7 @@ class PostingViewModel(
 
     private fun getCaptcha() =
         viewModelScope.async {
-            replyInteractor.getCaptcha(boardId, threadNum)
+            replyInteractor.getCaptcha(imageboardType, boardId, threadNum)
         }
 
     fun onSageClick() {
@@ -156,6 +158,7 @@ class PostingViewModel(
             if (threadNum > 0)
                 replyInteractor
                     .reply(
+                        imageboardType = imageboardType,
                         boardId = boardId,
                         threadNum = threadNum,
                         comment = comment.value,
@@ -170,6 +173,7 @@ class PostingViewModel(
             else
                 replyInteractor
                     .createThread(
+                        imageboardType = imageboardType,
                         boardId = boardId,
                         comment = comment.value,
                         isOp = isOpSelected.value,
@@ -205,6 +209,7 @@ class PostingViewModel(
     )
 
     class Factory @AssistedInject constructor(
+        @Assisted("imageboard") private val imageboardType: String,
         @Assisted("boardId") private val boardId: String,
         @Assisted("threadNum") private val threadNum: Int,
         @Assisted("additionalString") private val additionalString: String?,
@@ -217,17 +222,19 @@ class PostingViewModel(
             require(modelClass == PostingViewModel::class.java)
 
             return PostingViewModel(
-            boardId = boardId,
-            threadNum = threadNum,
-            additionalString = additionalString,
-            boardInteractor = boardInteractor,
-            replyInteractor = replyInteractor,
+                imageboardType = ImageboardType.valueOf(imageboardType),
+                boardId = boardId,
+                threadNum = threadNum,
+                additionalString = additionalString,
+                boardInteractor = boardInteractor,
+                replyInteractor = replyInteractor,
             ) as T
         }
 
         @AssistedFactory
         interface AFactory {
             fun create(
+                @Assisted("imageboard") imageboardType: String,
                 @Assisted("boardId") boardId: String,
                 @Assisted("threadNum") threadNum: Int,
                 @Assisted("additionalString") additionalString: String

@@ -1,18 +1,23 @@
 package ru.be_more.orange_forum.domain.interactors
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.model.model.Category
+import ru.be_more.model.model.ImageboardType
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
 class CategoryInteractorImpl @Inject constructor(
-    private val apiRepository: RemoteContract.ApiRepository,
     private val categoryRepository: DbContract.CategoryRepository,
     private val boardRepository: DbContract.BoardRepository,
+    private val apiRepositoryMap: Map<ImageboardType, @JvmSuppressWildcards RemoteContract.ApiRepository>,
 ): InteractorContract.CategoryInteractor {
 
     private val searchQuery = MutableStateFlow("")
@@ -34,16 +39,23 @@ class CategoryInteractorImpl @Inject constructor(
         }
 
     override suspend fun refresh() =
-        apiRepository.getCategories()
-            .let { categories ->
-                categoryRepository.delete()
-                categoryRepository.insert(categories)
-                boardRepository.insertKeepingState(
-                    categories
-                        .map { it.boards }
-                        .flatten()
-                )
+        withContext(Dispatchers.IO) {
+            categoryRepository.delete()
+            apiRepositoryMap.forEach { (_, api) ->
+                launch {
+                    api.getCategories()
+                        .let { categories ->
+                            categoryRepository.insert(categories)
+                            boardRepository.insertKeepingState(
+                                categories
+                                    .map { it.boards }
+                                    .flatten()
+                            )
+                        }
+                }
             }
+
+        }
 
     override suspend fun toggleExpanded(name: String) =
         categoryRepository.getEmpty(name)

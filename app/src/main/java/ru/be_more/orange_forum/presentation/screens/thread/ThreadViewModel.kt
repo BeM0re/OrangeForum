@@ -12,16 +12,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import ru.be_more.database.prefs.Preferences
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.model.model.BoardSetting
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.model.model.Post
 import ru.be_more.ui.composeViews.initArgs.PostInitArgs
 import ru.be_more.orange_forum.presentation.screens.base.BaseModalContentViewModel
-import ru.be_more.orange_forum.presentation.screens.board.BoardViewModel
-import javax.inject.Inject
 
 class ThreadViewModel(
+    private val imageboardType: ImageboardType,
     override var boardId: String,
     private val threadNum: Int,
     private val boardInteractor: InteractorContract.BoardInteractor,
@@ -56,7 +55,7 @@ class ThreadViewModel(
 
             threadInteractor.refresh(boardId, threadNum)
 
-            threadInteractor.getBoardFlow(boardId, threadNum)
+            threadInteractor.getThreadFlow(boardId, threadNum)
                 .collect { thread ->
                     screenTitle.emit(thread.title)
                     isFavorite.emit(thread.isFavorite)
@@ -85,8 +84,8 @@ class ThreadViewModel(
             PostInitArgs(
                 post = post,
                 onPicClick = ::onPicClicked,
-                onTextLinkClick = ::onTextLinkClicked,
-                onPostNumClick = ::replyToPost
+                onTextLinkClick = { onTextLinkClicked(imageboardType, it) },
+                onPostNumClick = { replyToPost(imageboardType, it) }
             )
         }
 
@@ -108,11 +107,12 @@ class ThreadViewModel(
 
     fun download() =
         runCoroutine("download") {
-            threadInteractor.save(boardId, threadNum)
+            threadInteractor.save(imageboardType, boardId, threadNum)
         }
 
     fun onReplyClicked() =
         navigateToReply(
+            imageboardType = imageboardType,
             boardId = boardId,
             threadNum = threadNum,
             additionalString = "",
@@ -129,6 +129,7 @@ class ThreadViewModel(
     }
 
     class Factory @AssistedInject constructor(
+        @Assisted("imageboard") val imageboardType: String,
         @Assisted("boardId") val boardId: String,
         @Assisted("threadNum") val threadNum: Int,
         private val boardInteractor: InteractorContract.BoardInteractor,
@@ -142,6 +143,7 @@ class ThreadViewModel(
             require(modelClass == ThreadViewModel::class.java)
 
             return ThreadViewModel(
+                imageboardType = ImageboardType.valueOf(imageboardType),
                 boardId = boardId,
                 threadNum = threadNum,
                 boardInteractor = boardInteractor,
@@ -154,6 +156,7 @@ class ThreadViewModel(
         @AssistedFactory
         interface AFactory {
             fun create(
+                @Assisted("imageboard") imageboardType: String,
                 @Assisted("boardId") boardId: String,
                 @Assisted("threadNum") threadNum: Int,
             ): Factory

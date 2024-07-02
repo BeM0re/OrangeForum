@@ -26,4 +26,5 @@ data class StoredThread(
     val isQueued: Boolean,
     val isDrown: Boolean,
     val hasNewMessages: Boolean,
+    val imageboard: StoredImageboard,
 )

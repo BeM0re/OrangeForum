@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.be_more.orange_forum.R
 import ru.be_more.model.model.AttachedFile
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.model.model.Post
 import ru.be_more.ui.composeViews.initArgs.HiddenOpPostInitArgs
 import ru.be_more.ui.theme.DvachTheme
@@ -75,7 +77,13 @@ fun OpPostHiddenViewPreview() {
                     isOpPost = true,
                     isAuthorOp = true,
                     number = 123,
-                    threadNum = 12312
+                    threadNum = 12312,
+                    imageboard = Imageboard(
+                        baseUrl = "",
+                        attachmentUrl = "",
+                        staticDataUrl = "",
+                        type = ImageboardType.Dvach,
+                    )
                 ),
                 onClick = {_, _, -> },
             )

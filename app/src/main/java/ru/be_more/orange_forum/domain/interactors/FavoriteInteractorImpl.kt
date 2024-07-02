@@ -9,13 +9,15 @@ import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.model.model.Board
+import ru.be_more.model.model.ImageboardType
 import javax.inject.Inject
+import kotlin.reflect.KClass
 import kotlin.time.Duration
 
 class FavoriteInteractorImpl @Inject constructor(
     private val boardRepository: DbContract.BoardRepository,
     private val threadRepository: DbContract.ThreadRepository,
-    private val apiRepository: RemoteContract.ApiRepository,
+    private val apiRepositoryMap: Map<ImageboardType, @JvmSuppressWildcards RemoteContract.ApiRepository>
 ): InteractorContract.FavoriteInteractor {
 
     override fun getBoardListFlow(): Flow<List<Board>> =
@@ -53,21 +55,23 @@ class FavoriteInteractorImpl @Inject constructor(
     override suspend fun updateFavoriteThreadInfo() =
         threadRepository.getFavorites()
             .forEach { thread ->
-                apiRepository.getThreadInfo(thread.boardId, thread.num)
-                    .also {
-                            info ->
-                        if (!info.isAlive)
-                            threadRepository.setIsDrown(info.boardId, info.threadNum, isDrown = true)
-                        else
-                            apiRepository.getEmptyThread(info.boardId, info.threadNum,)
-                                .also { updatedThread ->
-                                    if (updatedThread.lasthit > thread.lasthit)
-                                        threadRepository.setLasthit(info.boardId, info.threadNum, info.timestamp)
-                                            .also {
-                                                threadRepository.setHasNewPost(info.boardId, info.threadNum, hasNewPost = true)
-                                            }
-                                }
-                    }
+                apiRepositoryMap[thread.imageboard.type]?.let { repo ->
+                    repo.getThreadInfo(thread.boardId, thread.num)
+                        .also {
+                                info ->
+                            if (!info.isAlive)
+                                threadRepository.setIsDrown(info.boardId, info.threadNum, isDrown = true)
+                            else
+                                repo.getEmptyThread(info.boardId, info.threadNum,)
+                                    .also { updatedThread ->
+                                        if (updatedThread.lasthit > thread.lasthit)
+                                            threadRepository.setLasthit(info.boardId, info.threadNum, info.timestamp)
+                                                .also {
+                                                    threadRepository.setHasNewPost(info.boardId, info.threadNum, hasNewPost = true)
+                                                }
+                                    }
+                        }
+                }
             }
 
 }

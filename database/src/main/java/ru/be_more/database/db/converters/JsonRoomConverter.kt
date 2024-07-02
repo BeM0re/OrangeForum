@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import ru.be_more.database.db.entities.StoredBoard
 import ru.be_more.database.db.entities.StoredFile
 import ru.be_more.database.db.entities.StoredIcon
+import ru.be_more.database.db.entities.StoredImageboard
 import ru.be_more.database.db.entities.StoredPost
 import ru.be_more.database.db.entities.StoredThread
 
@@ -136,6 +137,22 @@ object JsonRoomConverter {
             return null
         }
         val listType = object : TypeToken<List<StoredIcon>>() {}.type
+        return Gson().fromJson(json, listType)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun fromImageboard(storedImageboard: StoredImageboard): String {
+        return Gson().toJson(storedImageboard)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toImageboard(json: String?): StoredImageboard? {
+        if (json == null) {
+            return null
+        }
+        val listType = object : TypeToken<StoredImageboard>() {}.type
         return Gson().fromJson(json, listType)
     }
 }

@@ -4,9 +4,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.database.db.dao.BoardDao
-import ru.be_more.database.db.entities.StoredBoard
-import ru.be_more.orange_forum.data.local.dbConverters.BoardFactory
 import ru.be_more.model.model.Board
+import ru.be_more.orange_forum.data.local.dbConverters.toEntity
+import ru.be_more.orange_forum.data.local.dbConverters.toModel
 import javax.inject.Inject
 
 class BoardRepositoryImpl @Inject constructor(
@@ -15,16 +15,16 @@ class BoardRepositoryImpl @Inject constructor(
 
     override suspend fun get(boardId: String): Board? =
         dao.get(boardId)
-            ?.let { BoardFactory.fromEntity(it) }
+            ?.let { it.toModel() }
 
     override fun getFlow(boardId: String): Flow<Board> =
         dao.getFlow(boardId)
-            .map { BoardFactory.fromEntity(it) }
+            .map { it.toModel() }
 
     override fun getListFlow(): Flow<List<Board>> =
         dao.getListFlow()
             .map { boardList ->
-                boardList.map { BoardFactory.fromEntity(it) }
+                boardList.map { it.toModel() }
             }
 
     override suspend fun insertKeepingState(board: Board) =
@@ -33,7 +33,7 @@ class BoardRepositoryImpl @Inject constructor(
             .let { isFavorite ->
                 dao.insertBoard(
                     board.copy(isFavorite = isFavorite)
-                        .let { BoardFactory.toEntity(it) }
+                        .let { it.toEntity() }
                 )
             }
 
@@ -43,7 +43,7 @@ class BoardRepositoryImpl @Inject constructor(
                 dao.insertBoardList(
                     boards.map { board ->
                         board.copy(isFavorite = board.id in favorites)
-                            .let { BoardFactory.toEntity(it) }
+                            .let { it.toEntity() }
                     }
                 )
             }

@@ -24,4 +24,5 @@ data class StoredPost(
     val timestamp: Long,
     val number: Int, //Порядковый номер в треде
     val replies: List<Int>,
+    val imageboard: StoredImageboard,
 )

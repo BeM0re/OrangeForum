@@ -9,11 +9,9 @@ import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import ru.be_more.orange_forum.consts.DVACH_ROOT_URL
 import ru.be_more.orange_forum.domain.contracts.StorageContract
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
 class LocalStorageImpl @Inject constructor(
@@ -22,7 +20,7 @@ class LocalStorageImpl @Inject constructor(
 
     override fun saveFile(url: String): Uri? {
         val glideUrl = GlideUrl(
-            DVACH_ROOT_URL +url.substring(1), LazyHeaders.Builder()
+            url, LazyHeaders.Builder()
                 .addHeader("Cookie", "usercode_auth=54e8a3b3c8d5c3d6cffb841e9bf7da63; " +
                         "_ga=GA1.2.57010468.1498700728; " +
                         "ageallow=1; " +

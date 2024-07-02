@@ -35,6 +35,8 @@ import io.sanghun.compose.video.RepeatMode
 import io.sanghun.compose.video.VideoPlayer
 import io.sanghun.compose.video.controller.VideoPlayerControllerConfig
 import io.sanghun.compose.video.uri.VideoPlayerMediaItem
+import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.model.model.Post
 import ru.be_more.ui.composeViews.initArgs.ImageInitArgs
 import ru.be_more.ui.composeViews.initArgs.ModalContentArgs
@@ -208,6 +210,12 @@ fun ModalContentDialogPreview() {
                         subject = "Subject",
                         timestamp = 2312342232,
                         number = 312,
+                        imageboard = Imageboard(
+                            baseUrl = "https://2ch.hk",
+                            attachmentUrl = "https://2ch.hk",
+                            staticDataUrl = "https://2ch.hk",
+                            type = ImageboardType.Dvach,
+                        )
                     ),
                     onTextLinkClick = { },
                     onPicClick = { },

@@ -6,12 +6,14 @@ import ru.be_more.orange_forum.domain.contracts.DbContract
 import ru.be_more.orange_forum.domain.contracts.InteractorContract
 import ru.be_more.orange_forum.domain.contracts.RemoteContract
 import ru.be_more.model.model.Board
+import ru.be_more.model.model.ImageboardType
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
 class QueueInteractorImpl @Inject constructor(
     private val boardRepository: DbContract.BoardRepository,
     private val threadRepository: DbContract.ThreadRepository,
-    private val apiRepository: RemoteContract.ApiRepository,
+    private val apiRepositoryMap: Map<ImageboardType, @JvmSuppressWildcards RemoteContract.ApiRepository>
 ): InteractorContract.QueueInteractor{
 
     override fun getBoardListFlow(): Flow<List<Board>> =
@@ -37,8 +39,8 @@ class QueueInteractorImpl @Inject constructor(
     private suspend fun deleteDrownThreads() =
         threadRepository.getQueued()
             .forEach { thread ->
-                apiRepository.getThreadInfo(thread.boardId, thread.num)
-                    .also {
+                apiRepositoryMap[thread.imageboard.type]?.getThreadInfo(thread.boardId, thread.num)
+                    ?.also {
                         if (!it.isAlive)
                             threadRepository.delete(it.boardId, it.threadNum)
                     }
