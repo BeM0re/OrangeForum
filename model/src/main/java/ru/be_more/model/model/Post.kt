@@ -18,5 +18,5 @@ data class Post(
     val timestamp: Long,
     val number: Int, //Порядковый номер в треде
     val replies: List<Int> = emptyList(),
-    val imageboard: Imageboard,
+    val imageboardType: ImageboardType,
 ) : ModalContent

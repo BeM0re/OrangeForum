@@ -143,12 +143,7 @@ fun PostViewPreview() {
                     timestamp = 1700619604,
                     number = 1233,
                     replies = listOf(12321, 32123),
-                    imageboard = Imageboard(
-                        baseUrl = "https://2ch.hk",
-                        attachmentUrl = "https://2ch.hk",
-                        staticDataUrl = "https://2ch.hk",
-                        type = ImageboardType.Dvach
-                    )
+                    imageboardType = ImageboardType.Dvach,
                 ),
                 onPicClick = { },
                 onTextLinkClick = { },

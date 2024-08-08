@@ -21,7 +21,7 @@ import ru.be_more.database.db.utils.Converters
         StoredThread::class,
         StoredPost::class,
     ],
-    version = 17,
+    version = 18,
     exportSchema = false
 )
 

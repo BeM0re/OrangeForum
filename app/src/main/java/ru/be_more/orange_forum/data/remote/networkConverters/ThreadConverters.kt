@@ -27,7 +27,7 @@ fun FourchanThreadDto.toModel(boardId: String, imageboard: Imageboard): BoardThr
         newMessageAmount = 0,
         isPinned = posts.first().sticky > 0,
         lasthit = posts.last().timestamp,
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun FourchanThreadDto.toThreadInfo(boardId: String, threadNum: Int, imageboard: Imageboard): ThreadInfo =
@@ -37,7 +37,7 @@ fun FourchanThreadDto.toThreadInfo(boardId: String, threadNum: Int, imageboard: 
         postCount = posts.size,
         timestamp = posts.first().timestamp,
         isAlive = true,
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun ThreadDto.toModel(boardId: String, imageboard: Imageboard): BoardThread =
@@ -56,7 +56,7 @@ fun ThreadDto.toModel(boardId: String, imageboard: Imageboard): BoardThread =
         newMessageAmount = 0,
         isPinned = (threads.getOrNull(0)?.posts?.getOrNull(0)?.sticky ?: 0) > 0,
         lasthit = threads.getOrNull(0)?.posts?.getOrNull(0)?.lasthit ?: 0,
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun ThreadInfoDto.toModel(boardId: String, threadNum: Int, imageboard: Imageboard): ThreadInfo =
@@ -66,5 +66,5 @@ fun ThreadInfoDto.toModel(boardId: String, threadNum: Int, imageboard: Imageboar
         postCount = thread?.posts ?: 0,
         timestamp = thread?.timestamp ?: 0,
         isAlive = result > 0,
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )

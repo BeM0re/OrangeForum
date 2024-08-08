@@ -25,7 +25,7 @@ fun FourchanPostDto.toModel(boardId: String, threadNum: Int, imageboard: Imagebo
         subject = sub ?: "",
         timestamp = timestamp,
         number = number,
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun FourchanPostDto.toThread(boardId: String, imageboard: Imageboard): BoardThread =
@@ -46,7 +46,7 @@ fun FourchanPostDto.toThread(boardId: String, imageboard: Imageboard): BoardThre
         lasthit = lastModified,
         newMessageAmount = 0,
         lastPostNumber = 0,
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun PostDto.toModel(boardId: String, threadNum: Int, imageboard: Imageboard): Post =
@@ -66,7 +66,7 @@ fun PostDto.toModel(boardId: String, threadNum: Int, imageboard: Imageboard): Po
         subject = subject,
         timestamp = timestamp,
         number = number,
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun PostDto.toThread(boardId: String, imageboard: Imageboard): BoardThread =
@@ -87,5 +87,5 @@ fun PostDto.toThread(boardId: String, imageboard: Imageboard): BoardThread =
         lasthit = lasthit,
         newMessageAmount = 0,
         lastPostNumber = 0,
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )

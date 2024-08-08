@@ -64,7 +64,7 @@ class CategoryInteractorImpl @Inject constructor(
             }
 
     override suspend fun search(query: String) =
-        searchQuery.emit(query)
+        searchQuery.emit(query.lowercase())
 
     private fun getCategoryFlow(): Flow<List<Category>> =
         combine(

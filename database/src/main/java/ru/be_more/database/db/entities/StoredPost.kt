@@ -4,7 +4,7 @@ import androidx.room.Entity
 
 @Entity(
     tableName = "posts",
-    primaryKeys = ["boardId", "id"]
+    primaryKeys = ["boardId", "id", "imageboardType"]
 )
 data class StoredPost(
     val boardId: String,
@@ -24,5 +24,5 @@ data class StoredPost(
     val timestamp: Long,
     val number: Int, //Порядковый номер в треде
     val replies: List<Int>,
-    val imageboard: StoredImageboard,
+    val imageboardType: String,
 )

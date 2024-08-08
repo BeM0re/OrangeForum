@@ -6,5 +6,5 @@ data class ThreadInfo(
     val timestamp: Long = 0,
     val postCount: Int = 0,
     val isAlive: Boolean,
-    val imageboard: Imageboard,
+    val imageboardType: ImageboardType,
 )

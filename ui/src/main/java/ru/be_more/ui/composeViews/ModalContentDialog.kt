@@ -210,12 +210,7 @@ fun ModalContentDialogPreview() {
                         subject = "Subject",
                         timestamp = 2312342232,
                         number = 312,
-                        imageboard = Imageboard(
-                            baseUrl = "https://2ch.hk",
-                            attachmentUrl = "https://2ch.hk",
-                            staticDataUrl = "https://2ch.hk",
-                            type = ImageboardType.Dvach,
-                        )
+                        imageboardType = ImageboardType.Dvach,
                     ),
                     onTextLinkClick = { },
                     onPicClick = { },

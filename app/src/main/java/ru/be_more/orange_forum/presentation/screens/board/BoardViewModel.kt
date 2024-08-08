@@ -89,7 +89,6 @@ class BoardViewModel(
             threadInteractor.markQueued(boardId, threadNum)
         }
 
-
     private fun hideThread(boardId: String, threadNum: Int) =
         runCoroutine {
             threadInteractor.markHidden(boardId, threadNum)

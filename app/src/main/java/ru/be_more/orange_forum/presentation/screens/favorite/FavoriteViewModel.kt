@@ -40,7 +40,7 @@ class FavoriteViewModel @Inject constructor(
                 ShortBoardInitArgs(
                     boardId = board.id,
                     boardName = board.name,
-                    onClick = { navigateToBoard(board.imageboard.type, it) }
+                    onClick = { navigateToBoard(board.imageboardType, it) }
                 ).also { add(it) }
 
                 board.threads.map { thread ->
@@ -50,7 +50,7 @@ class FavoriteViewModel @Inject constructor(
                         title = thread.title,
                         isDrown = thread.isDrown,
                         hasNewMessage = thread.hasNewMessages,
-                        onClick = { boardId, threadNum -> navigateToThread(thread.imageboard.type, boardId, threadNum) }
+                        onClick = { boardId, threadNum -> navigateToThread(thread.imageboardType, boardId, threadNum) }
                     )
                 }.also { addAll(it) }
             }

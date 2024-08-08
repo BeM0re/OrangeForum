@@ -46,7 +46,7 @@ class FourchanApiRepositoryImpl @Inject constructor(
                         name = FOURCHAN_CATEGORY,
                         boards = it,
                         isExpanded = false,
-                        imageboard = imageboard,
+                        imageboardType = imageboard.type,
                     )
                 )
             }
@@ -156,7 +156,7 @@ class FourchanApiRepositoryImpl @Inject constructor(
                 boardId = boardId,
                 threadNum = threadNum,
                 isAlive = false,
-                imageboard = imageboard
+                imageboardType = imageboard.type
             )
         }
 

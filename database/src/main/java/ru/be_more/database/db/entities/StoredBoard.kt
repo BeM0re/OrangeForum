@@ -5,10 +5,13 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import ru.be_more.database.db.converters.JsonRoomConverter
 
-@Entity(tableName = "boards")
+@Entity(
+    tableName = "boards",
+    primaryKeys = ["id","imageboardType"]
+)
 @TypeConverters(JsonRoomConverter::class)
 data class StoredBoard(
-    @PrimaryKey val id: String,
+    val id: String,
     val name: String,
     val category: String = "",
     val isFavorite: Boolean,
@@ -26,5 +29,5 @@ data class StoredBoard(
     val maxFileSize: Int?,
     val tags: List<String>?,
     val icons: List<StoredIcon>?,
-    val imageboard: StoredImageboard,
+    val imageboardType: String,
 )

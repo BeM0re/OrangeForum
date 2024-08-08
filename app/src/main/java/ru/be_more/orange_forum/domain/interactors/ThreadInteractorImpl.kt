@@ -78,7 +78,7 @@ class ThreadInteractorImpl @Inject constructor(
             .map { threadRepository.getFavorites() }
             .collect { threadList ->
                 threadList.forEach { thread ->
-                    getThread(thread.imageboard, boardId, threadNum, savePics = false)
+                    getThread(thread.imageboardType, boardId, threadNum, savePics = false)
                 }
             }
 
@@ -89,7 +89,7 @@ class ThreadInteractorImpl @Inject constructor(
 
     override suspend fun refresh(boardId: String, threadNum: Int) =
         threadRepository.get(boardId, threadNum)
-            .let { apiRepositoryMap[it?.imageboard?.type] }
+            .let { apiRepositoryMap[it?.imageboardType] }
             ?.getThread(boardId, threadNum)
             ?.let { thread ->
                 threadRepository.insertKeepingState(listOf(thread))
@@ -98,12 +98,12 @@ class ThreadInteractorImpl @Inject constructor(
 
     @Deprecated("")
     private suspend fun getThread(
-        imageboard: Imageboard,
+        imageboardType: ImageboardType,
         boardId: String,
         threadNum: Int,
         savePics: Boolean,
     ) =
-        apiRepositoryMap[imageboard.type]
+        apiRepositoryMap[imageboardType]
             ?.getThread(boardId, threadNum)
             ?.let { thread ->
                 //todo save states

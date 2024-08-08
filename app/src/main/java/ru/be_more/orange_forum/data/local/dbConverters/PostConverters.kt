@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.data.local.dbConverters
 
 import ru.be_more.database.db.entities.StoredPost
 import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 import ru.be_more.model.model.Post
 
 fun StoredPost.toModel(): Post =
@@ -23,7 +24,7 @@ fun StoredPost.toModel(): Post =
         timestamp = timestamp,
         number = number,
         replies = replies,
-        imageboard = imageboard.toModel(),
+        imageboardType = ImageboardType.valueOf(imageboardType),
     )
 
 fun Post.toEntity() =
@@ -45,5 +46,5 @@ fun Post.toEntity() =
         timestamp = timestamp,
         number = number,
         replies = replies,
-        imageboard = imageboard.toEntity(),
+        imageboardType = imageboardType.name,
     )

@@ -2,6 +2,7 @@ package ru.be_more.orange_forum.data.local.dbConverters
 
 import ru.be_more.database.db.entities.StoredThread
 import ru.be_more.model.model.BoardThread
+import ru.be_more.model.model.ImageboardType
 
 fun StoredThread.toModel(): BoardThread =
     BoardThread(
@@ -21,7 +22,7 @@ fun StoredThread.toModel(): BoardThread =
         isQueued = isQueued,
         isDrown = isDrown,
         hasNewMessages = hasNewMessages,
-        imageboard = imageboard.toModel(),
+        imageboardType = ImageboardType.valueOf(imageboardType),
     )
 
 fun BoardThread.toEntity() =
@@ -42,5 +43,5 @@ fun BoardThread.toEntity() =
         isQueued = isQueued,
         isDrown = isDrown,
         hasNewMessages = hasNewMessages,
-        imageboard = imageboard.toEntity(),
+        imageboardType = imageboardType.name,
     )

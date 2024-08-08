@@ -56,7 +56,7 @@ class CategoryViewModel @Inject constructor(
                             BoardShortListItemViewInitArgs(
                                 id = board.id,
                                 title = board.name,
-                                onClick = { navigateToBoard(board.imageboard.type, it) }
+                                onClick = { navigateToBoard(board.imageboardType, it) }
                             )
                         )
                     }

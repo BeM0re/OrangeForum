@@ -29,7 +29,7 @@ class QueueViewModel @Inject constructor(
                 ShortBoardInitArgs(
                     boardId = board.id,
                     boardName = board.name,
-                    onClick = { navigateToBoard(board.imageboard.type, it) }
+                    onClick = { navigateToBoard(board.imageboardType, it) }
                 ).also { add(it) }
 
                 board.threads.forEach { thread ->
@@ -39,7 +39,7 @@ class QueueViewModel @Inject constructor(
                         title = thread.title,
                         isDrown = false,
                         hasNewMessage = false,
-                        onClick = { boardId, threadNum -> navigateToThread(thread.imageboard.type, boardId, threadNum) }
+                        onClick = { boardId, threadNum -> navigateToThread(thread.imageboardType, boardId, threadNum) }
                     ).also { add(it) }
                 }
             }

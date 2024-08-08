@@ -6,7 +6,7 @@ import ru.be_more.database.db.converters.JsonRoomConverter
 
 @Entity(
     tableName = "threads",
-    primaryKeys = ["num", "boardId"]
+    primaryKeys = ["num", "boardId", "imageboardType"]
 )
 @TypeConverters(JsonRoomConverter::class)
 data class StoredThread(
@@ -26,5 +26,5 @@ data class StoredThread(
     val isQueued: Boolean,
     val isDrown: Boolean,
     val hasNewMessages: Boolean,
-    val imageboard: StoredImageboard,
+    val imageboardType: String,
 )

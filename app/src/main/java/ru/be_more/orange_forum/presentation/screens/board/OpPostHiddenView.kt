@@ -78,12 +78,8 @@ fun OpPostHiddenViewPreview() {
                     isAuthorOp = true,
                     number = 123,
                     threadNum = 12312,
-                    imageboard = Imageboard(
-                        baseUrl = "",
-                        attachmentUrl = "",
-                        staticDataUrl = "",
-                        type = ImageboardType.Dvach,
-                    )
+                    imageboardType = ImageboardType.Dvach,
+
                 ),
                 onClick = {_, _, -> },
             )

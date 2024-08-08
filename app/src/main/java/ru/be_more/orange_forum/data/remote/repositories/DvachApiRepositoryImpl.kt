@@ -44,7 +44,7 @@ class DvachApiRepositoryImpl @Inject constructor(
                     name = category,
                     boards = boards,
                     isExpanded = false,
-                    imageboard = imageboard,
+                    imageboardType = imageboard.type,
                 )
             }
 
@@ -203,7 +203,7 @@ class DvachApiRepositoryImpl @Inject constructor(
                 boardId = boardId,
                 threadNum = threadNum,
                 isAlive = false,
-                imageboard = imageboard,
+                imageboardType = imageboard.type,
             )
         }
 

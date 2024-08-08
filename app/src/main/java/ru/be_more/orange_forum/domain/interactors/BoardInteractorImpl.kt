@@ -56,7 +56,7 @@ class BoardInteractorImpl @Inject constructor(
         boardRepository
             .get(boardId)
             .let {
-                boardRepository.markFavorite(boardId, it?.isFavorite == true)
+                boardRepository.markFavorite(boardId, it?.isFavorite == false)
             }
 
     override suspend fun refresh(imageboardType: ImageboardType, boardId: String) =

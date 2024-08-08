@@ -39,7 +39,7 @@ class QueueInteractorImpl @Inject constructor(
     private suspend fun deleteDrownThreads() =
         threadRepository.getQueued()
             .forEach { thread ->
-                apiRepositoryMap[thread.imageboard.type]?.getThreadInfo(thread.boardId, thread.num)
+                apiRepositoryMap[thread.imageboardType]?.getThreadInfo(thread.boardId, thread.num)
                     ?.also {
                         if (!it.isAlive)
                             threadRepository.delete(it.boardId, it.threadNum)

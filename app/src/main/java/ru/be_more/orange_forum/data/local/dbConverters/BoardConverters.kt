@@ -6,6 +6,7 @@ import ru.be_more.model.model.Board
 import ru.be_more.model.model.BoardSetting
 import ru.be_more.model.model.Icon
 import ru.be_more.model.model.Imageboard
+import ru.be_more.model.model.ImageboardType
 
 fun StoredBoard.toModel(): Board =
     Board(
@@ -30,7 +31,7 @@ fun StoredBoard.toModel(): Board =
             tags = tags,
             icons = icons?.map { it.toModel() },
         ),
-        imageboard = imageboard.toModel(),
+        imageboardType = ImageboardType.valueOf(imageboardType),
     )
 
 fun Board.toEntity() =
@@ -53,7 +54,7 @@ fun Board.toEntity() =
         maxFileSize = boardSetting.maxFileSize,
         tags = boardSetting.tags,
         icons = boardSetting.icons?.map { it.toEntity() },
-        imageboard = imageboard.toEntity(),
+        imageboardType = imageboardType.name,
     )
 
 fun StoredIcon.toModel() =

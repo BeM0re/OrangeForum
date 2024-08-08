@@ -18,5 +18,5 @@ data class BoardThread(
     val isQueued: Boolean = false,
     val isDrown: Boolean = false,
     val hasNewMessages: Boolean = false,
-    val imageboard: Imageboard,
+    val imageboardType: ImageboardType,
 )

@@ -40,7 +40,7 @@ fun List<FourchanBoardPageDto>.toModel(boardName: String, boardId: String, image
             tags = emptyList(),
             icons = emptyList(),
         ),
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun BoardDto.toModel(boardId: String, imageboard: Imageboard): Board =
@@ -66,7 +66,7 @@ fun BoardDto.toModel(boardId: String, imageboard: Imageboard): Board =
             tags = board.tags,
             icons = board.icons?.map { it.toModel(imageboard) },
         ),
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun BoardShortDto.toModel(imageboard: Imageboard): Board =
@@ -91,7 +91,7 @@ fun BoardShortDto.toModel(imageboard: Imageboard): Board =
             tags = null,
             icons = null,
         ),
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 fun FourchanShortBoardDto.toModel(imageboard: Imageboard): Board =
@@ -116,7 +116,7 @@ fun FourchanShortBoardDto.toModel(imageboard: Imageboard): Board =
             tags = null,
             icons = null,
         ),
-        imageboard = imageboard,
+        imageboardType = imageboard.type,
     )
 
 

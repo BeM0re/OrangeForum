@@ -55,7 +55,7 @@ class FavoriteInteractorImpl @Inject constructor(
     override suspend fun updateFavoriteThreadInfo() =
         threadRepository.getFavorites()
             .forEach { thread ->
-                apiRepositoryMap[thread.imageboard.type]?.let { repo ->
+                apiRepositoryMap[thread.imageboardType]?.let { repo ->
                     repo.getThreadInfo(thread.boardId, thread.num)
                         .also {
                                 info ->
